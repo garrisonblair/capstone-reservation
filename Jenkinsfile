@@ -36,17 +36,27 @@ pipeline {
                 echo 'Running static analysis.. in Jenkinsfile'
                 runStaticAnalysis()
             }
+            post {
+                failure {
+                    buildFailure()
+                }
+                unstable {
+                    buildFailure()
+                }
+            }
         }
         stage('Build') {
             steps {
                 echo 'Building.. in Jenkinsfile'
                 build()
             }
-            failure {
-                buildFailure()
-            }
-            unstable {
-                buildFailure()
+            post {
+                failure {
+                    buildFailure()
+                }
+                unstable {
+                    buildFailure()
+                }
             }
         }
         stage('Unit Tests') {
