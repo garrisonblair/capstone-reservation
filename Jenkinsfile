@@ -58,16 +58,16 @@ pipeline {
                 runIntegrationTests()
             }
         }
-        post {
-            success {
-                buildSuccess()
-            }
-            failure {
-                buildFailure()
-            }
-            unstable {
-                buildFailure()
-            }
+    }
+    post {
+        success {
+            buildSuccess()
+        }
+        failure {
+            buildFailure()
+        }
+        unstable {
+            buildFailure()
         }
     }
 }
