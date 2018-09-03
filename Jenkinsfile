@@ -1,8 +1,5 @@
 pipeline {
 
-    // see https://jenkins.io/doc/book/pipeline/jenkinsfile/
-    // see https://jenkins.io/doc/book/pipeline/syntax/
-    
     agent any
 
     parameters {
