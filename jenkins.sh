@@ -39,7 +39,7 @@ function build() {
 	echo 'Building... from jenkins.sh'
 }
 
-function sonar() {
+function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
 }
 
