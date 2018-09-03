@@ -33,27 +33,11 @@ pipeline {
                 echo 'Running static analysis.. in Jenkinsfile'
                 runStaticAnalysis()
             }
-            post {
-                failure {
-                    buildFailure()
-                }
-                unstable {
-                    buildFailure()
-                }
-            }
         }
         stage('Build') {
             steps {
                 echo 'Building.. in Jenkinsfile'
                 buildApplication()
-            }
-            post {
-                failure {
-                    buildFailure()
-                }
-                unstable {
-                    buildFailure()
-                }
             }
         }
         stage('Unit Tests') {
@@ -64,14 +48,6 @@ pipeline {
                 echo 'Running Unit tests in Jenkinsfile...'
                 runUnitTests()
             }
-            post {
-                failure {
-                    buildFailure()
-                }
-                unstable {
-                    buildFailure()
-                }
-            }
         }
         stage('Integration Tests') {
             when {
@@ -81,13 +57,16 @@ pipeline {
                 echo 'Running integration tests in Jenkinsfile...'
                 runIntegrationTests()
             }
-            post {
-                failure {
-                    buildFailure()
-                }
-                unstable {
-                    buildFailure()
-                }
+        }
+        post {
+            success {
+                buildSuccess()
+            }
+            failure {
+                buildFailure()
+            }
+            unstable {
+                buildFailure()
             }
         }
     }
@@ -112,4 +91,10 @@ def runIntegrationTests() {
 
 def buildFailure() {
     echo 'build failed'
+    slackSend color: "#aa0a0a", message: "Build Failed: ${env.JOB_NAME} ${env.BUILD_NUMBER} ${env.GIT_BRANCH}"
+}
+
+def buildSuccess() {
+    echo 'build succeeded'
+    slackSend color: "#43e045", message: "Build Succeeded: ${env.JOB_NAME} ${env.BUILD_NUMBER} ${env.GIT_BRANCH}"
 }
