@@ -48,7 +48,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building.. in Jenkinsfile'
-                build()
+                buildApplication()
             }
             post {
                 failure {
@@ -101,7 +101,7 @@ def runStaticAnalysis() {
     sh './jenkins.sh staticAnalysis'
 }
 
-def build() {
+def buildApplication() {
     sh './jenkins.sh build'
 }
 
