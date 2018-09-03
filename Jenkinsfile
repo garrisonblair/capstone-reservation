@@ -26,7 +26,6 @@ pipeline {
                 echo env.PATH
                 echo env.NODE_NAME
                 echo env.USER
-                
             }
         }
         stage('Static Analysis') {
@@ -106,5 +105,4 @@ def runIntegrationTests() {
 
 def buildFailure() {
     echo 'build failed'
-    // Notify slack
 }
