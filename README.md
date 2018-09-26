@@ -21,6 +21,14 @@ As a developer you will need to perform the following steps:
     pip3 install virtualenv
 ```
 
+- Create a venv folder where it will contain all the virtual environments
+```
+    mkdir venv
+    cd venv
+```
+
+- Clone the git
+
 - Create virtual environment
 ```
     virtualenv CapstoneReservation -p python3
@@ -29,6 +37,19 @@ As a developer you will need to perform the following steps:
 - Run virtual environment
 ```
     source CapstoneReservation/bin/activate
+```
+
+- Go inside the the virtual environment directory and clone the project
+```
+    cd CapstoneReservation
+    git clone git@github.com:SteveLocke/CapstoneReservation.git
+```
+
+- Go inside the repository and upgrade pip to the latest version
+```
+    cd CapstoneReservation
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    python get-pip.py
 ```
 
 - Install python dependencies
