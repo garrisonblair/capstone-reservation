@@ -85,6 +85,8 @@ This will create an user to access to the Django administration interface
     python3 manage.py runserver 0.0.0.0:8000
 ```
 
+- Follow the steps to install yarn on [https://yarnpkg.com/en/docs/install](https://yarnpkg.com/en/docs/install)
+
 - Go to the root directory of the React app
 ```
     cd client // or cd ../client (dependending on your current directory)
@@ -149,3 +151,4 @@ The default port of the React app is **3000**
 - [https://react.semantic-ui.com/](https://react.semantic-ui.com/)
 - [https://github.com/headzoo/react-moment](https://github.com/headzoo/react-moment)
 - [https://www.getpostman.com/](https://www.getpostman.com/)
+- [https://yarnpkg.com/en/docs/install](https://yarnpkg.com/en/docs/install)
