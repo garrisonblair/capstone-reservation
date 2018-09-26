@@ -106,7 +106,7 @@ The default port of the React app is **3000**
 
 - List all Django commands
 ```
-python3 manage.py --help
+    python3 manage.py --help
 ```
 
 - Dump DB
