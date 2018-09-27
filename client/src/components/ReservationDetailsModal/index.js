@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import settings from '../../config/settings';
 import './ReservationDetailsModal.scss';
-import { Button, Header, Modal, Dropdown, Button } from 'semantic-ui-react'
+import { Button, Header, Modal, Dropdown } from 'semantic-ui-react'
 
 class ReservationDetailsModal extends Component {
-  componentDidMount() {
-    console.log(settings)
-  }
 
+  roomNumber = this.props.roomNumber;
   hourOptions = [
     { text: '08', value: 8 },
     { text: '09', value: 9 },
@@ -26,7 +24,7 @@ class ReservationDetailsModal extends Component {
     { text: '22', value: 22 },
     { text: '23', value: 23 },
     { text: '24', value: 24 }
-  ]
+  ];
 
   minuteOptions = [
     { text: '00', value: 0 },
@@ -35,11 +33,16 @@ class ReservationDetailsModal extends Component {
     { text: '30', value: 30 },
     { text: '40', value: 40 },
     { text: '50', value: 50 }
-  ]
+  ];
 
   reservedOptions = [
-    { text: 'me' }
+    // here the value should be 'this.props.username'
+    { text: 'me', value: 1 }
   ]
+
+  componentDidMount() {
+    console.log(settings)
+  }
 
   render() {
     return (
@@ -48,23 +51,24 @@ class ReservationDetailsModal extends Component {
           <Modal.Header>Reservation Details</Modal.Header>
           <Modal.Content>
             <Modal.Description>
-              <Header>Room #</Header>
+              <Header>Room # {this.roomNumber}</Header>
               <p>Date: </p>
-              <br/>
+              <br />
               <span>
-                <span class="inputLabel">From:</span>
+                <span className="inputLabel">From:</span>
                 <Dropdown placeholder='hh' selection compact className="timeSelection" options={this.hourOptions} />
                 <Dropdown placeholder='mm' selection compact className="timeSelection" options={this.minuteOptions} />
-                <span class="inputLabel" id="toLabel">To:</span>
+                <span className="inputLabel" id="toLabel">To:</span>
                 <Dropdown placeholder='hh' selection compact className="timeSelection" options={this.hourOptions} />
                 <Dropdown placeholder='mm' selection compact className="timeSelection" options={this.minuteOptions} />
               </span>
-              <br/><br/>
+              <br /><br />
               <span>
-                <span class="inputLabel">Reserved by:</span>
+                <span className="inputLabel">Reserved by:</span>
                 <Dropdown compact placeholder='hh' selection options={this.reservedOptions} />
               </span>
-              
+
+
             </Modal.Description>
           </Modal.Content>
         </Modal>
