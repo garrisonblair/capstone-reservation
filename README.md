@@ -145,6 +145,11 @@ The default port of the React app is **3000**
     deactivate
 ```
 
+- Run all Django tests
+```
+    python3 manage.py test apps
+```
+
 ## References
 
 - [http://www.django-rest-framework.org/](http://www.django-rest-framework.org/)
