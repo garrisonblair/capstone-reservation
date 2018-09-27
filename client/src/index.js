@@ -4,6 +4,7 @@ import {HashRouter as Router, Route, Switch} from 'react-router-dom';
 import Home from './components/Home';
 import Login from './components/Login';
 import NotFound from './components/NotFound';
+import ReservationDetailsModal from './components/ReservationDetailsModal';
 
 
 ReactDOM.render(
@@ -12,6 +13,10 @@ ReactDOM.render(
       <Switch>
         <Route exact path="/" component={Home}/>
         <Route exact path="/login" component={Login}/>
+
+        {/* This Route is only for development testing. Remove after.*/}
+        <Route exact path="/andresModal" component={ReservationDetailsModal}/>
+
         <Route component={NotFound}/>
       </Switch>
     </div>
