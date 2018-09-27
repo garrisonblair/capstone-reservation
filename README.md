@@ -1,5 +1,14 @@
 # SOEN490
 
+Infrastructure Information:
+
+	Digital Ocean Ubuntu Server: 165.227.34.184
+
+	Continuous Integration (Jenkins) URL: http://165.227.34.184:8080
+		Notifications of builds sent to Slack channel: #jenkinsnotifications
+
+	Github Repository: https://github.com/SteveLocke/SOEN490
+
 ## Overview
 
 The app uses the following tools:
@@ -155,3 +164,4 @@ The default port of the React app is **3000**
 - [https://github.com/headzoo/react-moment](https://github.com/headzoo/react-moment)
 - [https://www.getpostman.com/](https://www.getpostman.com/)
 - [https://yarnpkg.com/en/docs/install](https://yarnpkg.com/en/docs/install)
+>>>>>>> 38a91684bb7cfefd4349061429b6b576954e1cee
