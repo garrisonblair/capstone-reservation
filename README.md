@@ -27,11 +27,6 @@ As a developer you will need to perform the following steps:
     cd venv
 ```
 
-- Clone the git repository
-```
-    git clone git@github.com:SteveLocke/CapstoneReservation.git
-```
-
 - Create virtual environment
 ```
     virtualenv CapstoneReservation -p python3
