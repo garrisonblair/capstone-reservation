@@ -6,6 +6,8 @@ import { Button, Header, Modal, Dropdown } from 'semantic-ui-react'
 class ReservationDetailsModal extends Component {
 
   roomNumber = this.props.roomNumber;
+  opened = false;
+  state = { modalOpen: false }
   hourOptions = [
     { text: '08', value: 8 },
     { text: '09', value: 9 },
@@ -40,6 +42,8 @@ class ReservationDetailsModal extends Component {
     { text: 'me', value: 1 }
   ]
 
+  closeModal = () => this.setState({ modalOpen: false })
+  handleOpen = () => this.setState({ modalOpen: true })
   componentDidMount() {
     console.log(settings)
   }
@@ -47,7 +51,7 @@ class ReservationDetailsModal extends Component {
   render() {
     return (
       <div id="reservation-details-modal">
-        <Modal trigger={<Button>Show Modal</Button>} centered={false}>
+        <Modal trigger={<Button onClick={this.handleOpen}>Show Modal</Button>} centered={false} size={"tiny"} open={this.state.modalOpen}>
           <Modal.Header>Reservation Details</Modal.Header>
           <Modal.Content>
             <Modal.Description>
@@ -65,9 +69,13 @@ class ReservationDetailsModal extends Component {
               <br /><br />
               <span>
                 <span className="inputLabel">Reserved by:</span>
-                <Dropdown compact placeholder='hh' selection options={this.reservedOptions} />
+                <Dropdown compact placeholder='hh' selection options={this.reservedOptions} defaultValue={this.reservedOptions[0].value} />
               </span>
-
+              <br /><br />
+              <div>
+                <Button content='Reserve' primary />
+                <Button content='Cancel' secondary onClick={this.closeModal}/>
+              </div>
 
             </Modal.Description>
           </Modal.Content>
