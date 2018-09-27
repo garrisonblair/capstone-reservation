@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import settings from '../../config/settings';
 import './ReservationDetailsModal.scss';
-import { Button, Header, Modal, Dropdown } from 'semantic-ui-react'
+import { Button, Header, Modal, Dropdown } from 'semantic-ui-react';
+import axios from 'axios';
 
 class ReservationDetailsModal extends Component {
 
@@ -24,8 +25,7 @@ class ReservationDetailsModal extends Component {
     { text: '20', value: 20 },
     { text: '21', value: 21 },
     { text: '22', value: 22 },
-    { text: '23', value: 23 },
-    { text: '24', value: 24 }
+    { text: '23', value: 23 }
   ];
 
   minuteOptions = [
@@ -44,8 +44,8 @@ class ReservationDetailsModal extends Component {
 
   closeModal = () => this.setState({ modalOpen: false })
   handleOpen = () => this.setState({ modalOpen: true })
-  componentDidMount() {
-    console.log(settings)
+  handleReserve (){
+    axios.get(`${settings.API_ROOT}/users`).then(response => console.log(response));
   }
 
   render() {
@@ -73,10 +73,9 @@ class ReservationDetailsModal extends Component {
               </span>
               <br /><br />
               <div>
-                <Button content='Reserve' primary />
+                <Button content='Reserve' primary onClick={this.handleReserve}/>
                 <Button content='Cancel' secondary onClick={this.closeModal}/>
               </div>
-
             </Modal.Description>
           </Modal.Content>
         </Modal>
