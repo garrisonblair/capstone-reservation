@@ -9,12 +9,3 @@ class Student(models.Model):
     student_id = models.TextField(max_length=8, blank=False, primary_key=True)
 
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Student.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.student.save()

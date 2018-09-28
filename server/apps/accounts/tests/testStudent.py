@@ -22,11 +22,3 @@ class TestStudent(TestCase):
         read_student = Student.objects.get(student_id=student_id)
 
         self.assertEqual(read_student, student)
-
-    def testStudentCreatedWithUser(self):
-        new_user = User.objects.create_user('JohnDoe', 'JohnDoe@gmail.com', 'VerySafePassword')
-
-        student = Student.objects.get(user=new_user)
-
-        self.assertEqual(student.user, new_user)
-        self.assertEqual(new_user.student, student)
