@@ -15,9 +15,8 @@ class TestRoom(TestCase):
         room_id = "Room 1"
         capacity = 7
         number_of_computers = 2
-        is_active = True
 
-        room = Room(room_id=room_id, capacity=capacity, number_of_computers=number_of_computers, is_active=is_active)
+        room = Room(room_id=room_id, capacity=capacity, number_of_computers=number_of_computers)
         room.save()
 
         read_room = Room.objects.all().get(room_id=room_id)
