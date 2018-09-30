@@ -10,7 +10,17 @@ class Booking(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-
+	
+    def save(self, *args, **kwargs):	
+        if Booking.objects.filter(room=self.room, date=self.date, start_time=self.start_time, end_time=self.end_time).exists():
+            print('The room is occupied at the specified period.')
+        elif Booking.objects.filter(room=self.room, date=self.date, start_time__gte=self.start_time, start_time__lte=self.end_time).exists():
+            print('The specified period is overlapped with other bookings.')
+        elif Booking.objects.filter(room=self.room, date=self.date, end_time__gte=self.start_time, end_time__lte=self.end_time).exists():
+            print('The specified period is overlapped with other bookings.')
+        else:
+            super(Booking, self).save(*args, **kwargs)
+			
     def __str__(self):
-        return 'Student: %s, Room: %r, Date: %d, Start time: %st, End Time: %et' % (self.student, self.room, self.date, self.start_time, self.end_time)
+        return 'Booking: %d, Student: %s, Room: %s, Date: %s, Start time: %s, End Time: %s' % (self.id, self.student.student_id, self.room.room_id, self.date, self.start_time, self.end_time)
 		
