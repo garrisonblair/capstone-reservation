@@ -3,6 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from apps.accounts.models.Student import Student
 from apps.accounts.models.Room import Room
+from django.db.models import Q
 
 class Booking(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -12,9 +13,9 @@ class Booking(models.Model):
     end_time = models.TimeField()
 	
     def save(self, *args, **kwargs):
-        if Booking.objects.filter(room=self.room, date=self.date, start_time__gte=self.start_time, start_time__lte=self.end_time).exists():
+        if Booking.objects.filter(~Q(start_time=self.end_time), room=self.room, date=self.date, start_time__gte=self.start_time, start_time__lte=self.end_time).exists():
             print('The specified period is overlapped with other bookings.')
-        elif Booking.objects.filter(room=self.room, date=self.date, end_time__gte=self.start_time, end_time__lte=self.end_time).exists():
+        elif Booking.objects.filter(~Q(end_time=self.start_time), room=self.room, date=self.date, end_time__gte=self.start_time, end_time__lte=self.end_time).exists():
             print('The specified period is overlapped with other bookings.')
         else:
             super(Booking, self).save(*args, **kwargs)
