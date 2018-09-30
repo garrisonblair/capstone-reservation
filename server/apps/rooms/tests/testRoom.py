@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from apps.accounts.models.Room import Room
+from apps.rooms.models.Room import Room
 
 
 class TestRoom(TestCase):
