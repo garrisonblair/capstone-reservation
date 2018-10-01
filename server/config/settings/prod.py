@@ -7,6 +7,7 @@ PROJECT_APPS = [
     'apps.ping.apps.PingConfig',
     'apps.accounts.apps.AccountsConfig',
     'apps.rooms.apps.RoomsConfig',
+    'apps.booking.apps.BookingConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS

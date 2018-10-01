@@ -1,7 +1,7 @@
 from django.test import TestCase
-from apps.accounts.models.Booking import Booking
+from apps.booking.models.Booking import Booking
 from apps.accounts.models.Student import Student
-from apps.accounts.models.Room import Room
+from apps.rooms.models.Room import Room
 from datetime import datetime
 import re
 
