@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import settings from '../../config/settings';
-import './ReservationDetailsModal.scss';
+//import './ReservationDetailsModal.scss';
 import { Button, Header, Modal, Dropdown } from 'semantic-ui-react';
 import axios from 'axios';
 
