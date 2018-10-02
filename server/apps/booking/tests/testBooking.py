@@ -4,6 +4,7 @@ from apps.accounts.models.Student import Student
 from apps.rooms.models.Room import Room
 from datetime import datetime
 import re
+from django.core.exceptions import ValidationError
 
 class TestBooking(TestCase):
 
@@ -36,7 +37,7 @@ class TestBooking(TestCase):
 
         read_booking = Booking.objects.get(student=student, room=room, date=date, start_time=start_time, end_time=end_time)
 
-        self.assertEqual(read_booking, booking)		
+        self.assertEqual(read_booking, booking)
         assert re.match(r'^Booking: \d+, Student: 12345678, Room: 1, Date: 2019-09-29, Start time: 12:00:00, End Time: 13:00:00$', str(read_booking))
 
     def testOverlappedBookingCreation(self):
@@ -70,24 +71,30 @@ class TestBooking(TestCase):
         booking = Booking(student=student1, room=room, date=date, start_time=start_time1, end_time=end_time1)
         booking.save()
 
-        print("Case with existing time 12:00 to 13:00, compare to 12:30 to 13:00")
+        #Case with existing time 12:00 to 13:00, compare to 12:30 to 13:00
         booking2 = Booking(student=student2, room=room, date=date, start_time=start_time2, end_time=end_time2)
-        booking2.save()
 
+        with self.assertRaises(ValidationError) as ex:
+            booking2.save()
+        
         self.assertEqual(len(Booking.objects.all()), 1)
 
         start_time3 = datetime.strptime("11:30", "%H:%M").time()
         end_time3 = datetime.strptime("12:30", "%H:%M").time()
 
-        print("Case with existing time 12:00 to 13:00, compare to 11:30 to 12:30")
+        #Case with existing time 12:00 to 13:00, compare to 11:30 to 12:30
         booking3 = Booking(student=student2, room=room, date=date, start_time=start_time3, end_time=end_time3)
-        booking3.save()
+        
+        with self.assertRaises(ValidationError) as ex:
+            booking3.save()
 
         self.assertEqual(len(Booking.objects.all()), 1)
 
-        print("Case with existing time 12:00 to 13:00, compare to 12:00 to 13:00")
+        #Case with existing time 12:00 to 13:00, compare to 12:00 to 13:00
         booking4 = Booking(student=student1, room=room, date=date, start_time=start_time1, end_time=end_time1)
-        booking4.save()
+        
+        with self.assertRaises(ValidationError) as ex:
+            booking4.save()
 
         self.assertEqual(len(Booking.objects.all()), 1)
         self.assertEqual(len(Booking.objects.filter(student=student1, room=room, date=date, start_time=start_time1, end_time=end_time1)), 1)
@@ -96,8 +103,9 @@ class TestBooking(TestCase):
         start_time4 = datetime.strptime("11:00", "%H:%M").time()
         end_time4 = datetime.strptime("12:00", "%H:%M").time()
 
-        print("Case with existing time 12:00 to 13:00, compare to 11:00 to 12:00. No error should be found.")
+        #Case with existing time 12:00 to 13:00, compare to 11:00 to 12:00. No error should be found
         booking5 = Booking(student=student1, room=room, date=date, start_time=start_time4, end_time=end_time4)
+        
         booking5.save()
-
         self.assertEqual(len(Booking.objects.all()), 2)
+
