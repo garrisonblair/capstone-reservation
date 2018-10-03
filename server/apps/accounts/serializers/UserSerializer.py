@@ -4,7 +4,6 @@ from rest_framework.authtoken.models import Token
 
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = serializers.SerializerMethodField()
 
     class Meta:
         model = User
