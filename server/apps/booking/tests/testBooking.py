@@ -96,3 +96,12 @@ class TestBooking(TestCase):
         booking5.save()
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 2)
 
+    def testFailWhenEndTimeBeforeStartTime(self):
+        end_time = datetime.strptime("11:00", "%H:%M").time()
+        booking = Booking(student=self.student, room=self.room, date=self.date, start_time=self.start_time,
+                          end_time=end_time)
+
+        try:
+            booking.save()
+        except ValidationError:
+            self.assertTrue(True)
