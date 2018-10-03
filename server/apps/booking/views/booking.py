@@ -9,18 +9,22 @@ from apps.booking.models.Booking import Booking
 
 from apps.booking.serializers.booking_serializer import BookingSerializer
 
+
 class BookingView(APIView):
 
     def post(self, request):
 
+        # Must be logged in as student
+        if not request.auth or not request.user.student:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        print(request.data)
+        request.data.student = request.user.student.student_id
 
         serializer = BookingSerializer(data=request.data)
 
         if serializer.is_valid():
             try:
                 booking = serializer.save()
-                return Response(BookingSerializer(booking).data)
+                return Response(BookingSerializer(booking).data, status=status.HTTP_201_CREATED)
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
