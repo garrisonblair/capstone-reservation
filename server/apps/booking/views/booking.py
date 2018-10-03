@@ -15,14 +15,18 @@ class BookingView(APIView):
     def post(self, request):
 
         # Must be logged in as student
-        if not request.auth or not request.user.student:
+        if not request.user or not request.user.student:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        request.data.student = request.user.student.student_id
+        booking_data = dict(request.data)
+        booking_data["student"] = request.user.student.student_id
 
-        serializer = BookingSerializer(data=request.data)
+        serializer = BookingSerializer(data=booking_data)
 
-        if serializer.is_valid():
+        if not serializer.is_valid():
+            return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
             try:
                 booking = serializer.save()
                 return Response(BookingSerializer(booking).data, status=status.HTTP_201_CREATED)
