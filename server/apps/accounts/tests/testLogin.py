@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken import views
 from apps.accounts.views.me import MyUser
 
+
 class TestLogin(TestCase):
 
     def setUp(self):
@@ -16,10 +17,10 @@ class TestLogin(TestCase):
         pass
 
     def testLogin(self):
-        requestFactory = APIRequestFactory()
+        request_factory = APIRequestFactory()
         view = views.obtain_auth_token
 
-        request = requestFactory.post('/login', {'username': 'John', 'password': 'johnsVerySafePassword'})
+        request = request_factory.post('/login', {'username': 'John', 'password': 'johnsVerySafePassword'})
 
         response = view(request)
 
