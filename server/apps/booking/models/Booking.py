@@ -6,6 +6,7 @@ from apps.rooms.models.Room import Room
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 
+
 class Booking(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
