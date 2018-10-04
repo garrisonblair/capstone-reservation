@@ -54,7 +54,7 @@ function unitTests() {
 
 	cd $WORKSPACE/server
 	python3 ./manage.py test apps
-	python3 ./manage.py test --patten="**/tests/*.py"
+	python3 ./manage.py test -P="**/tests/*.py"
 }
 
 function integrationTests() {
