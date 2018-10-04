@@ -105,3 +105,4 @@ class TestBooking(TestCase):
             booking.save()
         except ValidationError:
             self.assertTrue(True)
+
