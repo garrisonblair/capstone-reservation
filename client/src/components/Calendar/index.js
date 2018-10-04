@@ -9,7 +9,7 @@ class Calendar extends Component {
     roomsList: [],
     hoursList: [],
     dateSelected: new Date(),
-    status: 0
+    bookings: [{room: "H961-4", start: 9, end: 15, booker: 'stud1'},{room: "H961-4", start: 15, end: 21, booker: 'stud2'}]
   };
 
   componentDidMount() {
@@ -43,7 +43,7 @@ class Calendar extends Component {
 
   renderHeader() {
     return (
-      <div className="date__header">
+      <div className="calendar__header">
         <span>
           {this.state.dateSelected.toDateString()}
         </span>
@@ -53,7 +53,6 @@ class Calendar extends Component {
 
   renderRooms() {
     const { roomsList } = this.state;
-    console.log(roomsList)
 
     const rooms = roomsList.map((room) =>
       <div className="calendar__rooms__room" key={room}>
@@ -84,19 +83,23 @@ class Calendar extends Component {
     let cell = 0;
 
     for (let i = 0; i < roomsList.length; i++) {
+      let currentRoom = roomsList[i];
       for (let j = 0; j < hoursList.length; j++) {
+        let currentHour = hoursList[j];
         roomsCells.push(
-          <div className={`calendar__cells__cell-${j} ${
-            this.isBooked(roomsList[i], hoursList[j])
-              ? "booked"
-              : ""
-          }`} style={this.setCellStyle(j).cell_style} key={cell} data-hour={hoursList[j]} data-room={roomsList[i]} onClick={this.handleClickCell}>{this.cellText(roomsList[i], hoursList[j])}</div>
+          <div className={`calendar__cells__cell-${j}`} style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom} onClick={this.handleClickCell}>{this.cellText(currentRoom, currentHour)}</div>
         );
         cell++;
       }
       
+      let bookedCells = [];
+      let bookings = this.state.bookings.filter(booking => booking.room == currentRoom);
+      if (bookings.length > 0) {
+        bookedCells.push(this.renderCurrentBookings(bookings))
+      }
+      
       cells.push(
-        <div className="calendar__rooms__cells" key={i}>{roomsCells}</div>
+        <div className="calendar__rooms__cells" key={i}>{roomsCells}{bookedCells}</div>
       );
 
       roomsCells = [];
@@ -107,36 +110,59 @@ class Calendar extends Component {
 
   }
 
+  renderCurrentBookings(bookings) {
+    let bookingsDiv = [];
+    let key = 0
+
+    bookings.forEach(booking => {
+      let style = {
+        //Assuming each hour div is divided in 6 rows for an increment of 10 minutes
+        cell_style: {
+          gridRowStart: booking.start, 
+          gridRowEnd: booking.end,
+          border: "solid",
+          backgroundColor: "aqua"
+        }
+      }
+      bookingsDiv.push(
+        <div style={style.cell_style} key={booking.room + booking.start}>Booked {booking.booker}</div>
+      )
+    });
+    
+
+    return bookingsDiv;
+  }
+
   setCellStyle(x) {
     let style = {
+      //Assuming each hour div is divided in 6 rows for an increment of 10 minutes
       cell_style: {
         gridRowStart: x * 6 + 1, 
         gridRowEnd: (x + 1) * 6 + 1,
         border: "solid"
       }
     }
-    console.log(style)
     return style;
   }
 
-  isBooked = (room, hour) => {
-    let roomHours = this.state[room];
+  // isBooked = (room, hour) => {
+  //   let roomHours = this.state[room];
 
-    for (let i = 0 ;i < roomHours.length; i++) {
-      if (roomHours[i] == hour) {
-        return true;
-      }
-    }
+  //   for (let i = 0 ;i < roomHours.length; i++) {
+  //     if (roomHours[i] == hour) {
+  //       return true;
+  //     }
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
   cellText = (room, hour) => {
     let roomHours = this.state[room];
 
     for (let i = 0 ;i < roomHours.length; i++) {
       if (roomHours[i] == hour) {
-        return "Booked";
+        return "Booked by Student 1 from 10:50 to 11:50";
       }
     }
 
@@ -144,16 +170,22 @@ class Calendar extends Component {
   }
 
   handleClickCell = (e) => {
-    let roomHours = this.state[e.target.getAttribute('data-room')];
+    let selectedRoom = e.target.getAttribute('data-room');
+    let selectedHour = e.target.getAttribute('data-hour');
+    
+    alert("open modal for room " + selectedRoom + ", starting at " + selectedHour)
+    // let roomHours = this.state[selectedRoom];
 
-    if (!roomHours.includes(e.target.getAttribute('data-hour'))) {
-      roomHours.push(e.target.getAttribute('data-hour'));
-      this.setState({[e.target.getAttribute('data-room')]:  roomHours});
-    } else {
-      // This is for delete or CAMPON maybe
-      let filteredHours = roomHours.filter(hour => hour !== e.target.getAttribute('data-hour'))
-      this.setState({[e.target.getAttribute('data-room')]: filteredHours});
-    }
+    // if (!roomHours.includes(selectedHour)) {
+    //   roomHours.push(selectedHour);
+    //   this.setState({[selectedRoom]:  roomHours});
+    // } else {
+    //   // This is for delete or CAMPON maybe
+    //   let filteredHours = roomHours.filter(hour => hour !== selectedHour)
+    //   this.setState({[selectedRoom]: filteredHours});
+    // }
+    
+    
   }
 
   render() {

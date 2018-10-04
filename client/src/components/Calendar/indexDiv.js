@@ -76,9 +76,11 @@ class Calendar extends Component {
     while (cell < numberOfCells) {
       for (let j = 0; j < roomsList.length; j++) {
         cells.push(
-          <div className="col cell" key={cell} data-key={cell} onClick={this.handleClickCell}>
-            {/* put booking info */}
-          </div>
+          <div className={`calendar__cells__cell-${j} ${
+            this.isBooked(currentRoom, currentHour)
+              ? "booked"
+              : ""
+          }`} style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom} onClick={this.handleClickCell}>{this.cellText(currentRoom, currentHour)}</div>
         );
         cell++;
       }

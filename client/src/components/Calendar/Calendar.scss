@@ -9,6 +9,11 @@
 /* Calendar */
 .calendar__container {
   display: inline-grid;
+  grid-template-rows: 2, 100px;
+}
+
+.calendar__header {
+  text-align: center;
 }
 
 .calendar__wrapper {
