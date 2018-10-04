@@ -51,15 +51,10 @@ function build() {
 
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
-	#python3 ./manage.py test --patten="**/tests/*.py"
-	
-	echo "Currently in: "
-	pwd
-	echo "Contents of directory are: "
-	ls
 
 	cd $WORKSPACE/server
-	python3 manage.py test apps
+	python3 ./manage.py test apps
+	python3 ./manage.py test --patten="**/tests/*.py"
 }
 
 function integrationTests() {
