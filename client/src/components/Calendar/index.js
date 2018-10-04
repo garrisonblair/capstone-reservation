@@ -51,9 +51,9 @@ class Calendar extends Component {
 
   }
 
-  renderHeader() {
+  renderDate() {
     return (
-      <div className="calendar__header">
+      <div className="calendar__date">
         <span>
           {this.state.dateSelected.toDateString()}
         </span>
@@ -97,7 +97,7 @@ class Calendar extends Component {
       for (let j = 0; j < hoursList.length; j++) {
         let currentHour = hoursList[j];
         roomsCells.push(
-          <div className={`calendar__cells__cell-${j}`} style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom} onClick={this.handleClickCell}>{this.cellText(currentRoom, currentHour)}</div>
+          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom} onClick={this.handleClickCell}>{this.cellText(currentRoom, currentHour)}CELL</div>
         );
         cell++;
       }
@@ -201,7 +201,7 @@ class Calendar extends Component {
   render() {
     return (
       <div className="calendar__container">
-        {this.renderHeader()}
+        {this.renderDate()}
         <div className="calendar__wrapper">
           {this.renderRooms()}
           {this.renderHours()}

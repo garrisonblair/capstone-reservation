@@ -12,7 +12,7 @@
   grid-template-rows: 2, 100px;
 }
 
-.calendar__header {
+.calendar__date {
   text-align: center;
 }
 
@@ -45,13 +45,14 @@
 // }
 
   .calendar__cells__cell {
-    
+    border-style: solid;
   }
 
 
 .calendar__rooms__cells {
   display: inline-grid;
   grid-template-rows: repeat(42, 15px);
+  grid-template-columns: 1;
 }
 
 .calendar__rooms__room {
