@@ -35,12 +35,12 @@ function staticAnalysis() {
 
 function build() {
 	echo 'Building... from jenkins.sh'
-	#curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-	#python get-pip.py
-	#pip3 install -r server/requirements/dev.txt
-	#cd server
-	#python3 manage.py makemigrations
-	#python3 manage.py migrate
+	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+	python get-pip.py
+	pip3 install -r server/requirements/dev.txt
+	cd server
+	python3 manage.py makemigrations
+	python3 manage.py migrate
 	#python3 manage.py createsuper
 
 	echo "Currently in: "
@@ -58,12 +58,6 @@ function unitTests() {
 	echo "Contents of directory are: "
 	ls
 
-	cd server
-	
-	echo "Currently in: "
-	pwd
-	echo "Contents of directory are: "
-	ls
 	
 	python3 manage.py test apps
 }
