@@ -13,11 +13,9 @@ echo "*"
 echo 
 echo "  POD NAME: $(hostname)"
 echo "  CURRENT DIRECTORY: $(pwd)"
-echo "  JAVA VERSION:"
-java -version
+echo "  PYTHON VERSION:"
+python3 -V
 echo
-echo "  MAVEN VERSION:"
-mvn -version
 echo
 echo "  DISK USAGE: "
 df 
@@ -37,10 +35,19 @@ function staticAnalysis() {
 
 function build() {
 	echo 'Building... from jenkins.sh'
+	#curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+	#python get-pip.py
+	#pip3 install -r server/requirements/dev.txt
+	#cd server
+	#python3 manage.py makemigrations
+	#python3 manage.py migrate
+	#python3 manage.py createsuper
 }
 
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
+	#python3 ./manage.py test --patten="**/tests/*.py"
+	python3 manage.py test apps
 }
 
 function integrationTests() {
