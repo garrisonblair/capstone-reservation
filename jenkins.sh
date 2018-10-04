@@ -42,12 +42,18 @@ function build() {
 	#python3 manage.py makemigrations
 	#python3 manage.py migrate
 	#python3 manage.py createsuper
+
+	echo "Currently in: "
+	pwd
+	echo "Contents of directory are: "
+	ls
 }
 
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
 	#python3 ./manage.py test --patten="**/tests/*.py"
-	python3 ./server/manage.py test apps
+	cd server
+	python3 manage.py test apps
 }
 
 function integrationTests() {
