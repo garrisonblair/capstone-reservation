@@ -50,7 +50,7 @@ function testRunServer() {
 	echo 'Running server testing... from jenkins.sh'
 
 	cd $WORKSPACE/server
-	python3 manage.py runserver 0.0.0.0:8080
+	python3 manage.py runserver 0.0.0.0:8081
 }
 
 function unitTests() {
