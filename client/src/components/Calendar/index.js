@@ -28,14 +28,24 @@ class Calendar extends Component {
     document.documentElement.style.setProperty("--colNum", colNumber);
 
     // Set up hours
+    let t = new Date();
+    t.setHours(12,0,0);
+    t.setMinutes(t.getMinutes() + 65)
+    console.log(t.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}))
+
     let hourStart =  8;
     let hourEnd =  14;
-    let hourIncrement = 1;
+    let minutesIncrement = 60;
     let hours = []
+    let time = new Date();
+    time.setHours(hourStart,0,0);
 
-    for (let hour = hourStart; hour <= hourEnd; hour += hourIncrement) {
-      hours.push(hour);  
+    while (time.getHours() < hourEnd) {
+      hours.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+      time.setMinutes(time.getMinutes() + minutesIncrement)
+      console.log(time)
     }
+    
     this.setState({hoursList: hours});
     document.documentElement.style.setProperty("--rowNum", hours.length);
 
