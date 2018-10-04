@@ -47,7 +47,7 @@ function build() {
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
 	#python3 ./manage.py test --patten="**/tests/*.py"
-	python3 manage.py test apps
+	python3 ./server/manage.py test apps
 }
 
 function integrationTests() {
