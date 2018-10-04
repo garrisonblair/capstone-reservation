@@ -29,7 +29,7 @@ class Calendar extends Component {
 
     // Set up hours
     let hourStart =  8;
-    let hourEnd =  23;
+    let hourEnd =  14;
     let hourIncrement = 1;
     let hours = []
 
@@ -80,23 +80,43 @@ class Calendar extends Component {
     const { roomsList, hoursList } = this.state;
 
     let cells = [];
+    let roomsCells = [];
     let cell = 0;
 
-    for (let i = 0; i < hoursList.length; i++) {
-      for (let j = 0; j < roomsList.length; j++) {
-        cells.push(
-          <div className={`calendar__cells__cell ${
-            this.isBooked(roomsList[j], hoursList[i])
+    for (let i = 0; i < roomsList.length; i++) {
+      for (let j = 0; j < hoursList.length; j++) {
+        roomsCells.push(
+          <div className={`calendar__cells__cell-${j} ${
+            this.isBooked(roomsList[i], hoursList[j])
               ? "booked"
               : ""
-          }`} key={cell} data-hour={hoursList[i]} data-room={roomsList[j]} onClick={this.handleClickCell}>{this.cellText(roomsList[j], hoursList[i])}</div>
+          }`} style={this.setCellStyle(j).cell_style} key={cell} data-hour={hoursList[j]} data-room={roomsList[i]} onClick={this.handleClickCell}>{this.cellText(roomsList[i], hoursList[j])}</div>
         );
         cell++;
-      }       
+      }
+      
+      cells.push(
+        <div className="calendar__rooms__cells" key={i}>{roomsCells}</div>
+      );
+
+      roomsCells = [];
+      
     }
 
     return <div className="calendar__cells__wrapper">{cells}</div>;
 
+  }
+
+  setCellStyle(x) {
+    let style = {
+      cell_style: {
+        gridRowStart: x * 6 + 1, 
+        gridRowEnd: (x + 1) * 6 + 1,
+        border: "solid"
+      }
+    }
+    console.log(style)
+    return style;
   }
 
   isBooked = (room, hour) => {

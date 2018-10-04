@@ -1,6 +1,6 @@
 /* Variables */
 :root {
-  --rowNum: 5;
+  --rowNum: 7;
   --colNum: 5;
   --gridHeight: 120px;
   --wrapperH: 40px; 
@@ -29,11 +29,24 @@
 .calendar__cells__wrapper {
   display: inline-grid;
   grid-template-columns: repeat(var(--colNum), 1fr);
-  grid-template-rows: repeat(var(--rowNum), 1fr);
 }
 
-.calendar__cells__cell {
-  border: 1px solid;
+// @for $i from 0 through 49 {
+//   .calendar__cells__cell-#{$i} {
+//     border: 1px solid;
+//     grid-row-start: $i * 6 + 1;
+//     grid-row-end: ($i + 1) * 6 + 1;
+//   }
+// }
+
+  .calendar__cells__cell {
+    
+  }
+
+
+.calendar__rooms__cells {
+  display: inline-grid;
+  grid-template-rows: repeat(42, 15px);
 }
 
 .calendar__rooms__room {
