@@ -33,6 +33,7 @@ function staticAnalysis() {
 	echo 'Running static analysis... from jenkins.sh'
 }
 
+
 function build() {
 	echo 'Building... from jenkins.sh'
 	#curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
@@ -43,10 +44,10 @@ function build() {
 	python3 manage.py migrate
 	#python3 manage.py createsuper
 
-	echo "Currently in: "
-	pwd
-	echo "Contents of directory are: "
-	ls
+}
+
+function testRunServer() {
+	python3 manage.py runserver 0.0.0.0:8080
 }
 
 function unitTests() {
@@ -71,6 +72,9 @@ case $COMMAND in
 		;;
 	build )
 		build
+		;;
+	testRunServer )
+		testRunServer
 		;;	
 	unitTests )
 		unitTests

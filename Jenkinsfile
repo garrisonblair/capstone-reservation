@@ -40,6 +40,12 @@ pipeline {
                 buildApplication()
             }
         }
+        stage('Test Run Server') {
+            steps {
+                echo 'Testing running server.. in Jenkinsfile'
+                testRunServer()
+            }
+        }
         stage('Unit Tests') {
             when {
                 expression { params.skipUnitTests == false }
@@ -79,6 +85,10 @@ def runStaticAnalysis() {
 
 def buildApplication() {
     sh './jenkins.sh build'
+}
+
+def testRunServer() {
+    sh './jenkins.sh testRunServer'
 }
 
 def runUnitTests() {
