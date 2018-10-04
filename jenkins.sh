@@ -58,7 +58,7 @@ function unitTests() {
 	echo "Contents of directory are: "
 	ls
 
-	
+	cd $WORKSPACE/server
 	python3 manage.py test apps
 }
 
