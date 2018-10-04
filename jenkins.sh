@@ -36,6 +36,17 @@ function staticAnalysis() {
 
 function build() {
 	echo 'Building... from jenkins.sh'
+	
+	pip3 install virtualenv
+	mkdir venv
+	cd venv
+	echo 'Running unit tests... from jenkins.sh'
+
+	virtualenv CapstoneReservation -p python3
+	source CapstoneReservation/bin/activate
+	cd CapstoneReservation
+	git clone git@github.com:SteveLocke/CapstoneReservation.git
+
 	#curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 	#python get-pip.py
 	pip3 install -r server/requirements/dev.txt
