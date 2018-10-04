@@ -51,8 +51,8 @@
 
 .calendar__rooms__cells {
   display: inline-grid;
-  grid-template-rows: repeat(42, 15px);
-  grid-template-columns: 1;
+  grid-template-rows: repeat(36, 20px);
+  grid-template-columns: 1,auto;
 }
 
 .calendar__rooms__room {

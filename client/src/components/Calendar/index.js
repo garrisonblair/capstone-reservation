@@ -9,7 +9,7 @@ class Calendar extends Component {
     roomsList: [],
     hoursList: [],
     dateSelected: new Date(),
-    bookings: [{room: "H961-4", start: 9, end: 15, booker: 'stud1'},{room: "H961-4", start: 15, end: 21, booker: 'stud2'}]
+    bookings: [{room: "H961-2", start: 8, end: 20, booker: 'stud1'},{room: "H961-4", start: 15, end: 21, booker: 'stud2'}]
   };
 
   componentDidMount() {
@@ -130,6 +130,7 @@ class Calendar extends Component {
         cell_style: {
           gridRowStart: booking.start, 
           gridRowEnd: booking.end,
+          gridColumn: 1,
           border: "solid",
           backgroundColor: "aqua"
         }
@@ -147,9 +148,11 @@ class Calendar extends Component {
     let style = {
       //Assuming each hour div is divided in 6 rows for an increment of 10 minutes
       cell_style: {
+        display: "inline-grid",
         gridRowStart: x * 6 + 1, 
         gridRowEnd: (x + 1) * 6 + 1,
-        border: "solid"
+        border: "solid",
+        gridColumn: 1
       }
     }
     return style;
