@@ -11,7 +11,7 @@ class ReservationDetailsModal extends Component {
     modalOpen: false,
     minHour: this.props.minHour || 8,
     maxHour: this.props.maxHour || 24,
-    date: this.props.date.toDateString() || "please provide a date",
+    date: (new Date(this.props.date)).toDateString() || "please provide a date",
     defaultHour: this.props.defaultHour,
     defaultMinute: this.props.defaultMinute,
     roomNumber: this.props.roomNumber || "please provide a room number",
