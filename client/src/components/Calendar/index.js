@@ -9,7 +9,7 @@ class Calendar extends Component {
     roomsList: [],
     hoursList: [],
     dateSelected: new Date(),
-    bookings: [{room: "H961-2", start: 8, end: 15, booker: 'stud1'},{room: "H961-4", start: 10, end: 20, booker: 'stud2'}]
+    bookings: [{room: "H961-2", start: "08:10", end: "15:50", booker: 'stud1'},{room: "H961-4", start: "08:00", end: "10:30", booker: 'stud2'}]
   };
 
    /************ SETUP *************/
@@ -29,24 +29,37 @@ class Calendar extends Component {
     this.setState({roomsList: rooms});
 
     //Set up hours
-    let hourStart =  8;
-    let hourEnd =  24;
-    let minutesIncrement = 60;
+    let hoursSettings = {
+      start: "07:30",
+      end: "23:00",
+      increment: 30
+    }
+    let hourStart =  this.timeStringToInt(hoursSettings.start);
+    let hourEnd =  this.timeStringToInt(hoursSettings.end);
+
+    let minutesIncrement = hoursSettings.increment;
     let hours = []
     let time = new Date();
-    time.setHours(hourStart,0,0);
-
+    time.setHours(hourStart.hour,hourStart.minutes,0);
+    
     //Format time for display in table
-    while (time.getDay() == this.state.dateSelected.getDay()) {
+    let currentTime = hourStart.hour * 60 + hourStart.minutes;
+    let endTime = hourEnd.hour * 60 + hourEnd.minutes;
+    
+    let safe = 0;
+    while (currentTime <= endTime && safe < 100) {
       hours.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
       time.setMinutes(time.getMinutes() + minutesIncrement);
+      currentTime += minutesIncrement;
+      safe ++;
     }
-    this.setState({hoursList: hours, minutesIncrement: minutesIncrement});
+    this.setState({hoursSettings: hoursSettings, hoursList: hours});
 
     //Set variables in scss
+    let gridRowNum = minutesIncrement * hours.length / 10;
     document.documentElement.style.setProperty("--colNum", colNumber);
     document.documentElement.style.setProperty("--rowNum", hours.length);
-    document.documentElement.style.setProperty("--cellsDivisionNum", minutesIncrement * (hourEnd - hourStart) / 10);
+    document.documentElement.style.setProperty("--cellsDivisionNum", gridRowNum);
 
   }
 
@@ -126,11 +139,11 @@ class Calendar extends Component {
 
     bookings.forEach(booking => {
       bookingsDiv.push(
-        <div className="calendar__cells__event" style={this.setBookingStyle(booking).booking_style} key={booking.room + booking.start} onClick={this.handleClickBooking}>
-          <div className="calendar__cells__event__booker"> {booking.booker} </div>
-          <div className="calendar__cells__event__time">
-            <div>{`HH:MM XM`}</div>
-            <div>{`HH:MM XM`}</div>
+        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.room + booking.start} onClick={this.handleClickBooking}>
+          <div className="calendar__booking__booker"> {booking.booker} </div>
+          <div className="calendar__booking__time">
+            <div>{booking.start}</div>
+            <div>{booking.end}</div>
           </div>
 
         </div>
@@ -143,25 +156,40 @@ class Calendar extends Component {
 
   /************ STYLE METHODS*************/
 
-  setCellStyle(x) {
-    // Style for .calendar__cells_cell
+  
+  // Style for .calendar__cells__cell
+  setCellStyle(hourRow) {
+
+    let rowStart = (hourRow * this.state.hoursSettings.increment / 10) + 1;
+    let rowEnd = rowStart + this.state.hoursSettings.increment / 10;
+    // console.log(rowStart + "  ||  " + rowEnd)
     let style = {
-      //Assuming each hour div is divided in 6 rows for an increment of 10 minutes
       cell_style: {
-        gridRowStart: x * 6 + 1,
-        gridRowEnd: (x + 1) * 6 + 1,
+        gridRowStart: rowStart,
+        gridRowEnd: rowEnd,
         gridColumn: 1
       }
     }
     return style;
   }
 
+  //Style for .calendar__booking
   setBookingStyle(booking) {
+    let bookingStart = this.timeStringToInt(booking.start);
+    let bookingEnd = this.timeStringToInt(booking.end);
+    let calendarStart = this.timeStringToInt(this.state.hoursSettings.start);
+
+    //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
+    // let rowStart = ((bookingStart.hour - this.state.hourStart) * 6 + 1) + (bookingStart.minutes / 10);
+    // let rowEnd = ((bookingEnd.hour - this.state.hourStart) * 6 + 1) + (bookingEnd.minutes / 10);
+    let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
+    let rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
+
+    console.log(rowStart + "   ||   " + rowEnd)
     let style = {
-      //Assuming each hour div is divided in 6 rows for an increment of 10 minutes
       booking_style: {
-        gridRowStart: booking.start, 
-        gridRowEnd: booking.end,
+        gridRowStart: rowStart, 
+        gridRowEnd: rowEnd,
         gridColumn: 1,
       }
     }
@@ -193,6 +221,20 @@ class Calendar extends Component {
     console.log(e)
   }
 
+  /************ HELPER METHOD *************/
+
+  //Handle time in the string format
+  timeStringToInt(time) {
+    //Need offset depending if time format is H:MM or HH:MM
+    let offset = time.length == 5 ? 1 : 0;
+
+    let timeInt = {
+      hour: parseInt(time.substring(0, 1 + offset)),
+      minutes: parseInt(time.substring(2 + offset , 4 + offset))
+    }
+    
+    return timeInt;
+  }
 
    /************ COMPONENT RENDERING *************/
 
