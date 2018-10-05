@@ -9,7 +9,7 @@ class Calendar extends Component {
     roomsList: [],
     hoursList: [],
     dateSelected: new Date(),
-    bookings: [{room: "H961-2", start: "08:10", end: "15:50", booker: 'stud1'},{room: "H961-4", start: "08:00", end: "10:30", booker: 'stud2'}]
+    bookings: []
   };
 
    /************ SETUP *************/
@@ -18,8 +18,11 @@ class Calendar extends Component {
     console.log(settings)
   }
 
+  //TODO: Get settings from props or from requests.
   componentWillMount() {
-    //Set up rooms list
+
+
+    /*** Set up rooms list ***/
     let colNumber = 33;
     let rooms = [];
     for (let i = 1; i <= colNumber; i++) {
@@ -28,7 +31,7 @@ class Calendar extends Component {
     }
     this.setState({roomsList: rooms});
 
-    //Set up hours
+    /*** Set up hours ***/
     let hoursSettings = {
       start: "07:30",
       end: "23:00",
@@ -46,16 +49,25 @@ class Calendar extends Component {
     let currentTime = hourStart.hour * 60 + hourStart.minutes;
     let endTime = hourEnd.hour * 60 + hourEnd.minutes;
     
-    let safe = 0;
-    while (currentTime <= endTime && safe < 100) {
+    //TODO: Remove loop variable. Using this var only to avoid infinite loop during development.
+    let loop = 0;
+    while (currentTime <= endTime && loop < 1000) {
       hours.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
       time.setMinutes(time.getMinutes() + minutesIncrement);
       currentTime += minutesIncrement;
-      safe ++;
+      loop ++;
+      if (loop > 999) {
+        alert("Infinite loop")
+      }
     }
     this.setState({hoursSettings: hoursSettings, hoursList: hours});
 
-    //Set variables in scss
+    /*** Set up existing bookings list ***/
+    let bookings = [{room: "H961-2", start: "08:10", end: "15:50", booker: 'stud1'},{room: "H961-4", start: "08:00", end: "10:30", booker: 'stud2'}];
+    this.setState({bookings: bookings});
+
+
+    /*** Set up variables in scss ***/
     let gridRowNum = minutesIncrement * hours.length / 10;
     document.documentElement.style.setProperty("--colNum", colNumber);
     document.documentElement.style.setProperty("--rowNum", hours.length);
@@ -162,7 +174,7 @@ class Calendar extends Component {
 
     let rowStart = (hourRow * this.state.hoursSettings.increment / 10) + 1;
     let rowEnd = rowStart + this.state.hoursSettings.increment / 10;
-    // console.log(rowStart + "  ||  " + rowEnd)
+
     let style = {
       cell_style: {
         gridRowStart: rowStart,
@@ -180,12 +192,9 @@ class Calendar extends Component {
     let calendarStart = this.timeStringToInt(this.state.hoursSettings.start);
 
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
-    // let rowStart = ((bookingStart.hour - this.state.hourStart) * 6 + 1) + (bookingStart.minutes / 10);
-    // let rowEnd = ((bookingEnd.hour - this.state.hourStart) * 6 + 1) + (bookingEnd.minutes / 10);
     let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
     let rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
 
-    console.log(rowStart + "   ||   " + rowEnd)
     let style = {
       booking_style: {
         gridRowStart: rowStart, 
@@ -198,6 +207,7 @@ class Calendar extends Component {
 
    /************ CLICK HANDLING METHODS *************/
 
+  //TODO: Add modal opening when clicking on empty time slot
   handleClickCell = (e) => {
     let selectedRoom = e.target.getAttribute('data-room');
     let selectedHour = e.target.getAttribute('data-hour');
@@ -217,6 +227,7 @@ class Calendar extends Component {
     
   }
 
+  // TODO: Handle click on an existing booking
   handleClickBooking = (e) => {
     console.log(e)
   }
