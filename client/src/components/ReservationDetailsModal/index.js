@@ -6,7 +6,6 @@ import axios from 'axios';
 
 class ReservationDetailsModal extends Component {
 
-  opened = false;
   state = {
     modalOpen: false,
     minHour: this.props.minHour || 8,
@@ -46,17 +45,20 @@ class ReservationDetailsModal extends Component {
     })
   }
 
-
   closeModal = () => this.setState({ modalOpen: false });
+
   handleOpen = () => this.setState({ modalOpen: true });
-  handleReserve =() =>{
-    const token = 'Token 078e72c2471a07e3ad0f40f7efbf0426bd747efa';
+
+  handleReserve = () => {
+    const token = '93e055c826c29726518962afbbd7abeb6840b516';
     //const date = this.formatDate(this.state.date);
     //const start_time = this.state.de
+
     const headers = {
-      'Authorization': `${token}`
+      'Authorization': `Token ${token}`
     }
-    const body = {
+
+    const data = {
       "room": 1,
       "date": this.state.date.toISOString().slice(0,10),
       "start_time": "14:00:00",
@@ -64,16 +66,14 @@ class ReservationDetailsModal extends Component {
     };
 
     axios({
-      method:'POST',
-      url:`${settings.API_ROOT}/booking`,
-      headers: {headers},
-      data: body,
+      method: 'POST',
+      url: `${settings.API_ROOT}/booking`,
+      headers,
+      data,
       withCredentials: true,
-
     }).then((response)=>{
       console.log(response)
     })
-
   }
 
   render() {
