@@ -11,11 +11,11 @@ class ReservationDetailsModal extends Component {
     modalOpen: false,
     minHour: this.props.minHour || 8,
     maxHour: this.props.maxHour || 24,
-    date: (new Date(this.props.date)).toDateString() || "please provide a date",
+    date: (new Date(this.props.date)) || "please provide a date",
     defaultHour: this.props.defaultHour,
     defaultMinute: this.props.defaultMinute,
     roomNumber: this.props.roomNumber || "please provide a room number",
-    hourOptions:[],
+    hourOptions: [],
     minuteOptions: [
       { text: '00', value: 0 },
       { text: '10', value: 10 },
@@ -40,15 +40,40 @@ class ReservationDetailsModal extends Component {
   }
 
   componentWillMount() {
+    console.log(this.state.roomNumber);
     this.setState({
       hourOptions: this.generateHourOptions(this.state.minHour, this.state.maxHour)
     })
   }
 
+
   closeModal = () => this.setState({ modalOpen: false });
   handleOpen = () => this.setState({ modalOpen: true });
-  handleReserve() {
-    axios.get(`${settings.API_ROOT}/users`).then(response => console.log(response.data[0]));
+  handleReserve =() =>{
+    const token = 'Token 078e72c2471a07e3ad0f40f7efbf0426bd747efa';
+    //const date = this.formatDate(this.state.date);
+    //const start_time = this.state.de
+    const headers = {
+      'Authorization': `${token}`
+    }
+    const body = {
+      "room": 1,
+      "date": this.state.date.toISOString().slice(0,10),
+      "start_time": "14:00:00",
+      "end_time": "15:00:00"
+    };
+
+    axios({
+      method:'POST',
+      url:`${settings.API_ROOT}/booking`,
+      headers: {headers},
+      data: body,
+      withCredentials: true,
+
+    }).then((response)=>{
+      console.log(response)
+    })
+
   }
 
   render() {
@@ -59,7 +84,7 @@ class ReservationDetailsModal extends Component {
           <Modal.Content>
             <Modal.Description>
               <Header>Room {this.state.roomNumber} </Header>
-              <p>Date: {this.state.date}</p>
+              <p>Date: {this.state.date.toDateString()}</p>
               <br />
               <span>
                 <span className="inputLabel">From:</span>
