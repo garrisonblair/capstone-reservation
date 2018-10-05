@@ -12,12 +12,14 @@ class Calendar extends Component {
     bookings: [{room: "H961-2", start: 8, end: 15, booker: 'stud1'},{room: "H961-4", start: 10, end: 20, booker: 'stud2'}]
   };
 
+   /************ SETUP *************/
+
   componentDidMount() {
     console.log(settings)
   }
 
   componentWillMount() {
-    // Set up rooms list
+    //Set up rooms list
     let colNumber = 33;
     let rooms = [];
     for (let i = 1; i <= colNumber; i++) {
@@ -26,7 +28,7 @@ class Calendar extends Component {
     }
     this.setState({roomsList: rooms});
 
-    // Set up hours
+    //Set up hours
     let hourStart =  8;
     let hourEnd =  24;
     let minutesIncrement = 60;
@@ -34,20 +36,21 @@ class Calendar extends Component {
     let time = new Date();
     time.setHours(hourStart,0,0);
 
+    //Format time for display in table
     while (time.getDay() == this.state.dateSelected.getDay()) {
       hours.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
       time.setMinutes(time.getMinutes() + minutesIncrement);
     }
-  
     this.setState({hoursList: hours, minutesIncrement: minutesIncrement});
 
     //Set variables in scss
-    
     document.documentElement.style.setProperty("--colNum", colNumber);
     document.documentElement.style.setProperty("--rowNum", hours.length);
     document.documentElement.style.setProperty("--cellsDivisionNum", minutesIncrement * (hourEnd - hourStart) / 10);
 
   }
+
+  /************ RENDER METHODS *************/
 
   renderDate() {
     return (
@@ -95,7 +98,7 @@ class Calendar extends Component {
       for (let j = 0; j < hoursList.length; j++) {
         let currentHour = hoursList[j];
         roomsCells.push(
-          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom} onClick={this.handleClickCell}>{this.cellText(currentRoom, currentHour)}</div>
+          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom} onClick={this.handleClickCell}></div>
         );
         cell++;
       }
@@ -120,26 +123,10 @@ class Calendar extends Component {
 
   renderCurrentBookings(bookings) {
     let bookingsDiv = [];
-    let date = new Date();
-    let bookingStart, bookingEnd;
-    console.log(date)
-    date.setH
-    console.log(bookings[0].start - bookings[0].end)
-
 
     bookings.forEach(booking => {
-      
-      let style = {
-        //Assuming each hour div is divided in 6 rows for an increment of 10 minutes
-        cell_style: {
-          gridRowStart: booking.start, 
-          gridRowEnd: booking.end,
-          gridColumn: 1,
-        }
-      }
-
       bookingsDiv.push(
-        <div className="calendar__cells__event" style={style.cell_style} key={booking.room + booking.start}>
+        <div className="calendar__cells__event" style={this.setBookingStyle(booking).booking_style} key={booking.room + booking.start} onClick={this.handleClickBooking}>
           <div className="calendar__cells__event__booker"> {booking.booker} </div>
           <div className="calendar__cells__event__time">
             <div>{`HH:MM XM`}</div>
@@ -152,6 +139,9 @@ class Calendar extends Component {
 
     return bookingsDiv;
   }
+
+
+  /************ STYLE METHODS*************/
 
   setCellStyle(x) {
     // Style for .calendar__cells_cell
@@ -166,17 +156,19 @@ class Calendar extends Component {
     return style;
   }
 
-  cellText = (room, hour) => {
-    let roomHours = this.state[room];
-
-    for (let i = 0 ;i < roomHours.length; i++) {
-      if (roomHours[i] == hour) {
-        return "Booked by Student 1 from 10:50 to 11:50";
+  setBookingStyle(booking) {
+    let style = {
+      //Assuming each hour div is divided in 6 rows for an increment of 10 minutes
+      booking_style: {
+        gridRowStart: booking.start, 
+        gridRowEnd: booking.end,
+        gridColumn: 1,
       }
     }
-
-    return "";
+    return style;
   }
+
+   /************ CLICK HANDLING METHODS *************/
 
   handleClickCell = (e) => {
     let selectedRoom = e.target.getAttribute('data-room');
@@ -197,9 +189,12 @@ class Calendar extends Component {
     
   }
 
-  handleClickBooking(e) {
+  handleClickBooking = (e) => {
     console.log(e)
   }
+
+
+   /************ COMPONENT RENDERING *************/
 
   render() {
     return (
