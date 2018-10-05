@@ -9,7 +9,7 @@ class Calendar extends Component {
     roomsList: [],
     hoursList: [],
     dateSelected: new Date(),
-    bookings: [{room: "H961-2", start: 8, end: 20, booker: 'stud1'},{room: "H961-4", start: 15, end: 21, booker: 'stud2'}]
+    bookings: [{room: "H961-2", start: 8, end: 15, booker: 'stud1'},{room: "H961-4", start: 10, end: 20, booker: 'stud2'}]
   };
 
   componentDidMount() {
@@ -18,36 +18,34 @@ class Calendar extends Component {
 
   componentWillMount() {
     // Set up rooms list
-    let colNumber = 10;
+    let colNumber = 33;
     let rooms = [];
     for (let i = 1; i <= colNumber; i++) {
       rooms.push("H961-" + i);
       this.setState({["H961-" + i]: []});
     }
     this.setState({roomsList: rooms});
-    document.documentElement.style.setProperty("--colNum", colNumber);
 
     // Set up hours
-    let t = new Date();
-    t.setHours(12,0,0);
-    t.setMinutes(t.getMinutes() + 65)
-    console.log(t.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}))
-
     let hourStart =  8;
-    let hourEnd =  14;
+    let hourEnd =  24;
     let minutesIncrement = 60;
     let hours = []
     let time = new Date();
     time.setHours(hourStart,0,0);
 
-    while (time.getHours() < hourEnd) {
+    while (time.getDay() == this.state.dateSelected.getDay()) {
       hours.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-      time.setMinutes(time.getMinutes() + minutesIncrement)
-      console.log(time)
+      time.setMinutes(time.getMinutes() + minutesIncrement);
     }
+  
+    this.setState({hoursList: hours, minutesIncrement: minutesIncrement});
+
+    //Set variables in scss
     
-    this.setState({hoursList: hours});
+    document.documentElement.style.setProperty("--colNum", colNumber);
     document.documentElement.style.setProperty("--rowNum", hours.length);
+    document.documentElement.style.setProperty("--cellsDivisionNum", minutesIncrement * (hourEnd - hourStart) / 10);
 
   }
 
@@ -97,7 +95,7 @@ class Calendar extends Component {
       for (let j = 0; j < hoursList.length; j++) {
         let currentHour = hoursList[j];
         roomsCells.push(
-          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom} onClick={this.handleClickCell}>{this.cellText(currentRoom, currentHour)}CELL</div>
+          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom} onClick={this.handleClickCell}>{this.cellText(currentRoom, currentHour)}</div>
         );
         cell++;
       }
@@ -122,53 +120,51 @@ class Calendar extends Component {
 
   renderCurrentBookings(bookings) {
     let bookingsDiv = [];
-    let key = 0
+    let date = new Date();
+    let bookingStart, bookingEnd;
+    console.log(date)
+    date.setH
+    console.log(bookings[0].start - bookings[0].end)
+
 
     bookings.forEach(booking => {
+      
       let style = {
         //Assuming each hour div is divided in 6 rows for an increment of 10 minutes
         cell_style: {
           gridRowStart: booking.start, 
           gridRowEnd: booking.end,
           gridColumn: 1,
-          border: "solid",
-          backgroundColor: "aqua"
         }
       }
+
       bookingsDiv.push(
-        <div style={style.cell_style} key={booking.room + booking.start}>Booked {booking.booker}</div>
-      )
+        <div className="calendar__cells__event" style={style.cell_style} key={booking.room + booking.start}>
+          <div className="calendar__cells__event__booker"> {booking.booker} </div>
+          <div className="calendar__cells__event__time">
+            <div>{`HH:MM XM`}</div>
+            <div>{`HH:MM XM`}</div>
+          </div>
+
+        </div>
+        )
     });
-    
 
     return bookingsDiv;
   }
 
   setCellStyle(x) {
+    // Style for .calendar__cells_cell
     let style = {
       //Assuming each hour div is divided in 6 rows for an increment of 10 minutes
       cell_style: {
-        display: "inline-grid",
-        gridRowStart: x * 6 + 1, 
+        gridRowStart: x * 6 + 1,
         gridRowEnd: (x + 1) * 6 + 1,
-        border: "solid",
         gridColumn: 1
       }
     }
     return style;
   }
-
-  // isBooked = (room, hour) => {
-  //   let roomHours = this.state[room];
-
-  //   for (let i = 0 ;i < roomHours.length; i++) {
-  //     if (roomHours[i] == hour) {
-  //       return true;
-  //     }
-  //   }
-
-  //   return false;
-  // }
 
   cellText = (room, hour) => {
     let roomHours = this.state[room];
@@ -199,6 +195,10 @@ class Calendar extends Component {
     // }
     
     
+  }
+
+  handleClickBooking(e) {
+    console.log(e)
   }
 
   render() {
