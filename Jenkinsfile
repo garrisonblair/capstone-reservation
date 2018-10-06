@@ -12,7 +12,6 @@ pipeline {
     options {
         timestamps()
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-
     }
     stages {
         stage('Show current environment variables') {
@@ -79,6 +78,10 @@ def runStaticAnalysis() {
 
 def buildApplication() {
     sh './jenkins.sh build'
+}
+
+def testRunServer() {
+    sh './jenkins.sh testRunServer'
 }
 
 def runUnitTests() {
