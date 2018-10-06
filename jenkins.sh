@@ -38,7 +38,7 @@ function build() {
 	echo 'Building... from jenkins.sh'
 	
 	pip3 install virtualenv
-	mkdir venv
+	mkdir -p venv
 	cd venv
 
 	virtualenv CapstoneReservation -p python3
