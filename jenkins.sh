@@ -40,7 +40,6 @@ function build() {
 	pip3 install virtualenv
 	mkdir venv
 	cd venv
-	echo 'Running unit tests... from jenkins.sh'
 
 	virtualenv CapstoneReservation -p python3
 	source CapstoneReservation/bin/activate
@@ -74,6 +73,7 @@ function unitTests() {
 
 function integrationTests() {
 	echo 'Running integration tests... from jenkins.sh'
+	echo 'No integration tests at this time'
 }
 
 
