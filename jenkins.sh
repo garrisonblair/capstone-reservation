@@ -46,7 +46,7 @@ function build() {
 	cd $WORKSPACE
 	pwd
 	ls
-	cd server
+	cd $WORKSPACE/server
 	pip3 install -r requirements/dev.txt
 	python3 manage.py makemigrations
 	python3 manage.py migrate
@@ -54,19 +54,13 @@ function build() {
 
 }
 
-function testRunServer() {
-	echo 'Running server testing... from jenkins.sh'
-
-	cd $WORKSPACE/server
-	python3 manage.py runserver 0.0.0.0:8081
-}
-
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
 
 	cd $WORKSPACE/server
-	python3 ./manage.py test apps
-	python3 ./manage.py test -p "**/tests/*.py"
+	python3 manage.py test apps
+	python3 manage.py test -p "**/tests/*.py"
+	python3 manage.py test apps/accounts
 }
 
 function integrationTests() {
