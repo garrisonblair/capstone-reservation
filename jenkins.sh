@@ -91,9 +91,6 @@ case $COMMAND in
 		;;
 	build )
 		build
-		;;
-	testRunServer )
-		testRunServer
 		;;	
 	unitTests )
 		unitTests

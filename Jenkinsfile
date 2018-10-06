@@ -39,12 +39,6 @@ pipeline {
                 buildApplication()
             }
         }
-        stage('Test Run Server') {
-            steps {
-                echo 'Testing running server.. in Jenkinsfile'
-                testRunServer()
-            }
-        }
         stage('Unit Tests') {
             when {
                 expression { params.skipUnitTests == false }
