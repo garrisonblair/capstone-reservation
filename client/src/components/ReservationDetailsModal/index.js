@@ -3,19 +3,20 @@ import settings from '../../config/settings';
 import './ReservationDetailsModal.scss';
 import { Button, Header, Modal, Dropdown, Message } from 'semantic-ui-react';
 import axios from 'axios';
-import {getTokenHeader} from '../../utils/requestHeaders';
+import { getTokenHeader } from '../../utils/requestHeaders';
 class ReservationDetailsModal extends Component {
 
   state = {
     hideErrorMessage: true,
+    hideWarningMessage: true,
     modalOpen: false,
     minHour: this.props.minHour || 8,
     maxHour: this.props.maxHour || 24,
     date: (new Date(this.props.date)) || "please provide a date",
     startHour: this.props.defaultHour + '',
     startMinute: this.props.defaultMinute + '',
-    endHour:0,
-    endMinute:0,
+    endHour: 0,
+    endMinute: 0,
     roomNumber: parseInt(this.props.roomNumber) || "please provide a room number",
     hourOptions: [],
     minuteOptions: [
@@ -51,22 +52,40 @@ class ReservationDetailsModal extends Component {
   closeModal = () => this.setState({
     modalOpen: false,
     hideErrorMessage: true
-   });
+  });
 
   handleOpen = () => this.setState({ modalOpen: true });
-  handleStartHourChange = (e, {value}) => this.setState({startHour: value});
-  handleStartMinuteChange = (e, {value}) => this.setState({startMinute: value});
-  handleEndHourChange = (e, {value}) => this.setState({endHour: value});
-  handleEndMinuteChange = (e, {value}) => this.setState({endMinute: value});
+  handleStartHourChange = (e, { value }) => this.setState({ startHour: value });
+  handleStartMinuteChange = (e, { value }) => this.setState({ startMinute: value });
+  handleEndHourChange = (e, { value }) => {
+    this.setState({
+      endHour: value,
+      hideWarningMessage:true
+     });
+  }
+  handleEndMinuteChange = (e, { value }) => {
+    this.setState({
+      endMinute: value,
+      hideWarningMessage:true
+     });
+  }
+  //handleEndMinuteChange = (e, { value }) => this.setState({ endMinute: value });
 
   handleReserve = () => {
+    //This 'if' block the method to continue if end time is not set.
+    if (this.state.endHour === 0 || this.state.endMinute === 0) {
+      this.setState({
+        hideWarningMessage:false
+      })
+      return;
+    }
     const headers = getTokenHeader();
 
     const data = {
       "room": this.state.roomNumber,
       "date": this.state.date.toISOString().slice(0, 10),
       "start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
-      "end_time": "15:00:00"
+      "end_time": `${this.state.endHour}:${this.state.endMinute}:00`
     };
     console.log(data);
     axios({
@@ -76,16 +95,16 @@ class ReservationDetailsModal extends Component {
       data,
       withCredentials: true,
     })
-    .then((response) => {
-      console.log(response);
+      .then((response) => {
+        console.log(response);
 
-    })
-    .catch((error) =>{
-      console.log(error.message);
-      this.setState({
-        hideErrorMessage: false
-      });
-    })
+      })
+      .catch((error) => {
+        console.log(error.message);
+        this.setState({
+          hideErrorMessage: false
+        });
+      })
   }
 
   render() {
@@ -93,10 +112,16 @@ class ReservationDetailsModal extends Component {
       <div id="reservation-details-modal">
         <Modal trigger={<div onClick={this.handleOpen}>Click me</div>} centered={false} size={"tiny"} open={this.state.modalOpen}>
           <Modal.Header>Reservation Details</Modal.Header>
+
           <Message negative hidden={this.state.hideErrorMessage}>
             <Message.Header>Reservation failed</Message.Header>
             <p>We are sorry, this reservation overlaps with other reservations. Try different times.</p>
           </Message>
+          <Message warning hidden={this.state.hideWarningMessage}>
+            <Message.Header>Reservation blocked</Message.Header>
+            <p>Please provide an end time to make the reservation.</p>
+          </Message>
+
           <Modal.Content>
             <Modal.Description>
               <Header>Room {this.state.roomNumber} </Header>
