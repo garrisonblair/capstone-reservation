@@ -1,12 +1,26 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {Button, Form, Icon, Input} from 'semantic-ui-react';
+import SweetAlert from 'sweetalert2-react';
 import settings from '../../config/settings';
 import {getTokenHeader} from '../../utils/requestHeaders';
 import './Login.scss';
 
 
 class Login extends Component {
+
+  state = {
+    showModal: false,
+    modalTitle: '',
+    modalText: '',
+    modalType: 'success'
+  }
+
+  closeModal = () => {
+    this.setState({
+      showModal: false
+    })
+  }
 
   handleUsernameChange = (event) => {
     this.setState({username: event.target.value})
@@ -37,10 +51,21 @@ class Login extends Component {
     })
     .catch((error) => {
       console.log("ERROR");
+      this.setState({
+        showModal: true,
+        modalType: 'error',
+        modalTitle: ':(',
+        modalText: 'Invalid credentials'
+      })
     })
   }
 
+  componentDidMount = () => {
+    document.title = 'Login'
+  }
+
   render = () => {
+    const {showModal, modalType, modalTitle, modalText} = this.state;
     return (
       <div className="login login--center">
         <div className="login__container">
@@ -76,6 +101,13 @@ class Login extends Component {
                   Login
                 </Button>
               </Form.Field>
+              <SweetAlert
+                show={showModal}
+                title={modalTitle}
+                text={modalText}
+                type={modalType}
+                onConfirm={this.closeModal}
+              />
               <div className="ui divider"/>
             </div>
           </div>
