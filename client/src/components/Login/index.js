@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {Button, Form, Icon, Input} from 'semantic-ui-react';
 import settings from '../../config/settings';
+import {getTokenHeader} from '../../utils/requestHeaders';
 import './Login.scss';
 
 
