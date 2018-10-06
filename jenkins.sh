@@ -43,15 +43,12 @@ function build() {
 
 	virtualenv CapstoneReservation -p python3
 	source CapstoneReservation/bin/activate
-	debug
 	pwd
 	ls
 	cd CapstoneReservation
-	debug
 	pwd
 	ls
 	git clone git@github.com:SteveLocke/CapstoneReservation.git
-	debug
 	pwd
 	ls
 	pip3 install -r server/requirements/dev.txt
