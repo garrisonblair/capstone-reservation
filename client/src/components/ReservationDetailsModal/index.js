@@ -12,19 +12,19 @@ class ReservationDetailsModal extends Component {
     minHour: this.props.minHour || 8,
     maxHour: this.props.maxHour || 24,
     date: (new Date(this.props.date)) || "please provide a date",
-    startHour: this.props.defaultHour,
-    startMinute: this.props.defaultMinute,
+    startHour: this.props.defaultHour + '',
+    startMinute: this.props.defaultMinute + '',
     endHour:0,
     endMinute:0,
     roomNumber: parseInt(this.props.roomNumber) || "please provide a room number",
     hourOptions: [],
     minuteOptions: [
-      { text: '00', value: 0 },
-      { text: '10', value: 10 },
-      { text: '20', value: 20 },
-      { text: '30', value: 30 },
-      { text: '40', value: 40 },
-      { text: '50', value: 50 }
+      { text: '00', value: '00' },
+      { text: '10', value: '10' },
+      { text: '20', value: '20' },
+      { text: '30', value: '30' },
+      { text: '40', value: '40' },
+      { text: '50', value: '50' }
     ],
     reservedOptions: [
       // here the value should be 'this.props.username'
@@ -33,18 +33,19 @@ class ReservationDetailsModal extends Component {
   }
 
   generateHourOptions(minHour, maxHour) {
+    minHour = parseInt(minHour);
+    maxHour = parseInt(maxHour);
     let result = [];
     for (var i = minHour; i < maxHour; i++) {
-      result.push({ text: i + '', value: i });
+      result.push({ text: i + '', value: i + '' });
     }
-
     return result;
   }
 
   componentWillMount() {
     this.setState({
       hourOptions: this.generateHourOptions(this.state.minHour, this.state.maxHour)
-    })
+    });
   }
 
   closeModal = () => this.setState({
@@ -64,9 +65,10 @@ class ReservationDetailsModal extends Component {
     const data = {
       "room": this.state.roomNumber,
       "date": this.state.date.toISOString().slice(0, 10),
-      "start_time": "12:00:00",
+      "start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
       "end_time": "15:00:00"
     };
+    console.log(data);
     axios({
       method: 'POST',
       url: `${settings.API_ROOT}/booking`,
