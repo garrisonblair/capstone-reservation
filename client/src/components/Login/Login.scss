@@ -1,3 +1,31 @@
-#login {
-  padding: 0 20px;
+.login {
+  padding: 20px;
+  height: 100vh;
+  &__container {
+    border: 1px solid #cfd0d2;
+    width: 400px;
+    box-shadow: 2px 2px 5px #cfd0d2;
+    &__header {
+      background: url(../../assets/img/login_bg.png);
+      background-repeat: no-repeat;
+      color: white;
+      padding: 15px;
+      &__title {
+        font-weight: 400;
+      }
+    }
+    &__main {
+      padding: 0 15px 15px 15px;
+      &__form-wrapper {
+        .field {
+          margin: 10px;
+        }
+      }
+    }
+  }
+  &--center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
