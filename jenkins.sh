@@ -46,7 +46,7 @@ function build() {
 	cd $WORKSPACE
 	pwd
 	ls
-	cd CapstoneReservation/server
+	cd server
 	pip3 install -r requirements/dev.txt
 	python3 manage.py makemigrations
 	python3 manage.py migrate
