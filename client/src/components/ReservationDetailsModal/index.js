@@ -11,9 +11,11 @@ class ReservationDetailsModal extends Component {
     minHour: this.props.minHour || 8,
     maxHour: this.props.maxHour || 24,
     date: (new Date(this.props.date)) || "please provide a date",
-    defaultHour: this.props.defaultHour,
-    defaultMinute: this.props.defaultMinute,
-    roomNumber: this.props.roomNumber || "please provide a room number",
+    startHour: this.props.defaultHour,
+    startMinute: this.props.defaultMinute,
+    endHour:0,
+    endMinute:0,
+    roomNumber: parseInt(this.props.roomNumber) || "please provide a room number",
     hourOptions: [],
     minuteOptions: [
       { text: '00', value: 0 },
@@ -51,6 +53,10 @@ class ReservationDetailsModal extends Component {
    });
 
   handleOpen = () => this.setState({ modalOpen: true });
+  handleStartHourChange = (e, {value}) => this.setState({startHour: value});
+  handleStartMinuteChange = (e, {value}) => this.setState({startMinute: value});
+  handleEndHourChange = (e, {value}) => this.setState({endHour: value});
+  handleEndMinuteChange = (e, {value}) => this.setState({endMinute: value});
 
   handleReserve = () => {
     const token = '078e72c2471a07e3ad0f40f7efbf0426bd747efa';
@@ -62,12 +68,12 @@ class ReservationDetailsModal extends Component {
     }
 
     const data = {
-      "room": 1,
+      "room": this.state.roomNumber,
       "date": this.state.date.toISOString().slice(0, 10),
       "start_time": "12:00:00",
       "end_time": "15:00:00"
     };
-
+    console.log(data);
     axios({
       method: 'POST',
       url: `${settings.API_ROOT}/booking`,
@@ -103,11 +109,11 @@ class ReservationDetailsModal extends Component {
               <br />
               <span>
                 <span className="inputLabel">From:</span>
-                <Dropdown placeholder='hh' selection compact className="timeSelection" options={this.state.hourOptions} defaultValue={this.state.defaultHour} />
-                <Dropdown placeholder='mm' selection compact className="timeSelection" options={this.state.minuteOptions} defaultValue={this.state.defaultMinute} />
+                <Dropdown placeholder='hh' onChange={this.handleStartHourChange} selection compact className="timeSelection" options={this.state.hourOptions} defaultValue={this.state.startHour} />
+                <Dropdown placeholder='mm' onChange={this.handleStartMinuteChange} selection compact className="timeSelection" options={this.state.minuteOptions} defaultValue={this.state.startMinute} />
                 <span className="inputLabel" id="toLabel">To:</span>
-                <Dropdown placeholder='hh' selection compact className="timeSelection" options={this.state.hourOptions} />
-                <Dropdown placeholder='mm' selection compact className="timeSelection" options={this.state.minuteOptions} />
+                <Dropdown placeholder='hh' onChange={this.handleEndHourChange} selection compact className="timeSelection" options={this.state.hourOptions} />
+                <Dropdown placeholder='mm' onChange={this.handleEndMinuteChange} selection compact className="timeSelection" options={this.state.minuteOptions} />
               </span>
               <br /><br />
               <span>

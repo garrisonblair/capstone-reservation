@@ -15,7 +15,7 @@ ReactDOM.render(
         <Route exact path="/login" component={Login}/>
 
         {/* This Route is only for development testing. Remove after.*/}
-<Route exact path="/andresModal" render={() => <ReservationDetailsModal date ={new Date()} defaultHour={8} defaultMinute={30} roomNumber="1"/>}/>
+<Route exact path="/andresModal" render={() => <ReservationDetailsModal date ={new Date()} defaultHour={8} defaultMinute={30} roomNumber={1}/>}/>
 
         <Route component={NotFound}/>
       </Switch>
