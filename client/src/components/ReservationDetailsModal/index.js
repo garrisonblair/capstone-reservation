@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import settings from '../../config/settings';
 import './ReservationDetailsModal.scss';
-import { Button, Header, Modal, Dropdown } from 'semantic-ui-react';
+import { Button, Header, Modal, Dropdown, Message } from 'semantic-ui-react';
 import axios from 'axios';
-
 class ReservationDetailsModal extends Component {
 
   state = {
+    hideErrorMessage: true,
     modalOpen: false,
     minHour: this.props.minHour || 8,
     maxHour: this.props.maxHour || 24,
@@ -45,12 +45,15 @@ class ReservationDetailsModal extends Component {
     })
   }
 
-  closeModal = () => this.setState({ modalOpen: false });
+  closeModal = () => this.setState({
+    modalOpen: false,
+    hideErrorMessage: true
+   });
 
   handleOpen = () => this.setState({ modalOpen: true });
 
   handleReserve = () => {
-    const token = '93e055c826c29726518962afbbd7abeb6840b516';
+    const token = '078e72c2471a07e3ad0f40f7efbf0426bd747efa';
     //const date = this.formatDate(this.state.date);
     //const start_time = this.state.de
 
@@ -60,8 +63,8 @@ class ReservationDetailsModal extends Component {
 
     const data = {
       "room": 1,
-      "date": this.state.date.toISOString().slice(0,10),
-      "start_time": "14:00:00",
+      "date": this.state.date.toISOString().slice(0, 10),
+      "start_time": "12:00:00",
       "end_time": "15:00:00"
     };
 
@@ -71,8 +74,16 @@ class ReservationDetailsModal extends Component {
       headers,
       data,
       withCredentials: true,
-    }).then((response)=>{
-      console.log(response)
+    })
+    .then((response) => {
+      console.log(response);
+
+    })
+    .catch((error) =>{
+      console.log(error.message);
+      this.setState({
+        hideErrorMessage: false
+      });
     })
   }
 
@@ -81,6 +92,10 @@ class ReservationDetailsModal extends Component {
       <div id="reservation-details-modal">
         <Modal trigger={<div onClick={this.handleOpen}>Click me</div>} centered={false} size={"tiny"} open={this.state.modalOpen}>
           <Modal.Header>Reservation Details</Modal.Header>
+          <Message negative hidden={this.state.hideErrorMessage}>
+            <Message.Header>Reservation failed</Message.Header>
+            <p>We are sorry, this reservation overlaps with other reservations. Try different times.</p>
+          </Message>
           <Modal.Content>
             <Modal.Description>
               <Header>Room {this.state.roomNumber} </Header>
