@@ -45,7 +45,7 @@ function build() {
 	source CapstoneReservation/bin/activate
 	cd CapstoneReservation
 	git clone git@github.com:SteveLocke/CapstoneReservation.git
-
+	debug
 	pip3 install -r server/requirements/dev.txt
 	cd server
 	python3 manage.py makemigrations
@@ -72,6 +72,13 @@ function unitTests() {
 function integrationTests() {
 	echo 'Running integration tests... from jenkins.sh'
 	echo 'No integration tests at this time'
+}
+
+function debug() {
+	echo 'Current directory: '
+	pwd
+	echo 'Directory contents: '
+	ls
 }
 
 
