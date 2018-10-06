@@ -31,11 +31,13 @@ set -x
 
 function staticAnalysis() {
 	echo 'Running static analysis... from jenkins.sh'
+	echo 'blahhhh'
 }
 
 
 function build() {
 	echo 'Building... from jenkins.sh'
+	echo 'Is this working?'
 	
 	pip3 install virtualenv
 	mkdir -p venv
