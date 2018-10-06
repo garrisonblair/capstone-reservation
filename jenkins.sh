@@ -50,8 +50,6 @@ function build() {
 	pip3 install -r requirements/dev.txt
 	python3 manage.py makemigrations
 	python3 manage.py migrate
-	#python3 manage.py createsuper
-
 }
 
 function unitTests() {
