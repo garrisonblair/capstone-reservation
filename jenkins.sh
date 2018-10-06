@@ -46,8 +46,6 @@ function build() {
 	cd CapstoneReservation
 	git clone git@github.com:SteveLocke/CapstoneReservation.git
 
-	#curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-	#python get-pip.py
 	pip3 install -r server/requirements/dev.txt
 	cd server
 	python3 manage.py makemigrations
