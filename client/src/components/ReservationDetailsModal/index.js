@@ -3,6 +3,7 @@ import settings from '../../config/settings';
 import './ReservationDetailsModal.scss';
 import { Button, Header, Modal, Dropdown, Message } from 'semantic-ui-react';
 import axios from 'axios';
+import {getTokenHeader} from '../../utils/requestHeaders';
 class ReservationDetailsModal extends Component {
 
   state = {
@@ -41,7 +42,6 @@ class ReservationDetailsModal extends Component {
   }
 
   componentWillMount() {
-    console.log(this.state.roomNumber);
     this.setState({
       hourOptions: this.generateHourOptions(this.state.minHour, this.state.maxHour)
     })
@@ -59,13 +59,7 @@ class ReservationDetailsModal extends Component {
   handleEndMinuteChange = (e, {value}) => this.setState({endMinute: value});
 
   handleReserve = () => {
-    const token = '078e72c2471a07e3ad0f40f7efbf0426bd747efa';
-    //const date = this.formatDate(this.state.date);
-    //const start_time = this.state.de
-
-    const headers = {
-      'Authorization': `Token ${token}`
-    }
+    const headers = getTokenHeader();
 
     const data = {
       "room": this.state.roomNumber,
@@ -73,7 +67,6 @@ class ReservationDetailsModal extends Component {
       "start_time": "12:00:00",
       "end_time": "15:00:00"
     };
-    console.log(data);
     axios({
       method: 'POST',
       url: `${settings.API_ROOT}/booking`,
