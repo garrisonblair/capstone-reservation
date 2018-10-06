@@ -30,3 +30,4 @@ class Booking(models.Model):
             raise ValidationError("Specified time is overlapped with other bookings.")
         elif Booking.objects.filter(~Q(end_time=self.start_time), room=self.room, date=self.date, end_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
+

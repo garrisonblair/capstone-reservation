@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 
 from rest_framework.views import APIView
@@ -32,3 +34,30 @@ class BookingView(APIView):
                 return Response(BookingSerializer(booking).data, status=status.HTTP_201_CREATED)
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+
+        defaultYear = datetime.date.year
+        print(defaultYear)
+        defaultMonth = datetime.date.month
+        print(defaultMonth)
+        defaultDay = datetime.date.day
+        print(defaultDay)
+
+        #requestYear = request.GET.get('year', defaultYear)
+        #requestMonth = request.GET.get('month', defaultMonth)
+        #requestDay = request.GET.get('day', defaultDay)
+
+        # will ask frontend to pass yyyy,mm,dd
+        # expecting ISO format of date
+        # date = datetime.date(requestYear,requestMonth,requestDay)
+        date = datetime.date(2018, 10, 6)
+        print(date)
+        bookings = Booking.objects.filter(date=date)
+        print(bookings)
+        bookingsList = list()
+        for booking in bookings:
+            serializer = BookingSerializer(booking)
+            bookingsList.append(serializer.data)
+        return Response(bookingsList, status=status.HTTP_200_OK)
+
