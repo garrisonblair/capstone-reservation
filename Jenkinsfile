@@ -12,8 +12,6 @@ pipeline {
     options {
         timestamps()
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-        skipDefaultCheckout(true)
-
     }
     stages {
         stage('Show current environment variables') {

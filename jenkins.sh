@@ -31,13 +31,11 @@ set -x
 
 function staticAnalysis() {
 	echo 'Running static analysis... from jenkins.sh'
-	echo 'blahhhh'
 }
 
 
 function build() {
 	echo 'Building... from jenkins.sh'
-	echo 'Is this working?'
 	
 	pip3 install virtualenv
 	mkdir -p venv
@@ -47,10 +45,9 @@ function build() {
 	source CapstoneReservation/bin/activate
 	pwd
 	ls
-	cd CapstoneReservation
 	pwd
 	ls
-	#git clone git@github.com:SteveLocke/CapstoneReservation.git
+
 	pwd
 	ls
 	pip3 install -r server/requirements/dev.txt
