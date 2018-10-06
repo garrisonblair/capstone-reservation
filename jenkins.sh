@@ -41,17 +41,13 @@ function build() {
 	mkdir -p venv
 	cd venv
 
-	virtualenv CapstoneReservation -p python3
-	source CapstoneReservation/bin/activate
+	virtualenv venvironment -p python3
+	source venvironment/bin/activate
+	cd $WORKSPACE
 	pwd
 	ls
-	pwd
-	ls
-
-	pwd
-	ls
-	pip3 install -r server/requirements/dev.txt
-	cd server
+	cd CapstoneReservation/server
+	pip3 install -r requirements/dev.txt
 	python3 manage.py makemigrations
 	python3 manage.py migrate
 	#python3 manage.py createsuper
