@@ -10,6 +10,8 @@ import './Login.scss';
 class Login extends Component {
 
   state = {
+    username: '',
+    password: '',
     showModal: false,
     modalTitle: '',
     modalText: '',
@@ -50,7 +52,6 @@ class Login extends Component {
       history.push('/');
     })
     .catch((error) => {
-      console.log("ERROR");
       this.setState({
         showModal: true,
         modalType: 'error',
