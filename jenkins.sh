@@ -48,7 +48,7 @@ function build() {
 	cd CapstoneReservation
 	pwd
 	ls
-	git clone git@github.com:SteveLocke/CapstoneReservation.git
+	#git clone git@github.com:SteveLocke/CapstoneReservation.git
 	pwd
 	ls
 	pip3 install -r server/requirements/dev.txt
