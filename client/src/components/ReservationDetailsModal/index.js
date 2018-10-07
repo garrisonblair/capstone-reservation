@@ -4,14 +4,15 @@ import './ReservationDetailsModal.scss';
 import { Button, Header, Modal, Dropdown, Message } from 'semantic-ui-react';
 import axios from 'axios';
 import { getTokenHeader } from '../../utils/requestHeaders';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 class ReservationDetailsModal extends Component {
 
   state = {
     hideErrorMessage: true,
-    warningMessageConfig: {
+    messageConfig: {
       hidden: true,
       title: "",
+      color: "red",
       message: ""
     },
     modalOpen: false,
@@ -56,16 +57,30 @@ class ReservationDetailsModal extends Component {
 
   closeModal = () => this.setState({
     modalOpen: false,
-    hideErrorMessage: true
   });
 
   handleOpen = () => this.setState({ modalOpen: true });
-  handleStartHourChange = (e, { value }) => this.setState({ startHour: value });
-  handleStartMinuteChange = (e, { value }) => this.setState({ startMinute: value });
+  handleStartHourChange = (e, { value }) => {
+    this.setState({
+      startHour: value,
+      messageConfig: {
+        hidden: true
+      }
+    });
+  }
+  handleStartMinuteChange = (e, { value }) => {
+    this.setState({
+      startMinute: value,
+      messageConfig: {
+        hidden: true
+      }
+    });
+  }
+
   handleEndHourChange = (e, { value }) => {
     this.setState({
       endHour: value,
-      warningMessageConfig: {
+      messageConfig: {
         hidden: true
       }
     });
@@ -74,7 +89,7 @@ class ReservationDetailsModal extends Component {
   handleEndMinuteChange = (e, { value }) => {
     this.setState({
       endMinute: value,
-      warningMessageConfig: {
+      messageConfig: {
         hidden: true
       }
     });
@@ -103,10 +118,11 @@ class ReservationDetailsModal extends Component {
     }
     catch (err) {
       this.setState({
-        warningMessageConfig: {
+        messageConfig: {
           hidden: false,
           title: "Reservation blocked",
-          message: err.message
+          message: err.message,
+          color: "orange"
         }
       })
       return;
@@ -120,6 +136,7 @@ class ReservationDetailsModal extends Component {
       "start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}:00`
     };
+
     axios({
       method: 'POST',
       url: `${settings.API_ROOT}/booking`,
@@ -129,16 +146,58 @@ class ReservationDetailsModal extends Component {
     })
       .then((response) => {
 
-        const {history} = this.props;
-        history.push('/');
+        const { history } = this.props;
+
+        console.log('Booked sucessfully')
+        this.setState({
+          messageConfig: {
+            hidden: false,
+            title: 'Completed',
+            message: `Room ${this.state.roomNumber} was successfuly booked.`,
+            color: 'green'
+          }
+        })
+        setTimeout(function () { history.push('/') }, 3300);
 
       })
       .catch((error) => {
         console.log(error.message);
         this.setState({
-          hideErrorMessage: false
+          messageConfig: {
+            hidden: false,
+            title: 'Reservation failed',
+            message: 'We are sorry, this reservation overlaps with other reservations. Try different times.',
+            color: "red"
+          }
         });
       })
+  }
+  modalDescription() {
+    return <Modal.Content>
+      <Modal.Description>
+        <Header>Room {this.state.roomNumber} </Header>
+        <p>Date: {this.state.date.toDateString()}</p>
+        <br />
+        <span>
+          <span className="inputLabel">From:</span>
+          <Dropdown placeholder='hh' onChange={this.handleStartHourChange} selection compact className="timeSelection" options={this.state.hourOptions} defaultValue={this.state.startHour} />
+          <Dropdown placeholder='mm' onChange={this.handleStartMinuteChange} selection compact className="timeSelection" options={this.state.minuteOptions} defaultValue={this.state.startMinute} />
+          <span className="inputLabel" id="toLabel">To:</span>
+          <Dropdown placeholder='hh' onChange={this.handleEndHourChange} selection compact className="timeSelection" options={this.state.hourOptions} />
+          <Dropdown placeholder='mm' onChange={this.handleEndMinuteChange} selection compact className="timeSelection" options={this.state.minuteOptions} />
+        </span>
+        <br /><br />
+        <span>
+          <span className="inputLabel">Reserved by:</span>
+          <Dropdown compact placeholder='hh' selection options={this.state.reservedOptions} defaultValue={this.state.reservedOptions[0].value} />
+        </span>
+        <br /><br />
+        <div>
+          <Button content='Reserve' primary onClick={this.handleReserve} />
+          <Button content='Cancel' secondary onClick={this.closeModal} />
+        </div>
+      </Modal.Description>
+    </Modal.Content>
   }
 
   render() {
@@ -146,42 +205,11 @@ class ReservationDetailsModal extends Component {
       <div id="reservation-details-modal">
         <Modal trigger={<div onClick={this.handleOpen}>Click me</div>} centered={false} size={"tiny"} open={this.state.modalOpen}>
           <Modal.Header>Reservation Details</Modal.Header>
-
-          <Message negative hidden={this.state.hideErrorMessage}>
-            <Message.Header>Reservation failed</Message.Header>
-            <p>We are sorry, this reservation overlaps with other reservations. Try different times.</p>
+          {this.state.messageConfig.color !== 'green' ? this.modalDescription() : null}
+          <Message attached='bottom' color={this.state.messageConfig.color} hidden={this.state.messageConfig.hidden}>
+            <Message.Header>{this.state.messageConfig.title}</Message.Header>
+            <p>{this.state.messageConfig.message}</p>
           </Message>
-
-          <Message warning hidden={this.state.warningMessageConfig.hidden}>
-            <Message.Header>{this.state.warningMessageConfig.title}</Message.Header>
-            <p>{this.state.warningMessageConfig.message}</p>
-          </Message>
-
-          <Modal.Content>
-            <Modal.Description>
-              <Header>Room {this.state.roomNumber} </Header>
-              <p>Date: {this.state.date.toDateString()}</p>
-              <br />
-              <span>
-                <span className="inputLabel">From:</span>
-                <Dropdown placeholder='hh' onChange={this.handleStartHourChange} selection compact className="timeSelection" options={this.state.hourOptions} defaultValue={this.state.startHour} />
-                <Dropdown placeholder='mm' onChange={this.handleStartMinuteChange} selection compact className="timeSelection" options={this.state.minuteOptions} defaultValue={this.state.startMinute} />
-                <span className="inputLabel" id="toLabel">To:</span>
-                <Dropdown placeholder='hh' onChange={this.handleEndHourChange} selection compact className="timeSelection" options={this.state.hourOptions} />
-                <Dropdown placeholder='mm' onChange={this.handleEndMinuteChange} selection compact className="timeSelection" options={this.state.minuteOptions} />
-              </span>
-              <br /><br />
-              <span>
-                <span className="inputLabel">Reserved by:</span>
-                <Dropdown compact placeholder='hh' selection options={this.state.reservedOptions} defaultValue={this.state.reservedOptions[0].value} />
-              </span>
-              <br /><br />
-              <div>
-                <Button content='Reserve' primary onClick={this.handleReserve} />
-                <Button content='Cancel' secondary onClick={this.closeModal} />
-              </div>
-            </Modal.Description>
-          </Modal.Content>
         </Modal>
       </div>
     )
