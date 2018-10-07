@@ -4,6 +4,7 @@ import './ReservationDetailsModal.scss';
 import { Button, Header, Modal, Dropdown, Message } from 'semantic-ui-react';
 import axios from 'axios';
 import { getTokenHeader } from '../../utils/requestHeaders';
+import {withRouter} from 'react-router-dom';
 class ReservationDetailsModal extends Component {
 
   state = {
@@ -85,17 +86,17 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  verifyReservationTimes(){
+  verifyReservationTimes() {
     const startTime = this.state.startHour + "." + this.state.startMinute;
     const endTime = this.state.endHour + "." + this.state.endMinute;
 
-    if(parseFloat(startTime) > parseFloat(endTime)){
+    if (parseFloat(startTime) > parseFloat(endTime)) {
       throw new Error("Please provide a start time that is before the end time to make a reservation.");
     }
   }
 
   handleReserve = () => {
-    //This 'if' block the method to continue if end time is not set.
+    //This try catch verifies requirements before sending the POST request
     try {
       this.verifyEndTime();
       this.verifyReservationTimes();
@@ -119,7 +120,6 @@ class ReservationDetailsModal extends Component {
       "start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}:00`
     };
-    console.log(data);
     axios({
       method: 'POST',
       url: `${settings.API_ROOT}/booking`,
@@ -128,7 +128,9 @@ class ReservationDetailsModal extends Component {
       withCredentials: true,
     })
       .then((response) => {
-        console.log(response);
+
+        const {history} = this.props;
+        history.push('/');
 
       })
       .catch((error) => {
@@ -186,4 +188,5 @@ class ReservationDetailsModal extends Component {
   }
 }
 
-export default ReservationDetailsModal;
+//export default ReservationDetailsModal;
+export default withRouter(ReservationDetailsModal)
