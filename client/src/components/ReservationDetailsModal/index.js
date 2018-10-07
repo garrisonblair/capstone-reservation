@@ -8,7 +8,11 @@ class ReservationDetailsModal extends Component {
 
   state = {
     hideErrorMessage: true,
-    hideWarningMessage: true,
+    warningMessageConfig: {
+      hidden: true,
+      title: "",
+      message: ""
+    },
     modalOpen: false,
     minHour: this.props.minHour || 8,
     maxHour: this.props.maxHour || 24,
@@ -60,25 +64,53 @@ class ReservationDetailsModal extends Component {
   handleEndHourChange = (e, { value }) => {
     this.setState({
       endHour: value,
-      hideWarningMessage:true
-     });
+      warningMessageConfig: {
+        hidden: true
+      }
+    });
   }
+
   handleEndMinuteChange = (e, { value }) => {
     this.setState({
       endMinute: value,
-      hideWarningMessage:true
-     });
+      warningMessageConfig: {
+        hidden: true
+      }
+    });
   }
-  //handleEndMinuteChange = (e, { value }) => this.setState({ endMinute: value });
+
+  verifyEndTime() {
+    if (this.state.endHour === 0 || this.state.endMinute === 0) {
+      throw new Error("Please provide an end time to make a reservation.");
+    }
+  }
+
+  verifyReservationTimes(){
+    const startTime = this.state.startHour + "." + this.state.startMinute;
+    const endTime = this.state.endHour + "." + this.state.endMinute;
+
+    if(parseFloat(startTime) > parseFloat(endTime)){
+      throw new Error("Please provide a start time that is before the end time to make a reservation.");
+    }
+  }
 
   handleReserve = () => {
     //This 'if' block the method to continue if end time is not set.
-    if (this.state.endHour === 0 || this.state.endMinute === 0) {
+    try {
+      this.verifyEndTime();
+      this.verifyReservationTimes();
+    }
+    catch (err) {
       this.setState({
-        hideWarningMessage:false
+        warningMessageConfig: {
+          hidden: false,
+          title: "Reservation blocked",
+          message: err.message
+        }
       })
       return;
     }
+
     const headers = getTokenHeader();
 
     const data = {
@@ -117,9 +149,10 @@ class ReservationDetailsModal extends Component {
             <Message.Header>Reservation failed</Message.Header>
             <p>We are sorry, this reservation overlaps with other reservations. Try different times.</p>
           </Message>
-          <Message warning hidden={this.state.hideWarningMessage}>
-            <Message.Header>Reservation blocked</Message.Header>
-            <p>Please provide an end time to make the reservation.</p>
+
+          <Message warning hidden={this.state.warningMessageConfig.hidden}>
+            <Message.Header>{this.state.warningMessageConfig.title}</Message.Header>
+            <p>{this.state.warningMessageConfig.message}</p>
           </Message>
 
           <Modal.Content>
