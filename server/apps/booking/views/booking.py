@@ -44,6 +44,7 @@ class BookingView(APIView):
         if requestYear != None and requestMonth != None and requestDay != None:
 
             try:
+
                 integerRequestYear = int(requestYear)
                 integerRequestMonth = int(requestMonth)
                 integerRequestDay = int(requestDay)
@@ -51,8 +52,8 @@ class BookingView(APIView):
                 date = datetime.date(integerRequestYear, integerRequestMonth, integerRequestDay)
                 bookings = Booking.objects.filter(date=date)
 
-            except ValidationError as error:
-                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+            except ValueError:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
         else:
             try:
