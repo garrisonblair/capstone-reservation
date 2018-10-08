@@ -57,9 +57,6 @@ function unitTests() {
 
 	cd $WORKSPACE/server
 	python3 manage.py test apps
-	python3 manage.py test -p "**/tests/*.py"
-	python3 manage.py test apps/accounts
-	python3 manage.py test apps/accounts
 }
 
 function integrationTests() {

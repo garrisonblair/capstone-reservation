@@ -80,10 +80,6 @@ def buildApplication() {
     sh './jenkins.sh build'
 }
 
-def testRunServer() {
-    sh './jenkins.sh testRunServer'
-}
-
 def runUnitTests() {
     sh './jenkins.sh unitTests'
 }
