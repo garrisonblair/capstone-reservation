@@ -69,7 +69,7 @@ pipeline {
             buildFailure()
         }
         always {
-            chuckNorris()
+            $class: 'hudson.plugins.chucknorris.CordellWalkerRecorder'
         }
     }
 }
