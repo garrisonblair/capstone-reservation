@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import settings from '../../config/settings';
 import './Calendar.scss';
+import ReservationDetailsModal from '../ReservationDetailsModal';
 
 
 class Calendar extends Component {
@@ -8,8 +9,11 @@ class Calendar extends Component {
   state = {
     roomsList: [],
     hoursList: [],
-    dateSelected: new Date(),
-    bookings: []
+    bookings: [],
+    isBooking: false,
+    selectedHour: "",
+    selectedRoom: "",
+    selectedDate: new Date()
   };
 
    /************ SETUP *************/
@@ -34,7 +38,7 @@ class Calendar extends Component {
     let hoursSettings = {
       start: "08:00",
       end: "23:00",
-      increment: 60
+      increment: 30
     }
     let hourStart =  this.timeStringToInt(hoursSettings.start);
     let hourEnd =  this.timeStringToInt(hoursSettings.end);
@@ -80,7 +84,7 @@ class Calendar extends Component {
     return (
       <div className="calendar__date">
         <span>
-          {this.state.dateSelected.toDateString()}
+          {this.state.selectedDate.toDateString()}
         </span>
       </div>
     );
@@ -211,19 +215,8 @@ class Calendar extends Component {
     let selectedRoom = e.target.getAttribute('data-room');
     let selectedHour = e.target.getAttribute('data-hour');
     
-    alert("open modal for room " + selectedRoom + ", starting at " + selectedHour)
-    // let roomHours = this.state[selectedRoom];
-
-    // if (!roomHours.includes(selectedHour)) {
-    //   roomHours.push(selectedHour);
-    //   this.setState({[selectedRoom]:  roomHours});
-    // } else {
-    //   // This is for delete or CAMPON maybe
-    //   let filteredHours = roomHours.filter(hour => hour !== selectedHour)
-    //   this.setState({[selectedRoom]: filteredHours});
-    // }
-    
-    
+    this.toggleBookingModal();
+    this.setState({selectedHour: selectedHour, selectedRoom: selectedRoom});
   }
 
   // TODO: Handle click on an existing booking
@@ -232,6 +225,10 @@ class Calendar extends Component {
   }
 
   /************ HELPER METHOD *************/
+
+  toggleBookingModal = () => {
+    this.setState({isBooking: !this.state.isBooking})
+  }
 
   //Handle time in the string format
   timeStringToInt(time) {
@@ -257,6 +254,8 @@ class Calendar extends Component {
           {this.renderHours()}
           {this.renderCells()} 
         </div>
+        {/* {this.state.isBooking ? <ReservationDetailsModal></ReservationDetailsModal> : null} */}
+        <ReservationDetailsModal show={this.state.isBooking} selectedRoom={this.state.selectedRoom} selectedHour={this.state.selectedHour} selectedDate={this.state.selectedDate}></ReservationDetailsModal>
       </div>
     )
   }

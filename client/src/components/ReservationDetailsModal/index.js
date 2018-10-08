@@ -49,15 +49,37 @@ class ReservationDetailsModal extends Component {
     return result;
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.show) {
+      this.setState({ modalOpen: nextProps.show });
+    }
+
+    let hour = "";
+    let minute = "";
+    if (nextProps.selectedHour != "") {
+      hour = nextProps.selectedHour.substring(0,2);
+      minute = nextProps.selectedHour.substring(3,5);
+    }
+    this.setState({
+      roomNumber: nextProps.selectedRoom,
+      startHour: hour,
+      startMinute: minute,
+      date: nextProps.selectedDate
+    });
+  }
+
   componentWillMount() {
     this.setState({
       hourOptions: this.generateHourOptions(this.state.minHour, this.state.maxHour)
     });
   }
 
-  closeModal = () => this.setState({
+  closeModal = () => {
+    console.log(this.state)
+    this.setState({
     modalOpen: false,
-  });
+    });
+  }
 
   handleOpen = () => this.setState({ modalOpen: true });
   handleStartHourChange = (e, { value }) => {
@@ -203,7 +225,7 @@ class ReservationDetailsModal extends Component {
   render() {
     return (
       <div id="reservation-details-modal">
-        <Modal trigger={<div onClick={this.handleOpen}>Click me</div>} centered={false} size={"tiny"} open={this.state.modalOpen}>
+        <Modal centered={false} size={"tiny"} open={this.state.modalOpen}>
           <Modal.Header>Reservation Details</Modal.Header>
           {this.state.messageConfig.color !== 'green' ? this.modalDescription() : null}
           <Message attached='bottom' color={this.state.messageConfig.color} hidden={this.state.messageConfig.hidden}>
@@ -216,5 +238,5 @@ class ReservationDetailsModal extends Component {
   }
 }
 
-//export default ReservationDetailsModal;
-export default withRouter(ReservationDetailsModal)
+export default ReservationDetailsModal;
+// export default withRouter(ReservationDetailsModal)
