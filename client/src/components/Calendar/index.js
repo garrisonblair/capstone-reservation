@@ -21,7 +21,6 @@ class Calendar extends Component {
   //TODO: Get settings from props or from requests.
   componentWillMount() {
 
-
     /*** Set up rooms list ***/
     let colNumber = 33;
     let rooms = [];
@@ -33,9 +32,9 @@ class Calendar extends Component {
 
     /*** Set up hours ***/
     let hoursSettings = {
-      start: "07:30",
+      start: "08:00",
       end: "23:00",
-      increment: 30
+      increment: 60
     }
     let hourStart =  this.timeStringToInt(hoursSettings.start);
     let hourEnd =  this.timeStringToInt(hoursSettings.end);
