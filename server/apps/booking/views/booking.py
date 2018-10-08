@@ -35,8 +35,20 @@ class BookingView(APIView):
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
 
+        print("request: ")
+        print(request)
+
+        print("*args: ")
+        print(*args)
+
+        print("**kwargs: ")
+        print(**kwargs)
+
+        print("request.data: ")
+        booking_data = dict(request.data)
+        print(booking_data)
         defaultYear = datetime.date.year
         print(defaultYear)
         defaultMonth = datetime.date.month
@@ -44,16 +56,34 @@ class BookingView(APIView):
         defaultDay = datetime.date.day
         print(defaultDay)
 
-        requestYear = request.GET.get('year', defaultYear)
-        requestMonth = request.GET.get('month', defaultMonth)
-        requestDay = request.GET.get('day', defaultDay)
+        #requestYear = request.GET.get('year', defaultYear)
+        #requestMonth = request.GET.get('month', defaultMonth)
+        #requestDay = request.GET.get('day', defaultDay)
+
+        requestYear = request.GET.get('year')
+        print("requestYear: ")
+        print(requestYear)
+        requestMonth = request.GET.get('month')
+        print("requestMonth: ")
+        print(requestMonth)
+        requestDay = request.GET.get('day')
+        print("requestDay: ")
+        print(requestDay)
+        requestDate = request.GET.get('date')
+        print("requestDate: ")
+        print(requestDate)
 
         # Need to modify hardcoded values below once front-end finalizes format
         integerRequestYear = 2018
         integerRequestMonth = 10
         integerRequestDay = 6
 
+        #integerRequestYear = int(requestYear)
+        #integerRequestMonth = int(requestMonth)
+        #integerRequestDay = int(requestDay)
+
         date = datetime.date(integerRequestYear, integerRequestMonth, integerRequestDay)
+        #date = datetime.date(requestYear, requestMonth, requestDay)
 
         bookings = Booking.objects.filter(date=date)
 
