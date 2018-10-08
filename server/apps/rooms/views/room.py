@@ -54,10 +54,11 @@ class RoomView(APIView):
                 else:
                     error_msg = "Invalid times: start time must be before end time"
                     return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)  # Invalid time format
-            except (ValueError, TypeError) as error:
+            except (ValueError, TypeError):
                 error_msg = "Invalid parameters, please input parameters in the YYYY-MM-DD HH:mm format"
                 return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
 
+        # When only one of start time and end time is provided
         else:
             error_msg = "Invalid times: please supply a start time and an end time"
             return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
