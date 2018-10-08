@@ -10,7 +10,6 @@ class Calendar extends Component {
   state = {
     roomsList: [],
     hoursList: [],
-    bookings: [],
     isBooking: false,
     selectedHour: "",
     selectedRoom: "",
@@ -25,17 +24,17 @@ class Calendar extends Component {
 
   //TODO: Get settings from props or from requests.
   componentWillMount() {
+    /*** Get bookings ***/
+    this.getBookings();
 
     /*** Set up rooms list ***/
-    this.getBookings();
     let colNumber = 33;
     let rooms = [];
     for (let i = 1; i <= colNumber; i++) {
-      rooms.push("H961-" + i);
-      this.setState({["H961-" + i]: []});
+      rooms.push(i);
+      // this.setState({["H961-" + i]: []});
     }
     this.setState({roomsList: rooms});
-
     /*** Set up hours ***/
     let hoursSettings = {
       start: "08:00",
@@ -67,9 +66,9 @@ class Calendar extends Component {
     }
     this.setState({hoursSettings: hoursSettings, hoursList: hours});
 
-    /*** Set up existing bookings list ***/
-    let bookings = [{room: "H961-2", start: "08:10", end: "15:50", booker: 'stud1'},{room: "H961-4", start: "08:00", end: "10:30", booker: 'stud2'}];
-    this.setState({bookings: bookings});
+    /*** Set up existing bookings list TODO: Remove once fully implemented***/
+    // let bookings = [{room: "H961-2", start: "08:10", end: "15:50", booker: 'stud1'},{room: "H961-4", start: "08:00", end: "10:30", booker: 'stud2'}];
+    // this.setState({bookings: bookings});
 
 
     /*** Set up variables in scss ***/
@@ -81,22 +80,37 @@ class Calendar extends Component {
   }
 
   /************ REQUESTS *************/
-  getBookings() {
-    // axios.get('/bookings', {
-    //   params: {
-    //     date: this.state.selectedDate
-    //   }
-    // })
-    // .then(function (response) {
-    //   console.log(response);
-    //   this.setState({bookings: response})
-    // })
-    // .catch(function (error) {
-    //   console.log(error);
-    // })
-    // .then(function () {
-    //   // always executed
-    // });  
+  getBookings(){
+    console.log(this.state.selectedDate)
+    let params = {
+      year: this.state.selectedDate.getFullYear(),
+      month: this.state.selectedDate.getMonth() + 1,
+      day: this.state.selectedDate.getDate()
+    }
+    console.log(params)
+    axios({
+      method: 'GET',
+      url: `${settings.API_ROOT}/booking`,
+      params: params
+    })
+    .then((response) => {
+      let bookings = [];
+      response.data.map(booking => {
+        bookings.push(booking);
+      })
+
+      this.setState({bookings: response.data})
+
+      // this.setState({bookings: response})
+    })
+    .catch(function (error) {
+      console.log("OOPS")
+      console.log(error);
+      console.log(error.data);
+    })
+    .then(function () {
+      // always executed
+    });  
   }
 
   /************ RENDER METHODS *************/
@@ -153,11 +167,15 @@ class Calendar extends Component {
       }
 
       let bookedCells = [];
-      let bookings = this.state.bookings.filter(booking => booking.room == currentRoom);
-      if (bookings.length > 0) {
+      console.log("TESTING RENDER BOOKING")
+      if (this.state.bookings) {
+        
+        let bookings = this.state.bookings.filter(booking => booking.room == currentRoom);
+        if (bookings.length > 0) {
         bookedCells.push(this.renderCurrentBookings(bookings))
+        }
       }
-
+      
       cells.push(
         <div className="calendar__rooms__cells" key={i}>{roomsCells}{bookedCells}</div>
       );
@@ -175,11 +193,11 @@ class Calendar extends Component {
 
     bookings.forEach(booking => {
       bookingsDiv.push(
-        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.room + booking.start} onClick={this.handleClickBooking}>
-          <div className="calendar__booking__booker"> {booking.booker} </div>
+        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} onClick={this.handleClickBooking}>
+          <div className="calendar__booking__booker"> Booked by {booking.student} </div>
           <div className="calendar__booking__time">
-            <div>{booking.start}</div>
-            <div>{booking.end}</div>
+            <div>{booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time}</div>
+            <div>{booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}</div>
           </div>
 
         </div>
@@ -203,7 +221,8 @@ class Calendar extends Component {
       cell_style: {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
-        gridColumn: 1
+        gridColumn: 1,
+        minHeight: '20px'
       }
     }
     return style;
@@ -211,8 +230,8 @@ class Calendar extends Component {
 
   //Style for .calendar__booking
   setBookingStyle(booking) {
-    let bookingStart = this.timeStringToInt(booking.start);
-    let bookingEnd = this.timeStringToInt(booking.end);
+    let bookingStart = this.timeStringToInt(booking.start_time);
+    let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(this.state.hoursSettings.start);
 
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
@@ -254,11 +273,11 @@ class Calendar extends Component {
   //Handle time in the string format
   timeStringToInt(time) {
     //Need offset depending if time format is H:MM or HH:MM
-    let offset = time.length == 5 ? 1 : 0;
-
+    let offset = time.charAt(2) == ':' ? 0 : 1;
+    console.log(time + "   ||  " + offset)
     let timeInt = {
-      hour: parseInt(time.substring(0, 1 + offset)),
-      minutes: parseInt(time.substring(2 + offset , 4 + offset))
+      hour: parseInt(time.substring(0, 2 - offset)),
+      minutes: parseInt(time.substring(3 - offset , 5 - offset))
     }
 
     return timeInt;
@@ -268,7 +287,9 @@ class Calendar extends Component {
 
 
   render() {
-    return (
+    console.log("RENDER: ")
+    console.log(this.state.bookings)
+    return this.state.bookings ? (
       <div className="calendar__container">
         {this.renderDate()}
         <div className="calendar__wrapper">
@@ -285,6 +306,8 @@ class Calendar extends Component {
           onClose={this.toggleBookingModal}
         />
       </div>
+    ) : (
+      <span>Fetching bookings</span>
     )
   }
 }
