@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import settings from '../../config/settings';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
+import axios from 'axios';
 
 
 class Calendar extends Component {
@@ -26,6 +27,7 @@ class Calendar extends Component {
   componentWillMount() {
 
     /*** Set up rooms list ***/
+    this.getBookings();
     let colNumber = 33;
     let rooms = [];
     for (let i = 1; i <= colNumber; i++) {
@@ -76,6 +78,25 @@ class Calendar extends Component {
     document.documentElement.style.setProperty("--rowNum", hours.length);
     document.documentElement.style.setProperty("--cellsDivisionNum", gridRowNum);
 
+  }
+
+  /************ REQUESTS *************/
+  getBookings() {
+    // axios.get('/bookings', {
+    //   params: {
+    //     date: this.state.selectedDate
+    //   }
+    // })
+    // .then(function (response) {
+    //   console.log(response);
+    //   this.setState({bookings: response})
+    // })
+    // .catch(function (error) {
+    //   console.log(error);
+    // })
+    // .then(function () {
+    //   // always executed
+    // });  
   }
 
   /************ RENDER METHODS *************/
