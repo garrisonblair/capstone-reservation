@@ -83,29 +83,19 @@ class BookingAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def testViewRoomsOneResult(self):
-        requestRoom1 = self.factory.post("/booking",
-                                    {
-                                        "room": 1,
-                                        "date": "2019-10-7",
-                                        "start_time": "14:00:00",
-                                        "end_time": "15:00:00"
-                                    }, format="json")
 
-        force_authenticate(requestRoom1, user=User.objects.get(username="john"))
-        responseRoom1 = BookingView.as_view()(requestRoom1)
-        self.assertEqual(responseRoom1.status_code, status.HTTP_201_CREATED)
+        student = Student(student_id='12345678')
+        student.user = None
+        student.save()
 
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
 
-        requestRoom2 = self.factory.post("/booking",
-                                    {
-                                        "room": 2,
-                                        "date": "2019-10-8",
-                                        "start_time": "14:00:00",
-                                        "end_time": "15:00:00"
-                                    }, format="json")
-        force_authenticate(requestRoom2, user=User.objects.get(username="john"))
-        responseRoom2 = BookingView.as_view()(requestRoom2)
-        self.assertEqual(responseRoom2.status_code, status.HTTP_201_CREATED)
+        booking1 = Booking(student=student, room=room, date="2019-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1.save()
+
+        booking2 = Booking(student=student, room=room, date="2019-10-7", start_time="16:00:00", end_time="17:00:00")
+        booking2.save()
 
         allBookings = Booking.objects.all()
         self.assertEqual(len(allBookings), 2)
@@ -114,28 +104,22 @@ class BookingAPITest(TestCase):
         self.assertEqual(len(bookingsOct7), 1)
 
 
-    def testViewRoomsMultipleResults(self):
-        requestRoom1 = self.factory.post("/booking",
-                                    {
-                                        "room": 1,
-                                        "date": "2019-10-7",
-                                        "start_time": "14:00:00",
-                                        "end_time": "15:00:00"
-                                    }, format="json")
-        force_authenticate(requestRoom1, user=User.objects.get(username="john"))
-        responseRoom1 = BookingView.as_view()(requestRoom1)
-        self.assertEqual(responseRoom1.status_code, status.HTTP_201_CREATED)
 
-        requestRoom2 = self.factory.post("/booking",
-                                    {
-                                        "room": 2,
-                                        "date": "2019-10-7",
-                                        "start_time": "14:00:00",
-                                        "end_time": "15:00:00"
-                                    }, format="json")
-        force_authenticate(requestRoom2, user=User.objects.get(username="john"))
-        responseRoom2 = BookingView.as_view()(requestRoom2)
-        self.assertEqual(responseRoom2.status_code, status.HTTP_201_CREATED)
+
+    def testViewRoomsMultipleResults(self):
+
+        student = Student(student_id='12345678')
+        student.user = None
+        student.save()
+
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(student=student, room=room, date="2019-10-7", start_time="14:00:00", end_time="15:00:00")
+        booking1.save()
+
+        booking2 = Booking(student=student, room=room, date="2019-10-7", start_time="16:00:00", end_time="17:00:00")
+        booking2.save()
 
         allBookings = Booking.objects.all()
         self.assertEqual(len(allBookings), 2)
@@ -144,27 +128,19 @@ class BookingAPITest(TestCase):
         self.assertEqual(len(bookingsOct7), 2)
 
     def testViewRoomNoResult(self):
-        requestRoom1 = self.factory.post("/booking",
-                                    {
-                                        "room": 1,
-                                        "date": "2019-10-6",
-                                        "start_time": "14:00:00",
-                                        "end_time": "15:00:00"
-                                    }, format="json")
-        force_authenticate(requestRoom1, user=User.objects.get(username="john"))
-        responseRoom1 = BookingView.as_view()(requestRoom1)
-        self.assertEqual(responseRoom1.status_code, status.HTTP_201_CREATED)
 
-        requestRoom2 = self.factory.post("/booking",
-                                    {
-                                        "room": 2,
-                                        "date": "2019-10-6",
-                                        "start_time": "14:00:00",
-                                        "end_time": "15:00:00"
-                                    }, format="json")
-        force_authenticate(requestRoom2, user=User.objects.get(username="john"))
-        responseRoom2 = BookingView.as_view()(requestRoom2)
-        self.assertEqual(responseRoom2.status_code, status.HTTP_201_CREATED)
+        student = Student(student_id='12345678')
+        student.user = None
+        student.save()
+
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(student=student, room=room, date="2019-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1.save()
+
+        booking2 = Booking(student=student, room=room, date="2019-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2.save()
 
         allBookings = Booking.objects.all()
         self.assertEqual(len(allBookings), 2)
