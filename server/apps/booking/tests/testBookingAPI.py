@@ -92,15 +92,14 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2019-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
         booking1.save()
-
-        booking2 = Booking(student=student, room=room, date="2019-10-7", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-7", start_time="16:00:00", end_time="17:00:00")
         booking2.save()
 
         allBookings = Booking.objects.all()
         self.assertEqual(len(allBookings), 2)
-        oct7Date = datetime.date(2019, 10, 7)
+        oct7Date = datetime.date(2018, 10, 7)
         bookingsOct7 = Booking.objects.filter(date=oct7Date)
         self.assertEqual(len(bookingsOct7), 1)
 
@@ -108,11 +107,15 @@ class BookingAPITest(TestCase):
                                     {
                                         "year": 2018,
                                         "month": 10,
-                                        "day": 7,
+                                        "day": 7
                                     }, format="json")
         response = BookingView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returnedBookings = response.data
+        self.assertEqual(len(returnedBookings), 1)
+        self.assertEqual(len(returnedBookings), len(bookingsOct7))
+
 
     def testViewBookingssMultipleResults(self):
 
@@ -123,15 +126,14 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2019-10-7", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-7", start_time="14:00:00", end_time="15:00:00")
         booking1.save()
-
-        booking2 = Booking(student=student, room=room, date="2019-10-7", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-7", start_time="16:00:00", end_time="17:00:00")
         booking2.save()
 
         allBookings = Booking.objects.all()
         self.assertEqual(len(allBookings), 2)
-        oct7Date = datetime.date(2019, 10, 7)
+        oct7Date = datetime.date(2018, 10, 7)
         bookingsOct7 = Booking.objects.filter(date=oct7Date)
         self.assertEqual(len(bookingsOct7), 2)
 
@@ -144,6 +146,10 @@ class BookingAPITest(TestCase):
         response = BookingView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returnedBookings = response.data
+        self.assertEqual(len(returnedBookings), 2)
+        self.assertEqual(len(returnedBookings), len(bookingsOct7))
+
 
     def testViewBookingsNoResult(self):
 
@@ -154,10 +160,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2019-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
         booking1.save()
-
-        booking2 = Booking(student=student, room=room, date="2019-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
         booking2.save()
 
         allBookings = Booking.objects.all()
@@ -175,6 +180,10 @@ class BookingAPITest(TestCase):
         response = BookingView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returnedBookings = response.data
+        self.assertEqual(len(returnedBookings), 0)
+        self.assertEqual(len(returnedBookings), len(bookingsOct7))
+
 
     def testViewBookingsNoArguements(self):
 
@@ -185,17 +194,13 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2019-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
         booking1.save()
-
-        booking2 = Booking(student=student, room=room, date="2019-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
         booking2.save()
 
         allBookings = Booking.objects.all()
         self.assertEqual(len(allBookings), 2)
-        oct7Date = datetime.date(2019, 10, 7)
-        bookingsOct7 = Booking.objects.filter(date=oct7Date)
-        self.assertEqual(len(bookingsOct7), 0)
 
         request = self.factory.get("/booking",
                                    {
@@ -203,6 +208,10 @@ class BookingAPITest(TestCase):
         response = BookingView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returnedBookings = response.data
+        self.assertEqual(len(returnedBookings), 2)
+        self.assertEqual(len(returnedBookings), len(allBookings))
+
 
 
 
