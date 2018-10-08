@@ -68,6 +68,9 @@ pipeline {
         unstable {
             buildFailure()
         }
+        always {
+            chuckNorris()
+        }
     }
 }
 
