@@ -90,9 +90,11 @@ class BookingAPITest(TestCase):
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     }, format="json")
-        responseRoom1 = BookingView.as_view()(requestRoom1)
 
+        force_authenticate(requestRoom1, user=User.objects.get(username="john"))
+        responseRoom1 = BookingView.as_view()(requestRoom1)
         self.assertEqual(responseRoom1.status_code, status.HTTP_201_CREATED)
+
 
         requestRoom2 = self.factory.post("/booking",
                                     {
@@ -101,9 +103,10 @@ class BookingAPITest(TestCase):
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     }, format="json")
+        force_authenticate(requestRoom2, user=User.objects.get(username="john"))
         responseRoom2 = BookingView.as_view()(requestRoom2)
-
         self.assertEqual(responseRoom2.status_code, status.HTTP_201_CREATED)
+
         allBookings = Booking.objects.all()
         self.assertEqual(len(allBookings), 2)
         oct7Date = datetime.date(2019, 10, 7)
@@ -119,7 +122,9 @@ class BookingAPITest(TestCase):
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     }, format="json")
+        force_authenticate(requestRoom1, user=User.objects.get(username="john"))
         responseRoom1 = BookingView.as_view()(requestRoom1)
+        self.assertEqual(responseRoom1.status_code, status.HTTP_201_CREATED)
 
         requestRoom2 = self.factory.post("/booking",
                                     {
@@ -128,9 +133,10 @@ class BookingAPITest(TestCase):
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     }, format="json")
+        force_authenticate(requestRoom2, user=User.objects.get(username="john"))
         responseRoom2 = BookingView.as_view()(requestRoom2)
-
         self.assertEqual(responseRoom2.status_code, status.HTTP_201_CREATED)
+
         allBookings = Booking.objects.all()
         self.assertEqual(len(allBookings), 2)
         oct7Date = datetime.date(2019, 10, 7)
@@ -145,7 +151,9 @@ class BookingAPITest(TestCase):
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     }, format="json")
+        force_authenticate(requestRoom1, user=User.objects.get(username="john"))
         responseRoom1 = BookingView.as_view()(requestRoom1)
+        self.assertEqual(responseRoom1.status_code, status.HTTP_201_CREATED)
 
         requestRoom2 = self.factory.post("/booking",
                                     {
@@ -154,9 +162,10 @@ class BookingAPITest(TestCase):
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     }, format="json")
+        force_authenticate(requestRoom2, user=User.objects.get(username="john"))
         responseRoom2 = BookingView.as_view()(requestRoom2)
-
         self.assertEqual(responseRoom2.status_code, status.HTTP_201_CREATED)
+
         allBookings = Booking.objects.all()
         self.assertEqual(len(allBookings), 2)
         oct7Date = datetime.date(2019, 10, 7)
