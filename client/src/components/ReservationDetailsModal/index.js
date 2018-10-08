@@ -76,8 +76,13 @@ class ReservationDetailsModal extends Component {
 
   closeModal = () => {
     this.props.onClose();
+    this.setState({
+    modalOpen: false,
+    });
+  }
 
-    console.log(this.state)
+  closeModalWithReservation = () => {
+    this.props.onCloseWithReservation();
     this.setState({
     modalOpen: false,
     });
@@ -181,7 +186,9 @@ class ReservationDetailsModal extends Component {
             color: 'green'
           }
         })
-        setTimeout(function () { history.push('/') }, 3300);
+        // setTimeout(function () { history.push('/') }, 3300);
+
+        this.closeModalWithReservation();
 
       })
       .catch((error) => {

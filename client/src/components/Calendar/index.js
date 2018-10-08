@@ -278,6 +278,14 @@ class Calendar extends Component {
     this.setState({isBooking: !this.state.isBooking})
   }
 
+  toggleBookingModalWithReservation = () => {
+    //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on. With reload, the view will come back to the current day.
+    window.location.reload();
+    
+    // this.setState({isBooking: !this.state.isBooking})
+    // this.getBookings();
+  }
+
   //Handle time in the string format
   timeStringToInt(time) {
     //Need offset depending if time format is H:MM or HH:MM
@@ -310,6 +318,7 @@ class Calendar extends Component {
           selectedHour={this.state.selectedHour}
           selectedDate={this.state.selectedDate}
           onClose={this.toggleBookingModal}
+          onCloseWithReservation={this.toggleBookingModalWithReservation}
         />
       </div>
     ) : (
