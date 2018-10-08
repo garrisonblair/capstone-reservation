@@ -6,7 +6,7 @@ import axios from 'axios';
 
 
 class Calendar extends Component {
-  
+
   state = {
     roomsList: [],
     hoursList: [],
@@ -49,11 +49,11 @@ class Calendar extends Component {
     let hours = []
     let time = new Date();
     time.setHours(hourStart.hour,hourStart.minutes,0);
-    
+
     //Format time for display in table
     let currentTime = hourStart.hour * 60 + hourStart.minutes;
     let endTime = hourEnd.hour * 60 + hourEnd.minutes;
-    
+
     //TODO: Remove loop variable. Using this var only to avoid infinite loop during development.
     let loop = 0;
     while (currentTime <= endTime && loop < 1000) {
@@ -119,7 +119,7 @@ class Calendar extends Component {
         {room}
       </div>
     );
-    
+
     return  <div className="calendar__rooms__wrapper">{rooms}</div>
 
   }
@@ -151,19 +151,19 @@ class Calendar extends Component {
         );
         cell++;
       }
-      
+
       let bookedCells = [];
       let bookings = this.state.bookings.filter(booking => booking.room == currentRoom);
       if (bookings.length > 0) {
         bookedCells.push(this.renderCurrentBookings(bookings))
       }
-      
+
       cells.push(
         <div className="calendar__rooms__cells" key={i}>{roomsCells}{bookedCells}</div>
       );
 
       roomsCells = [];
-      
+
     }
 
     return <div className="calendar__cells__wrapper">{cells}</div>;
@@ -192,7 +192,7 @@ class Calendar extends Component {
 
   /************ STYLE METHODS*************/
 
-  
+
   // Style for .calendar__cells__cell
   setCellStyle(hourRow) {
 
@@ -221,7 +221,7 @@ class Calendar extends Component {
 
     let style = {
       booking_style: {
-        gridRowStart: rowStart, 
+        gridRowStart: rowStart,
         gridRowEnd: rowEnd,
         gridColumn: 1,
       }
@@ -235,7 +235,7 @@ class Calendar extends Component {
   handleClickCell = (e) => {
     let selectedRoom = e.target.getAttribute('data-room');
     let selectedHour = e.target.getAttribute('data-hour');
-    
+
     this.toggleBookingModal();
     this.setState({selectedHour: selectedHour, selectedRoom: selectedRoom});
   }
@@ -260,11 +260,12 @@ class Calendar extends Component {
       hour: parseInt(time.substring(0, 1 + offset)),
       minutes: parseInt(time.substring(2 + offset , 4 + offset))
     }
-    
+
     return timeInt;
   }
 
    /************ COMPONENT RENDERING *************/
+
 
   render() {
     return (
@@ -273,10 +274,16 @@ class Calendar extends Component {
         <div className="calendar__wrapper">
           {this.renderRooms()}
           {this.renderHours()}
-          {this.renderCells()} 
+          {this.renderCells()}
         </div>
         {/* {this.state.isBooking ? <ReservationDetailsModal></ReservationDetailsModal> : null} */}
-        <ReservationDetailsModal show={this.state.isBooking} selectedRoom={this.state.selectedRoom} selectedHour={this.state.selectedHour} selectedDate={this.state.selectedDate}></ReservationDetailsModal>
+        <ReservationDetailsModal
+          show={this.state.isBooking}
+          selectedRoom={this.state.selectedRoom}
+          selectedHour={this.state.selectedHour}
+          selectedDate={this.state.selectedDate}
+          onClose={this.toggleBookingModal}
+        />
       </div>
     )
   }

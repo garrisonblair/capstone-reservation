@@ -75,6 +75,8 @@ class ReservationDetailsModal extends Component {
   }
 
   closeModal = () => {
+    this.props.onClose();
+
     console.log(this.state)
     this.setState({
     modalOpen: false,
