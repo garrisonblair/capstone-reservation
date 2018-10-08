@@ -1,5 +1,4 @@
 from django.core.exceptions import ValidationError
-from django.core import serializers
 from datetime import datetime
 
 from rest_framework.views import APIView
