@@ -212,6 +212,33 @@ class BookingAPITest(TestCase):
         self.assertEqual(len(returnedBookings), 2)
         self.assertEqual(len(returnedBookings), len(allBookings))
 
+    def testViewBookingsSomeArguements(self):
 
+        student = Student(student_id='12345678')
+        student.user = None
+        student.save()
+
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1.save()
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2.save()
+
+        allBookings = Booking.objects.all()
+        self.assertEqual(len(allBookings), 2)
+
+        request = self.factory.get("/booking",
+                                   {
+                                       "year": 2018,
+                                       "month": 10,
+                                   }, format="json")
+        response = BookingView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returnedBookings = response.data
+        self.assertEqual(len(returnedBookings), 2)
+        self.assertEqual(len(returnedBookings), len(allBookings))
 
 
