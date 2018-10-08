@@ -51,7 +51,7 @@ class RoomAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def testGetRoomsInvalidRequest(self):
+    def testGetRoomsInvalidRequestEndBeforeStart(self):
         request = self.factory.get("/room",
                                    {
                                         "start_date_time": '2018-10-22 17:00',
@@ -65,25 +65,29 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, error_msg)
 
-    def testGetRoomsInvalidRequestOneParam(self):
-        request1 = self.factory.get("/room",
+    def testGetRoomsInvalidRequestMissingLastParam(self):
+        request = self.factory.get("/room",
                                    {
                                         "start_date_time": '2018-10-22 11:00'
                                    }, format="json")
 
-        response1 = RoomView.as_view()(request1)
+        response = RoomView.as_view()(request)
 
         error_msg = "Invalid times: please supply a start time and an end time"
 
-        self.assertEqual(response1.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response1.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, error_msg)
 
-        request2 = self.factory.get("/room",
+    def testGetRoomsInvalidRequestMissingFirstParam(self):
+
+        request = self.factory.get("/room",
                                    {
                                        "end_date_time": '2018-10-22 17:00'
                                    }, format="json")
 
-        response2 = RoomView.as_view()(request2)
+        response = RoomView.as_view()(request)
 
-        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response2.data, error_msg)
+        error_msg = "Invalid times: please supply a start time and an end time"
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, error_msg)
