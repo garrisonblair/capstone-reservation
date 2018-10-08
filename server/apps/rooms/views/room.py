@@ -26,33 +26,36 @@ class RoomView(APIView):
 
         # Time interval parameters provided
         elif start_date_time != '' and end_date_time != '':
-            start_date_time = datetime.strptime(start_date_time, "%Y-%m-%d %H:%M")
-            end_date_time = datetime.strptime(end_date_time, "%Y-%m-%d %H:%M")
+            try:
+                start_date_time = datetime.strptime(start_date_time, "%Y-%m-%d %H:%M")
+                end_date_time = datetime.strptime(end_date_time, "%Y-%m-%d %H:%M")
 
-            # Time format is valid
-            if start_date_time < end_date_time:
-                date = start_date_time.date()
-                start_time = start_date_time.time()
-                end_time = end_date_time.time()
+                # Time format is valid
+                if start_date_time < end_date_time:
+                    date = start_date_time.date()
+                    start_time = start_date_time.time()
+                    end_time = end_date_time.time()
 
-                bookings = Booking.objects.filter(date=date, start_time__gte=start_time, end_time__lte=end_time)
-                booked_rooms = []
+                    bookings = Booking.objects.filter(date=date, start_time__gte=start_time, end_time__lte=end_time)
+                    booked_rooms = []
 
-                for booking in bookings:
-                    booked_rooms.append(booking.room.pk)
+                    for booking in bookings:
+                        booked_rooms.append(booking.room.pk)
 
-                rooms = Room.objects.all().exclude(pk__in=booked_rooms)  # Booked rooms excluded from the query
+                    rooms = Room.objects.all().exclude(pk__in=booked_rooms)  # Booked rooms excluded from the query
 
-                data = serializers.serialize("json", rooms)
+                    data = serializers.serialize("json", rooms)
 
-                try:
-                    return Response(data, status=status.HTTP_200_OK)
-                except ValidationError as error:
-                    return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+                    try:
+                        return Response(data, status=status.HTTP_200_OK)
+                    except ValidationError as error:
+                        return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
-            else:
-                error_msg = "Invalid times: start time must be before end time"
-                return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)  # Invalid time format
+                else:
+                    error_msg = "Invalid times: start time must be before end time"
+                    return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)  # Invalid time format
+            except (ValueError, TypeError) as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             error_msg = "Invalid times: please supply a start time and an end time"
