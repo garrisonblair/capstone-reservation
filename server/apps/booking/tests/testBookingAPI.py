@@ -81,3 +81,58 @@ class BookingAPITest(TestCase):
         response = BookingView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testViewRoomsOneResult(self):
+        requestRoom1 = self.factory.post("/booking",
+                                    {
+                                        "room": 1,
+                                        "date": "2019-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "15:00:00"
+                                    }, format="json")
+        responseRoom1 = BookingView.as_view()(requestRoom1)
+
+        self.assertEqual(responseRoom1.status_code, status.HTTP_201_CREATED)
+
+        requestRoom2 = self.factory.post("/booking",
+                                    {
+                                        "room": 2,
+                                        "date": "2019-10-8",
+                                        "start_time": "14:00:00",
+                                        "end_time": "15:00:00"
+                                    }, format="json")
+        responseRoom2 = BookingView.as_view()(requestRoom2)
+
+        self.assertEqual(responseRoom2.status_code, status.HTTP_201_CREATED)
+        allBookings = Booking.objects.all()
+        self.assertEqual(len(allBookings), 2)
+        oct7Date = datetime.date(2019, 10, 7)
+        bookingsOct7 = Booking.objects.filter(date=oct7Date)
+        self.assertEqual(len(bookingsOct7), 1)
+
+
+    def testViewRoomsMultipleResults(self):
+        requestRoom1 = self.factory.post("/booking",
+                                    {
+                                        "room": 1,
+                                        "date": "2019-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "15:00:00"
+                                    }, format="json")
+        responseRoom1 = BookingView.as_view()(requestRoom1)
+
+        requestRoom2 = self.factory.post("/booking",
+                                    {
+                                        "room": 2,
+                                        "date": "2019-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "15:00:00"
+                                    }, format="json")
+        responseRoom2 = BookingView.as_view()(requestRoom2)
+
+        self.assertEqual(responseRoom2.status_code, status.HTTP_201_CREATED)
+        allBookings = Booking.objects.all()
+        self.assertEqual(len(allBookings), 2)
+        oct7Date = datetime.date(2019, 10, 7)
+        bookingsOct7 = Booking.objects.filter(date=oct7Date)
+        self.assertEqual(len(bookingsOct7), 2)

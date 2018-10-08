@@ -48,15 +48,15 @@ class BookingView(APIView):
         requestMonth = request.GET.get('month', defaultMonth)
         requestDay = request.GET.get('day', defaultDay)
 
-        # Need tl modify hardcoded values below once front-end finalizes format
+        # Need to modify hardcoded values below once front-end finalizes format
         integerRequestYear = 2018
         integerRequestMonth = 10
         integerRequestDay = 6
 
         date = datetime.date(integerRequestYear, integerRequestMonth, integerRequestDay)
-        print(date)
+
         bookings = Booking.objects.filter(date=date)
-        print(bookings)
+
         bookingsList = list()
         for booking in bookings:
             serializer = BookingSerializer(booking)
