@@ -3,6 +3,7 @@ import settings from '../../config/settings';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import axios from 'axios';
+import { Button, Item } from 'semantic-ui-react';
 
 
 class Calendar extends Component {
@@ -28,7 +29,7 @@ class Calendar extends Component {
     this.getBookings();
 
     /*** Set up rooms list ***/
-    let colNumber = 33;
+    let colNumber = 10;
     let rooms = [];
     for (let i = 1; i <= colNumber; i++) {
       rooms.push(i);
@@ -66,11 +67,6 @@ class Calendar extends Component {
     }
     this.setState({hoursSettings: hoursSettings, hoursList: hours});
 
-    /*** Set up existing bookings list TODO: Remove once fully implemented***/
-    // let bookings = [{room: "H961-2", start: "08:10", end: "15:50", booker: 'stud1'},{room: "H961-4", start: "08:00", end: "10:30", booker: 'stud2'}];
-    // this.setState({bookings: bookings});
-
-
     /*** Set up variables in scss ***/
     let gridRowNum = minutesIncrement * hours.length / 10;
     document.documentElement.style.setProperty("--colNum", colNumber);
@@ -81,13 +77,12 @@ class Calendar extends Component {
 
   /************ REQUESTS *************/
   getBookings(){
-    console.log(this.state.selectedDate)
     let params = {
       year: this.state.selectedDate.getFullYear(),
       month: this.state.selectedDate.getMonth() + 1,
       day: this.state.selectedDate.getDate()
     }
-    console.log(params)
+
     axios({
       method: 'GET',
       url: `${settings.API_ROOT}/booking`,
@@ -104,9 +99,7 @@ class Calendar extends Component {
       // this.setState({bookings: response})
     })
     .catch(function (error) {
-      console.log("OOPS")
       console.log(error);
-      console.log(error.data);
     })
     .then(function () {
       // always executed
@@ -115,12 +108,15 @@ class Calendar extends Component {
 
   /************ RENDER METHODS *************/
 
+  // TODO: Styling the buttons
   renderDate() {
     return (
       <div className="calendar__date">
+        <Button onClick={this.handleClickPreviousDate}>Previous</Button>
         <span>
           {this.state.selectedDate.toDateString()}
         </span>
+        <Button onClick={this.handleClickNextDate}>Next</Button>
       </div>
     );
   }
@@ -167,9 +163,7 @@ class Calendar extends Component {
       }
 
       let bookedCells = [];
-      console.log("TESTING RENDER BOOKING")
-      if (this.state.bookings) {
-        
+      if (this.state.bookings) {     
         let bookings = this.state.bookings.filter(booking => booking.room == currentRoom);
         if (bookings.length > 0) {
         bookedCells.push(this.renderCurrentBookings(bookings))
@@ -194,7 +188,7 @@ class Calendar extends Component {
     bookings.forEach(booking => {
       bookingsDiv.push(
         <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} onClick={this.handleClickBooking}>
-          <div className="calendar__booking__booker"> Booked by {booking.student} </div>
+          <div className="calendar__booking__booker">{booking.student} </div>
           <div className="calendar__booking__time">
             <div>{booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time}</div>
             <div>{booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}</div>
@@ -222,7 +216,7 @@ class Calendar extends Component {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
         gridColumn: 1,
-        minHeight: '20px'
+        minHeight: '50px'
       }
     }
     return style;
@@ -242,7 +236,7 @@ class Calendar extends Component {
       booking_style: {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
-        gridColumn: 1,
+        gridColumn: 1
       }
     }
     return style;
@@ -264,6 +258,20 @@ class Calendar extends Component {
     console.log(e)
   }
 
+  handleClickNextDate = (e) => {
+    let nextDay = this.state.selectedDate;
+    nextDay.setDate(nextDay.getDate() + 1);
+    this.setState({selectedDate: nextDay})
+    this.getBookings();
+  }
+
+  handleClickPreviousDate = (e) => {
+    let previousDay = this.state.selectedDate;
+    previousDay.setDate(previousDay.getDate() - 1);
+    this.setState({selectedDate: previousDay})
+    this.getBookings();
+  }
+
   /************ HELPER METHOD *************/
 
   toggleBookingModal = () => {
@@ -274,7 +282,7 @@ class Calendar extends Component {
   timeStringToInt(time) {
     //Need offset depending if time format is H:MM or HH:MM
     let offset = time.charAt(2) == ':' ? 0 : 1;
-    console.log(time + "   ||  " + offset)
+
     let timeInt = {
       hour: parseInt(time.substring(0, 2 - offset)),
       minutes: parseInt(time.substring(3 - offset , 5 - offset))
@@ -287,8 +295,6 @@ class Calendar extends Component {
 
 
   render() {
-    console.log("RENDER: ")
-    console.log(this.state.bookings)
     return this.state.bookings ? (
       <div className="calendar__container">
         {this.renderDate()}
