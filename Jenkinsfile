@@ -12,7 +12,6 @@ pipeline {
     options {
         timestamps()
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-
     }
     stages {
         stage('Show current environment variables') {
@@ -68,6 +67,9 @@ pipeline {
         }
         unstable {
             buildFailure()
+        }
+        always {
+            step([$class: 'hudson.plugins.chucknorris.CordellWalkerRecorder'])
         }
     }
 }
