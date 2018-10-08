@@ -19,8 +19,8 @@ class ReservationDetailsModal extends Component {
     minHour: this.props.minHour || 8,
     maxHour: this.props.maxHour || 24,
     date: (new Date(this.props.date)) || "please provide a date",
-    startHour: this.props.defaultHour + '',
-    startMinute: this.props.defaultMinute + '',
+    startHour: "8",
+    startMinute: "00",
     endHour: 0,
     endMinute: 0,
     roomNumber: parseInt(this.props.roomNumber) || "please provide a room number",
@@ -57,7 +57,7 @@ class ReservationDetailsModal extends Component {
     let hour = "";
     let minute = "";
     if (nextProps.selectedHour != "") {
-      hour = nextProps.selectedHour.substring(0,2);
+      hour = nextProps.selectedHour.charAt(0) == '0' ? nextProps.selectedHour.substring(1,2) :  nextProps.selectedHour.substring(0,2);
       minute = nextProps.selectedHour.substring(3,5);
     }
     this.setState({
