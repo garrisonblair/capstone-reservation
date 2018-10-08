@@ -11,11 +11,25 @@ from apps.booking.models.Booking import Booking
 
 
 class RoomView(APIView):
-    def get(self, request, start_date_time='', end_date_time=''):
-        if start_date_time != '' and end_date_time != '':
+    def get(self, request):
+        start_date_time = request.query_params.get('start_date_time', '')
+        end_date_time = request.query_params.get('end_date_time', '')
+
+        # Query returns all rooms when no time slot is provided
+        if start_date_time == '' and end_date_time == '':
+            data = serializers.serialize("json", Room.objects.all())
+
+            try:
+                return Response(data, status=status.HTTP_200_OK)
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+        # Time interval parameters provided
+        elif start_date_time != '' and end_date_time != '':
             start_date_time = datetime.strptime(start_date_time, "%Y-%m-%d %H:%M")
             end_date_time = datetime.strptime(end_date_time, "%Y-%m-%d %H:%M")
 
+            # Time format is valid
             if start_date_time < end_date_time:
                 date = start_date_time.date()
                 start_time = start_date_time.time()
@@ -27,7 +41,7 @@ class RoomView(APIView):
                 for booking in bookings:
                     booked_rooms.append(booking.room.pk)
 
-                rooms = Room.objects.all().exclude(pk__in=booked_rooms)
+                rooms = Room.objects.all().exclude(pk__in=booked_rooms)  # Booked rooms excluded from the query
 
                 data = serializers.serialize("json", rooms)
 
@@ -37,12 +51,8 @@ class RoomView(APIView):
                     return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
             else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_400_BAD_REQUEST)  # Invalid time format
 
-        elif start_date_time == '' and end_date_time == '':
-            data = serializers.serialize("json", Room.objects.all())
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-            try:
-                return Response(data, status=status.HTTP_200_OK)
-            except ValidationError as error:
-                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
