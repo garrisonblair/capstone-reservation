@@ -97,3 +97,11 @@ class RoomAPITest(TestCase):
                                        "start_date_time": 'AdhG4gf',
                                        "end_date_time": '1234'
                                    }, format="json")
+
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid parameters, please input parameters in the YYYY-MM-DD HH:mm format"
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, error_msg)
+
