@@ -49,13 +49,14 @@ class RoomView(APIView):
                     try:
                         return Response(data, status=status.HTTP_200_OK)
                     except ValidationError as error:
-                        return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+                        return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
                 else:
                     error_msg = "Invalid times: start time must be before end time"
                     return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)  # Invalid time format
             except (ValueError, TypeError) as error:
-                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+                error_msg = "Invalid parameters, please input parameters in the YYYY-MM-DD HH:mm format"
+                return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             error_msg = "Invalid times: please supply a start time and an end time"
