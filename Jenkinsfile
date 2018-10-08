@@ -7,6 +7,8 @@ pipeline {
         booleanParam(defaultValue: false, description: 'Determines whether to skip static analysis', name: 'skipStaticAnalysis')
         booleanParam(defaultValue: false, description: 'Determines whether to skip the unit tests', name: 'skipUnitTests')
         booleanParam(defaultValue: false, description: 'Determines whether to skip the integration tests', name: 'skipIntegrationTests')
+        booleanParam(defaultValue: false, description: 'Determines whether to skip the code coverage', name: 'skipCodeCoverage')
+        booleanParam(defaultValue: false, description: 'Determines whether to skip the static analysis', name: 'skipStaticAnalysis')
     
     }
     options {
@@ -24,9 +26,9 @@ pipeline {
                 echo env.USER
             }
         }
-        stage('Static Analysis') {
+        stage('Code Coverage') {
             when {
-                expression { params.skipStaticAnalysis == false }
+                expression { params.skipCodeCoverage == false }
             }
             steps {
                 echo 'Running code coverage.. in Jenkinsfile'
