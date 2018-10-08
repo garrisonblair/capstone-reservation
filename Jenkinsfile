@@ -69,7 +69,7 @@ pipeline {
             buildFailure()
         }
         always {
-            $class: 'hudson.plugins.chucknorris.CordellWalkerRecorder'
+            step([$class: 'hudson.plugins.chucknorris.CordellWalkerRecorder'])
         }
     }
 }
