@@ -5,8 +5,8 @@ import Calendar from '../Calendar';
 
 
 class Home extends Component {
-  componentDidMount() {
-    console.log(settings)
+  componentDidMount = () => {
+    document.title = 'Home'
   }
 
   render() {
