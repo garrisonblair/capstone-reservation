@@ -8,6 +8,7 @@ from rest_framework import status
 
 from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
+from apps.rooms.serializers.room_serializer import RoomSerializer
 
 
 class RoomView(APIView):
@@ -17,10 +18,14 @@ class RoomView(APIView):
 
         # Query returns all rooms when no time slot is provided
         if start_date_time == '' and end_date_time == '':
-            data = serializers.serialize("json", Room.objects.all())
+            rooms = Room.objects.all()
+            room_list = list()
+            for room in rooms:
+                serializer = RoomSerializer(room)
+                room_list.append(serializer.data)
 
             try:
-                return Response(data, status=status.HTTP_200_OK)
+                return Response(room_list, status=status.HTTP_200_OK)
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
@@ -37,17 +42,20 @@ class RoomView(APIView):
                     end_time = end_date_time.time()
 
                     bookings = Booking.objects.filter(date=date, start_time__gte=start_time, end_time__lte=end_time)
-                    booked_rooms = []
+                    booked_rooms = list()
 
                     for booking in bookings:
                         booked_rooms.append(booking.room.pk)
 
                     rooms = Room.objects.all().exclude(pk__in=booked_rooms)  # Booked rooms excluded from the query
 
-                    data = serializers.serialize("json", rooms)
+                    room_list = list()
+                    for room in rooms:
+                        serializer = RoomSerializer(room)
+                        room_list.append(serializer.data)
 
                     try:
-                        return Response(data, status=status.HTTP_200_OK)
+                        return Response(room_list, status=status.HTTP_200_OK)
                     except ValidationError as error:
                         return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
