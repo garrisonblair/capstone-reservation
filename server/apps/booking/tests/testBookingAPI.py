@@ -83,7 +83,7 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def testViewRoomsOneResult(self):
+    def testViewBookingsOneResult(self):
 
         student = Student(student_id='12345678')
         student.user = None
@@ -114,7 +114,7 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def testViewRoomsMultipleResults(self):
+    def testViewBookingssMultipleResults(self):
 
         student = Student(student_id='12345678')
         student.user = None
@@ -145,7 +145,7 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def testViewRoomNoResult(self):
+    def testViewBookingsNoResult(self):
 
         student = Student(student_id='12345678')
         student.user = None
@@ -171,6 +171,34 @@ class BookingAPITest(TestCase):
                                        "year": 2018,
                                        "month": 10,
                                        "day": 7,
+                                   }, format="json")
+        response = BookingView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def testViewBookingsNoArguements(self):
+
+        student = Student(student_id='12345678')
+        student.user = None
+        student.save()
+
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(student=student, room=room, date="2019-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1.save()
+
+        booking2 = Booking(student=student, room=room, date="2019-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2.save()
+
+        allBookings = Booking.objects.all()
+        self.assertEqual(len(allBookings), 2)
+        oct7Date = datetime.date(2019, 10, 7)
+        bookingsOct7 = Booking.objects.filter(date=oct7Date)
+        self.assertEqual(len(bookingsOct7), 0)
+
+        request = self.factory.get("/booking",
+                                   {
                                    }, format="json")
         response = BookingView.as_view()(request)
 
