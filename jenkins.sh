@@ -13,11 +13,9 @@ echo "*"
 echo 
 echo "  POD NAME: $(hostname)"
 echo "  CURRENT DIRECTORY: $(pwd)"
-echo "  JAVA VERSION:"
-java -version
+echo "  PYTHON VERSION:"
+python3 -V
 echo
-echo "  MAVEN VERSION:"
-mvn -version
 echo
 echo "  DISK USAGE: "
 df 
@@ -35,16 +33,42 @@ function staticAnalysis() {
 	echo 'Running static analysis... from jenkins.sh'
 }
 
+
 function build() {
 	echo 'Building... from jenkins.sh'
+	
+	pip3 install virtualenv
+	mkdir -p venv
+	cd venv
+
+	virtualenv venvironment -p python3
+	source venvironment/bin/activate
+	cd $WORKSPACE
+	pwd
+	ls
+	cd $WORKSPACE/server
+	pip3 install -r requirements/dev.txt
+	python3 manage.py makemigrations
+	python3 manage.py migrate
 }
 
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
+
+	cd $WORKSPACE/server
+	python3 manage.py test apps
 }
 
 function integrationTests() {
 	echo 'Running integration tests... from jenkins.sh'
+	echo 'No integration tests at this time'
+}
+
+function debug() {
+	echo 'Current directory: '
+	pwd
+	echo 'Directory contents: '
+	ls
 }
 
 
