@@ -7,8 +7,6 @@ pipeline {
         booleanParam(defaultValue: false, description: 'Determines whether to skip static analysis', name: 'skipStaticAnalysis')
         booleanParam(defaultValue: false, description: 'Determines whether to skip the unit tests', name: 'skipUnitTests')
         booleanParam(defaultValue: false, description: 'Determines whether to skip the integration tests', name: 'skipIntegrationTests')
-        booleanParam(defaultValue: false, description: 'Determines whether to skip the code coverage', name: 'skipCodeCoverage')
-        booleanParam(defaultValue: false, description: 'Determines whether to skip the static analysis', name: 'skipStaticAnalysis')
     
     }
     options {
@@ -26,43 +24,13 @@ pipeline {
                 echo env.USER
             }
         }
-        stage('Code Coverage') {
-            when {
-                expression { params.skipCodeCoverage == false }
-            }
-            steps {
-                echo 'Running code coverage.. in Jenkinsfile'
-                sh  ''' source activate ${BUILD_TAG}
-                        coverage run irisvmpy/iris.py 1 1 2 3
-                        python -m coverage xml -o ./reports/coverage.xml
-                    '''
-            }
-            post{
-                always{
-                    step([$class: 'CoberturaPublisher',
-                                   autoUpdateHealth: false,
-                                   autoUpdateStability: false,
-                                   coberturaReportFile: 'reports/coverage.xml',
-                                   failNoReports: false,
-                                   failUnhealthy: false,
-                                   failUnstable: false,
-                                   maxNumberOfBuilds: 10,
-                                   onlyStable: false,
-                                   sourceEncoding: 'ASCII',
-                                   zoomCoverageChart: false])
-                }
-            }
-        }
         stage('Static Analysis') {
             when {
                 expression { params.skipStaticAnalysis == false }
             }
             steps {
                 echo 'Running static analysis.. in Jenkinsfile'
-                 echo "PEP8 style check"
-                sh  ''' source activate ${BUILD_TAG}
-                        pylint --disable=C irisvmpy || true
-                    '''
+                runStaticAnalysis()
             }
         }
         stage('Build') {
