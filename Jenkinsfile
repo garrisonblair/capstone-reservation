@@ -29,8 +29,38 @@ pipeline {
                 expression { params.skipStaticAnalysis == false }
             }
             steps {
+                echo 'Running code coverage.. in Jenkinsfile'
+                sh  ''' source activate ${BUILD_TAG}
+                        coverage run irisvmpy/iris.py 1 1 2 3
+                        python -m coverage xml -o ./reports/coverage.xml
+                    '''
+            }
+            post{
+                always{
+                    step([$class: 'CoberturaPublisher',
+                                   autoUpdateHealth: false,
+                                   autoUpdateStability: false,
+                                   coberturaReportFile: 'reports/coverage.xml',
+                                   failNoReports: false,
+                                   failUnhealthy: false,
+                                   failUnstable: false,
+                                   maxNumberOfBuilds: 10,
+                                   onlyStable: false,
+                                   sourceEncoding: 'ASCII',
+                                   zoomCoverageChart: false])
+                }
+            }
+        }
+        stage('Static Analysis') {
+            when {
+                expression { params.skipStaticAnalysis == false }
+            }
+            steps {
                 echo 'Running static analysis.. in Jenkinsfile'
-                runStaticAnalysis()
+                 echo "PEP8 style check"
+                sh  ''' source activate ${BUILD_TAG}
+                        pylint --disable=C irisvmpy || true
+                    '''
             }
         }
         stage('Build') {
@@ -78,10 +108,6 @@ def runStaticAnalysis() {
 
 def buildApplication() {
     sh './jenkins.sh build'
-}
-
-def testRunServer() {
-    sh './jenkins.sh testRunServer'
 }
 
 def runUnitTests() {
