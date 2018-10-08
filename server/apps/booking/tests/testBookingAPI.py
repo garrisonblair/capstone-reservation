@@ -136,3 +136,32 @@ class BookingAPITest(TestCase):
         oct7Date = datetime.date(2019, 10, 7)
         bookingsOct7 = Booking.objects.filter(date=oct7Date)
         self.assertEqual(len(bookingsOct7), 2)
+
+    def testViewRoomNoResult(self):
+        requestRoom1 = self.factory.post("/booking",
+                                    {
+                                        "room": 1,
+                                        "date": "2019-10-6",
+                                        "start_time": "14:00:00",
+                                        "end_time": "15:00:00"
+                                    }, format="json")
+        responseRoom1 = BookingView.as_view()(requestRoom1)
+
+        requestRoom2 = self.factory.post("/booking",
+                                    {
+                                        "room": 2,
+                                        "date": "2019-10-6",
+                                        "start_time": "14:00:00",
+                                        "end_time": "15:00:00"
+                                    }, format="json")
+        responseRoom2 = BookingView.as_view()(requestRoom2)
+
+        self.assertEqual(responseRoom2.status_code, status.HTTP_201_CREATED)
+        allBookings = Booking.objects.all()
+        self.assertEqual(len(allBookings), 2)
+        oct7Date = datetime.date(2019, 10, 7)
+        bookingsOct7 = Booking.objects.filter(date=oct7Date)
+        self.assertEqual(len(bookingsOct7), 0)
+
+
+
