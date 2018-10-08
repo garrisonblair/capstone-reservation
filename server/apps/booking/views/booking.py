@@ -53,7 +53,7 @@ class BookingView(APIView):
                 bookings = Booking.objects.filter(date=date)
 
             except ValueError:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response("Invalid date. Please supply valid integer values for year, month and day", status=status.HTTP_400_BAD_REQUEST)
 
         else:
             try:
