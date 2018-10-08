@@ -36,32 +36,49 @@ class RoomAPITest(TestCase):
         request = self.factory.get("/room")
 
         response = RoomView.as_view()(request)
-        rsp_data = "[{\"model\": \"rooms.room\", \"pk\": 1, \"fields\": {\"room_id\": \"H833-17\", \"capacity\": 4, " \
-                   "\"number_of_computers\": 1}}, {\"model\": \"rooms.room\", \"pk\": 2, \"fields\": {\"room_id\": " \
-                   "\"H833-03\", \"capacity\": 8, \"number_of_computers\": 2}}] "
+        response_data = [
+            {
+                "id": 1,
+                "room_id": "H833-17",
+                "capacity": 4,
+                "number_of_computers": 1
+            },
+            {
+                "id": 2,
+                "room_id": "H833-03",
+                "capacity": 8,
+                "number_of_computers": 2
+            }
+        ]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertJSONEqual(response.data, rsp_data)
+        self.assertEqual(response.data, response_data)
 
     def testGetRoomsAtDateTime(self):
         request = self.factory.get("/room",
                                    {
-                                        "start_date_time": '2018-10-22 11:00',
-                                        "end_date_time": '2018-10-22 17:00'
+                                       "start_date_time": '2018-10-22 11:00',
+                                       "end_date_time": '2018-10-22 17:00'
                                    }, format="json")
 
         response = RoomView.as_view()(request)
-        rsp_data = "[{\"model\": \"rooms.room\", \"pk\": 2, \"fields\": {\"room_id\": \"H833-03\", \"capacity\": 8, " \
-                   "\"number_of_computers\": 2}}] "
+        response_data = [
+            {
+                "id": 2,
+                "room_id": "H833-03",
+                "capacity": 8,
+                "number_of_computers": 2
+            }
+        ]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertJSONEqual(response.data, rsp_data)
+        self.assertEqual(response.data, response_data)
 
     def testGetRoomsInvalidRequestEndBeforeStart(self):
         request = self.factory.get("/room",
                                    {
-                                        "start_date_time": '2018-10-22 17:00',
-                                        "end_date_time": '2018-10-22 11:00'
+                                       "start_date_time": '2018-10-22 17:00',
+                                       "end_date_time": '2018-10-22 11:00'
                                    }, format="json")  # start time after end time
 
         response = RoomView.as_view()(request)
@@ -74,7 +91,7 @@ class RoomAPITest(TestCase):
     def testGetRoomsInvalidRequestMissingLastParam(self):
         request = self.factory.get("/room",
                                    {
-                                        "start_date_time": '2018-10-22 11:00'
+                                       "start_date_time": '2018-10-22 11:00'
                                    }, format="json")
 
         response = RoomView.as_view()(request)
@@ -110,4 +127,3 @@ class RoomAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, error_msg)
-
