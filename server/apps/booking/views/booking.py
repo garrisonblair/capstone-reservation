@@ -44,14 +44,16 @@ class BookingView(APIView):
         defaultDay = datetime.date.day
         print(defaultDay)
 
-        #requestYear = request.GET.get('year', defaultYear)
-        #requestMonth = request.GET.get('month', defaultMonth)
-        #requestDay = request.GET.get('day', defaultDay)
+        requestYear = request.GET.get('year', defaultYear)
+        requestMonth = request.GET.get('month', defaultMonth)
+        requestDay = request.GET.get('day', defaultDay)
 
-        # will ask frontend to pass yyyy,mm,dd
-        # expecting ISO format of date
-        # date = datetime.date(requestYear,requestMonth,requestDay)
-        date = datetime.date(2018, 10, 6)
+        # Need tl modify hardcoded values below once front-end finalizes format
+        integerRequestYear = 2018
+        integerRequestMonth = 10
+        integerRequestDay = 6
+
+        date = datetime.date(integerRequestYear, integerRequestMonth, integerRequestDay)
         print(date)
         bookings = Booking.objects.filter(date=date)
         print(bookings)
