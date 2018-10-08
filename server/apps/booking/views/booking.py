@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 
 from rest_framework.views import APIView
@@ -32,3 +34,36 @@ class BookingView(APIView):
                 return Response(BookingSerializer(booking).data, status=status.HTTP_201_CREATED)
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+
+        requestYear = request.GET.get('year')
+        requestDay = request.GET.get('day')
+        requestMonth = request.GET.get('month')
+
+        if requestYear != None and requestMonth != None and requestDay != None:
+
+            try:
+
+                integerRequestYear = int(requestYear)
+                integerRequestMonth = int(requestMonth)
+                integerRequestDay = int(requestDay)
+
+                date = datetime.date(integerRequestYear, integerRequestMonth, integerRequestDay)
+                bookings = Booking.objects.filter(date=date)
+
+            except ValueError:
+                return Response("Invalid date. Please supply valid integer values for year, month and day", status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            try:
+                bookings = Booking.objects.all()
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+        bookingsList = list()
+        for booking in bookings:
+            serializer = BookingSerializer(booking)
+            bookingsList.append(serializer.data)
+        return Response(bookingsList, status=status.HTTP_200_OK)
+
