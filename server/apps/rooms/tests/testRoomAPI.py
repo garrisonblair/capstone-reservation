@@ -37,8 +37,12 @@ class RoomAPITest(TestCase):
         request = self.factory.get("/room")
 
         response = RoomView.as_view()(request)
+        rsp_data = "[{\"model\": \"rooms.room\", \"pk\": 1, \"fields\": {\"room_id\": \"H833-17\", \"capacity\": 4, " \
+                   "\"number_of_computers\": 1}}, {\"model\": \"rooms.room\", \"pk\": 2, \"fields\": {\"room_id\": " \
+                   "\"H833-03\", \"capacity\": 8, \"number_of_computers\": 2}}] "
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertJSONEqual(response.data, rsp_data)
 
     def testGetRoomsAtDateTime(self):
         request = self.factory.get("/room",
@@ -48,8 +52,11 @@ class RoomAPITest(TestCase):
                                    }, format="json")
 
         response = RoomView.as_view()(request)
+        rsp_data = "[{\"model\": \"rooms.room\", \"pk\": 2, \"fields\": {\"room_id\": \"H833-03\", \"capacity\": 8, " \
+                   "\"number_of_computers\": 2}}] "
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertJSONEqual(response.data, rsp_data)
 
     def testGetRoomsInvalidRequestEndBeforeStart(self):
         request = self.factory.get("/room",
