@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory
@@ -103,8 +104,15 @@ class BookingAPITest(TestCase):
         bookingsOct7 = Booking.objects.filter(date=oct7Date)
         self.assertEqual(len(bookingsOct7), 1)
 
+        request = self.factory.get("/booking",
+                                    {
+                                        "year": 2018,
+                                        "month": 10,
+                                        "day": 7,
+                                    }, format="json")
+        response = BookingView.as_view()(request)
 
-
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def testViewRoomsMultipleResults(self):
 
@@ -127,6 +135,16 @@ class BookingAPITest(TestCase):
         bookingsOct7 = Booking.objects.filter(date=oct7Date)
         self.assertEqual(len(bookingsOct7), 2)
 
+        request = self.factory.get("/booking",
+                                   {
+                                       "year": 2018,
+                                       "month": 10,
+                                       "day": 7,
+                                   }, format="json")
+        response = BookingView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def testViewRoomNoResult(self):
 
         student = Student(student_id='12345678')
@@ -147,6 +165,16 @@ class BookingAPITest(TestCase):
         oct7Date = datetime.date(2019, 10, 7)
         bookingsOct7 = Booking.objects.filter(date=oct7Date)
         self.assertEqual(len(bookingsOct7), 0)
+
+        request = self.factory.get("/booking",
+                                   {
+                                       "year": 2018,
+                                       "month": 10,
+                                       "day": 7,
+                                   }, format="json")
+        response = BookingView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 
