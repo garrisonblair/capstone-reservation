@@ -169,7 +169,7 @@ class Calendar extends Component {
       for (let j = 0; j < hoursList.length; j++) {
         let currentHour = hoursList[j];
         roomsCells.push(
-          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-roomId={currentRoom.id} data-roomName={currentRoom.room_id} onClick={this.handleClickCell}></div>
+          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room-id={currentRoom.id} data-room-name={currentRoom.room_id} onClick={this.handleClickCell}></div>
         );
         cell++;
       }
@@ -257,8 +257,8 @@ class Calendar extends Component {
    /************ CLICK HANDLING METHODS *************/
 
   handleClickCell = (e) => {
-    let selectedRoomId = e.target.getAttribute('data-roomId');
-    let selectedRoomName = e.target.getAttribute('data-roomName');
+    let selectedRoomId = e.target.getAttribute('data-room-id');
+    let selectedRoomName = e.target.getAttribute('data-room-name');
     let selectedHour = e.target.getAttribute('data-hour');
 
     this.toggleBookingModal();

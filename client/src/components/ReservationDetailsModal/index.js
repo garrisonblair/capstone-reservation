@@ -57,8 +57,13 @@ class ReservationDetailsModal extends Component {
     let hour = "";
     let minute = "";
     if (nextProps.selectedHour != "") {
-      hour = nextProps.selectedHour.charAt(0) == '0' ? nextProps.selectedHour.substring(1,2) :  nextProps.selectedHour.substring(0,2);
-      minute = nextProps.selectedHour.substring(3,5);
+      let offset = nextProps.selectedHour.charAt(2) == ':' ? 0 : 1;
+
+      hour = nextProps.selectedHour.substring(0, 2 - offset);
+      minute = nextProps.selectedHour.substring(3 - offset , 5 - offset);
+      if (hour.charAt(0) == '0') {
+        hour = hour.substring(1,3);
+      }
     }
     this.setState({
       roomNumber: nextProps.selectedRoomId,
