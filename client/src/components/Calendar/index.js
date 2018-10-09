@@ -18,53 +18,6 @@ class Calendar extends Component {
     selectedDate: new Date()
   };
 
-   /************ SETUP *************/
-
-  componentDidMount() {
-    console.log(settings)
-  }
-
-  componentWillMount() {
-    /*** Get bookings ***/
-    this.getBookings();
-
-    /*** Get rooms ***/
-    this.getRooms();
-  
-    /*** Set up hours ***/
-    let hoursSettings = {
-      start: "08:00",
-      end: "23:00",
-      increment: 60
-    }
-    let hourStart =  this.timeStringToInt(hoursSettings.start);
-    let hourEnd =  this.timeStringToInt(hoursSettings.end);
-
-    let minutesIncrement = hoursSettings.increment;
-    let hours = []
-    let time = new Date();
-    time.setHours(hourStart.hour,hourStart.minutes,0);
-
-    //Format time for display in table
-    let currentTime = hourStart.hour * 60 + hourStart.minutes;
-    let endTime = hourEnd.hour * 60 + hourEnd.minutes;
-
-
-    while (currentTime <= endTime) {
-      hours.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-      time.setMinutes(time.getMinutes() + minutesIncrement);
-      currentTime += minutesIncrement;
-    }
-    this.setState({hoursSettings: hoursSettings, hoursList: hours});
-
-    /*** Set up variables in scss ***/
-    let gridRowNum = minutesIncrement * hours.length / 10;
-    
-    document.documentElement.style.setProperty("--rowNum", hours.length);
-    document.documentElement.style.setProperty("--cellsDivisionNum", gridRowNum);
-
-  }
-
   /************ REQUESTS *************/
   getBookings() {
     let params = {
@@ -100,15 +53,155 @@ class Calendar extends Component {
       let colNumber = response.data.length;
       document.documentElement.style.setProperty("--colNum", colNumber);
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     })
-    .then(function () {
+    .then(() => {
       // always executed
     });
   }
 
-  /************ RENDER METHODS *************/
+  /************ STYLE METHODS*************/
+
+  // Style for .calendar__cells__cell
+  setCellStyle(hourRow) {
+    const {hoursSettings} = this.state;
+    let rowStart = (hourRow * hoursSettings.increment / 10) + 1;
+    let rowEnd = rowStart + hoursSettings.increment / 10;
+
+    let style = {
+      cell_style: {
+        gridRowStart: rowStart,
+        gridRowEnd: rowEnd,
+        gridColumn: 1,
+        minHeight: '100px',
+      }
+    }
+    return style;
+  }
+
+  //Style for .calendar__booking
+  setBookingStyle(booking) {
+    const {hoursSettings} = this.state;
+    let bookingStart = this.timeStringToInt(booking.start_time);
+    let bookingEnd = this.timeStringToInt(booking.end_time);
+    let calendarStart = this.timeStringToInt(hoursSettings.start);
+
+    //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
+    let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
+    let rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
+
+    let style = {
+      booking_style: {
+        gridRowStart: rowStart,
+        gridRowEnd: rowEnd,
+        gridColumn: 1
+      }
+    }
+    return style;
+  }
+
+   /************ CLICK HANDLING METHODS *************/
+
+  handleClickCell = (e) => {
+    let selectedRoomId = e.target.getAttribute('data-room-id');
+    let selectedRoomName = e.target.getAttribute('data-room-name');
+    let selectedHour = e.target.getAttribute('data-hour');
+
+    this.toggleBookingModal();
+    this.setState({
+      selectedHour: selectedHour,
+      selectedRoomId: selectedRoomId,
+      selectedRoomName: selectedRoomName
+    });
+  }
+
+  // TODO: Handle click on an existing booking
+  handleClickBooking = (e) => {
+    console.log(e)
+  }
+
+  handleClickNextDate = (e) => {
+    let nextDay = this.state.selectedDate;
+    nextDay.setDate(nextDay.getDate() + 1);
+    this.setState({selectedDate: nextDay})
+    this.getBookings();
+  }
+
+  handleClickPreviousDate = (e) => {
+    let previousDay = this.state.selectedDate;
+    previousDay.setDate(previousDay.getDate() - 1);
+    this.setState({selectedDate: previousDay})
+    this.getBookings();
+  }
+
+  /************ HELPER METHOD *************/
+
+  toggleBookingModal = () => {
+    this.setState({isBooking: !this.state.isBooking})
+  }
+
+  toggleBookingModalWithReservation = () => {
+    //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on.
+    //With reload, the view will come back to the current day.
+    window.location.reload();
+  }
+
+  timeStringToInt(time) {
+    let tokens = time.split(':');
+    let timeInt = {
+      hour: parseInt(tokens[0]),
+      minutes: parseInt(tokens[1]),
+    }
+    return timeInt;
+  }
+
+  /************* COMPONENT LIFE CYCLE *************/
+
+  componentDidMount() {
+    // console.log(settings)
+  }
+
+  componentWillMount() {
+    /*** Get bookings ***/
+    this.getBookings();
+
+    /*** Get rooms ***/
+    this.getRooms();
+
+    /*** Set up hours ***/
+    let hoursSettings = {
+      start: "08:00",
+      end: "23:00",
+      increment: 60
+    }
+    let hourStart =  this.timeStringToInt(hoursSettings.start);
+    let hourEnd =  this.timeStringToInt(hoursSettings.end);
+
+    let minutesIncrement = hoursSettings.increment;
+    let hours = []
+    let time = new Date();
+    time.setHours(hourStart.hour, hourStart.minutes, 0);
+
+    //Format time for display in table
+    let currentTime = hourStart.hour * 60 + hourStart.minutes;
+    let endTime = hourEnd.hour * 60 + hourEnd.minutes;
+
+    while (currentTime <= endTime) {
+      hours.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+      time.setMinutes(time.getMinutes() + minutesIncrement);
+      currentTime += minutesIncrement;
+    }
+    this.setState({hoursSettings: hoursSettings, hoursList: hours});
+
+    /*** Set up variables in scss ***/
+    let gridRowNum = minutesIncrement * hours.length / 10;
+
+    document.documentElement.style.setProperty("--rowNum", hours.length);
+    document.documentElement.style.setProperty("--cellsDivisionNum", gridRowNum);
+  }
+
+  /************ COMPONENT RENDERING *************/
 
   renderDate() {
     return (
@@ -118,7 +211,8 @@ class Calendar extends Component {
           circular
           icon="chevron left"
           size="large"
-          onClick={this.handleClickPreviousDate} />
+          onClick={this.handleClickPreviousDate}
+        />
         <h1 className="calendar__date__header">
           <Icon name="calendar alternate outline" />
           {this.state.selectedDate.toDateString()}
@@ -128,22 +222,21 @@ class Calendar extends Component {
           circular
           icon="chevron right"
           size="large"
-          onClick={this.handleClickNextDate} />
+          onClick={this.handleClickNextDate}
+        />
       </div>
     );
   }
 
   renderRooms() {
     const {roomsList} = this.state;
-
     const rooms = roomsList.map((room) =>
       <div className="calendar__rooms__room" key={room.room_id}>
         {room.room_id}
       </div>
     );
 
-    return  <div className="calendar__rooms__wrapper">{rooms}</div>
-
+    return <div className="calendar__rooms__wrapper">{rooms}</div>
   }
 
   renderHours() {
@@ -187,11 +280,8 @@ class Calendar extends Component {
       );
 
       roomsCells = [];
-
     }
-
     return <div className="calendar__cells__wrapper">{cells}</div>;
-
   }
 
   renderCurrentBookings(bookings) {
@@ -205,110 +295,11 @@ class Calendar extends Component {
             <div>{booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time}</div>
             <div>{booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}</div>
           </div>
-
         </div>
-        )
+      )
     });
-
     return bookingsDiv;
   }
-
-
-  /************ STYLE METHODS*************/
-
-
-  // Style for .calendar__cells__cell
-  setCellStyle(hourRow) {
-
-    let rowStart = (hourRow * this.state.hoursSettings.increment / 10) + 1;
-    let rowEnd = rowStart + this.state.hoursSettings.increment / 10;
-
-    let style = {
-      cell_style: {
-        gridRowStart: rowStart,
-        gridRowEnd: rowEnd,
-        gridColumn: 1,
-        minHeight: '100px',
-      }
-    }
-    return style;
-  }
-
-  //Style for .calendar__booking
-  setBookingStyle(booking) {
-    let bookingStart = this.timeStringToInt(booking.start_time);
-    let bookingEnd = this.timeStringToInt(booking.end_time);
-    let calendarStart = this.timeStringToInt(this.state.hoursSettings.start);
-
-    //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
-    let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
-    let rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
-
-    let style = {
-      booking_style: {
-        gridRowStart: rowStart,
-        gridRowEnd: rowEnd,
-        gridColumn: 1
-      }
-    }
-    return style;
-  }
-
-   /************ CLICK HANDLING METHODS *************/
-
-  handleClickCell = (e) => {
-    let selectedRoomId = e.target.getAttribute('data-room-id');
-    let selectedRoomName = e.target.getAttribute('data-room-name');
-    let selectedHour = e.target.getAttribute('data-hour');
-
-    this.toggleBookingModal();
-    this.setState({selectedHour: selectedHour, selectedRoomId: selectedRoomId, selectedRoomName: selectedRoomName});
-  }
-
-  // TODO: Handle click on an existing booking
-  handleClickBooking = (e) => {
-    console.log(e)
-  }
-
-  handleClickNextDate = (e) => {
-    let nextDay = this.state.selectedDate;
-    nextDay.setDate(nextDay.getDate() + 1);
-    this.setState({selectedDate: nextDay})
-    this.getBookings();
-  }
-
-  handleClickPreviousDate = (e) => {
-    let previousDay = this.state.selectedDate;
-    previousDay.setDate(previousDay.getDate() - 1);
-    this.setState({selectedDate: previousDay})
-    this.getBookings();
-  }
-
-  /************ HELPER METHOD *************/
-
-  toggleBookingModal = () => {
-    this.setState({isBooking: !this.state.isBooking})
-  }
-
-  toggleBookingModalWithReservation = () => {
-    //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on. 
-    //With reload, the view will come back to the current day.
-    window.location.reload();
-  }
-
-  timeStringToInt(time) {
-    //Need offset depending if time format is H:MM or HH:MM
-    let offset = time.charAt(2) == ':' ? 0 : 1;
-
-    let timeInt = {
-      hour: parseInt(time.substring(0, 2 - offset)),
-      minutes: parseInt(time.substring(3 - offset , 5 - offset))
-    }
-
-    return timeInt;
-  }
-
-   /************ COMPONENT RENDERING *************/
 
   render() {
     return (
