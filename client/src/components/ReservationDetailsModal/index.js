@@ -1,7 +1,8 @@
 import axios from 'axios';
-import {Button, Dropdown, Header, Icon, Message, Modal} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
+import {Button, Dropdown, Header, Icon, Message, Modal} from 'semantic-ui-react';
 import settings from '../../config/settings'
 import {getTokenHeader} from '../../utils/requestHeaders';
 import './ReservationDetailsModal.scss';
@@ -18,14 +19,10 @@ class ReservationDetailsModal extends Component {
       message: ""
     },
     modalOpen: false,
-    minHour: this.props.minHour || 8,
-    maxHour: this.props.maxHour || 24,
-    date: (new Date(this.props.date)) || "please provide a date",
     startHour: "8",
     startMinute: "00",
     endHour: 0,
     endMinute: 0,
-    roomNumber: parseInt(this.props.roomNumber) || "please provide a room number",
     hourOptions: [],
     minuteOptions: [
       { text: '00', value: '00' },
@@ -42,13 +39,11 @@ class ReservationDetailsModal extends Component {
   }
 
   generateHourOptions(minHour, maxHour) {
-    minHour = parseInt(minHour);
-    maxHour = parseInt(maxHour);
     let result = [];
-    for (var i = minHour; i < maxHour; i++) {
+    for (let i = minHour; i < maxHour; i++) {
       result.push({
-        text: i + '',
-        value: i + ''
+        text: `${i}`,
+        value: `${i}`
       });
     }
     return result;
@@ -71,16 +66,15 @@ class ReservationDetailsModal extends Component {
       }
     }
     this.setState({
-      roomNumber: nextProps.selectedRoomId,
       startHour: hour,
       startMinute: minute,
-      date: nextProps.selectedDate
     });
   }
 
   componentWillMount() {
+    const {minHour, maxHour} = this.props;
     this.setState({
-      hourOptions: this.generateHourOptions(this.state.minHour, this.state.maxHour)
+      hourOptions: this.generateHourOptions(minHour, maxHour)
     });
   }
 
@@ -171,11 +165,11 @@ class ReservationDetailsModal extends Component {
     const headers = getTokenHeader();
 
     //Handle time zone
-    let tzoffset = (this.state.date).getTimezoneOffset() * 60000;
-    let localISOTime = (new Date(this.state.date - tzoffset)).toISOString().slice(0, -1);
+    let tzoffset = (this.props.selectedDate).getTimezoneOffset() * 60000;
+    let localISOTime = (new Date(this.props.selectedDate - tzoffset)).toISOString().slice(0, -1);
 
     const data = {
-      "room": this.state.roomNumber,
+      "room": this.props.selectedRoomId,
       "date": localISOTime.slice(0, 10),
       "start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}:00`
@@ -195,7 +189,7 @@ class ReservationDetailsModal extends Component {
         messageConfig: {
           hidden: false,
           title: 'Completed',
-          message: `Room ${this.state.roomNumber} was successfuly booked.`,
+          message: `Room ${this.props.selectedRoomId} was successfuly booked.`,
           color: 'green'
         }
       })
@@ -221,7 +215,7 @@ class ReservationDetailsModal extends Component {
         <Modal.Description>
           <Header>
             <Icon name="calendar"/>
-            {this.state.date.toDateString()}
+            {this.props.selectedDate.toDateString()}
           </Header>
           <div className="modal-description">
             <h3 className="header--inline">
@@ -299,7 +293,7 @@ class ReservationDetailsModal extends Component {
         <Modal centered={false} size={"tiny"} open={this.state.modalOpen}>
           <Modal.Header>
             <Icon name="map marker alternate"/>
-            Room {this.state.roomNumber}
+            Room {this.props.selectedRoomName}
           </Modal.Header>
           {this.state.messageConfig.color !== 'green'? this.renderDescription(): null}
           <Message attached='bottom' color={this.state.messageConfig.color} hidden={this.state.messageConfig.hidden}>
@@ -310,6 +304,19 @@ class ReservationDetailsModal extends Component {
       </div>
     )
   }
+}
+
+ReservationDetailsModal.propTypes = {
+  minHour: PropTypes.number,
+  maxHour: PropTypes.number,
+  selectedRoomId: PropTypes.string.isRequired,
+  selectedRoomName: PropTypes.string.isRequired,
+  selectedDate: PropTypes.object.isRequired
+}
+
+ReservationDetailsModal.defaultProps = {
+  minHour: 8,
+  maxHour: 24,
 }
 
 export default ReservationDetailsModal;
