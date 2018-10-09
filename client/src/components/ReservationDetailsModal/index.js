@@ -159,9 +159,13 @@ class ReservationDetailsModal extends Component {
 
     const headers = getTokenHeader();
 
+    //Handle time zone
+    let tzoffset = (this.state.date).getTimezoneOffset() * 60000; 
+    let localISOTime = (new Date(this.state.date - tzoffset)).toISOString().slice(0, -1);
+
     const data = {
       "room": this.state.roomNumber,
-      "date": this.state.date.toISOString().slice(0, 10),
+      "date": localISOTime.slice(0, 10),
       "start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}:00`
     };

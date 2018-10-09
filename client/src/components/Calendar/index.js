@@ -40,7 +40,7 @@ class Calendar extends Component {
     let hoursSettings = {
       start: "08:00",
       end: "23:00",
-      increment: 30
+      increment: 60
     }
     let hourStart =  this.timeStringToInt(hoursSettings.start);
     let hourEnd =  this.timeStringToInt(hoursSettings.end);
@@ -89,14 +89,7 @@ class Calendar extends Component {
       params: params
     })
     .then((response) => {
-      let bookings = [];
-      response.data.map(booking => {
-        bookings.push(booking);
-      })
-
       this.setState({bookings: response.data})
-
-      // this.setState({bookings: response})
     })
     .catch(function (error) {
       console.log(error);
@@ -216,7 +209,7 @@ class Calendar extends Component {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
         gridColumn: 1,
-        minHeight: '50px'
+        minHeight: '100px',
       }
     }
     return style;
@@ -281,7 +274,7 @@ class Calendar extends Component {
   toggleBookingModalWithReservation = () => {
     //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on. With reload, the view will come back to the current day.
     window.location.reload();
-    
+
     // this.setState({isBooking: !this.state.isBooking})
     // this.getBookings();
   }
@@ -303,7 +296,7 @@ class Calendar extends Component {
 
 
   render() {
-    return this.state.bookings ? (
+    return (
       <div className="calendar__container">
         {this.renderDate()}
         <div className="calendar__wrapper">
@@ -321,8 +314,6 @@ class Calendar extends Component {
           onCloseWithReservation={this.toggleBookingModalWithReservation}
         />
       </div>
-    ) : (
-      <span>Fetching bookings</span>
     )
   }
 }
