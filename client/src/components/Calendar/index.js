@@ -13,7 +13,8 @@ class Calendar extends Component {
     hoursList: [],
     isBooking: false,
     selectedHour: "",
-    selectedRoom: "",
+    selectedRoomName: "",
+    selectedRoomId: "",
     selectedDate: new Date()
   };
 
@@ -168,14 +169,14 @@ class Calendar extends Component {
       for (let j = 0; j < hoursList.length; j++) {
         let currentHour = hoursList[j];
         roomsCells.push(
-          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom.room_id} onClick={this.handleClickCell}></div>
+          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room-id={currentRoom.id} data-room-name={currentRoom.room_id} onClick={this.handleClickCell}></div>
         );
         cell++;
       }
 
       let bookedCells = [];
       if (this.state.bookings) {
-        let bookings = this.state.bookings.filter(booking => booking.room == currentRoom.room_id);
+        let bookings = this.state.bookings.filter(booking => booking.room == currentRoom.id);
         if (bookings.length > 0) {
         bookedCells.push(this.renderCurrentBookings(bookings))
         }
@@ -256,11 +257,12 @@ class Calendar extends Component {
    /************ CLICK HANDLING METHODS *************/
 
   handleClickCell = (e) => {
-    let selectedRoom = e.target.getAttribute('data-room');
+    let selectedRoomId = e.target.getAttribute('data-room-id');
+    let selectedRoomName = e.target.getAttribute('data-room-name');
     let selectedHour = e.target.getAttribute('data-hour');
 
     this.toggleBookingModal();
-    this.setState({selectedHour: selectedHour, selectedRoom: selectedRoom});
+    this.setState({selectedHour: selectedHour, selectedRoomId: selectedRoomId, selectedRoomName: selectedRoomName});
   }
 
   // TODO: Handle click on an existing booking
@@ -319,7 +321,8 @@ class Calendar extends Component {
         </div>
         <ReservationDetailsModal
           show={this.state.isBooking}
-          selectedRoom={this.state.selectedRoom}
+          selectedRoomId={this.state.selectedRoomId}
+          selectedRoomName={this.state.selectedRoomName}
           selectedHour={this.state.selectedHour}
           selectedDate={this.state.selectedDate}
           onClose={this.toggleBookingModal}
