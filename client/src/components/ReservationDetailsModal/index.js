@@ -1,8 +1,8 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {withRouter} from 'react-router-dom';
 import {Button, Dropdown, Header, Icon, Message, Modal} from 'semantic-ui-react';
+import SweetAlert from 'sweetalert2-react';
 import settings from '../../config/settings'
 import {getTokenHeader} from '../../utils/requestHeaders';
 import './ReservationDetailsModal.scss';
@@ -11,20 +11,16 @@ import './ReservationDetailsModal.scss';
 class ReservationDetailsModal extends Component {
 
   state = {
-    hideErrorMessage: true,
-    messageConfig: {
-      hidden: true,
-      title: "",
-      color: "red",
-      message: ""
-    },
-    modalOpen: false,
+    show: false,
     startHour: this.props.startHour,
     startMinute: this.props.startMinute,
     endHour: this.props.endHour,
     endMinute: this.props.endMinute,
     hourOptions: [],
-    reservedOptions: []
+    reservedOptions: [],
+    modalTitle: '',
+    modalText: '',
+    modalType: 'success'
   }
 
   generateHourOptions(minHour, maxHour) {
@@ -57,52 +53,53 @@ class ReservationDetailsModal extends Component {
   closeModal = () => {
     this.props.onClose();
     this.setState({
-      modalOpen: false,
+      show: false,
     });
   }
 
   closeModalWithReservation = () => {
     this.props.onCloseWithReservation();
     this.setState({
-      modalOpen: false,
+      show: false,
     });
   }
 
-  handleOpen = () => this.setState({ modalOpen: true });
+  closeAlertModal = () => {
+    const {modalType} = this.state;
+
+    this.setState({
+      showModal: false
+    })
+
+    // Handle successful reservation
+    if (modalType === 'success') {
+      this.closeModalWithReservation();
+    }
+  }
+
+  handleOpen = () => this.setState({ show: true });
 
   handleStartHourChange = (e, {value}) => {
     this.setState({
-      startHour: value,
-      messageConfig: {
-        hidden: true
-      }
+      startHour: value
     });
   }
 
   handleStartMinuteChange = (e, {value}) => {
     this.setState({
-      startMinute: value,
-      messageConfig: {
-        hidden: true
-      }
+      startMinute: value
     });
   }
 
   handleEndHourChange = (e, {value}) => {
     this.setState({
-      endHour: value,
-      messageConfig: {
-        hidden: true
-      }
+      endHour: value
     });
   }
 
   handleEndMinuteChange = (e, {value}) => {
     this.setState({
-      endMinute: value,
-      messageConfig: {
-        hidden: true
-      }
+      endMinute: value
     });
   }
 
@@ -130,12 +127,10 @@ class ReservationDetailsModal extends Component {
     }
     catch (err) {
       this.setState({
-        messageConfig: {
-          hidden: false,
-          title: "Reservation blocked",
-          message: err.message,
-          color: "orange"
-        }
+        showModal: true,
+        modalTitle: 'Reservation blocked',
+        modalText: err.message,
+        modalType: 'warning'
       })
       return;
     }
@@ -162,28 +157,20 @@ class ReservationDetailsModal extends Component {
       withCredentials: true,
     })
     .then((response) => {
-      // const {history} = this.props;
-      console.log('Booked sucessfully')
       this.setState({
-        messageConfig: {
-          hidden: false,
-          title: 'Completed',
-          message: `Room ${this.props.selectedRoomId} was successfuly booked.`,
-          color: 'green'
-        }
+        showModal: true,
+        modalTitle: 'Completed',
+        modalText: `Room ${this.props.selectedRoomName} was successfuly booked.`,
+        modalType: 'success'
       })
-      // setTimeout(function () { history.push('/') }, 3300);
-      this.closeModalWithReservation();
     })
     .catch((error) => {
       console.log(error.message);
       this.setState({
-        messageConfig: {
-          hidden: false,
-          title: 'Reservation failed',
-          message: 'We are sorry, this reservation overlaps with other reservations. Try different times.',
-          color: "red"
-        }
+        showModal: true,
+        modalTitle: 'Reservation failed',
+        modalText: 'We are sorry, this reservation overlaps with other reservations. Try different times.',
+        modalType: 'error'
       });
     })
   }
@@ -191,7 +178,7 @@ class ReservationDetailsModal extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.show) {
       this.setState({
-        modalOpen: nextProps.show
+        show: nextProps.show
       });
     }
 
@@ -226,12 +213,14 @@ class ReservationDetailsModal extends Component {
   }
 
   renderDescription() {
+    const {startHour, startMinute, hourOptions, minuteOptions, reservedOptions} = this.state;
+    const {selectedDate} = this.props;
     return (
       <Modal.Content>
         <Modal.Description>
           <Header>
             <Icon name="calendar"/>
-            {this.props.selectedDate.toDateString()}
+            {selectedDate.toDateString()}
           </Header>
           <div className="modal-description">
             <h3 className="header--inline">
@@ -243,8 +232,8 @@ class ReservationDetailsModal extends Component {
               compact
               placeholder='hh'
               className="dropdown--fixed-width"
-              options={this.state.hourOptions}
-              defaultValue={this.state.startHour}
+              options={hourOptions}
+              defaultValue={startHour}
               onChange={this.handleStartHourChange}
             />
             <Dropdown
@@ -252,8 +241,8 @@ class ReservationDetailsModal extends Component {
               compact
               placeholder='mm'
               className="dropdown--fixed-width"
-              options={this.state.minuteOptions}
-              defaultValue={this.state.startMinute}
+              options={minuteOptions}
+              defaultValue={startMinute}
               onChange={this.handleStartMinuteChange}
             />
           </div>
@@ -267,7 +256,7 @@ class ReservationDetailsModal extends Component {
               compact
               className="dropdown--fixed-width"
               placeholder='hh'
-              options={this.state.hourOptions}
+              options={hourOptions}
               onChange={this.handleEndHourChange}
             />
             <Dropdown
@@ -275,7 +264,7 @@ class ReservationDetailsModal extends Component {
               compact
               className="dropdown--fixed-width"
               placeholder='mm'
-              options={this.state.minuteOptions}
+              options={minuteOptions}
               onChange={this.handleEndMinuteChange}
             />
           </div>
@@ -289,7 +278,7 @@ class ReservationDetailsModal extends Component {
               compact
               className="dropdown--fixed-width"
               placeholder='hh'
-              options={this.state.reservedOptions}
+              options={reservedOptions}
               defaultValue={this.state.reservedOptions[0].value}
             />
           </div>
@@ -304,18 +293,23 @@ class ReservationDetailsModal extends Component {
   }
 
   render() {
+    const {show, showModal, modalTitle, modalText, modalType} = this.state;
+    const {selectedRoomName} = this.props;
     return (
       <div id="reservation-details-modal">
-        <Modal centered={false} size={"tiny"} open={this.state.modalOpen}>
+        <Modal centered={false} size={"tiny"} open={show}>
           <Modal.Header>
             <Icon name="map marker alternate"/>
-            Room {this.props.selectedRoomName}
+            Room {selectedRoomName}
           </Modal.Header>
-          {this.state.messageConfig.color !== 'green'? this.renderDescription(): null}
-          <Message attached='bottom' color={this.state.messageConfig.color} hidden={this.state.messageConfig.hidden}>
-            <Message.Header>{this.state.messageConfig.title}</Message.Header>
-            <p>{this.state.messageConfig.message}</p>
-          </Message>
+          {this.renderDescription()}
+          <SweetAlert
+            show={showModal}
+            title={modalTitle}
+            text={modalText}
+            type={modalType}
+            onConfirm={this.closeAlertModal}
+          />
         </Modal>
       </div>
     )
