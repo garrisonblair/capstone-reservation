@@ -28,6 +28,12 @@ body {
 
 .calendar__date {
   text-align: center;
+  margin-bottom: 20px;
+  &__header {
+    display: inline;
+    font-weight: 400;
+    margin: 0 20px;
+  }
 }
 
 .calendar__wrapper {

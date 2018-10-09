@@ -3,7 +3,7 @@ import settings from '../../config/settings';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import axios from 'axios';
-import { Button, Item } from 'semantic-ui-react';
+import {Button, Icon} from 'semantic-ui-react';
 
 
 class Calendar extends Component {
@@ -103,7 +103,7 @@ class Calendar extends Component {
     })
     .then(function () {
       // always executed
-    });  
+    });
   }
 
   /************ RENDER METHODS *************/
@@ -112,17 +112,28 @@ class Calendar extends Component {
   renderDate() {
     return (
       <div className="calendar__date">
-        <Button onClick={this.handleClickPreviousDate}>Previous</Button>
-        <span>
+        <Button
+          basic
+          circular
+          icon="chevron left"
+          size="large"
+          onClick={this.handleClickPreviousDate} />
+        <h1 className="calendar__date__header">
+          <Icon name="calendar alternate outline" />
           {this.state.selectedDate.toDateString()}
-        </span>
-        <Button onClick={this.handleClickNextDate}>Next</Button>
+        </h1>
+        <Button
+          basic
+          circular
+          icon="chevron right"
+          size="large"
+          onClick={this.handleClickNextDate} />
       </div>
     );
   }
 
   renderRooms() {
-    const { roomsList } = this.state;
+    const {roomsList} = this.state;
 
     const rooms = roomsList.map((room) =>
       <div className="calendar__rooms__room" key={room}>
@@ -135,7 +146,7 @@ class Calendar extends Component {
   }
 
   renderHours() {
-    const { hoursList } = this.state;
+    const {hoursList} = this.state;
     const hours = hoursList.map((hour) =>
       <div className="calendar__hours__hour" key={hour}>
         {hour}
@@ -146,7 +157,7 @@ class Calendar extends Component {
   }
 
   renderCells() {
-    const { roomsList, hoursList } = this.state;
+    const {roomsList, hoursList} = this.state;
 
     let cells = [];
     let roomsCells = [];
@@ -163,13 +174,13 @@ class Calendar extends Component {
       }
 
       let bookedCells = [];
-      if (this.state.bookings) {     
+      if (this.state.bookings) {
         let bookings = this.state.bookings.filter(booking => booking.room == currentRoom);
         if (bookings.length > 0) {
         bookedCells.push(this.renderCurrentBookings(bookings))
         }
       }
-      
+
       cells.push(
         <div className="calendar__rooms__cells" key={i}>{roomsCells}{bookedCells}</div>
       );
@@ -281,7 +292,7 @@ class Calendar extends Component {
   toggleBookingModalWithReservation = () => {
     //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on. With reload, the view will come back to the current day.
     window.location.reload();
-    
+
     // this.setState({isBooking: !this.state.isBooking})
     // this.getBookings();
   }
