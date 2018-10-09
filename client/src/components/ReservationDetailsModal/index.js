@@ -19,8 +19,10 @@ class ReservationDetailsModal extends Component {
       message: ""
     },
     modalOpen: false,
-    startHour: "8",
-    startMinute: "00",
+    startHour: this.props.startHour,
+    startMinute: this.props.startMinute,
+    endHour: this.props.endHour,
+    endMinute: this.props.endMinute,
     hourOptions: [],
     reservedOptions: []
   }
@@ -106,22 +108,22 @@ class ReservationDetailsModal extends Component {
 
   verifyEndTime() {
     const {endHour, endMinute} = this.props;
-    if (endHour === 0 || endMinute === 0) {
+    if (endHour.length === 0 || endMinute.length === 0) {
       throw new Error("Please provide an end time to make a reservation.");
     }
   }
 
   verifyReservationTimes() {
-    const startTime = this.state.startHour + "." + this.state.startMinute;
-    const endTime = this.state.endHour + "." + this.state.endMinute;
-
+    const {startHour, startMinute, endHour, endMinute} = this.state;
+    const startTime = `${startHour}.${startMinute}`;
+    const endTime = `${endHour}.${endMinute}`;
     if (parseFloat(startTime) > parseFloat(endTime)) {
       throw new Error("Please provide a start time that is before the end time to make a reservation.");
     }
   }
 
   handleReserve = () => {
-    // This try catch verifies requirements before sending the POST request
+    // Verify requirements before sending the POST request
     try {
       this.verifyEndTime();
       this.verifyReservationTimes();
@@ -138,13 +140,12 @@ class ReservationDetailsModal extends Component {
       return;
     }
 
-    console.log("PASS")
-
     const headers = getTokenHeader();
 
     // Handle time zone
     let tzoffset = (this.props.selectedDate).getTimezoneOffset() * 60000;
-    let localISOTime = (new Date(this.props.selectedDate - tzoffset)).toISOString().slice(0, -1);
+    let date = new Date(this.props.selectedDate - tzoffset);
+    let localISOTime = date.toISOString().slice(0, -1);
 
     const data = {
       "room": this.props.selectedRoomId,
@@ -197,12 +198,16 @@ class ReservationDetailsModal extends Component {
     let hour = "";
     let minute = "";
     if (nextProps.selectedHour != "") {
-      let offset = nextProps.selectedHour.charAt(2) == ':'? 0: 1;
+      [hour, minute] = nextProps.selectedHour.replace('AM', '').replace('PM', '').trim().split(':');
 
-      hour = nextProps.selectedHour.substring(0, 2 - offset);
-      minute = nextProps.selectedHour.substring(3 - offset , 5 - offset);
-      if (hour.charAt(0) == '0') {
+      // Removes leading zero
+      if (hour.charAt(0) === '0') {
         hour = hour.substring(1, 3);
+      }
+
+      // Handle 24-hour military time
+      if (nextProps.selectedHour.includes('PM')) {
+        hour = `${(parseInt(hour) + 12) % 24}`;
       }
     }
     this.setState({
@@ -318,23 +323,27 @@ class ReservationDetailsModal extends Component {
 }
 
 ReservationDetailsModal.propTypes = {
-  minHour: PropTypes.number,
-  maxHour: PropTypes.number,
+  show: PropTypes.bool.isRequired,
   selectedRoomId: PropTypes.string.isRequired,
   selectedRoomName: PropTypes.string.isRequired,
   selectedDate: PropTypes.object.isRequired,
+  selectedHour: PropTypes.string.isRequired,
+  minHour: PropTypes.number,
+  maxHour: PropTypes.number,
+  minuteInterval: PropTypes.number,
   onClose: PropTypes.func,
   onCloseWithReservation: PropTypes.func,
-  minuteInterval: PropTypes.number,
 }
 
 ReservationDetailsModal.defaultProps = {
   minHour: 8,
   maxHour: 24,
   minuteInterval: 10,
-  reservationProfiles: ['me'],
-  endHour: 0,
-  endMinute: 0
+  startHour: "8",
+  startMinute: "00",
+  endHour: "-1",
+  endMinute: "0",
+  reservationProfiles: ['me']
 }
 
 export default ReservationDetailsModal;
