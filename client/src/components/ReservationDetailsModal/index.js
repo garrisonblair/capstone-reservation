@@ -21,21 +21,8 @@ class ReservationDetailsModal extends Component {
     modalOpen: false,
     startHour: "8",
     startMinute: "00",
-    endHour: 0,
-    endMinute: 0,
     hourOptions: [],
-    minuteOptions: [
-      { text: '00', value: '00' },
-      { text: '10', value: '10' },
-      { text: '20', value: '20' },
-      { text: '30', value: '30' },
-      { text: '40', value: '40' },
-      { text: '50', value: '50' }
-    ],
-    reservedOptions: [
-      // here the value should be 'this.props.username'
-      { text: 'me', value: 1 }
-    ]
+    reservedOptions: []
   }
 
   generateHourOptions(minHour, maxHour) {
@@ -49,33 +36,20 @@ class ReservationDetailsModal extends Component {
     return result;
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.show) {
-      this.setState({ modalOpen: nextProps.show });
+  generateMinuteOptions(minuteInterval) {
+    let result = [];
+    for (let i = 0; i < 60; i += minuteInterval) {
+      result.push({
+        text: `${i < 10? `0${i}`: i}`,
+        value: `${i < 10? `0${i}`: i}`
+      })
     }
-
-    let hour = "";
-    let minute = "";
-    if (nextProps.selectedHour != "") {
-      let offset = nextProps.selectedHour.charAt(2) == ':' ? 0: 1;
-
-      hour = nextProps.selectedHour.substring(0, 2 - offset);
-      minute = nextProps.selectedHour.substring(3 - offset , 5 - offset);
-      if (hour.charAt(0) == '0') {
-        hour = hour.substring(1,3);
-      }
-    }
-    this.setState({
-      startHour: hour,
-      startMinute: minute,
-    });
+    return result;
   }
 
-  componentWillMount() {
-    const {minHour, maxHour} = this.props;
-    this.setState({
-      hourOptions: this.generateHourOptions(minHour, maxHour)
-    });
+  generateReservationProfilesOptions(reservationProfiles) {
+    let result = reservationProfiles.map((profile) => ({text: profile, value: profile}))
+    return result;
   }
 
   closeModal = () => {
@@ -102,6 +76,7 @@ class ReservationDetailsModal extends Component {
       }
     });
   }
+
   handleStartMinuteChange = (e, {value}) => {
     this.setState({
       startMinute: value,
@@ -130,7 +105,8 @@ class ReservationDetailsModal extends Component {
   }
 
   verifyEndTime() {
-    if (this.state.endHour === 0 || this.state.endMinute === 0) {
+    const {endHour, endMinute} = this.props;
+    if (endHour === 0 || endMinute === 0) {
       throw new Error("Please provide an end time to make a reservation.");
     }
   }
@@ -145,7 +121,7 @@ class ReservationDetailsModal extends Component {
   }
 
   handleReserve = () => {
-    //This try catch verifies requirements before sending the POST request
+    // This try catch verifies requirements before sending the POST request
     try {
       this.verifyEndTime();
       this.verifyReservationTimes();
@@ -162,9 +138,11 @@ class ReservationDetailsModal extends Component {
       return;
     }
 
+    console.log("PASS")
+
     const headers = getTokenHeader();
 
-    //Handle time zone
+    // Handle time zone
     let tzoffset = (this.props.selectedDate).getTimezoneOffset() * 60000;
     let localISOTime = (new Date(this.props.selectedDate - tzoffset)).toISOString().slice(0, -1);
 
@@ -207,6 +185,39 @@ class ReservationDetailsModal extends Component {
         }
       });
     })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.show) {
+      this.setState({
+        modalOpen: nextProps.show
+      });
+    }
+
+    let hour = "";
+    let minute = "";
+    if (nextProps.selectedHour != "") {
+      let offset = nextProps.selectedHour.charAt(2) == ':'? 0: 1;
+
+      hour = nextProps.selectedHour.substring(0, 2 - offset);
+      minute = nextProps.selectedHour.substring(3 - offset , 5 - offset);
+      if (hour.charAt(0) == '0') {
+        hour = hour.substring(1, 3);
+      }
+    }
+    this.setState({
+      startHour: hour,
+      startMinute: minute,
+    });
+  }
+
+  componentWillMount() {
+    const {minHour, maxHour, minuteInterval, reservationProfiles} = this.props;
+    this.setState({
+      hourOptions: this.generateHourOptions(minHour, maxHour),
+      minuteOptions: this.generateMinuteOptions(minuteInterval),
+      reservedOptions: this.generateReservationProfilesOptions(reservationProfiles)
+    });
   }
 
   renderDescription() {
@@ -311,12 +322,19 @@ ReservationDetailsModal.propTypes = {
   maxHour: PropTypes.number,
   selectedRoomId: PropTypes.string.isRequired,
   selectedRoomName: PropTypes.string.isRequired,
-  selectedDate: PropTypes.object.isRequired
+  selectedDate: PropTypes.object.isRequired,
+  onClose: PropTypes.func,
+  onCloseWithReservation: PropTypes.func,
+  minuteInterval: PropTypes.number,
 }
 
 ReservationDetailsModal.defaultProps = {
   minHour: 8,
   maxHour: 24,
+  minuteInterval: 10,
+  reservationProfiles: ['me'],
+  endHour: 0,
+  endMinute: 0
 }
 
 export default ReservationDetailsModal;
