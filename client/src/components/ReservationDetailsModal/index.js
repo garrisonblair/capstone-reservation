@@ -192,8 +192,10 @@ class ReservationDetailsModal extends Component {
       }
 
       // Handle 24-hour military time
-      if (nextProps.selectedHour.includes('PM')) {
-        hour = `${(parseInt(hour) + 12) % 24}`;
+      if (hour === '12') {
+        hour = '12';
+      } else if (nextProps.selectedHour.includes('PM')) {
+        hour = `${(parseInt(hour) + 12)}`;
       }
     }
     this.setState({
