@@ -1,14 +1,15 @@
-#reservation-details-modal {
-    padding: 0 20px;
-    
-  }
-  .timeSelection{
-    width: 70px;
-  }
-.inputLabel{
-  margin-right: 10px;
+.reservation-details-modal {
+  padding: 0 20px;
 }
-#toLabel{
-  margin-left: 15px;
+
+.header--inline {
+  display: inline;
 }
-  
+
+.dropdown--fixed-width {
+  width: 80px;
+}
+
+.modal-description {
+  margin: 15px 0;
+}

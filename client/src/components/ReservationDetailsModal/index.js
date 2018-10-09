@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
-import settings from '../../config/settings';
-import './ReservationDetailsModal.scss';
-import { Button, Header, Modal, Dropdown, Message } from 'semantic-ui-react';
 import axios from 'axios';
-import { getTokenHeader } from '../../utils/requestHeaders';
-import { withRouter } from 'react-router-dom';
+import {Button, Dropdown, Header, Icon, Message, Modal} from 'semantic-ui-react';
+import React, {Component} from 'react';
+import {withRouter} from 'react-router-dom';
+import settings from '../../config/settings'
+import {getTokenHeader} from '../../utils/requestHeaders';
+import './ReservationDetailsModal.scss';
+
+
 class ReservationDetailsModal extends Component {
 
   state = {
@@ -44,7 +46,10 @@ class ReservationDetailsModal extends Component {
     maxHour = parseInt(maxHour);
     let result = [];
     for (var i = minHour; i < maxHour; i++) {
-      result.push({ text: i + '', value: i + '' });
+      result.push({
+        text: i + '',
+        value: i + ''
+      });
     }
     return result;
   }
@@ -57,7 +62,7 @@ class ReservationDetailsModal extends Component {
     let hour = "";
     let minute = "";
     if (nextProps.selectedHour != "") {
-      let offset = nextProps.selectedHour.charAt(2) == ':' ? 0 : 1;
+      let offset = nextProps.selectedHour.charAt(2) == ':' ? 0: 1;
 
       hour = nextProps.selectedHour.substring(0, 2 - offset);
       minute = nextProps.selectedHour.substring(3 - offset , 5 - offset);
@@ -82,19 +87,20 @@ class ReservationDetailsModal extends Component {
   closeModal = () => {
     this.props.onClose();
     this.setState({
-    modalOpen: false,
+      modalOpen: false,
     });
   }
 
   closeModalWithReservation = () => {
     this.props.onCloseWithReservation();
     this.setState({
-    modalOpen: false,
+      modalOpen: false,
     });
   }
 
   handleOpen = () => this.setState({ modalOpen: true });
-  handleStartHourChange = (e, { value }) => {
+
+  handleStartHourChange = (e, {value}) => {
     this.setState({
       startHour: value,
       messageConfig: {
@@ -102,7 +108,7 @@ class ReservationDetailsModal extends Component {
       }
     });
   }
-  handleStartMinuteChange = (e, { value }) => {
+  handleStartMinuteChange = (e, {value}) => {
     this.setState({
       startMinute: value,
       messageConfig: {
@@ -111,7 +117,7 @@ class ReservationDetailsModal extends Component {
     });
   }
 
-  handleEndHourChange = (e, { value }) => {
+  handleEndHourChange = (e, {value}) => {
     this.setState({
       endHour: value,
       messageConfig: {
@@ -120,7 +126,7 @@ class ReservationDetailsModal extends Component {
     });
   }
 
-  handleEndMinuteChange = (e, { value }) => {
+  handleEndMinuteChange = (e, {value}) => {
     this.setState({
       endMinute: value,
       messageConfig: {
@@ -165,7 +171,7 @@ class ReservationDetailsModal extends Component {
     const headers = getTokenHeader();
 
     //Handle time zone
-    let tzoffset = (this.state.date).getTimezoneOffset() * 60000; 
+    let tzoffset = (this.state.date).getTimezoneOffset() * 60000;
     let localISOTime = (new Date(this.state.date - tzoffset)).toISOString().slice(0, -1);
 
     const data = {
@@ -182,70 +188,120 @@ class ReservationDetailsModal extends Component {
       data,
       withCredentials: true,
     })
-      .then((response) => {
-
-        const { history } = this.props;
-
-        console.log('Booked sucessfully')
-        this.setState({
-          messageConfig: {
-            hidden: false,
-            title: 'Completed',
-            message: `Room ${this.state.roomNumber} was successfuly booked.`,
-            color: 'green'
-          }
-        })
-        // setTimeout(function () { history.push('/') }, 3300);
-
-        this.closeModalWithReservation();
-
+    .then((response) => {
+      // const {history} = this.props;
+      console.log('Booked sucessfully')
+      this.setState({
+        messageConfig: {
+          hidden: false,
+          title: 'Completed',
+          message: `Room ${this.state.roomNumber} was successfuly booked.`,
+          color: 'green'
+        }
       })
-      .catch((error) => {
-        console.log(error.message);
-        this.setState({
-          messageConfig: {
-            hidden: false,
-            title: 'Reservation failed',
-            message: 'We are sorry, this reservation overlaps with other reservations. Try different times.',
-            color: "red"
-          }
-        });
-      })
+      // setTimeout(function () { history.push('/') }, 3300);
+      this.closeModalWithReservation();
+    })
+    .catch((error) => {
+      console.log(error.message);
+      this.setState({
+        messageConfig: {
+          hidden: false,
+          title: 'Reservation failed',
+          message: 'We are sorry, this reservation overlaps with other reservations. Try different times.',
+          color: "red"
+        }
+      });
+    })
   }
-  modalDescription() {
-    return <Modal.Content>
-      <Modal.Description>
-        <Header>Room {this.state.roomNumber} </Header>
-        <p>Date: {this.state.date.toDateString()}</p>
-        <br />
-        <span>
-          <span className="inputLabel">From:</span>
-          <Dropdown placeholder='hh' onChange={this.handleStartHourChange} selection compact className="timeSelection" options={this.state.hourOptions} defaultValue={this.state.startHour} />
-          <Dropdown placeholder='mm' onChange={this.handleStartMinuteChange} selection compact className="timeSelection" options={this.state.minuteOptions} defaultValue={this.state.startMinute} />
-          <span className="inputLabel" id="toLabel">To:</span>
-          <Dropdown placeholder='hh' onChange={this.handleEndHourChange} selection compact className="timeSelection" options={this.state.hourOptions} />
-          <Dropdown placeholder='mm' onChange={this.handleEndMinuteChange} selection compact className="timeSelection" options={this.state.minuteOptions} />
-        </span>
-        <br /><br />
-        <span>
-          <span className="inputLabel">Reserved by:</span>
-          <Dropdown compact placeholder='hh' selection options={this.state.reservedOptions} defaultValue={this.state.reservedOptions[0].value} />
-        </span>
-        <br /><br />
-        <div>
-          <Button content='Reserve' primary onClick={this.handleReserve} />
-          <Button content='Cancel' secondary onClick={this.closeModal} />
-        </div>
-      </Modal.Description>
-    </Modal.Content>
+
+  renderDescription() {
+    return (
+      <Modal.Content>
+        <Modal.Description>
+          <Header>
+            <Icon name="calendar"/>
+            {this.state.date.toDateString()}
+          </Header>
+          <div className="modal-description">
+            <h3 className="header--inline">
+              <Icon className="hourglass start"/>
+              {`from `}
+            </h3>
+            <Dropdown
+              selection
+              compact
+              placeholder='hh'
+              className="dropdown--fixed-width"
+              options={this.state.hourOptions}
+              defaultValue={this.state.startHour}
+              onChange={this.handleStartHourChange}
+            />
+            <Dropdown
+              selection
+              compact
+              placeholder='mm'
+              className="dropdown--fixed-width"
+              options={this.state.minuteOptions}
+              defaultValue={this.state.startMinute}
+              onChange={this.handleStartMinuteChange}
+            />
+          </div>
+          <div className="modal-description">
+            <h3 className="header--inline">
+              <Icon className="hourglass end"/>
+              {`to `}
+            </h3>
+            <Dropdown
+              selection
+              compact
+              className="dropdown--fixed-width"
+              placeholder='hh'
+              options={this.state.hourOptions}
+              onChange={this.handleEndHourChange}
+            />
+            <Dropdown
+              selection
+              compact
+              className="dropdown--fixed-width"
+              placeholder='mm'
+              options={this.state.minuteOptions}
+              onChange={this.handleEndMinuteChange}
+            />
+          </div>
+          <div className="modal-description">
+            <h3 className="header--inline">
+              <Icon name="user" /> {" "}
+              {`by `}
+            </h3>
+            <Dropdown
+              selection
+              compact
+              className="dropdown--fixed-width"
+              placeholder='hh'
+              options={this.state.reservedOptions}
+              defaultValue={this.state.reservedOptions[0].value}
+            />
+          </div>
+          <div className="ui divider"/>
+          <div>
+            <Button content='Reserve' primary onClick={this.handleReserve} />
+            <Button content='Cancel' secondary onClick={this.closeModal} />
+          </div>
+        </Modal.Description>
+      </Modal.Content>
+    )
   }
 
   render() {
     return (
       <div id="reservation-details-modal">
         <Modal centered={false} size={"tiny"} open={this.state.modalOpen}>
-          <Modal.Header>Reservation Details</Modal.Header>
-          {this.state.messageConfig.color !== 'green' ? this.modalDescription() : null}
+          <Modal.Header>
+            <Icon name="map marker alternate"/>
+            Room {this.state.roomNumber}
+          </Modal.Header>
+          {this.state.messageConfig.color !== 'green'? this.renderDescription(): null}
           <Message attached='bottom' color={this.state.messageConfig.color} hidden={this.state.messageConfig.hidden}>
             <Message.Header>{this.state.messageConfig.title}</Message.Header>
             <p>{this.state.messageConfig.message}</p>
@@ -257,4 +313,3 @@ class ReservationDetailsModal extends Component {
 }
 
 export default ReservationDetailsModal;
-// export default withRouter(ReservationDetailsModal)
