@@ -165,7 +165,6 @@ class ReservationDetailsModal extends Component {
       })
     })
     .catch((error) => {
-      console.log(error.message);
       this.setState({
         showModal: true,
         modalTitle: 'Reservation failed',
