@@ -66,46 +66,55 @@ class Calendar extends Component {
   }
 
   /************ REQUESTS *************/
+  
+  //propsTesting* is used for Jest testing 
   getBookings() {
-    let params = {
-      year: this.state.selectedDate.getFullYear(),
-      month: this.state.selectedDate.getMonth() + 1,
-      day: this.state.selectedDate.getDate()
+    if(this.props.propsTestingBookings) {
+      this.setState({bookings: this.props.propsTestingBookings})
+    } else {
+      let params = {
+        year: this.state.selectedDate.getFullYear(),
+        month: this.state.selectedDate.getMonth() + 1,
+        day: this.state.selectedDate.getDate()
+      }
+  
+      axios({
+        method: 'GET',
+        url: `${settings.API_ROOT}/booking`,
+        params: params
+      })
+      .then((response) => {
+        this.setState({bookings: response.data})
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
     }
-
-    axios({
-      method: 'GET',
-      url: `${settings.API_ROOT}/booking`,
-      params: params
-    })
-    .then((response) => {
-      this.setState({bookings: response.data})
-    })
-    .catch(function (error) {
-      console.log(error);
-    })
-    .then(function () {
-      // always executed
-    });
   }
 
   getRooms() {
-    axios({
-      method: 'GET',
-      url: `${settings.API_ROOT}/room`
-    })
-    .then((response) => {
-      console.log(response)
-      this.setState({roomsList: response.data})
-      let colNumber = response.data.length;
-      document.documentElement.style.setProperty("--colNum", colNumber);
-    })
-    .catch(function (error) {
-      console.log(error);
-    })
-    .then(function () {
-      // always executed
-    });
+    if(this.props.propsTestingRooms) {
+      this.setState({roomsList: this.props.propsTestingRooms})
+    } else {
+      axios({
+        method: 'GET',
+        url: `${settings.API_ROOT}/room`
+      })
+      .then((response) => {
+        this.setState({roomsList: response.data})
+        let colNumber = response.data.length;
+        document.documentElement.style.setProperty("--colNum", colNumber);
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+    } 
   }
 
   /************ RENDER METHODS *************/
