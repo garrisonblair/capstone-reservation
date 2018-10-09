@@ -1,0 +1,173 @@
+[
+{
+  "model": "rooms.room",
+  "pk": 1,
+  "fields": {
+    "room_id": "H961-1",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 2,
+  "fields": {
+    "room_id": "H961-2",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 3,
+  "fields": {
+    "room_id": "H961-3",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 4,
+  "fields": {
+    "room_id": "H961-4",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 5,
+  "fields": {
+    "room_id": "H961-6",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 6,
+  "fields": {
+    "room_id": "H961-7",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 7,
+  "fields": {
+    "room_id": "H961-11",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 8,
+  "fields": {
+    "room_id": "H961-13",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 9,
+  "fields": {
+    "room_id": "H961-15",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 10,
+  "fields": {
+    "room_id": "H961-17",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 11,
+  "fields": {
+    "room_id": "H961-19",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 12,
+  "fields": {
+    "room_id": "H961-21",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 13,
+  "fields": {
+    "room_id": "H961-23",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 14,
+  "fields": {
+    "room_id": "H961-25",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 15,
+  "fields": {
+    "room_id": "H961-26",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 16,
+  "fields": {
+    "room_id": "H961-27",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 17,
+  "fields": {
+    "room_id": "H961-28",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 18,
+  "fields": {
+    "room_id": "H961-29",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+},
+{
+  "model": "rooms.room",
+  "pk": 19,
+  "fields": {
+    "room_id": "H961-31",
+    "capacity": 4,
+    "number_of_computers": 4
+  }
+}
+]

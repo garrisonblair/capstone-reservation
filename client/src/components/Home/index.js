@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import settings from '../../config/settings';
 import './Home.scss';
+import Calendar from '../Calendar';
 
 
 class Home extends Component {
@@ -10,9 +11,12 @@ class Home extends Component {
 
   render() {
     return (
-      <div id="home">
-        <h1> Home </h1>
-      </div>
+      <div>
+        <main>
+          <Calendar/>
+        </main>
+        
+      </div>      
     )
   }
 }
