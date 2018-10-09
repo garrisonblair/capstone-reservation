@@ -61,7 +61,7 @@ class ReservationDetailsModal extends Component {
       minute = nextProps.selectedHour.substring(3,5);
     }
     this.setState({
-      roomNumber: nextProps.selectedRoom,
+      roomNumber: nextProps.selectedRoomId,
       startHour: hour,
       startMinute: minute,
       date: nextProps.selectedDate
