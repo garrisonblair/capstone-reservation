@@ -23,24 +23,18 @@ class Calendar extends Component {
     console.log(settings)
   }
 
-  //TODO: Get settings from props or from requests.
   componentWillMount() {
     /*** Get bookings ***/
     this.getBookings();
 
-    /*** Set up rooms list ***/
-    let colNumber = 10;
-    let rooms = [];
-    for (let i = 1; i <= colNumber; i++) {
-      rooms.push(i);
-      // this.setState({["H961-" + i]: []});
-    }
-    this.setState({roomsList: rooms});
+    /*** Get rooms ***/
+    this.getRooms();
+  
     /*** Set up hours ***/
     let hoursSettings = {
       start: "08:00",
       end: "23:00",
-      increment: 30
+      increment: 60
     }
     let hourStart =  this.timeStringToInt(hoursSettings.start);
     let hourEnd =  this.timeStringToInt(hoursSettings.end);
@@ -54,29 +48,24 @@ class Calendar extends Component {
     let currentTime = hourStart.hour * 60 + hourStart.minutes;
     let endTime = hourEnd.hour * 60 + hourEnd.minutes;
 
-    //TODO: Remove loop variable. Using this var only to avoid infinite loop during development.
-    let loop = 0;
-    while (currentTime <= endTime && loop < 1000) {
+
+    while (currentTime <= endTime) {
       hours.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
       time.setMinutes(time.getMinutes() + minutesIncrement);
       currentTime += minutesIncrement;
-      loop ++;
-      if (loop > 999) {
-        alert("Infinite loop")
-      }
     }
     this.setState({hoursSettings: hoursSettings, hoursList: hours});
 
     /*** Set up variables in scss ***/
     let gridRowNum = minutesIncrement * hours.length / 10;
-    document.documentElement.style.setProperty("--colNum", colNumber);
+    
     document.documentElement.style.setProperty("--rowNum", hours.length);
     document.documentElement.style.setProperty("--cellsDivisionNum", gridRowNum);
 
   }
 
   /************ REQUESTS *************/
-  getBookings(){
+  getBookings() {
     let params = {
       year: this.state.selectedDate.getFullYear(),
       month: this.state.selectedDate.getMonth() + 1,
@@ -89,14 +78,26 @@ class Calendar extends Component {
       params: params
     })
     .then((response) => {
-      let bookings = [];
-      response.data.map(booking => {
-        bookings.push(booking);
-      })
-
       this.setState({bookings: response.data})
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
+    .then(function () {
+      // always executed
+    });
+  }
 
-      // this.setState({bookings: response})
+  getRooms() {
+    axios({
+      method: 'GET',
+      url: `${settings.API_ROOT}/room`
+    })
+    .then((response) => {
+      console.log(response)
+      this.setState({roomsList: response.data})
+      let colNumber = response.data.length;
+      document.documentElement.style.setProperty("--colNum", colNumber);
     })
     .catch(function (error) {
       console.log(error);
@@ -108,7 +109,6 @@ class Calendar extends Component {
 
   /************ RENDER METHODS *************/
 
-  // TODO: Styling the buttons
   renderDate() {
     return (
       <div className="calendar__date">
@@ -136,8 +136,8 @@ class Calendar extends Component {
     const {roomsList} = this.state;
 
     const rooms = roomsList.map((room) =>
-      <div className="calendar__rooms__room" key={room}>
-        {room}
+      <div className="calendar__rooms__room" key={room.room_id}>
+        {room.room_id}
       </div>
     );
 
@@ -168,14 +168,14 @@ class Calendar extends Component {
       for (let j = 0; j < hoursList.length; j++) {
         let currentHour = hoursList[j];
         roomsCells.push(
-          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom} onClick={this.handleClickCell}></div>
+          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} key={cell} data-hour={currentHour} data-room={currentRoom.room_id} onClick={this.handleClickCell}></div>
         );
         cell++;
       }
 
       let bookedCells = [];
       if (this.state.bookings) {
-        let bookings = this.state.bookings.filter(booking => booking.room == currentRoom);
+        let bookings = this.state.bookings.filter(booking => booking.room == currentRoom.room_id);
         if (bookings.length > 0) {
         bookedCells.push(this.renderCurrentBookings(bookings))
         }
@@ -227,7 +227,7 @@ class Calendar extends Component {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
         gridColumn: 1,
-        minHeight: '50px'
+        minHeight: '100px',
       }
     }
     return style;
@@ -255,7 +255,6 @@ class Calendar extends Component {
 
    /************ CLICK HANDLING METHODS *************/
 
-  //TODO: Add modal opening when clicking on empty time slot
   handleClickCell = (e) => {
     let selectedRoom = e.target.getAttribute('data-room');
     let selectedHour = e.target.getAttribute('data-hour');
@@ -290,14 +289,11 @@ class Calendar extends Component {
   }
 
   toggleBookingModalWithReservation = () => {
-    //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on. With reload, the view will come back to the current day.
+    //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on. 
+    //With reload, the view will come back to the current day.
     window.location.reload();
-
-    // this.setState({isBooking: !this.state.isBooking})
-    // this.getBookings();
   }
 
-  //Handle time in the string format
   timeStringToInt(time) {
     //Need offset depending if time format is H:MM or HH:MM
     let offset = time.charAt(2) == ':' ? 0 : 1;
@@ -312,9 +308,8 @@ class Calendar extends Component {
 
    /************ COMPONENT RENDERING *************/
 
-
   render() {
-    return this.state.bookings ? (
+    return (
       <div className="calendar__container">
         {this.renderDate()}
         <div className="calendar__wrapper">
@@ -322,7 +317,6 @@ class Calendar extends Component {
           {this.renderHours()}
           {this.renderCells()}
         </div>
-        {/* {this.state.isBooking ? <ReservationDetailsModal></ReservationDetailsModal> : null} */}
         <ReservationDetailsModal
           show={this.state.isBooking}
           selectedRoom={this.state.selectedRoom}
@@ -332,8 +326,6 @@ class Calendar extends Component {
           onCloseWithReservation={this.toggleBookingModalWithReservation}
         />
       </div>
-    ) : (
-      <span>Fetching bookings</span>
     )
   }
 }
