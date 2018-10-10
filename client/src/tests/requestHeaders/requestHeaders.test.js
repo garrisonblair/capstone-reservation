@@ -1,7 +1,7 @@
 import React from 'react';
 import {getTokenHeader} from '../../utils/requestHeaders';
 
-it('should', () => {
+it('should expect "Token " with the stored token data', () => {
     const token = "myTokenToTest";
     const localStorageObject = {
         "token":token
