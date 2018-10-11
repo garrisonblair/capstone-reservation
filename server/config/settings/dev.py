@@ -1,4 +1,5 @@
 from .base import *
+from .ldap import *
 
 DEBUG = True
 ALLOWED_HOSTS = ['*']
