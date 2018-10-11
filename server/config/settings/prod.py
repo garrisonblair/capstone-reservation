@@ -4,6 +4,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 PROJECT_APPS = [
+    'apps.groups.apps.GroupsConfig',
     'apps.ping.apps.PingConfig',
     'apps.accounts.apps.AccountsConfig',
     'apps.rooms.apps.RoomsConfig',
