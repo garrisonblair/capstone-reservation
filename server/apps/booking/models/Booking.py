@@ -1,10 +1,23 @@
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from apps.accounts.models.Student import Student
 from apps.rooms.models.Room import Room
+from apps.booking.models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
+
+
+class BookingManager(models.Manager):
+    def create_booking(self, student, room, date, start_time, end_time, recurring_booking):
+        booking = self.create(
+            student=student,
+            room=room,
+            date=date,
+            start_time=start_time,
+            end_time=end_time,
+            recurring_booking=recurring_booking
+        )
+
+        return booking
 
 
 class Booking(models.Model):
@@ -13,6 +26,9 @@ class Booking(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
+    recurring_booking = models.ForeignKey(RecurringBooking, on_delete=models.CASCADE, null=True)
+
+    objects = BookingManager()
 
     def save(self, *args, **kwargs):
         self.validate_model()
