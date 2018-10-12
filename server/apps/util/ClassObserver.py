@@ -1,6 +1,6 @@
 import abc
 
-
+# INTERFACE
 class ClassObserver(abc.ABC):
 
     @abc.abstractmethod

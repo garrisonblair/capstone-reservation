@@ -3,6 +3,7 @@ import abc
 from apps.util.ClassObserver import ClassObserver
 
 
+# INTERFACE
 class BookingExporter(ClassObserver, abc.ABC):
 
     @abc.abstractmethod
