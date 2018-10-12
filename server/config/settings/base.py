@@ -23,7 +23,15 @@ THIRD_PARTY_APPS = [
     'rest_framework.authtoken',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS
+PROJECT_APPS = [
+    'apps.ping.apps.PingConfig',
+    'apps.accounts.apps.AccountsConfig',
+    'apps.rooms.apps.RoomsConfig',
+    'apps.booking.apps.BookingConfig',
+    'apps.bookingExporter.apps.BookingExporterConfig'
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
