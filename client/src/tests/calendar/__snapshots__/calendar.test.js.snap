@@ -1,0 +1,666 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Shows calendar 1`] = `
+<div
+  className="calendar__container"
+>
+  <div
+    className="calendar__date"
+  >
+    <button
+      className="ui large basic circular icon button"
+      onClick={[Function]}
+      role="button"
+    >
+      <i
+        aria-hidden="true"
+        className="chevron left icon"
+      />
+    </button>
+    <h1
+      className="calendar__date__header"
+    >
+      <i
+        aria-hidden="true"
+        className="calendar alternate outline icon"
+      />
+      Tue Oct 09 2018
+    </h1>
+    <button
+      className="ui large basic circular icon button"
+      onClick={[Function]}
+      role="button"
+    >
+      <i
+        aria-hidden="true"
+        className="chevron right icon"
+      />
+    </button>
+  </div>
+  <div
+    className="calendar__wrapper"
+  >
+    <div
+      className="calendar__rooms__wrapper"
+    >
+      <div
+        className="calendar__rooms__room"
+      >
+        room 1
+      </div>
+      <div
+        className="calendar__rooms__room"
+      >
+        room 2
+      </div>
+    </div>
+    <div
+      className="calendar__hours__wrapper"
+    >
+      <div
+        className="calendar__hours__hour"
+      >
+        07:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        08:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        09:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        10:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        11:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        12:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        13:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        14:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        15:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        16:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        17:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        18:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        19:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        20:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        21:00
+      </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        22:00
+      </div>
+    </div>
+    <div
+      className="calendar__cells__wrapper"
+    >
+      <div
+        className="calendar__rooms__cells"
+      >
+        <div
+          className="calendar__cells__cell"
+          data-hour="07:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 7,
+              "gridRowStart": 1,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="08:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 13,
+              "gridRowStart": 7,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="09:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 19,
+              "gridRowStart": 13,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="10:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 25,
+              "gridRowStart": 19,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="11:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 31,
+              "gridRowStart": 25,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="12:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 37,
+              "gridRowStart": 31,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="13:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 43,
+              "gridRowStart": 37,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="14:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 49,
+              "gridRowStart": 43,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="15:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 55,
+              "gridRowStart": 49,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="16:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 61,
+              "gridRowStart": 55,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="17:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 67,
+              "gridRowStart": 61,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="18:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 73,
+              "gridRowStart": 67,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="19:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 79,
+              "gridRowStart": 73,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="20:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 85,
+              "gridRowStart": 79,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="21:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 91,
+              "gridRowStart": 85,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="22:00"
+          data-room-id={1}
+          data-room-name="room 1"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 97,
+              "gridRowStart": 91,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__booking"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 12,
+              "gridRowStart": 2,
+            }
+          }
+        >
+          <div
+            className="calendar__booking__booker"
+          >
+            12345567
+             
+          </div>
+          <div
+            className="calendar__booking__time"
+          >
+            <div>
+              08:10
+            </div>
+            <div>
+              09:50
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="calendar__rooms__cells"
+      >
+        <div
+          className="calendar__cells__cell"
+          data-hour="07:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 7,
+              "gridRowStart": 1,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="08:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 13,
+              "gridRowStart": 7,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="09:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 19,
+              "gridRowStart": 13,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="10:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 25,
+              "gridRowStart": 19,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="11:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 31,
+              "gridRowStart": 25,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="12:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 37,
+              "gridRowStart": 31,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="13:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 43,
+              "gridRowStart": 37,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="14:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 49,
+              "gridRowStart": 43,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="15:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 55,
+              "gridRowStart": 49,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="16:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 61,
+              "gridRowStart": 55,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="17:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 67,
+              "gridRowStart": 61,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="18:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 73,
+              "gridRowStart": 67,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="19:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 79,
+              "gridRowStart": 73,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="20:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 85,
+              "gridRowStart": 79,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="21:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 91,
+              "gridRowStart": 85,
+              "minHeight": "100px",
+            }
+          }
+        />
+        <div
+          className="calendar__cells__cell"
+          data-hour="22:00"
+          data-room-id={2}
+          data-room-name="room 2"
+          onClick={[Function]}
+          style={
+            Object {
+              "gridColumn": 1,
+              "gridRowEnd": 97,
+              "gridRowStart": 91,
+              "minHeight": "100px",
+            }
+          }
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    id="reservation-details-modal"
+  />
+</div>
+`;
