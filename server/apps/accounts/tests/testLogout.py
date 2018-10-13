@@ -8,7 +8,6 @@ class TestLogout(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.request_factory = APIRequestFactory()
         self.username = 'John'
         self.email = 'JohnDoe@gmail.com'
         self.password = 'johnsVerySafePassword'
