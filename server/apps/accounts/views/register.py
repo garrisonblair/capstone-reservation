@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from utils.ldap_server import get_ldap_connection
 from apps.accounts.serializers.UserSerializer import UserSerializerLogin
+from apps.accounts.models.VerificationToken import VerificationToken
 
 
 # TODO: Send email
@@ -39,7 +40,12 @@ class RegisterView(APIView):
             print("New LDAP user")
             user.is_active = False
             user.save()
+
+            # Create verification token with 1 hour of expiration time
+            token = VerificationToken.objects.create(user=user)
+
             # Send email
+
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
