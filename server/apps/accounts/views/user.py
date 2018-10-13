@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.generics import ListAPIView
@@ -12,9 +13,10 @@ class UserList(ListAPIView):
     serializer_class = UserSerializerLogin
 
 
-# TODO: Update password
 # TODO: Check permission
 class UserUpdate(APIView):
+    # authentication_classes = ()
+    # permission_classes = ()
 
     def patch(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
@@ -44,6 +46,9 @@ class UserUpdate(APIView):
 
         if email:
             user.email = email
+
+        if password:
+            user.password = make_password(password)  # Hash password
 
         # Must be superuser to update those fields
         if is_active is not None and request.user.is_superuser:
