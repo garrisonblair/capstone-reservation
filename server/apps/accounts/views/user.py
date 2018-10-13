@@ -3,9 +3,12 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from apps.accounts.serializers.UserSerializer import UserSerializer, UserSerializerLogin
+from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 
 
 class UserList(ListAPIView):
@@ -13,10 +16,8 @@ class UserList(ListAPIView):
     serializer_class = UserSerializerLogin
 
 
-# TODO: Check permission
 class UserUpdate(APIView):
-    # authentication_classes = ()
-    # permission_classes = ()
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
 
     def patch(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
@@ -34,6 +35,9 @@ class UserUpdate(APIView):
             user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Check permissions
+        self.check_object_permissions(request, user)
 
         if username:
             user.username = username
