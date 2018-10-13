@@ -10,8 +10,12 @@ class WEBCalendarExporter(BookingExporter):
     LOGIN_URL = BASE_URL + "login.php"
     IMPORT_HANDLER_URL = BASE_URL + "import_handler.php"
 
+    # These messages are extremely dependent on WEBCalendar, but the system should
+    # not be updated during a transition phase
+    LOGIN_FAILED_MESSAGE = "Error: Invalid login"
     NOT_AUTHORIZED_MESSAGE = "You are not authorized"
 
+    # TODO: move these to some settings
     USERNAME = "f_daigl"
     PASSWORD = "<PUT_PASSWORD_HERE>"
 
@@ -31,7 +35,7 @@ class WEBCalendarExporter(BookingExporter):
     def login(self):
         response = self.session.post(self.LOGIN_URL, data={"login": self.USERNAME, "password": self.PASSWORD})
 
-        if response.status_code is not 200:
+        if self.LOGIN_FAILED_MESSAGE in response.text:
             # TODO: handle login failure
             print("login failed")
             pass
@@ -44,7 +48,7 @@ class WEBCalendarExporter(BookingExporter):
         data = {"ImportType": "ICAL",
                 "exc_private": "1",
                 "overwrite": "Y",
-                "calUser": "_NUC_LAB_H961_04"}
+                "calUser": booking.room.externalroomid.external_id}
         response = self.session.post(self.IMPORT_HANDLER_URL, files=file, data=data)
 
         print(response.text)
@@ -53,7 +57,6 @@ class WEBCalendarExporter(BookingExporter):
             # TODO: handle request failure
             print("Not Authorized")
             pass
-
 
     # BookingExporter
     # TODO: Investigate if using threads here could improve performance

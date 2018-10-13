@@ -1,7 +1,16 @@
+import datetime
+
 from django.test import TestCase
 from unittest import mock
 
 from ..WEBCalendarExporter.WEBCalendarExporter import WEBCalendarExporter
+from ..models.bookingExporterModels import ExternalRoomID
+
+from apps.booking.models import Booking
+from apps.rooms.models import Room
+from apps.accounts.models import Student
+
+
 
 class testWebCalendarExporter(TestCase):
 
@@ -19,18 +28,68 @@ END:VEVENT
 END:VCALENDAR"""
 
     def setUp(self):
-        self.exporter = WEBCalendarExporter()
+        room = Room(room_id="Room 1")
+        room.save()
+
+        external_id = ExternalRoomID(external_id="_ROOM1_")
+        external_id.room = room
+        external_id.save()
+
+        student = Student(student_id="s_loc")
+        student.save()
+
+        self.booking = Booking(start_time=datetime.time(12,0,0),
+                               end_time=datetime.time(13,0,0),
+                               date=datetime.date(2018,10,12),
+                               student=student,
+                               room=room)
+        self.booking.save()
+
+        self.response_mock = mock.Mock()
+        self.response_mock.text = ""
+
+        self.session_mock = mock.Mock()
+        self.session_mock.post.return_value = self.response_mock
 
     def testLoginSuccess(self):
 
-        self.exporter.login()
+        exporter = WEBCalendarExporter(self.session_mock)
+
+        exporter.login()
+
+        self.assertEqual(self.session_mock.post.call_count, 1)
+
+        self.assertEqual(self.session_mock.post.call_args[1],
+                         {"data":
+                              {"login": "f_daigl",
+                               "password": "<PUT_PASSWORD_HERE>"}
+                          })
+
+        self.assertEqual(self.session_mock.post.call_args[0][0],
+                         WEBCalendarExporter.LOGIN_URL)
 
     def testBackupBooking(self):
 
-        serializerMock = mock.Mock()
-        serializerMock.serialize_booking.return_value = self.TEST_ICS
+        serializer_mock = mock.Mock()
+        serializer_mock.serialize_booking.return_value = self.TEST_ICS
 
-        self.exporter = WEBCalendarExporter(ics_serializer=serializerMock)
+        self.exporter = WEBCalendarExporter(self.session_mock, serializer_mock)
+        self.exporter.backup_booking(self.booking)
 
-        self.exporter.backup_booking(None)
+        self.assertEqual(serializer_mock.serialize_booking.call_args[0][0], self.booking)
+
+        self.assertEqual(self.session_mock.post.call_args[0][0],
+                         WEBCalendarExporter.IMPORT_HANDLER_URL)
+
+        self.assertEqual(self.session_mock.post.call_args[1],
+                         {'data': {
+                            'overwrite': 'Y',
+                            'calUser': '_ROOM1_',
+                            'ImportType': 'ICAL',
+                            'exc_private': '1'},
+                         'files': {
+                            'FileName': ('booking.ics', self.TEST_ICS)}
+                          })
+        
+
 
