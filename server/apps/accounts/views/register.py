@@ -9,8 +9,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils.ldap_server import get_ldap_connection
-from apps.accounts.serializers.UserSerializer import UserSerializerLogin
 from apps.accounts.models.VerificationToken import VerificationToken
+from apps.accounts.serializers.UserSerializer import UserSerializerLogin
 
 
 # TODO: Fix timezone

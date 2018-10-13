@@ -20,7 +20,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 
 class VerificationTokenAdmin(admin.ModelAdmin):
-    list_display = ('user_id', 'email', 'verification_token', 'expiration')
+    list_display = ('user_id', 'email', 'token', 'expiration')
 
     def user_id(self, instance):
         return instance.user.id
