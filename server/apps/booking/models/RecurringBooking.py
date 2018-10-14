@@ -10,7 +10,7 @@ from datetime import timedelta
 
 class RecurringBookingManager(models.Manager):
     def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, student_group, student):
-        recurring_booking = RecurringBooking(
+        recurring_booking = self.create(
             start_date=start_date,
             end_date=end_date,
             booking_start_time=start_time,
@@ -19,7 +19,6 @@ class RecurringBookingManager(models.Manager):
             student_group=student_group,
             student=student
         )
-        recurring_booking.save()
 
         from . import Booking
         date = recurring_booking.start_date

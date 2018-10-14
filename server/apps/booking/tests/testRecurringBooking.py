@@ -1,5 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from datetime import timedelta
+
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.accounts.models.Student import Student
 from apps.groups.models.StudentGroup import StudentGroup
@@ -52,8 +54,32 @@ class TestRecurringBooking(TestCase):
             self.group,
             self.group.students.get(student_id='00000001')
         )
-
         self.assertEqual(recurring_booking.booking_set.count(), 3)
+
+        recurring_booking = RecurringBooking.objects.get(start_date=self.start_date)
+        booking1 = recurring_booking.booking_set.get(date=self.start_date)
+
+        self.assertEqual(booking1.start_time, self.start_time)
+        self.assertEqual(booking1.end_time, self.end_time)
+        self.assertEqual(booking1.room, self.room)
+        self.assertEqual(booking1.student_group, self.group)
+        self.assertEqual(booking1.student, self.group.students.get(student_id='00000001'))
+
+        booking2 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=7))
+
+        self.assertEqual(booking2.start_time, self.start_time)
+        self.assertEqual(booking2.end_time, self.end_time)
+        self.assertEqual(booking2.room, self.room)
+        self.assertEqual(booking2.student_group, self.group)
+        self.assertEqual(booking2.student, self.group.students.get(student_id='00000001'))
+
+        booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
+
+        self.assertEqual(booking3.start_time, self.start_time)
+        self.assertEqual(booking3.end_time, self.end_time)
+        self.assertEqual(booking3.room, self.room)
+        self.assertEqual(booking3.student_group, self.group)
+        self.assertEqual(booking3.student, self.group.students.get(student_id='00000001'))
 
     def testRecurringBookingCreationConflict(self):
         RecurringBooking.objects.create_recurring_booking(
