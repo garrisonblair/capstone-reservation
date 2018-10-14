@@ -1,10 +1,10 @@
 import abc
 
 # INTERFACE
-class ClassObserver(abc.ABC):
+class ModelObserver(abc.ABC):
 
     @abc.abstractmethod
-    def subject_saved(self, subject):
+    def subject_created(self, subject):
         pass
 
     @abc.abstractmethod

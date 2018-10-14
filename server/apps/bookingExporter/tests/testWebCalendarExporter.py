@@ -84,12 +84,12 @@ END:VCALENDAR"""
         self.assertEqual(self.session_mock.post.call_args[1],
                          {'data': {
                             'overwrite': 'Y',
-                            'calUser': '_ROOM1_',
+                            'calUser': self.booking.room.externalroomid.external_id,
                             'ImportType': 'ICAL',
                             'exc_private': '1'},
                          'files': {
                             'FileName': ('booking.ics', self.TEST_ICS)}
                           })
-        
+
 
 

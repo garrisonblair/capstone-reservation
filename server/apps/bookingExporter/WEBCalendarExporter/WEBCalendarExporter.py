@@ -69,7 +69,7 @@ class WEBCalendarExporter(BookingExporter):
 
     # ClassObserver
 
-    def subject_saved(self, subject):
+    def subject_created(self, subject):
         self.backup_booking(subject)
 
     def subject_updated(self, subject):
