@@ -41,26 +41,25 @@ class BookingView(APIView):
         requestDay = request.GET.get('day')
         requestMonth = request.GET.get('month')
 
-        print("requestYear: ")
-        print(requestYear)
-        print("requestMonth: ")
-        print(requestMonth)
-        print("requestDay: ")
-        print(requestDay)
-
         if requestYear != None and requestMonth != None and requestDay != None:
 
+            try:
 
-            integerRequestYear = int(requestYear)
-            integerRequestMonth = int(requestMonth)
-            integerRequestDay = int(requestDay)
+                integerRequestYear = int(requestYear)
+                integerRequestMonth = int(requestMonth)
+                integerRequestDay = int(requestDay)
 
-            date = datetime.date(integerRequestYear, integerRequestMonth, integerRequestDay)
+                date = datetime.date(integerRequestYear, integerRequestMonth, integerRequestDay)
+                bookings = Booking.objects.filter(date=date)
 
-            bookings = Booking.objects.filter(date=date)
+            except ValueError:
+                return Response("Invalid date. Please supply valid integer values for year, month and day", status=status.HTTP_400_BAD_REQUEST)
 
         else:
-            bookings = Booking.objects.all()
+            try:
+                bookings = Booking.objects.all()
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
         bookingsList = list()
         for booking in bookings:

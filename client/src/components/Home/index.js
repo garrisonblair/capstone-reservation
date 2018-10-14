@@ -1,18 +1,22 @@
 import React, {Component} from 'react';
 import settings from '../../config/settings';
 import './Home.scss';
+import Calendar from '../Calendar';
 
 
 class Home extends Component {
-  componentDidMount() {
-    console.log(settings)
+  componentDidMount = () => {
+    document.title = 'Home'
   }
 
   render() {
     return (
-      <div id="home">
-        <h1> Home </h1>
-      </div>
+      <div>
+        <main>
+          <Calendar/>
+        </main>
+        
+      </div>      
     )
   }
 }
