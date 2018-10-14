@@ -9,10 +9,16 @@ pipeline {
         booleanParam(defaultValue: false, description: 'Determines whether to skip the integration tests', name: 'skipIntegrationTests')
     
     }
+
     options {
         timestamps()
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     }
+
+    environment {
+    	DJANGO_ENV = 'dev'
+    }
+
     stages {
         stage('Show current environment variables') {
             steps {
@@ -22,6 +28,7 @@ pipeline {
                 echo env.PATH
                 echo env.NODE_NAME
                 echo env.USER
+                echo env.DJANGO_ENV
             }
         }
         stage('Static Analysis') {
