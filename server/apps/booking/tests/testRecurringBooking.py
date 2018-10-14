@@ -49,7 +49,8 @@ class TestRecurringBooking(TestCase):
             self.start_time,
             self.end_time,
             self.room,
-            self.group
+            self.group,
+            self.group.students.get(student_id='00000001')
         )
 
         self.assertEqual(recurring_booking.booking_set.count(), 3)
@@ -61,7 +62,8 @@ class TestRecurringBooking(TestCase):
             self.start_time,
             self.end_time,
             self.room,
-            self.group
+            self.group,
+            self.group.students.get(student_id='00000001')
         )
         with self.assertRaises(ValidationError):
             RecurringBooking.objects.create_recurring_booking(
@@ -70,7 +72,8 @@ class TestRecurringBooking(TestCase):
                 self.start_time,
                 self.end_time,
                 self.room,
-                self.group
+                self.group,
+                self.group.students.get(student_id='00000001')
             )
         self.assertEqual(RecurringBooking.objects.count(), 1)
 
@@ -82,7 +85,8 @@ class TestRecurringBooking(TestCase):
                 self.start_time,
                 self.end_time,
                 self.room,
-                self.group
+                self.group,
+                self.group.students.get(student_id='00000001')
             )
         self.assertEqual(RecurringBooking.objects.count(), 0)
 
@@ -94,6 +98,7 @@ class TestRecurringBooking(TestCase):
                 self.end_time,
                 self.start_time,
                 self.room,
-                self.group
+                self.group,
+                self.group.students.get(student_id='00000001')
             )
         self.assertEqual(RecurringBooking.objects.count(), 0)
