@@ -59,6 +59,15 @@ As a developer you will need to perform the following steps:
     python get-pip.py
 ```
 
+### .env Setup
+
+The application depends on environment variables stored in .env
+
+- Create .env
+```
+    cp .env.config .env
+```
+
 ### LDAP Setup
 
 ![Alt text](docs/ldap_tunnel.png)
