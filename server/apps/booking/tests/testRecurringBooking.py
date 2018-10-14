@@ -73,3 +73,16 @@ class TestRecurringBooking(TestCase):
                 self.group
             )
         self.assertEqual(RecurringBooking.objects.count(), 1)
+
+    def testRecurringBookingWrongDateOrder(self):
+        with self.assertRaises(ValidationError) as ex:
+            recurring_booking = RecurringBooking.objects.create_recurring_booking(
+                self.end_date,
+                self.start_date,
+                self.start_time,
+                self.end_time,
+                self.room,
+                self.group
+            )
+        self.assertEqual(RecurringBooking.objects.count(), 0)
+
