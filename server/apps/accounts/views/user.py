@@ -39,9 +39,6 @@ class UserUpdate(APIView):
         # Check permissions
         self.check_object_permissions(request, user)
 
-        if username:
-            user.username = username
-
         if first_name:
             user.first_name = first_name
 
@@ -55,6 +52,9 @@ class UserUpdate(APIView):
             user.password = make_password(password)  # Hash password
 
         # Must be superuser to update those fields
+        if username and request.user.is_superuser:
+            user.username = username
+
         if is_active is not None and request.user.is_superuser:
             user.is_active = bool(is_active)
 
