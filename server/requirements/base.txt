@@ -6,3 +6,4 @@ django-dotenv==1.4.2
 django-python3-ldap==0.11.2
 djangorestframework==3.8.2
 Pillow==5.2.0
+responses==0.9.0
