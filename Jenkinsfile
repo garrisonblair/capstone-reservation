@@ -28,6 +28,7 @@ pipeline {
                 echo env.PATH
                 echo env.NODE_NAME
                 echo env.USER
+                echo env.DJANGO_ENV
             }
         }
         stage('Static Analysis') {
