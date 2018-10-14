@@ -14,6 +14,12 @@ class TestCampOn(TestCase):
         self.student = Student(student_id=sid)
         self.student.user = None
         self.student.save()
+
+        #Create a second Student for camp-on
+        student_id = '87654321'
+        self.campStudent = Student(student_id=student_id)
+        self.campStudent.user = None
+        self.campStudent.save()
         
         #Setup one Room
         rid = "1"
@@ -32,20 +38,14 @@ class TestCampOn(TestCase):
         self.booking.save()
 
     def testCampOnCreation(self):
-        #Create a second Student for camp-on
-        student_id = '87654321'
-        campStudent = Student(student_id=student_id)
-        campStudent.user = None
-        campStudent.save()
-
         #Get the current time
         current_start_time = datetime.now().strftime('%H:%M')
 
-        campon = CampOn(student=campStudent, booking=self.booking, start_time=current_start_time)
+        campon = CampOn(student=self.campStudent, booking=self.booking, start_time=current_start_time, end_time=self.end_time)
         campon.save()
-        read_campon = CampOn.objects.get(student=campStudent, booking=self.booking, start_time=current_start_time)
+        read_campon = CampOn.objects.get(student=self.campStudent, booking=self.booking, start_time=current_start_time, end_time=self.end_time)
 
         self.assertEqual(read_campon, campon)
         self.assertEqual(len(Booking.objects.all()), 1)
         print(str(read_campon))
-        assert re.match(r'^Campon: \d+, Student: 87654321, Booking: 1, Start time: [0-9][0-9]:[0-9][0-9]:[0-9][0-9]$', str(read_campon))
+        assert re.match(r'^Campon: \d+, Student: 87654321, Booking: 1, Start time: [0-9][0-9]:[0-9][0-9]:[0-9][0-9], End time: 13:00:00$', str(read_campon))
