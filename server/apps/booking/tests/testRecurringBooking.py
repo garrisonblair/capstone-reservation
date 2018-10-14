@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.accounts.models.Student import Student
@@ -52,3 +53,23 @@ class TestRecurringBooking(TestCase):
         )
 
         self.assertEqual(recurring_booking.booking_set.count(), 3)
+
+    def testRecurringBookingCreationConflict(self):
+        recurring_booking = RecurringBooking.objects.create_recurring_booking(
+            self.start_date,
+            self.end_date,
+            self.start_time,
+            self.end_time,
+            self.room,
+            self.group
+        )
+        with self.assertRaises(ValidationError) as ex:
+            recurring_booking = RecurringBooking.objects.create_recurring_booking(
+                self.start_date,
+                self.end_date,
+                self.start_time,
+                self.end_time,
+                self.room,
+                self.group
+            )
+        self.assertEqual(RecurringBooking.objects.count(), 1)

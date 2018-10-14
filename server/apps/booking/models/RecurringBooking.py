@@ -1,4 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
+
 from apps.rooms.models.Room import Room
 from apps.groups.models.StudentGroup import StudentGroup
 from datetime import timedelta
@@ -43,4 +46,25 @@ class RecurringBooking(models.Model):
 
     objects = RecurringBookingManager()
 
+    def save(self, *args, **kwargs):
+        self.validate_model()
+        super(RecurringBooking, self).save(*args, **kwargs)
 
+    def validate_model(self):
+        if self.start_date >= self.end_date:
+            raise ValidationError("Start date can not be after End date.")
+        elif self.end_date < self.start_date + timedelta(days=7):
+            raise ValidationError("You must book for at least two consecutive weeks.")
+        elif self.booking_start_time >= self.booking_end_time:
+            raise ValidationError("Start time can not be after End time.")
+        else:
+            from . import Booking
+            date = self.start_date
+            while date <= self.end_date:
+                if Booking.objects.filter(~Q(start_time=self.booking_end_time), room=self.room, date=date,
+                                          start_time__range=(self.booking_start_time, self.booking_end_time)).exists():
+                    raise ValidationError("Recurring booking at specified time overlaps with another booking.")
+                elif Booking.objects.filter(~Q(end_time=self.booking_start_time), room=self.room, date=date,
+                                            end_time__range=(self.booking_start_time, self.booking_end_time)).exists():
+                    raise ValidationError("Recurring booking at specified time overlaps with another booking.")
+                date += timedelta(days=7)
