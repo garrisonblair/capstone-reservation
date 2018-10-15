@@ -21,9 +21,9 @@ The app uses the following tools:
 
 Docker is used for the deployment of the software in production only.
 
-### Setup
-
 As a developer you will need to perform the following steps:
+
+### Virtual Environment Setup
 
 - Install virtualenv
 ```
@@ -59,6 +59,36 @@ As a developer you will need to perform the following steps:
     python get-pip.py
 ```
 
+### .env Setup
+
+The application depends on environment variables stored in .env
+
+- Create .env
+```
+    cp .env.config .env
+```
+
+### LDAP Setup
+
+![Alt text](docs/ldap_tunnel.png)
+
+The application is dependent to an internal LDAP server. So, you will have to make a SSH tunnel to get access.
+
+- Create a SSH tunnel
+```
+    sudo ssh -vvv -N -L 0.0.0.0:636:[LDAPServer]:636 [ENCS_username]@login.encs.concordia.ca
+```
+
+where **LDAPServer** can be one of the following server:
+
+- faith.encs.concordia.ca
+- charity.encs.concordia.ca
+- hope.encs.concordia.ca
+- love.encs.concordia.ca
+
+
+### Django Server Setup
+
 - Install python dependencies
 ```
     pip3 install -r server/requirements/dev.txt
@@ -92,6 +122,8 @@ This will create an user to access to the Django administration interface
     python3 manage.py runserver 0.0.0.0:8000
 ```
 
+### React Client Setup
+
 - Follow the steps to install yarn on [https://yarnpkg.com/en/docs/install](https://yarnpkg.com/en/docs/install)
 
 - Go to the root directory of the React app
@@ -110,7 +142,6 @@ Any **yarn** (or **npm**) command has to be run on the same directory as **packa
     yarn start
 ```
 The default port of the React app is **3000**
-
 
 ## Repository Structure
 
@@ -144,6 +175,11 @@ The default port of the React app is **3000**
     python3 scripts/dump_database.py
 ```
 
+- Populate DB
+```
+    ./scripts/populate_db.sh
+```
+
 - Deactivate virtual environment
 ```
     deactivate
@@ -164,4 +200,3 @@ The default port of the React app is **3000**
 - [https://github.com/headzoo/react-moment](https://github.com/headzoo/react-moment)
 - [https://www.getpostman.com/](https://www.getpostman.com/)
 - [https://yarnpkg.com/en/docs/install](https://yarnpkg.com/en/docs/install)
->>>>>>> 38a91684bb7cfefd4349061429b6b576954e1cee

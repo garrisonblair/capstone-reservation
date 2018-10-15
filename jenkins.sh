@@ -6,11 +6,11 @@ set +x
 echo "*"
 echo "**************************************************************************************************"
 echo "*"
-echo 
+echo
 echo "*"
 echo "* jenkins.sh System Info"
 echo "*"
-echo 
+echo
 echo "  POD NAME: $(hostname)"
 echo "  CURRENT DIRECTORY: $(pwd)"
 echo "  PYTHON VERSION:"
@@ -18,12 +18,12 @@ python3 -V
 echo
 echo
 echo "  DISK USAGE: "
-df 
-echo 
+df
+echo
 echo "  ENVIRONMENT: "
-echo 
+echo
 env
-echo 
+echo
 echo "*"
 echo "**************************************************************************************************"
 echo "*"
@@ -36,25 +36,41 @@ function staticAnalysis() {
 
 function build() {
 	echo 'Building... from jenkins.sh'
-	
+
+	echo 'Setting up virtual environment...'
 	pip3 install virtualenv
 	mkdir -p venv
 	cd venv
-
+	pwd
 	virtualenv venvironment -p python3
 	source venvironment/bin/activate
+
+	echo 'Setting up server...'
 	cd $WORKSPACE
 	pwd
 	ls
+
+	echo 'Creating .env file...'
+	touch .env
+	echo "DJANGO_DEV='${DJANGO_ENV}'" >> .env
+	echo "SECRET_KEY='${SECRET_KEY}'" >> .env
+	# cat .env
+
+	echo 'Installting python dependencies...'
+	pip3 install -r $WORKSPACE/server/requirements/dev.txt
+
+	# echo 'List of python packages...'
+	# pip3 freeze
+
+	echo 'Setting up Django...'
 	cd $WORKSPACE/server
-	pip3 install -r requirements/dev.txt
 	python3 manage.py makemigrations
 	python3 manage.py migrate
 }
 
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
-
+	source $WORKSPACE/venv/venvironment/bin/activate
 	cd $WORKSPACE/server
 	python3 manage.py test apps
 }
@@ -81,7 +97,7 @@ case $COMMAND in
 		;;
 	build )
 		build
-		;;	
+		;;
 	unitTests )
 		unitTests
 		;;
