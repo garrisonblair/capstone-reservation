@@ -126,3 +126,15 @@ class BookingAPITest(TestCase):
 
         response = RecurringBookingView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testCreateRecurringBookingNotAuthenticated(self):
+        request = self.factory.post("/booking",
+                                    {
+                                        "room": 1,
+                                        "date": "2019-08-10",
+                                        "start_time": "14:00:00",
+                                        "end_time": "15:00:00"
+                                    }, format="json")
+        response = RecurringBookingView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
