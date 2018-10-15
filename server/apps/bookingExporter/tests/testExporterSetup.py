@@ -25,7 +25,6 @@ class TestExporterSetup(TestCase):
     def testExporterNotifiedCreate(self):
         exporter_mock = mock.Mock()
 
-        print(self.exporter_app_config.web_calendar_exporter)
         self.exporter_app_config.web_calendar_exporter = exporter_mock
 
         Booking.observers = [exporter_mock]

@@ -17,8 +17,6 @@ class SubjectModel:
 
     def object_created(self):
         for observer in self.get_observers():
-            print("save")
-            print(observer)
             observer.subject_created(self)
 
     def object_updated(self):

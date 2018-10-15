@@ -9,7 +9,7 @@ from ..models.bookingExporterModels import ExternalRoomID
 from apps.booking.models import Booking
 from apps.rooms.models import Room
 from apps.accounts.models import Student
-
+from apps.calendar_administration.models import SystemSettings
 
 
 class testWebCalendarExporter(TestCase):
@@ -53,16 +53,21 @@ END:VCALENDAR"""
 
     def testLoginSuccess(self):
 
-        exporter = WEBCalendarExporter(self.session_mock)
+        settings = SystemSettings.get_settings()
 
+        settings.webcalendar_username = "f_daigl"
+        settings.webcalendar_password = "mySafePassword"
+        settings.save()
+
+        exporter = WEBCalendarExporter(self.session_mock)
         exporter.login()
 
         self.assertEqual(self.session_mock.post.call_count, 1)
 
         self.assertEqual(self.session_mock.post.call_args[1],
                          {"data":
-                              {"login": "f_daigl",
-                               "password": "<PUT_PASSWORD_HERE>"}
+                              {"login": settings.webcalendar_username,
+                               "password": settings.webcalendar_password}
                           })
 
         self.assertEqual(self.session_mock.post.call_args[0][0],

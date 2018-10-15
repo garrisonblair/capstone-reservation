@@ -10,7 +10,6 @@ class BookingExporterConfig(AppConfig):
 
     def ready(self):
 
-        print('Here')
         self.register_web_calender_exporter()
         # TODO: Check system settings
         pass

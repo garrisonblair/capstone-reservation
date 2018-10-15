@@ -32,6 +32,7 @@ class WEBCalendarExporter(BookingExporter):
     # Gets authorization Cookies
     def login(self):
         settings = SystemSettings.get_settings()
+
         username = settings.webcalendar_username
         password = settings.webcalendar_password
 
@@ -39,7 +40,6 @@ class WEBCalendarExporter(BookingExporter):
 
         if self.LOGIN_FAILED_MESSAGE in response.text:
             # TODO: handle login failure (Log it)
-            print("login failed")
             pass
 
         pass
@@ -57,12 +57,15 @@ class WEBCalendarExporter(BookingExporter):
 
         if self.NOT_AUTHORIZED_MESSAGE in response.text:
             # TODO: handle request failure (Log it)
-            print("Not Authorized")
             pass
 
     # BookingExporter
     # TODO: Investigate if using threads here could improve performance
     def backup_booking(self, booking):
+        # only backup if room has external id
+        if not hasattr(booking.room, "externalroomid"):
+            return
+
         if not self.logged_in:
             self.login()
 
