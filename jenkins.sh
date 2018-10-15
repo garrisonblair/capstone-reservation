@@ -51,8 +51,8 @@ function build() {
 
 	echo 'Creating .env file...'
 	touch .env
-	echo 'DJANGO_DEV="${DJANGO_ENV}"' >> .env
-	echo 'SECRET_KEY="${SECRET_KEY}"' >> .env
+	echo "DJANGO_DEV='${DJANGO_ENV}'" >> .env
+	echo "SECRET_KEY='${SECRET_KEY}'" >> .env
 	cat .env
 
 	cd $WORKSPACE/server
