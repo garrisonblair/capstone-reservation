@@ -13,7 +13,6 @@ class TestUserUpdate(TestCase):
         self.password = 'admin'
         self.user = User.objects.create_user(self.username, self.email, make_password(self.password))
         self.token = Token.objects.create(user=self.user)
-        self.new_username = 'gandalf'
         self.new_password = 'oneringtorulethemall'
         self.new_email = 'bilbo@baggins.com'
 
@@ -23,7 +22,6 @@ class TestUserUpdate(TestCase):
     def testUserUpdate(self):
         authorization = 'Token {}'.format(self.token)
         data = dict(
-            username=self.new_username,
             password=self.new_password,
             email=self.new_email
         )
@@ -34,16 +32,9 @@ class TestUserUpdate(TestCase):
 
         try:
             user = User.objects.get(username=self.username)
-            self.fail('User data did not change')
         except User.DoesNotExist:
             pass
 
-        try:
-            user = User.objects.get(username=self.new_username)
-        except User.DoesNotExist:
-            self.fail('User DNE')
-
-        assert user.username == self.new_username
         check_password(self.new_password, user.password) == True
         assert user.email == self.new_email
         self.assertTrue('User is updated')
