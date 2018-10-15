@@ -69,6 +69,9 @@ function build() {
 
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
+	ls
+	which python3
+	pip3 freeze
 	cd $WORKSPACE/server
 	python3 manage.py test apps
 }
