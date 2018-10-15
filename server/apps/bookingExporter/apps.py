@@ -1,9 +1,5 @@
 from django.apps import AppConfig
 
-from .WEBCalendarExporter.WEBCalendarExporter import WEBCalendarExporter
-
-
-
 
 class BookingExporterConfig(AppConfig):
     name = 'apps.bookingExporter'
@@ -20,6 +16,7 @@ class BookingExporterConfig(AppConfig):
         pass
 
     def register_web_calender_exporter(self):
+        from .WEBCalendarExporter.WEBCalendarExporter import WEBCalendarExporter
         from apps.booking.models.Booking import Booking
         if self.web_calendar_exporter is None:
             self.web_calendar_exporter = WEBCalendarExporter()
