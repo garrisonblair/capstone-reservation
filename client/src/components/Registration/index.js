@@ -2,17 +2,25 @@ import axios from 'axios';
 import React, {Component} from 'react';
 import settings from '../../config/settings';
 import './Registration.scss';
+import SweetAlert from 'sweetalert2-react';
 import {Form, Input, Button} from 'semantic-ui-react';
 
 class Registration extends Component {
 
   state = {
     encsUsername: '',
-    afterVerification: false
+    afterVerification: false,
+    showModal: false,
+    modalTitle: '',
+    modalText: '',
+    modalType: 'success'
   }
 
   handleEncsUsername = (event) => {
     this.setState({encsUsername: event.target.value});
+  }
+  closeModal = () =>{
+    this.setState({showModal:false})
   }
 
   sendEmail = () => {
@@ -24,17 +32,32 @@ class Registration extends Component {
       data: data
     })
       .then((response) => {
-        console.log(response);
-        this.setState({
-          afterVerification: true
-        });
+        if(response.status == 201){
+          this.setState({
+            showModal:true,
+            modalTitle:'Succeed',
+            modalText:'A verification message has been send to your ENCS email.',
+            modalType: 'success',
+          })
+        }
+
       })
       .catch((error) => {
         if(error.message.includes('302')){
-          console.log('302 error')
+          this.setState({
+            showModal:true,
+            modalTitle:'Warning',
+            modalText:'You have already sent a verification to your ENCS email.',
+            modalType: 'warning',
+          })
         }
         else if(error.message.includes('400')){
-          console.log('400 error');
+          this.setState({
+            showModal:true,
+            modalTitle:'Error',
+            modalText:"We couldn't find this user in the system.",
+            modalType: 'error',
+          })
         }
 
       })
@@ -63,6 +86,13 @@ class Registration extends Component {
             </Button>
           </Form.Field>
         </div>
+        <SweetAlert
+          show={this.state.showModal}
+          title={this.state.modalTitle}
+          text={this.state.modalText}
+          type={this.state.modalType}
+          onConfirm={this.closeModal}
+        />
       </div>
     )
   }
