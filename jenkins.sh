@@ -44,7 +44,6 @@ function build() {
 	pwd
 	virtualenv venvironment -p python3
 	source venvironment/bin/activate
-	which python3
 
 	echo 'Setting up server...'
 	cd $WORKSPACE
@@ -55,13 +54,13 @@ function build() {
 	touch .env
 	echo "DJANGO_DEV='${DJANGO_ENV}'" >> .env
 	echo "SECRET_KEY='${SECRET_KEY}'" >> .env
-	cat .env
+	# cat .env
 
 	echo 'Installting python dependencies...'
 	pip3 install -r $WORKSPACE/server/requirements/dev.txt
 
-	echo 'List of python packages...'
-	pip3 freeze
+	# echo 'List of python packages...'
+	# pip3 freeze
 
 	echo 'Setting up Django...'
 	cd $WORKSPACE/server
@@ -71,10 +70,7 @@ function build() {
 
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
-	cat .env
 	source $WORKSPACE/venv/venvironment/bin/activate
-	which python3
-	pip3 freeze
 	cd $WORKSPACE/server
 	python3 manage.py test apps
 }
