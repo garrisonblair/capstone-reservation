@@ -3,6 +3,8 @@ import requests
 from ..BookingExporter import BookingExporter
 from .ICSSerializer import ICSSerializer
 
+from apps.calendar_administration.models.system_settings import SystemSettings
+
 
 class WEBCalendarExporter(BookingExporter):
 
@@ -14,10 +16,6 @@ class WEBCalendarExporter(BookingExporter):
     # not be updated during a transition phase
     LOGIN_FAILED_MESSAGE = "Error: Invalid login"
     NOT_AUTHORIZED_MESSAGE = "You are not authorized"
-
-    # TODO: move these to some settings
-    USERNAME = "f_daigl"
-    PASSWORD = "<PUT_PASSWORD_HERE>"
 
     def __init__(self, request_session=None, ics_serializer=None):
 
@@ -33,10 +31,14 @@ class WEBCalendarExporter(BookingExporter):
 
     # Gets authorization Cookies
     def login(self):
-        response = self.session.post(self.LOGIN_URL, data={"login": self.USERNAME, "password": self.PASSWORD})
+        settings = SystemSettings.get_settings()
+        username = settings.webcalendar_username
+        password = settings.webcalendar_password
+
+        response = self.session.post(self.LOGIN_URL, data={"login": username, "password": password})
 
         if self.LOGIN_FAILED_MESSAGE in response.text:
-            # TODO: handle login failure
+            # TODO: handle login failure (Log it)
             print("login failed")
             pass
 
@@ -54,7 +56,7 @@ class WEBCalendarExporter(BookingExporter):
         print(response.text)
 
         if self.NOT_AUTHORIZED_MESSAGE in response.text:
-            # TODO: handle request failure
+            # TODO: handle request failure (Log it)
             print("Not Authorized")
             pass
 
