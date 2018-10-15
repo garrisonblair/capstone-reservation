@@ -54,7 +54,7 @@ function build() {
 
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
-
+	echo $DJANGO_ENV
 	cd $WORKSPACE/server
 	python3 manage.py test apps
 }
