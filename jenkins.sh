@@ -48,9 +48,13 @@ function build() {
 	cd $WORKSPACE
 	pwd
 	ls
+
+	echo 'Creating .env file...'
 	touch .env
-	echo $DJANGO_ENV
-	echo $SECRET_KEY
+	echo 'DJANGO_DEV="${DJANGO_ENV}"' >> .env
+	echo 'SECRET_KEY="${SECRET_KEY}"' >> .env
+	cat .env
+
 	cd $WORKSPACE/server
 	pip3 install -r requirements/dev.txt
 	python3 manage.py makemigrations
