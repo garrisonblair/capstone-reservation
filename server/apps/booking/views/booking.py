@@ -37,23 +37,24 @@ class BookingView(APIView):
 
     def get(self, request):
 
-        requestYear = request.GET.get('year')
-        requestDay = request.GET.get('day')
-        requestMonth = request.GET.get('month')
+        request_year = request.GET.get('year')
+        request_day = request.GET.get('day')
+        request_month = request.GET.get('month')
 
-        if requestYear != None and requestMonth != None and requestDay != None:
+        if request_year is not None and request_month is not None and request_day is not None:
 
             try:
 
-                integerRequestYear = int(requestYear)
-                integerRequestMonth = int(requestMonth)
-                integerRequestDay = int(requestDay)
+                integer_request_year = int(request_year)
+                integer_request_month = int(request_month)
+                integer_request_day = int(request_day)
 
-                date = datetime.date(integerRequestYear, integerRequestMonth, integerRequestDay)
+                date = datetime.date(integer_request_year, integer_request_month, integer_request_day)
                 bookings = Booking.objects.filter(date=date)
 
             except ValueError:
-                return Response("Invalid date. Please supply valid integer values for year, month and day", status=status.HTTP_400_BAD_REQUEST)
+                return Response("Invalid date. Please supply valid integer values for year, month and day",
+                                status=status.HTTP_400_BAD_REQUEST)
 
         else:
             try:
@@ -61,9 +62,8 @@ class BookingView(APIView):
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
-        bookingsList = list()
+        bookings_list = list()
         for booking in bookings:
             serializer = BookingSerializer(booking)
-            bookingsList.append(serializer.data)
-        return Response(bookingsList, status=status.HTTP_200_OK)
-
+            bookings_list.append(serializer.data)
+        return Response(bookings_list, status=status.HTTP_200_OK)
