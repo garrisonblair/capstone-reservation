@@ -14,6 +14,7 @@ ReactDOM.render(
         <Route exact path="/" component={Home}/>
         <Route exact path="/login" component={Login}/>
         <Route exact path="/registration" component={Registration}/>
+        <Route exact path="/verify/:token" component={Registration}/>
         <Route component={NotFound}/>
       </Switch>
     </div>
