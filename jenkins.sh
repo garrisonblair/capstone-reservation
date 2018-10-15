@@ -69,7 +69,8 @@ function build() {
 
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
-	ls
+	cat .env
+	source venvironment/bin/activate
 	which python3
 	pip3 freeze
 	cd $WORKSPACE/server
