@@ -24,13 +24,19 @@ class Registration extends Component {
       data: data
     })
       .then((response) => {
+        console.log(response);
         this.setState({
           afterVerification: true
         });
-        console.log('succeeed');
       })
       .catch((error) => {
-        console.log('error!');
+        if(error.message.includes('302')){
+          console.log('302 error')
+        }
+        else if(error.message.includes('400')){
+          console.log('400 error');
+        }
+
       })
   }
 
