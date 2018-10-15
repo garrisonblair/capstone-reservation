@@ -1,41 +1,37 @@
 import axios from 'axios';
 import React, {Component} from 'react';
+import settings from '../../config/settings';
 import './Registration.scss';
 import {Form, Input, Button} from 'semantic-ui-react';
 
 class Registration extends Component {
 
   state = {
-    encsUsername:'',
+    encsUsername: '',
     afterVerification: false
   }
 
-  handleEncsUsername = () => {
-    this.setState({encsUsername:event.target.value});
+  handleEncsUsername = (event) => {
+    this.setState({encsUsername: event.target.value});
   }
 
   sendEmail = () => {
-    console.log(this.props.match.params.token);
-  }
-
-  componentWillMount() {
-    const {token} = this.props.match.params;
-    const data = {"username":`${this.state.encsUsername}`};
-    if (token) {
-      axios({
-        method: 'POST',
-        url: `${settings.API_ROOT}/register`,
-        data: data
-      })
+    const data = {"username": `${this.state.encsUsername}`};
+    console.log(data);
+    axios({
+      method: 'POST',
+      url: `${settings.API_ROOT}/register`,
+      data: data
+    })
       .then((response) => {
         this.setState({
-          afterVerification:true
+          afterVerification: true
         });
+        console.log('succeeed');
       })
-      .catch((error) =>{
-
+      .catch((error) => {
+        console.log('error!');
       })
-    }
   }
 
   render() {
