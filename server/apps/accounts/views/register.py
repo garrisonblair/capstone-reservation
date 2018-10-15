@@ -51,7 +51,7 @@ class RegisterView(APIView):
 
             # Send email
             subject = 'Capstone Reservation - Verify your email!'
-            verify_url = "{}://{}/#/verify?token={}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
+            verify_url = "{}://{}/#/verify/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
             context = {
                 'verify_url': verify_url,
                 'expiration': token.expiration - datetime.timedelta(hours=4)
