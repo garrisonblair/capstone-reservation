@@ -90,3 +90,21 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking3.room, self.room)
         self.assertEqual(booking3.student_group, self.group)
         self.assertEqual(booking3.student, self.group.students.get(student_id='j_lenn'))
+
+    def testCreateRecurringBookingFailureDateStartAfterEnd(self):
+
+        request = self.factory.post("/recurring_booking",
+                                    {
+                                        "start_date": "2019-10-16",
+                                        "end_date": "2019-10-01",
+                                        "booking_start_time": "12:00",
+                                        "booking_end_time": "15:00",
+                                        "room": 1,
+                                        "student_group": 1,
+                                        "student": 1
+                                    }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RecurringBookingView.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
