@@ -55,8 +55,14 @@ function build() {
 	echo "SECRET_KEY='${SECRET_KEY}'" >> .env
 	cat .env
 
+	echo 'Installting python dependencies...'
+	pip3 install -r $WORKSPACE/server/requirements/dev.txt
+
+	echo 'List of python packages...'
+	pip3 freeze
+
+	echo 'Setting up Django...'
 	cd $WORKSPACE/server
-	pip3 install -r requirements/dev.txt
 	python3 manage.py makemigrations
 	python3 manage.py migrate
 }
