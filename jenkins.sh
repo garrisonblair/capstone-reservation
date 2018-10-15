@@ -41,8 +41,10 @@ function build() {
 	pip3 install virtualenv
 	mkdir -p venv
 	cd venv
+	pwd
 	virtualenv venvironment -p python3
 	source venvironment/bin/activate
+	which python3
 
 	echo 'Setting up server...'
 	cd $WORKSPACE
