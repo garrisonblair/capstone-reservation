@@ -2,10 +2,14 @@ import axios from 'axios';
 import settings from '../../config/settings';
 import React, {Component} from 'react';
 import './Verification.scss';
+import {Loader, Icon, Step} from 'semantic-ui-react'
 
 
 class Verification extends Component {
-
+  state = {
+    isLoading: true,
+    firstName:''
+  }
   componentWillMount() {
     const {token} = this.props.match.params;
     console.log(token);
@@ -18,9 +22,10 @@ class Verification extends Component {
       })
         .then((response) => {
           this.setState({
-            isVerified: true
+            isLoading: false,
+            firstName: response.data.first_name
           });
-          console.log('verification succeed');
+          console.log(response);
         })
         .catch((error) => {
           console.log('verification failed')
@@ -29,9 +34,34 @@ class Verification extends Component {
   }
 
   render() {
+
     return (
       <div id="verification">
-        <h1> Verification </h1>
+        <div className="container">
+        <h1> Account settings </h1>
+          <Step.Group size="mini" widths={2}>
+            <Step completed>
+              <Icon name="envelope" />
+              <Step.Content>
+                <Step.Title>Step 1</Step.Title>
+                <Step.Description>ENCS username verification</Step.Description>
+              </Step.Content>
+            </Step>
+            <Step active>
+              <Icon name="cog" />
+              <Step.Content>
+                <Step.Title>Step 2</Step.Title>
+                <Step.Description>Account setup</Step.Description>
+              </Step.Content>
+            </Step>
+          </Step.Group>
+
+          <Loader active inline='centered' active={this.state.isLoading} />
+
+          <h3>Welcome {this.state.firstName}</h3>
+
+        </div>
+
       </div>
     )
   }

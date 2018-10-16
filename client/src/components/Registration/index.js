@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import settings from '../../config/settings';
 import './Registration.scss';
 import SweetAlert from 'sweetalert2-react';
-import {Form, Input, Button} from 'semantic-ui-react';
+import {Form, Input, Button, Icon, Step} from 'semantic-ui-react';
 
 class Registration extends Component {
 
@@ -66,8 +66,24 @@ class Registration extends Component {
     return (
       <div id="registration">
         <div className="container">
-          <h1>Registration</h1>
-          <p>Please enter your ENCS username. A validation will be sent to your email.</p>
+        <h1>Registration</h1>
+        <Step.Group size="mini" widths={2}>
+          <Step active>
+            <Icon name="envelope"/>
+            <Step.Content>
+              <Step.Title>Step 1</Step.Title>
+              <Step.Description>ENCS username verification</Step.Description>
+            </Step.Content>
+          </Step>
+          <Step>
+            <Icon name="cog"/>
+            <Step.Content>
+              <Step.Title>Step 2</Step.Title>
+              <Step.Description>Account setup</Step.Description>
+            </Step.Content>
+          </Step>
+        </Step.Group>
+          <p>Please enter your ENCS username. A validation will be sent to your ENCS email.</p>
           <Form.Field>
             <Input
               fluid

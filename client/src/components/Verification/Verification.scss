@@ -1,3 +1,8 @@
-#verification {
-    padding: 0 20px;
-  }
+  #verification {
+    display: grid;
+    grid-template-columns: auto 500px auto;
+    margin-top: 50px;
+    .container{
+        grid-column: 2;
+    }
+}
