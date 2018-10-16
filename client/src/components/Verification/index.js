@@ -16,6 +16,11 @@ class Verification extends Component {
       showErrorMessage: false,
       errorMessageText: ''
     },
+    studentId: {
+      value: '',
+      showErrorMessage: false,
+      errorMessageText: ''
+    },
     isLoading: true,
     firstName: ''
   }
@@ -41,21 +46,21 @@ class Verification extends Component {
         })
     }
   }
-  handleChangePassword1=(event) =>{
+  handleChangePassword1 = (event) => {
     this.setState({
-      password1:{
-        showErrorMessage:false,
-        errorMessageText:'',
-        value:event.target.value
+      password1: {
+        showErrorMessage: false,
+        errorMessageText: '',
+        value: event.target.value
       }
     })
   }
-  handleChangePassword2=(event)=>{
+  handleChangePassword2 = (event) => {
     this.setState({
-      password2:{
-        showErrorMessage:false,
-        errorMessageText:'',
-        value:event.target.value
+      password2: {
+        showErrorMessage: false,
+        errorMessageText: '',
+        value: event.target.value
       }
     })
   }
@@ -93,20 +98,56 @@ class Verification extends Component {
           errorMessageText: 'This passwords do not match each other'
         },
       })
+      throw new Error();
     }
+  }
+
+  verifyStudentId() {
+    const {studentId} = this.state;
+    console.log('clicked');
+
+    if (studentId.value.length === 0) {
+      this.setState({
+        studentId: {
+          showErrorMessage: true,
+          errorMessageText: 'Please enter your student Id number'
+        }
+      })
+      throw new Error();
+    }
+    if (studentId.value.length !== 8) {
+      this.setState({
+        studentId: {
+          showErrorMessage: true,
+          errorMessageText: 'Field should have 8 digits'
+        }
+      })
+      throw new Error();
+    }
+  }
+
+  handleChangeStudentId = (event) => {
+    this.setState({
+      studentId: {
+        value: event.target.value,
+        showErrorMessage: false,
+        errorMessageText: ''
+      }
+    })
   }
 
   handleUserSettings = () => {
     try {
       this.verifyPasswords();
+      this.verifyStudentId();
     }
     catch (error) {
       return;
     }
   }
-  renderInputErrorMessage(input){
-    if(input.showErrorMessage){
-      return(
+  renderInputErrorMessage(input) {
+    if (input.showErrorMessage) {
+      return (
         <div>
           <Label color="red" pointing='below'>{input.errorMessageText}</Label>
         </div>
@@ -115,7 +156,7 @@ class Verification extends Component {
   }
 
   render() {
-    let {password1, password2} = this.state;
+    let {password1, password2, studentId} = this.state;
     return (
       <div id="verification">
         <div className="container">
@@ -167,14 +208,14 @@ class Verification extends Component {
 
             <label>Student ID:</label>
             <Form.Field>
-
+              {this.renderInputErrorMessage(studentId)}
               <Input
                 fluid
                 size='medium'
                 icon='id card'
                 iconPosition='left'
                 placeholder='12345678'
-                onChange={this.handleEncsUsername}
+                onChange={this.handleChangeStudentId}
               />
             </Form.Field>
           </Form>
