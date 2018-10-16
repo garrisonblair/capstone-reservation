@@ -9,7 +9,6 @@ class Registration extends Component {
 
   state = {
     encsUsername: '',
-    afterVerification: false,
     showModal: false,
     modalTitle: '',
     modalText: '',
@@ -19,8 +18,9 @@ class Registration extends Component {
   handleEncsUsername = (event) => {
     this.setState({encsUsername: event.target.value});
   }
-  closeModal = () =>{
-    this.setState({showModal:false})
+
+  closeModal = () => {
+    this.setState({showModal: false})
   }
 
   sendEmail = () => {
@@ -32,34 +32,33 @@ class Registration extends Component {
       data: data
     })
       .then((response) => {
-        if(response.status == 201){
+        if (response.status == 201) {
           this.setState({
-            showModal:true,
-            modalTitle:'Succeed',
-            modalText:'A verification message has been send to your ENCS email.',
+            showModal: true,
+            modalTitle: 'Succeed',
+            modalText: 'A verification message has been send to your ENCS email.',
             modalType: 'success',
           })
         }
 
       })
       .catch((error) => {
-        if(error.message.includes('302')){
+        if (error.message.includes('302')) {
           this.setState({
-            showModal:true,
-            modalTitle:'Warning',
-            modalText:'You have already sent a verification to your ENCS email.',
+            showModal: true,
+            modalTitle: 'Warning',
+            modalText: 'You have already sent a verification to your ENCS email.',
             modalType: 'warning',
           })
         }
-        else if(error.message.includes('400')){
+        else if (error.message.includes('400')) {
           this.setState({
-            showModal:true,
-            modalTitle:'Error',
-            modalText:"We couldn't find this user in the system.",
+            showModal: true,
+            modalTitle: 'Error',
+            modalText: "We couldn't find this user in the system.",
             modalType: 'error',
           })
         }
-
       })
   }
 
@@ -83,7 +82,7 @@ class Registration extends Component {
             <br />
             <Button fluid size='small' icon onClick={this.sendEmail}>
               Send Email
-            </Button>
+      </Button>
           </Form.Field>
         </div>
         <SweetAlert
