@@ -123,7 +123,7 @@ class Verification extends Component {
       })
       throw new Error();
     }
-    if(!studentId.value.match('^[0-9]*$')){
+    if (!studentId.value.match('^[0-9]*$')) {
       this.setState({
         studentId: {
           showErrorMessage: true,
@@ -150,9 +150,24 @@ class Verification extends Component {
       this.verifyStudentId();
     }
     catch (error) {
-
       return;
     }
+
+    // axios({
+    //   method: 'POST',
+    //   url: `${settings.API_ROOT}/user/`,
+    //   data: data
+    // })
+    //   .then((response) => {
+    //     this.setState({
+    //       isLoading: false,
+    //       firstName: response.data.first_name
+    //     });
+    //     console.log(response);
+    //   })
+    //   .catch((error) => {
+    //     console.log('verification failed')
+    //   })
   }
   renderInputErrorMessage(input) {
     if (input.showErrorMessage) {
@@ -163,80 +178,92 @@ class Verification extends Component {
       )
     }
   }
-  renderMainForm(){
 
+  renderLoader() {
+    return (
+      <div>
+        <Loader active inline='centered' active />
+      </div>
+    )
+  }
+
+  renderMainForm() {
+    let {password1, password2, studentId} = this.state;
+    return (
+      <div>
+        <h1> Account settings </h1>
+        <Step.Group size="mini" widths={2}>
+          <Step completed>
+            <Icon name="envelope" />
+            <Step.Content>
+              <Step.Title>Step 1</Step.Title>
+              <Step.Description>ENCS username verification</Step.Description>
+            </Step.Content>
+          </Step>
+          <Step active>
+            <Icon name="cog" />
+            <Step.Content>
+              <Step.Title>Step 2</Step.Title>
+              <Step.Description>Account setup</Step.Description>
+            </Step.Content>
+          </Step>
+        </Step.Group>
+
+        <h4>Welcome {this.state.firstName}</h4>
+        <Form>
+          <label >Enter Password:</label>
+          <Form.Field>
+            {this.renderInputErrorMessage(password1)}
+            <Input
+              fluid
+              size='medium'
+              icon='key'
+              iconPosition='left'
+              type="password"
+              onChange={this.handleChangePassword1}
+            />
+          </Form.Field>
+          <label>Re-enter password:</label>
+          <Form.Field>
+            {this.renderInputErrorMessage(password2)}
+            <Input
+              fluid
+              size='medium'
+              icon='key'
+              type="password"
+              iconPosition='left'
+              onChange={this.handleChangePassword2}
+            />
+          </Form.Field>
+
+          <label>Student ID:</label>
+          <Form.Field>
+            {this.renderInputErrorMessage(studentId)}
+            <Input
+              fluid
+              size='medium'
+              icon='id card'
+              iconPosition='left'
+              placeholder='12345678'
+              onChange={this.handleChangeStudentId}
+            />
+          </Form.Field>
+        </Form>
+        <Form.Field>
+          <br />
+          <Button fluid size='small' icon onClick={this.handleUserSettings}>
+            Send Email
+      </Button>
+        </Form.Field>
+      </div>
+    )
   }
 
   render() {
-    let {password1, password2, studentId} = this.state;
     return (
       <div id="verification">
         <div className="container">
-          <Loader active inline='centered' active={this.state.isLoading} />
-          <h1> Account settings </h1>
-          <Step.Group size="mini" widths={2}>
-            <Step completed>
-              <Icon name="envelope" />
-              <Step.Content>
-                <Step.Title>Step 1</Step.Title>
-                <Step.Description>ENCS username verification</Step.Description>
-              </Step.Content>
-            </Step>
-            <Step active>
-              <Icon name="cog" />
-              <Step.Content>
-                <Step.Title>Step 2</Step.Title>
-                <Step.Description>Account setup</Step.Description>
-              </Step.Content>
-            </Step>
-          </Step.Group>
-
-          <h4>Welcome {this.state.firstName}</h4>
-          <Form>
-            <label >Enter Password:</label>
-            <Form.Field>
-              {this.renderInputErrorMessage(password1)}
-              <Input
-                fluid
-                size='medium'
-                icon='key'
-                iconPosition='left'
-                type="password"
-                onChange={this.handleChangePassword1}
-              />
-            </Form.Field>
-            <label>Re-enter password:</label>
-            <Form.Field>
-              {this.renderInputErrorMessage(password2)}
-              <Input
-                fluid
-                size='medium'
-                icon='key'
-                type="password"
-                iconPosition='left'
-                onChange={this.handleChangePassword2}
-              />
-            </Form.Field>
-
-            <label>Student ID:</label>
-            <Form.Field>
-              {this.renderInputErrorMessage(studentId)}
-              <Input
-                fluid
-                size='medium'
-                icon='id card'
-                iconPosition='left'
-                placeholder='12345678'
-                onChange={this.handleChangeStudentId}
-              />
-            </Form.Field>
-          </Form>
-          <Form.Field>
-            <br />
-            <Button fluid size='small' icon onClick={this.handleUserSettings}>
-              Send Email
-      </Button>
-          </Form.Field>
+          {this.state.isLoading ? this.renderLoader() : this.renderMainForm()}
         </div>
       </div>
     )
