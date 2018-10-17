@@ -26,10 +26,11 @@ class Verification extends Component {
     isLoading: true,
     firstName: '',
     userId: 0,
-    errorModal: {
+    sweetAlertModal: {
       title: '',
       description: '',
-      visible: false
+      visible: false,
+      type:''
     }
   }
   componentWillMount() {
@@ -54,17 +55,18 @@ class Verification extends Component {
         })
         .catch((error) => {
           this.setState({
-            errorModal: {
+            sweetAlertModal: {
               visible: true,
               description: "something happened",
-              title: ":("
-            },
+              title: ":(",
+              type:'error'
+            }
           })
         })
     }
   }
   closeModal = () => {
-
+    this.props.history.push('/');
   }
   handleChangePassword1 = (event) => {
     this.setState({
@@ -181,9 +183,7 @@ class Verification extends Component {
       "student_id": `${studentId.value}`,
       "password": `${password}`
     }
-    console.log(`${settings.API_ROOT}/user/${userId}`);
-    console.log(data);
-    console.log(headers);
+
     axios({
       method: 'PATCH',
       url: `${settings.API_ROOT}/user/${userId}`,
@@ -191,10 +191,24 @@ class Verification extends Component {
       data: data
     })
       .then((response) => {
-        console.log('patch successfully');
+        this.setState({
+          sweetAlertModal: {
+            visible: true,
+            description: "Settings recorded successfuly",
+            title: "Settings",
+            type:'success'
+          }
+        })
       })
       .catch((error) => {
-        console.log('patch error');
+        this.setState({
+          sweetAlertModal: {
+            visible: true,
+            description: "There was an error.",
+            title: ":(",
+            type:'error'
+          }
+        })
       })
   }
   renderInputErrorMessage(input) {
@@ -210,7 +224,7 @@ class Verification extends Component {
   renderLoader() {
     return (
       <div>
-        <Loader active inline='centered' />
+        <Loader active inline='centered' size="large" />
       </div>
     )
   }
@@ -288,17 +302,17 @@ class Verification extends Component {
   }
 
   render() {
-    let {errorModal} = this.state;
+    let {sweetAlertModal} = this.state;
     return (
       <div id="verification">
         <div className="container">
           {this.state.isLoading ? this.renderLoader() : this.renderMainForm()}
         </div>
         <SweetAlert
-          show={errorModal.visible}
-          title={errorModal.title}
-          text={errorModal.description}
-          type={'error'}
+          show={sweetAlertModal.visible}
+          title={sweetAlertModal.title}
+          text={sweetAlertModal.description}
+          type={sweetAlertModal.type}
           onConfirm={this.closeModal}
         />
       </div>
