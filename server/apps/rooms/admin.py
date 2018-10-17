@@ -3,4 +3,3 @@ from .models.Room import Room
 
 # Register your models here.
 admin.site.register(Room)
-

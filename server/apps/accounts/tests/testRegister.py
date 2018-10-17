@@ -36,5 +36,3 @@ class TestRegister(TestCase):
 
         assert user.username == self.username
         self.assertTrue('User is registered')
-
-
