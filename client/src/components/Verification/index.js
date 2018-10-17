@@ -3,6 +3,8 @@ import settings from '../../config/settings';
 import React, {Component} from 'react';
 import './Verification.scss';
 import {Loader, Form, Input, Button, Icon, Step, Label} from 'semantic-ui-react'
+import {getTokenHeader} from '../../utils/requestHeaders';
+
 
 class Verification extends Component {
   state = {
@@ -22,7 +24,8 @@ class Verification extends Component {
       errorMessageText: ''
     },
     isLoading: true,
-    firstName: ''
+    firstName: '',
+    userId: 0
   }
   componentWillMount() {
     const {token} = this.props.match.params;
@@ -37,8 +40,13 @@ class Verification extends Component {
         .then((response) => {
           this.setState({
             isLoading: false,
-            firstName: response.data.first_name
+            firstName: response.data.first_name,
+            userId: response.data.id
           });
+          const localStorageObject = {
+            "token": response.data.token
+          };
+          localStorage.setItem('CapstoneReservationUser', JSON.stringify(localStorageObject));
           console.log(response);
         })
         .catch((error) => {
@@ -145,6 +153,7 @@ class Verification extends Component {
   }
 
   handleUserSettings = () => {
+    //Verify form before continuing transaction.
     try {
       this.verifyPasswords();
       this.verifyStudentId();
@@ -153,21 +162,28 @@ class Verification extends Component {
       return;
     }
 
-    // axios({
-    //   method: 'POST',
-    //   url: `${settings.API_ROOT}/user/`,
-    //   data: data
-    // })
-    //   .then((response) => {
-    //     this.setState({
-    //       isLoading: false,
-    //       firstName: response.data.first_name
-    //     });
-    //     console.log(response);
-    //   })
-    //   .catch((error) => {
-    //     console.log('verification failed')
-    //   })
+    let {studentId, userId} = this.state;
+    const headers = getTokenHeader();
+    const password = this.state.password1.value;
+    const data = {
+      "student_id":`${studentId.value}`,
+      "password":`${password}`
+    }
+    console.log(`${settings.API_ROOT}/user/${userId}`);
+    console.log(data);
+    console.log(headers);
+    axios({
+      method: 'PATCH',
+      url: `${settings.API_ROOT}/user/${userId}`,
+      headers,
+      data: data
+    })
+      .then((response) => {
+        console.log('patch successfully');
+      })
+      .catch((error) => {
+        console.log('patch error');
+      })
   }
   renderInputErrorMessage(input) {
     if (input.showErrorMessage) {
@@ -252,7 +268,7 @@ class Verification extends Component {
         <Form.Field>
           <br />
           <Button fluid size='small' icon onClick={this.handleUserSettings}>
-            Send Email
+            Set settings
       </Button>
         </Form.Field>
       </div>
