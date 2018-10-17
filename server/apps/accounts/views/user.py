@@ -7,7 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.accounts.serializers.UserSerializer import UserSerializer, UserSerializerLogin
+from apps.accounts.models.Student import Student
+from apps.accounts.serializers.UserSerializer import UserSerializer, UserSerializerLogin, StudentSerializer
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 
 
@@ -29,6 +30,7 @@ class UserUpdate(APIView):
         is_active = request.data.get('is_active')
         is_staff = request.data.get('is_staff')
         is_superuser = request.data.get('is_superuser')
+        student_id = request.data.get('student_id')
 
         user = None
         try:
@@ -51,6 +53,15 @@ class UserUpdate(APIView):
         if password:
             user.password = make_password(password)  # Hash password
 
+        student = None
+        if student_id:
+            try:
+                student = Student.objects.get(user=user)
+            except Student.DoesNotExist:
+                # Add student ID only if it's a new user
+                student = Student(user=user, student_id=student_id)
+                student.save()
+
         # Must be superuser to update those fields
         if username and request.user.is_superuser:
             user.username = username
@@ -66,5 +77,7 @@ class UserUpdate(APIView):
 
         user.save()
         serializer = UserSerializer(user)
+        if student:
+            serializer = StudentSerializer(student)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
