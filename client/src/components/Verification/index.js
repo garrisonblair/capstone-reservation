@@ -104,7 +104,6 @@ class Verification extends Component {
 
   verifyStudentId() {
     const {studentId} = this.state;
-    console.log('clicked');
 
     if (studentId.value.length === 0) {
       this.setState({
@@ -120,6 +119,15 @@ class Verification extends Component {
         studentId: {
           showErrorMessage: true,
           errorMessageText: 'Field should have 8 digits'
+        }
+      })
+      throw new Error();
+    }
+    if(!studentId.value.match('^[0-9]*$')){
+      this.setState({
+        studentId: {
+          showErrorMessage: true,
+          errorMessageText: 'Student ID should have only digits'
         }
       })
       throw new Error();
@@ -142,6 +150,7 @@ class Verification extends Component {
       this.verifyStudentId();
     }
     catch (error) {
+
       return;
     }
   }
@@ -153,6 +162,9 @@ class Verification extends Component {
         </div>
       )
     }
+  }
+  renderMainForm(){
+
   }
 
   render() {
@@ -219,16 +231,13 @@ class Verification extends Component {
               />
             </Form.Field>
           </Form>
-
           <Form.Field>
             <br />
             <Button fluid size='small' icon onClick={this.handleUserSettings}>
               Send Email
       </Button>
           </Form.Field>
-
         </div>
-
       </div>
     )
   }
