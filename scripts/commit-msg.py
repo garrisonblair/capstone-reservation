@@ -7,8 +7,7 @@ MERGE_REGEX = "Merge"
 COMMIT_MESSAGE_LENGTH = 6
 
 def validate_commit_message():
-    """ Make sure commit message has is linked to an issue. """
-    messabe_is_valid = 0
+    """ Make sure commit message is linked to an issue. """
     try:
         script, commit_msg = sys.argv
 
