@@ -35,8 +35,6 @@ class TestUserUpdate(TestCase):
         except User.DoesNotExist:
             pass
 
-        check_password(self.new_password, user.password) == True
+        check_password(self.new_password, user.password) is True
         assert user.email == self.new_email
         self.assertTrue('User is updated')
-
-
