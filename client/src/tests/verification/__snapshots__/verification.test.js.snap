@@ -1,0 +1,162 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Show registration 1`] = `
+<div
+  id="verification"
+>
+  <div
+    className="container"
+  >
+    <div>
+      <div
+        className="ui large active centered inline loader"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Show registration form 1`] = `
+<div
+  id="verification"
+>
+  <div
+    className="container"
+  >
+    <div>
+      <h1>
+         Account settings 
+      </h1>
+      <div
+        className="ui mini two steps"
+      >
+        <div
+          className="completed step"
+          onClick={[Function]}
+        >
+          <i
+            aria-hidden="true"
+            className="envelope icon"
+          />
+          <div
+            className="content"
+          >
+            <div
+              className="title"
+            >
+              Step 1
+            </div>
+            <div
+              className="description"
+            >
+              ENCS username verification
+            </div>
+          </div>
+        </div>
+        <div
+          className="active step"
+          onClick={[Function]}
+        >
+          <i
+            aria-hidden="true"
+            className="cog icon"
+          />
+          <div
+            className="content"
+          >
+            <div
+              className="title"
+            >
+              Step 2
+            </div>
+            <div
+              className="description"
+            >
+              Account setup
+            </div>
+          </div>
+        </div>
+      </div>
+      <h4>
+        Welcome 
+        
+      </h4>
+      <form
+        className="ui form"
+        onSubmit={[Function]}
+      >
+        <label>
+          Enter Password:
+        </label>
+        <div
+          className="field"
+        >
+          <div
+            className="ui medium fluid left icon input"
+          >
+            <input
+              onChange={[Function]}
+              type="password"
+            />
+            <i
+              aria-hidden="true"
+              className="key icon"
+            />
+          </div>
+        </div>
+        <label>
+          Re-enter password:
+        </label>
+        <div
+          className="field"
+        >
+          <div
+            className="ui medium fluid left icon input"
+          >
+            <input
+              onChange={[Function]}
+              type="password"
+            />
+            <i
+              aria-hidden="true"
+              className="key icon"
+            />
+          </div>
+        </div>
+        <label>
+          Student ID:
+        </label>
+        <div
+          className="field"
+        >
+          <div
+            className="ui medium fluid left icon input"
+          >
+            <input
+              onChange={[Function]}
+              placeholder="12345678"
+              type="text"
+            />
+            <i
+              aria-hidden="true"
+              className="id card icon"
+            />
+          </div>
+        </div>
+      </form>
+      <div
+        className="field"
+      >
+        <br />
+        <button
+          className="ui small fluid icon button"
+          onClick={[Function]}
+          role="button"
+        >
+          Set settings
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

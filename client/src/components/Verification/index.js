@@ -30,10 +30,14 @@ class Verification extends Component {
       title: '',
       description: '',
       visible: false,
-      type:''
+      type:'error'
     }
   }
   componentWillMount() {
+    //This props value is for testing.
+    if(this.props.showFormForTesting){
+      this.setState({isLoading:false})
+    }
     const {token} = this.props.match.params;
     if (token) {
       const data = {"token": `${token}`}
@@ -113,11 +117,11 @@ class Verification extends Component {
       this.setState({
         password1: {
           showErrorMessage: true,
-          errorMessageText: 'This passwords do not match each other'
+          errorMessageText: 'These passwords do not match each other'
         },
         password2: {
           showErrorMessage: true,
-          errorMessageText: 'This passwords do not match each other'
+          errorMessageText: 'These passwords do not match each other'
         },
       })
       throw new Error();
