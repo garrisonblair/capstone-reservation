@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 import './Verification.scss';
 import {Loader, Form, Input, Button, Icon, Step, Label} from 'semantic-ui-react'
 import {getTokenHeader} from '../../utils/requestHeaders';
-
+import SweetAlert from 'sweetalert2-react';
 
 class Verification extends Component {
   state = {
@@ -25,11 +25,15 @@ class Verification extends Component {
     },
     isLoading: true,
     firstName: '',
-    userId: 0
+    userId: 0,
+    errorModal: {
+      title: '',
+      description: '',
+      visible: false
+    }
   }
   componentWillMount() {
     const {token} = this.props.match.params;
-    console.log(token);
     if (token) {
       const data = {"token": `${token}`}
       axios({
@@ -47,12 +51,20 @@ class Verification extends Component {
             "token": response.data.token
           };
           localStorage.setItem('CapstoneReservationUser', JSON.stringify(localStorageObject));
-          console.log(response);
         })
         .catch((error) => {
-          console.log('verification failed')
+          this.setState({
+            errorModal: {
+              visible: true,
+              description: "something happened",
+              title: ":("
+            },
+          })
         })
     }
+  }
+  closeModal = () => {
+
   }
   handleChangePassword1 = (event) => {
     this.setState({
@@ -166,8 +178,8 @@ class Verification extends Component {
     const headers = getTokenHeader();
     const password = this.state.password1.value;
     const data = {
-      "student_id":`${studentId.value}`,
-      "password":`${password}`
+      "student_id": `${studentId.value}`,
+      "password": `${password}`
     }
     console.log(`${settings.API_ROOT}/user/${userId}`);
     console.log(data);
@@ -198,7 +210,7 @@ class Verification extends Component {
   renderLoader() {
     return (
       <div>
-        <Loader active inline='centered' active />
+        <Loader active inline='centered' />
       </div>
     )
   }
@@ -276,11 +288,19 @@ class Verification extends Component {
   }
 
   render() {
+    let {errorModal} = this.state;
     return (
       <div id="verification">
         <div className="container">
           {this.state.isLoading ? this.renderLoader() : this.renderMainForm()}
         </div>
+        <SweetAlert
+          show={errorModal.visible}
+          title={errorModal.title}
+          text={errorModal.description}
+          type={'error'}
+          onConfirm={this.closeModal}
+        />
       </div>
     )
   }
