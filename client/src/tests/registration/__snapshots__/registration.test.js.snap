@@ -7,90 +7,108 @@ exports[`Show registration 1`] = `
   <div
     className="container"
   >
-    <h1>
-      Registration
-    </h1>
-    <div
-      className="ui mini two steps"
-    >
+    <div>
+      <h1>
+        Registration
+      </h1>
       <div
-        className="active step"
-        onClick={[Function]}
+        className="ui mini two steps"
       >
-        <i
-          aria-hidden="true"
-          className="envelope icon"
-        />
         <div
-          className="content"
+          className="active step"
+          onClick={[Function]}
         >
+          <i
+            aria-hidden="true"
+            className="envelope icon"
+          />
           <div
-            className="title"
+            className="content"
           >
-            Step 1
+            <div
+              className="title"
+            >
+              Step 1
+            </div>
+            <div
+              className="description"
+            >
+              ENCS username verification
+            </div>
           </div>
+        </div>
+        <div
+          className="step"
+          onClick={[Function]}
+        >
+          <i
+            aria-hidden="true"
+            className="cog icon"
+          />
           <div
-            className="description"
+            className="content"
           >
-            ENCS username verification
+            <div
+              className="title"
+            >
+              Step 2
+            </div>
+            <div
+              className="description"
+            >
+              Account setup
+            </div>
           </div>
         </div>
       </div>
+      <p>
+        Please enter your ENCS username. A validation will be sent to your ENCS email.
+      </p>
       <div
-        className="step"
-        onClick={[Function]}
+        className="field"
       >
-        <i
-          aria-hidden="true"
-          className="cog icon"
-        />
         <div
-          className="content"
+          className="ui small fluid left icon input"
         >
-          <div
-            className="title"
-          >
-            Step 2
-          </div>
-          <div
-            className="description"
-          >
-            Account setup
-          </div>
+          <input
+            onChange={[Function]}
+            placeholder="ex. a_test"
+            type="text"
+          />
+          <i
+            aria-hidden="true"
+            className="user icon"
+          />
         </div>
       </div>
-    </div>
-    <p>
-      Please enter your ENCS username. A validation will be sent to your ENCS email.
-    </p>
-    <div
-      className="field"
-    >
       <div
-        className="ui small fluid left icon input"
+        className="field"
       >
-        <input
-          onChange={[Function]}
-          placeholder="ex. a_test"
-          type="text"
-        />
-        <i
-          aria-hidden="true"
-          className="user icon"
-        />
+        <br />
+        <button
+          className="ui small fluid icon button"
+          onClick={[Function]}
+          role="button"
+        >
+          Send Email
+        </button>
       </div>
     </div>
-    <div
-      className="field"
-    >
-      <br />
-      <button
-        className="ui small fluid icon button"
-        onClick={[Function]}
-        role="button"
-      >
-        Send Email
-      </button>
+  </div>
+</div>
+`;
+
+exports[`Show registration loader 1`] = `
+<div
+  id="registration"
+>
+  <div
+    className="container"
+  >
+    <div>
+      <div
+        className="ui large active centered inline loader"
+      />
     </div>
   </div>
 </div>

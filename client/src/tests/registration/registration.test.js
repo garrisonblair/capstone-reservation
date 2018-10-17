@@ -8,3 +8,10 @@ it('Show registration', () => {
         .toJSON();
     expect(tree).toMatchSnapshot();
 });
+
+it('Show registration loader', () => {
+    const tree = renderer
+        .create(<Registration showLoaderForTest={true}></Registration>)
+        .toJSON();
+    expect(tree).toMatchSnapshot();
+});

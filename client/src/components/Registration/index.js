@@ -16,6 +16,13 @@ class Registration extends Component {
     showLoader: false
   }
 
+  componentWillMount(){
+    //This is only for testing.
+    if(this.props.showLoaderForTest){
+      this.setState({showLoader:true});
+    }
+  }
+
   handleEncsUsername = (event) => {
     this.setState({encsUsername: event.target.value});
   }
