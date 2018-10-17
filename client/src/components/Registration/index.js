@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import settings from '../../config/settings';
 import './Registration.scss';
 import SweetAlert from 'sweetalert2-react';
-import {Form, Input, Button, Icon, Step} from 'semantic-ui-react';
+import {Form, Input, Button, Icon, Step, Loader} from 'semantic-ui-react';
 
 class Registration extends Component {
 
@@ -12,7 +12,8 @@ class Registration extends Component {
     showModal: false,
     modalTitle: '',
     modalText: '',
-    modalType: 'success'
+    modalType: 'info',
+    showLoader: false
   }
 
   handleEncsUsername = (event) => {
@@ -21,9 +22,14 @@ class Registration extends Component {
 
   closeModal = () => {
     this.setState({showModal: false})
+    if (this.state.modalType === 'success') {
+      this.props.history.push('/login');
+    }
+
   }
 
   sendEmail = () => {
+    this.setState({showLoader: true})
     const data = {"username": `${this.state.encsUsername}`};
     console.log(data);
     axios({
@@ -34,6 +40,7 @@ class Registration extends Component {
       .then((response) => {
         if (response.status == 201) {
           this.setState({
+            showLoader: false,
             showModal: true,
             modalTitle: 'Succeed',
             modalText: 'A verification message has been send to your ENCS email.',
@@ -43,6 +50,7 @@ class Registration extends Component {
 
       })
       .catch((error) => {
+        this.setState({showLoader: false})
         if (error.message.includes('302')) {
           this.setState({
             showModal: true,
@@ -62,44 +70,60 @@ class Registration extends Component {
       })
   }
 
-  render() {
+  renderLoader() {
     return (
-      <div id="registration">
-        <div className="container">
+      <div>
+        <Loader active inline='centered' size="large" />
+      </div>
+    )
+  }
+
+  renderMainForm() {
+    return (
+      <div>
         <h1>Registration</h1>
         <Step.Group size="mini" widths={2}>
           <Step active>
-            <Icon name="envelope"/>
+            <Icon name="envelope" />
             <Step.Content>
               <Step.Title>Step 1</Step.Title>
               <Step.Description>ENCS username verification</Step.Description>
             </Step.Content>
           </Step>
           <Step>
-            <Icon name="cog"/>
+            <Icon name="cog" />
             <Step.Content>
               <Step.Title>Step 2</Step.Title>
               <Step.Description>Account setup</Step.Description>
             </Step.Content>
           </Step>
         </Step.Group>
-          <p>Please enter your ENCS username. A validation will be sent to your ENCS email.</p>
-          <Form.Field>
-            <Input
-              fluid
-              size='small'
-              icon='user'
-              iconPosition='left'
-              placeholder='ex. a_test'
-              onChange={this.handleEncsUsername}
-            />
-          </Form.Field>
-          <Form.Field>
-            <br />
-            <Button fluid size='small' icon onClick={this.sendEmail}>
-              Send Email
+        <p>Please enter your ENCS username. A validation will be sent to your ENCS email.</p>
+        <Form.Field>
+          <Input
+            fluid
+            size='small'
+            icon='user'
+            iconPosition='left'
+            placeholder='ex. a_test'
+            onChange={this.handleEncsUsername}
+          />
+        </Form.Field>
+        <Form.Field>
+          <br />
+          <Button fluid size='small' icon onClick={this.sendEmail}>
+            Send Email
       </Button>
-          </Form.Field>
+        </Form.Field>
+      </div>
+    )
+  }
+
+  render() {
+    return (
+      <div id="registration">
+        <div className="container">
+          {this.state.showLoader ? this.renderLoader() : this.renderMainForm()}
         </div>
         <SweetAlert
           show={this.state.showModal}
