@@ -57,6 +57,8 @@ class UserUpdate(APIView):
         if student_id:
             try:
                 student = Student.objects.get(user=user)
+                # Restrict student from changing its student ID once it's set
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
             except Student.DoesNotExist:
                 # Add student ID only if it's a new user
                 student = Student(user=user, student_id=student_id)
@@ -78,6 +80,6 @@ class UserUpdate(APIView):
         user.save()
         serializer = UserSerializer(user)
         if student:
-            serializer = StudentSerializer(student)
+            serializer = StudentSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
