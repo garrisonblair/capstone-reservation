@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 
 from apps.accounts.models.VerificationToken import VerificationToken
 
+
 class TestVerify(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -29,7 +30,5 @@ class TestVerify(TestCase):
             self.fail('Token DNE')
 
         assert verification_token.user == self.user
-        assert self.user.is_active == True
+        assert self.user.is_active is True
         self.assertTrue('User is verified')
-
-

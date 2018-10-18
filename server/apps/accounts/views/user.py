@@ -67,4 +67,3 @@ class UserUpdate(APIView):
         user.save()
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-

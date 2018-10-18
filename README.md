@@ -23,6 +23,14 @@ Docker is used for the deployment of the software in production only.
 
 As a developer you will need to perform the following steps:
 
+### Git Setup
+To enforce commit rules we implement some commit hooks that run linting and check that commit messages are properly linked.
+To set them up run the following command the first time you setup the repository
+
+```
+    sh scrips/setup_hooks.sh
+```
+
 ### Virtual Environment Setup
 
 - Install virtualenv

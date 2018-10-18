@@ -69,4 +69,3 @@ class RoomView(APIView):
         else:
             error_msg = "Invalid times: please supply a start time and an end time"
             return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
-
