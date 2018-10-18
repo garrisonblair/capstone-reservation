@@ -6,10 +6,10 @@ import SweetAlert from 'sweetalert2-react';
 import settings from '../../config/settings'
 import {getTokenHeader} from '../../utils/requestHeaders';
 import './ReservationDetailsModal.scss';
+import {toDateInputValue} from '../../utils/dateFormatter';
 
 
 class ReservationDetailsModal extends Component {
-
   state = {
     show: false,
     startHour: this.props.startHour,
@@ -22,7 +22,11 @@ class ReservationDetailsModal extends Component {
     modalText: '',
     modalType: 'success',
     isRecurring: false,
-    tabIndex:0
+    tabIndex: 0,
+    inputOption0: {
+      startDate: toDateInputValue(this.props.selectedDate),
+      endDate: null
+    }
   }
 
   generateHourOptions(minHour, maxHour) {
@@ -121,15 +125,37 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  handleTabChange = (e, { activeIndex }) => {
-    this.setState({ tabIndex:activeIndex })
+  handleTabChange = (e, {activeIndex}) => {
+    this.setState({tabIndex: activeIndex})
   }
 
-  handleReserve = () => {
+  verifyRecurringOption0 = () => {
+    const {startDate, endDate} = this.state.inputOption0;
+    console.log('hhoura');
+    if (endDate == null) {
+      console.log(endDate);
+      throw new Error('Please enter an end date.');
+    }
+  }
+
+  handleSubmit = () => {
+    let {tabIndex} = this.state;
+    console.log(typeof (tabIndex));
     // Verify requirements before sending the POST request
     try {
       this.verifyEndTime();
       this.verifyReservationTimes();
+      if (this.state.isRecurring) {
+        switch (tabIndex) {
+          case 0:
+            this.verifyRecurringOption0()
+            break;
+          default:
+            throw new Error('Something went wrong')
+            break;
+        }
+        return;
+      }
     }
     catch (err) {
       this.setState({
@@ -139,11 +165,6 @@ class ReservationDetailsModal extends Component {
         modalType: 'warning'
       })
       return;
-    }
-
-    //Verify requirements if is a recurring booking
-    if(this.state.isRecurring){
-
     }
 
     const headers = getTokenHeader();
@@ -227,55 +248,57 @@ class ReservationDetailsModal extends Component {
     this.setState({isRecurring: !isRecurring})
   }
 
-  toDateInputValue = (date) =>{
-    return date.toISOString().slice(0,10)
-  }
+  handleStartDateChangeOption0 = (event) =>{this.setState({inputOption0:{startDate:event.target.value}}) }
+  handleEndDateChangeOption0 = (event) =>{this.setState({inputOption0:{endDate:event.target.value}}) }
 
-  renderRecurringBookingOption1= () =>{
-    return(
+  renderRecurringBookingOption0 = () => {
+    let {startDate} = this.state.inputOption0;
+    return (
       <div>
-      <div className="modal-description">
-    <h3 className="header--inline">
-      <Icon name="calendar alternate" /> {" "}
-      {`Starting date`}
-    </h3>
-    <Form.Field>
-      <Input
-        size='small'
-        icon='user'
-        type="date"
-        iconPosition='left'
-        value={this.toDateInputValue(this.props.selectedDate)}
-      />
-    </Form.Field>
-  </div>
-  <div className="modal-description">
-    <h3 className="header--inline">
-      <Icon name="calendar alternate outline" /> {" "}
-      {`End date `}
-    </h3>
-    <Form.Field>
-      <Input
-        size='small'
-        icon='user'
-        type="date"
-        iconPosition='left'
-      />
-    </Form.Field>
-  </div>
+        <div className="modal-description">
+          <h3 className="header--inline">
+            <Icon name="calendar alternate" /> {" "}
+            {`Starting date`}
+          </h3>
+          <Form.Field>
+            <Input
+              size='small'
+              icon='user'
+              type="text"
+              iconPosition='left'
+              value={startDate}
+              onChange={this.handleStartDateChangeOption0}
+            />
+          </Form.Field>
+        </div>
+        <div className="modal-description">
+          <h3 className="header--inline">
+            <Icon name="calendar alternate outline" /> {" "}
+            {`End date `}
+          </h3>
+          <Form.Field>
+            <Input
+              size='small'
+              icon='user'
+              type="text"
+              iconPosition='left'
+              onChange={this.handleEndDateChangeOption0}
+            />
+          </Form.Field>
+        </div>
       </div>
     )
   }
 
   renderRecurringForm() {
     const panes = [
-      { menuItem: 'Option 1', render: () => <Tab.Pane attached={false}>{this.renderRecurringBookingOption1()}</Tab.Pane> },
-      { menuItem: 'Option 2', render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane> },
-      { menuItem: 'Option 3', render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane> },
+      {menuItem: 'Option 1', render: () => <Tab.Pane attached={false}>{this.renderRecurringBookingOption0()}</Tab.Pane>},
+      {menuItem: 'Option 2', render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane>},
+      {menuItem: 'Option 3', render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane>},
     ]
     return (
       <div>
-        <Tab menu={{ pointing: true }} onTabChange={this.handleTabChange} panes={panes} />
+        <Tab menu={{pointing: true}} onTabChange={this.handleTabChange} panes={panes} />
       </div>
     )
   }
@@ -357,7 +380,7 @@ class ReservationDetailsModal extends Component {
           {this.state.isRecurring ? this.renderRecurringForm() : null}
           <div className="ui divider" />
           <div>
-            <Button content='Reserve' primary onClick={this.handleReserve} />
+            <Button content='Reserve' primary onClick={this.handleSubmit} />
             <Button content='Cancel' secondary onClick={this.closeModal} />
           </div>
         </Modal.Description>
