@@ -28,5 +28,6 @@ class VerificationTokenAdmin(admin.ModelAdmin):
     def email(self, instance):
         return instance.user.email
 
+
 admin.site.register(Student, StudentAdmin)
 admin.site.register(VerificationToken, VerificationTokenAdmin)

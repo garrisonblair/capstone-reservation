@@ -34,16 +34,27 @@ class Booking(models.Model, SubjectModel):
         return this
 
     def __str__(self):
-        return 'Booking: %d, Student: %s, Room: %s, Date: %s, Start time: %s, End Time: %s' % (self.id, self.student.student_id, self.room.room_id, self.date, self.start_time, self.end_time)
+        return 'Booking: %d, Student: %s, Room: %s, Date: %s, Start time: %s, End Time: %s' % (self.id,
+                                                                                               self.student.student_id,
+                                                                                               self.room.room_id,
+                                                                                               self.date,
+                                                                                               self.start_time,
+                                                                                               self.end_time)
 
     def validate_model(self):
 
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
 
-        if Booking.objects.filter(~Q(start_time=self.end_time), room=self.room, date=self.date, start_time__range=(self.start_time, self.end_time)).exists():
+        if Booking.objects.filter(~Q(start_time=self.end_time),
+                                  room=self.room,
+                                  date=self.date,
+                                  start_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
-        elif Booking.objects.filter(~Q(end_time=self.start_time), room=self.room, date=self.date, end_time__range=(self.start_time, self.end_time)).exists():
+        elif Booking.objects.filter(~Q(end_time=self.start_time),
+                                    room=self.room,
+                                    date=self.date,
+                                    end_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
     def get_observers(self):
