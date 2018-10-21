@@ -38,9 +38,9 @@ END:VCALENDAR"""
         student = Student(student_id="s_loc")
         student.save()
 
-        self.booking = Booking(start_time=datetime.time(12,0,0),
-                               end_time=datetime.time(13,0,0),
-                               date=datetime.date(2018,10,12),
+        self.booking = Booking(start_time=datetime.time(12, 0, 0),
+                               end_time=datetime.time(13, 0, 0),
+                               date=datetime.date(2018, 10, 12),
                                student=student,
                                room=room)
         self.booking.save()
@@ -65,9 +65,9 @@ END:VCALENDAR"""
         self.assertEqual(self.session_mock.post.call_count, 1)
 
         self.assertEqual(self.session_mock.post.call_args[1],
-                         {"data":
-                              {"login": settings.webcalendar_username,
-                               "password": settings.webcalendar_password}
+                         {"data": {
+                                "login": settings.webcalendar_username,
+                                "password": settings.webcalendar_password}
                           })
 
         self.assertEqual(self.session_mock.post.call_args[0][0],
@@ -95,6 +95,3 @@ END:VCALENDAR"""
                          'files': {
                             'FileName': ('booking.ics', self.TEST_ICS)}
                           })
-
-
-

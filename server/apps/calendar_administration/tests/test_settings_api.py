@@ -16,8 +16,6 @@ class TestSettingsAPI(TestCase):
         self.user.is_superuser = True
         self.user.save
 
-
-
         self.factory = APIRequestFactory()
 
     def testGetSettings(self):

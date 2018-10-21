@@ -3,6 +3,7 @@ from django.test import TestCase
 from apps.rooms.models.Room import Room
 from ..models.bookingExporterModels import ExternalRoomID
 
+
 class TestModels(TestCase):
 
     def testExternalRoomIDCreation(self):
@@ -13,4 +14,3 @@ class TestModels(TestCase):
         external_room_id = ExternalRoomID(external_id="_ROOM1_", room=room)
 
         self.assertEqual(room.externalroomid, external_room_id)
-

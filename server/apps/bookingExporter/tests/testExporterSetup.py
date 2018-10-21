@@ -32,9 +32,9 @@ class TestExporterSetup(TestCase):
         booking = Booking(
             student=self.student,
             room=self.room,
-            start_time=datetime.time(12,0,0),
-            end_time=datetime.time(13,0,0),
-            date=datetime.date(2018,1,1))
+            start_time=datetime.time(12, 0, 0),
+            end_time=datetime.time(13, 0, 0),
+            date=datetime.date(2018, 1, 1))
         booking.save()
 
         self.assertEqual(booking, exporter_mock.subject_created.call_args[0][0])

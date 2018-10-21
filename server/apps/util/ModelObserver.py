@@ -1,5 +1,6 @@
 import abc
 
+
 # INTERFACE
 class ModelObserver(abc.ABC):
 

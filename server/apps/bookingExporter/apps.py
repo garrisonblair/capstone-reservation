@@ -21,5 +21,3 @@ class BookingExporterConfig(AppConfig):
             self.web_calendar_exporter = WEBCalendarExporter()
 
         Booking().register(self.web_calendar_exporter)
-
-
