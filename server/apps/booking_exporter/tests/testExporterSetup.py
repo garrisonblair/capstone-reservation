@@ -14,7 +14,7 @@ from apps.rooms.models.Room import Room
 class TestExporterSetup(TestCase):
 
     def setUp(self):
-        self.exporter_app_config = apps.get_app_config("bookingExporter")
+        self.exporter_app_config = apps.get_app_config("booking_exporter")
 
         self.student = Student(student_id="f_daigl")
         self.student.save()

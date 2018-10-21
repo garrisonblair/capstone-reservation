@@ -3,7 +3,7 @@ import requests
 from ..BookingExporter import BookingExporter
 from .ICSSerializer import ICSSerializer
 
-from apps.calendar_administration.models.system_settings import SystemSettings
+from apps.configuration_administration.models.system_settings import SystemSettings
 
 
 class WEBCalendarExporter(BookingExporter):

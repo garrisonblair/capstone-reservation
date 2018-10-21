@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class BookingExporterConfig(AppConfig):
-    name = 'apps.bookingExporter'
+    name = 'apps.booking_exporter'
 
     def __init__(self, arg1, arg2):
         super(BookingExporterConfig, self).__init__(arg1, arg2)
