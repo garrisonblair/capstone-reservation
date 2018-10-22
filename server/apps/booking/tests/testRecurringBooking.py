@@ -171,3 +171,44 @@ class TestRecurringBooking(TestCase):
                 False
             )
         self.assertEqual(RecurringBooking.objects.count(), 0)
+
+    def testRecurringBookingSingleConflictFlagSet(self):
+        Booking(
+            student=self.group.students.get(student_id='00000001'),
+            room=self.room,
+            date=self.start_date,
+            start_time=self.start_time,
+            end_time=self.end_time
+        ).save()
+
+        RecurringBooking.objects.create_recurring_booking(
+            self.start_date,
+            self.end_date,
+            self.start_time,
+            self.end_time,
+            self.room,
+            self.group,
+            self.group.students.get(student_id='00000001'),
+            True
+        )
+        self.assertEqual(RecurringBooking.objects.count(), 1)
+
+        # In the first week the booking should not be made, but will be made the following weeks
+        recurring_booking = RecurringBooking.objects.get(student_group=self.group)
+        self.assertEqual(recurring_booking.booking_set.count(), 2)
+
+        booking2 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=7))
+
+        self.assertEqual(booking2.start_time, self.start_time)
+        self.assertEqual(booking2.end_time, self.end_time)
+        self.assertEqual(booking2.room, self.room)
+        self.assertEqual(booking2.student_group, self.group)
+        self.assertEqual(booking2.student, self.group.students.get(student_id='00000001'))
+
+        booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
+
+        self.assertEqual(booking3.start_time, self.start_time)
+        self.assertEqual(booking3.end_time, self.end_time)
+        self.assertEqual(booking3.room, self.room)
+        self.assertEqual(booking3.student_group, self.group)
+        self.assertEqual(booking3.student, self.group.students.get(student_id='00000001'))
