@@ -186,7 +186,7 @@ class BookingAPITest(TestCase):
         force_authenticate(request, user=User.objects.get(username="john"))
 
         response = RecurringBookingView.as_view()(request)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
     def testRecurringBookingConflictFlagSet(self):
         Booking(
