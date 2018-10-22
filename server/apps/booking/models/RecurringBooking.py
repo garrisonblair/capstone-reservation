@@ -9,7 +9,7 @@ from datetime import timedelta
 
 
 class RecurringBookingManager(models.Manager):
-    def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, student_group, student):
+    def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, student_group, student, skip):
         recurring_booking = self.create(
             start_date=start_date,
             end_date=end_date,
@@ -17,7 +17,8 @@ class RecurringBookingManager(models.Manager):
             booking_end_time=end_time,
             room=room,
             student_group=student_group,
-            student=student
+            student=student,
+            skip_conflicts=skip
         )
 
         from . import Booking
@@ -46,6 +47,7 @@ class RecurringBooking(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    skip_conflicts = models.BooleanField(default=False)
 
     objects = RecurringBookingManager()
 
@@ -68,8 +70,10 @@ class RecurringBooking(models.Model):
             while date <= self.end_date:
                 if Booking.objects.filter(~Q(start_time=self.booking_end_time), room=self.room, date=date,
                                           start_time__range=(self.booking_start_time, self.booking_end_time)).exists():
-                    raise ValidationError("Recurring booking at specified time overlaps with another booking.")
+                    if not self.skip_conflicts:
+                        raise ValidationError("Recurring booking at specified time overlaps with another booking.")
                 elif Booking.objects.filter(~Q(end_time=self.booking_start_time), room=self.room, date=date,
                                             end_time__range=(self.booking_start_time, self.booking_end_time)).exists():
-                    raise ValidationError("Recurring booking at specified time overlaps with another booking.")
+                    if not self.skip_conflicts:
+                        raise ValidationError("Recurring booking at specified time overlaps with another booking.")
                 date += timedelta(days=7)

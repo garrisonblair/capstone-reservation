@@ -14,6 +14,7 @@ class RecurringBookingSerializer(serializers.ModelSerializer):
     room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
     student_group = serializers.PrimaryKeyRelatedField(queryset=StudentGroup.objects.all())
     student = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all())
+    skip_conflicts = serializers.BooleanField()
 
     def create(self, validated_data):
         return RecurringBooking.objects.create_recurring_booking(
@@ -23,7 +24,8 @@ class RecurringBookingSerializer(serializers.ModelSerializer):
             end_time=validated_data["booking_end_time"],
             room=validated_data["room"],
             student_group=validated_data["student_group"],
-            student=validated_data["student"]
+            student=validated_data["student"],
+            skip_conflicts=validated_data["skip_conflicts"]
         )
 
     class Meta:
