@@ -135,11 +135,13 @@ class ReservationDetailsModal extends Component {
       console.log(endDate);
       throw new Error('Please enter an end date.');
     }
+    if(!(new Date(startDate) < new Date(endDate))){
+      throw new Error('End date should be after starting date.');
+    }
   }
 
   handleSubmit = () => {
     let {tabIndex} = this.state;
-    console.log(typeof (tabIndex));
     // Verify requirements before sending the POST request
     try {
       this.verifyEndTime();
@@ -151,7 +153,6 @@ class ReservationDetailsModal extends Component {
             break;
           default:
             throw new Error('Something went wrong')
-            break;
         }
         return;
       }
