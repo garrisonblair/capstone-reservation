@@ -38,7 +38,9 @@ class Booking(models.Model):
         super(Booking, self).save(*args, **kwargs)
 
     def __str__(self):
-        return 'Booking: %d, Student: %s, Room: %s, Date: %s, Start time: %s, End Time: %s' % (self.id, self.student.student_id, self.room.room_id, self.date, self.start_time, self.end_time)
+        return 'Booking: {}, Student: {}, Room: {}, Date: {}, Start time: {}, End Time: {}'.format(
+            self.id, self.student.student_id, self.room.room_id, self.date, self.start_time, self.end_time
+        )
 
     def validate_model(self):
         if self.start_time >= self.end_time:
