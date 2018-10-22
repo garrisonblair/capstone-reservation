@@ -92,7 +92,25 @@ class TestCampOn(TestCase):
         campon = CampOn(student=self.campStudent, 
                         booking=self.booking, 
                         start_time=campon_start_time,
-                        end_time=self.end_time)
+                        end_time=campon_end_time)
         with self.assertRaises(ValidationError) as ex:
             campon.save()
         self.assertEqual(len(CampOn.objects.all()), 0)
+
+    def testCampOnSameStudentOnSameBooking(self):
+        #Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
+        campon_start_time = datetime.strptime("12:15", "%H:%M").time()
+        campon = CampOn(student=self.campStudent, 
+                        booking=self.booking, 
+                        start_time=campon_start_time,
+                        end_time=self.end_time)
+        campon.save()
+        
+        campon_start_time = datetime.strptime("12:30", "%H:%M").time()
+        campon = CampOn(student=self.campStudent, 
+                        booking=self.booking, 
+                        start_time=campon_start_time,
+                        end_time=self.end_time)
+        with self.assertRaises(ValidationError) as ex:
+            campon.save()
+        self.assertEqual(len(CampOn.objects.all()), 1)
