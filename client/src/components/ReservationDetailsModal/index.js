@@ -140,35 +140,7 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  handleSubmit = () => {
-    let {tabIndex} = this.state;
-    // Verify requirements before sending the POST request
-    try {
-      this.verifyEndTime();
-      this.verifyReservationTimes();
-      if (this.state.isRecurring) {
-        switch (tabIndex) {
-          case 0:
-            this.verifyRecurringOption0()
-            break;
-          default:
-            throw new Error('Something went wrong')
-        }
-        return;
-      }
-    }
-    catch (err) {
-      this.setState({
-        showModal: true,
-        modalTitle: 'Reservation blocked',
-        modalText: err.message,
-        modalType: 'warning'
-      })
-      return;
-    }
-
-    const headers = getTokenHeader();
-
+  sendPostRequestBooking = (headers) =>{
     // Handle time zone
     let tzoffset = (this.props.selectedDate).getTimezoneOffset() * 60000;
     let date = new Date(this.props.selectedDate - tzoffset);
@@ -204,6 +176,48 @@ class ReservationDetailsModal extends Component {
           modalType: 'error'
         });
       })
+  }
+
+  sendPostRequestRecurringBooking = (headers) =>{
+
+
+  }
+
+  handleSubmit = () => {
+    let {tabIndex, isRecurring} = this.state;
+    // Verify requirements before sending the POST request
+    try {
+      this.verifyEndTime();
+      this.verifyReservationTimes();
+      if (this.state.isRecurring) {
+        switch (tabIndex) {
+          case 0:
+            this.verifyRecurringOption0()
+            break;
+          default:
+            throw new Error('Something went wrong')
+        }
+        return;
+      }
+    }
+    catch (err) {
+      this.setState({
+        showModal: true,
+        modalTitle: 'Reservation blocked',
+        modalText: err.message,
+        modalType: 'warning'
+      })
+      return;
+    }
+
+    const headers = getTokenHeader();
+    if(isRecurring){
+      this.sendPostRequestRecurringBooking(headers);
+    }
+    else{
+      this.sendPostRequestBooking(headers);
+    }
+
   }
 
   componentWillReceiveProps(nextProps) {
