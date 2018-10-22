@@ -5,7 +5,7 @@ from apps.accounts.models.Student import Student
 from apps.rooms.models.Room import Room
 from django.db.models import Q
 from django.core.exceptions import ValidationError
-
+from datetime import datetime
 
 class Booking(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -27,11 +27,9 @@ class Booking(models.Model):
                                                                                                self.end_time)
 
     def validate_model(self):
-
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
-
-        if Booking.objects.filter(~Q(start_time=self.end_time),
+        elif Booking.objects.filter(~Q(start_time=self.end_time),
                                   room=self.room,
                                   date=self.date,
                                   start_time__range=(self.start_time, self.end_time)).exists():
