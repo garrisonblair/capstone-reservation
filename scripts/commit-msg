@@ -1,0 +1,4 @@
+#!/bin/sh
+
+commit_msg=$(cat $1)
+python scripts/commit-msg.py "$commit_msg"
