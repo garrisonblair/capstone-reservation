@@ -1,17 +1,10 @@
-import datetime
-
 from django.core.exceptions import ValidationError
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
 from apps.accounts.models.Student import Student
-from apps.booking.models.Booking import Booking
 from apps.booking.models.CampOn import CampOn
-
 from apps.booking.serializers.campon_serializer import CampOnSerializer
-
 
 class CampOnView(APIView):
 
