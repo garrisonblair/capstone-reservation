@@ -24,12 +24,12 @@ class BookingManager(models.Manager):
 
 class Booking(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE, null=True)
+    student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE, blank=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-    recurring_booking = models.ForeignKey(RecurringBooking, on_delete=models.CASCADE, null=True)
+    recurring_booking = models.ForeignKey(RecurringBooking, on_delete=models.CASCADE, blank=True)
 
     objects = BookingManager()
 
