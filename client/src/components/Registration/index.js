@@ -30,7 +30,7 @@ class Registration extends Component {
   closeModal = () => {
     this.setState({showModal: false})
     if (this.state.modalType === 'success') {
-      this.props.history.push('/login');
+      this.props.history.push('/');
     }
 
   }
@@ -49,8 +49,8 @@ class Registration extends Component {
           this.setState({
             showLoader: false,
             showModal: true,
-            modalTitle: 'Succeed',
-            modalText: 'A verification message has been send to your ENCS email.',
+            modalTitle: 'A verification link has been sent to your ENCS email account.',
+            modalText: 'Please click on the link to continue the registration process.',
             modalType: 'success',
           })
         }
@@ -61,8 +61,8 @@ class Registration extends Component {
         if (error.message.includes('302')) {
           this.setState({
             showModal: true,
-            modalTitle: 'Warning',
-            modalText: 'You have already sent a verification to your ENCS email.',
+            modalTitle: 'You are already registered',
+            modalText: 'A verification email has already been sent to your ENCS email. Please double check.',
             modalType: 'warning',
           })
         }
