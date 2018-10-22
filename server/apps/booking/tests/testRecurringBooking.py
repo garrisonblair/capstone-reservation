@@ -128,3 +128,17 @@ class TestRecurringBooking(TestCase):
                 self.group.students.get(student_id='00000001')
             )
         self.assertEqual(RecurringBooking.objects.count(), 0)
+
+    def testRecurringBookingGroupNotVerified(self):
+        self.group.is_verified = False
+        with self.assertRaises(ValidationError):
+            RecurringBooking.objects.create_recurring_booking(
+                self.start_date,
+                self.end_date,
+                self.end_time,
+                self.start_time,
+                self.room,
+                self.group,
+                self.group.students.get(student_id='00000001')
+            )
+        self.assertEqual(RecurringBooking.objects.count(), 0)

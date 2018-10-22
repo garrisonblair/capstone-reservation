@@ -54,7 +54,9 @@ class RecurringBooking(models.Model):
         super(RecurringBooking, self).save(*args, **kwargs)
 
     def validate_model(self):
-        if self.start_date >= self.end_date:
+        if not self.student_group.is_verified:
+            raise ValidationError("You must book as part of a verified group to create a recurring booking")
+        elif self.start_date >= self.end_date:
             raise ValidationError("Start date can not be after End date.")
         elif self.end_date < self.start_date + timedelta(days=7):
             raise ValidationError("You must book for at least two consecutive weeks.")
