@@ -178,9 +178,31 @@ class ReservationDetailsModal extends Component {
       })
   }
 
-  sendPostRequestRecurringBooking = (headers) =>{
+  sendPostRequestRecurringBooking = (headers, skipConflicts) =>{
+    const {startDate, endDate} = this.state.inputOption0;
+    const data = {
+      "start_date": startDate,
+      "end_date": endDate,
+      "booking_start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
+      "booking_end_time": `${this.state.endHour}:${this.state.endMinute}:00`,
+      "room":this.props.selectedRoomId,
+      "student_group":1,
+      "student":1,
+      "skip_conflicts":skipConflicts,
+    };
+    axios({
+      method: 'POST',
+      url: `${settings.API_ROOT}/recurring_booking`,
+      headers,
+      data,
+      withCredentials: true,
+    })
+    .then((response) =>{
 
+    })
+    .catch((error) =>{
 
+    })
   }
 
   handleSubmit = () => {
@@ -215,7 +237,7 @@ class ReservationDetailsModal extends Component {
       this.sendPostRequestRecurringBooking(headers);
     }
     else{
-      this.sendPostRequestBooking(headers);
+      this.sendPostRequestBooking(headers, false);
     }
 
   }
