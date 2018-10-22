@@ -117,11 +117,11 @@ class Verification extends Component {
       this.setState({
         password1: {
           showErrorMessage: true,
-          errorMessageText: 'These passwords do not match each other'
+          errorMessageText: 'Passwords do not match'
         },
         password2: {
           showErrorMessage: true,
-          errorMessageText: 'These passwords do not match each other'
+          errorMessageText: 'Passwords do not match'
         },
       })
       throw new Error();
@@ -135,7 +135,7 @@ class Verification extends Component {
       this.setState({
         studentId: {
           showErrorMessage: true,
-          errorMessageText: 'Please enter your student Id number'
+          errorMessageText: 'Please enter your student ID number'
         }
       })
       throw new Error();
