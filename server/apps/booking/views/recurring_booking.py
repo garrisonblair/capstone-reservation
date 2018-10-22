@@ -23,7 +23,7 @@ class RecurringBookingView(APIView):
 
         else:
             try:
-                recurring_booking = serializer.create(validated_data=serializer.validated_data)
-                return Response(RecurringBookingSerializer(recurring_booking).data, status=status.HTTP_201_CREATED)
+                recurring_booking, conflicts = serializer.create(validated_data=serializer.validated_data)
+                return Response(conflicts, status=status.HTTP_201_CREATED)
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)

@@ -24,6 +24,7 @@ class RecurringBookingManager(models.Manager):
 
         from . import Booking
         date = recurring_booking.start_date
+        conflicts = list()
         while date <= recurring_booking.end_date:
             try:
                 booking = Booking.objects.create_booking(
@@ -38,11 +39,12 @@ class RecurringBookingManager(models.Manager):
                 recurring_booking.booking_set.add(booking)
             except ValidationError:
                 if skip_conflicts:
+                    conflicts.append(date)
                     date += timedelta(days=7)
                     continue
             date += timedelta(days=7)
 
-        return recurring_booking
+        return recurring_booking, conflicts
 
 
 class RecurringBooking(models.Model):
