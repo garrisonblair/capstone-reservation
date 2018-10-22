@@ -58,7 +58,8 @@ class BookingAPITest(TestCase):
                                         "booking_end_time": "15:00",
                                         "room": 1,
                                         "student_group": 1,
-                                        "student": 1
+                                        "student": 1,
+                                        "skip_conflicts": False
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -101,7 +102,8 @@ class BookingAPITest(TestCase):
                                         "booking_end_time": "15:00",
                                         "room": 1,
                                         "student_group": 1,
-                                        "student": 1
+                                        "student": 1,
+                                        "skip_conflicts": False
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -119,7 +121,8 @@ class BookingAPITest(TestCase):
                                         "booking_end_time": "12:00",
                                         "room": 1,
                                         "student_group": 1,
-                                        "student": 1
+                                        "student": 1,
+                                        "skip_conflicts": False
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -137,7 +140,8 @@ class BookingAPITest(TestCase):
                                         "booking_end_time": "12:00",
                                         "room": 1,
                                         "student_group": 1,
-                                        "student": 1
+                                        "student": 1,
+                                        "skip_conflicts": False
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))

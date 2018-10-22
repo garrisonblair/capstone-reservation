@@ -9,7 +9,8 @@ from datetime import timedelta
 
 
 class RecurringBookingManager(models.Manager):
-    def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, student_group, student, skip):
+    def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, student_group,
+                                 student, skip_conflicts):
         recurring_booking = self.create(
             start_date=start_date,
             end_date=end_date,
@@ -18,7 +19,7 @@ class RecurringBookingManager(models.Manager):
             room=room,
             student_group=student_group,
             student=student,
-            skip_conflicts=skip
+            skip_conflicts=skip_conflicts
         )
 
         from . import Booking
