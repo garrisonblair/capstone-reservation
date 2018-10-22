@@ -46,7 +46,7 @@ class TestRecurringBooking(TestCase):
         self.end_time = end.time()
 
     def testRecurringBookingCreation(self):
-        recurring_booking = RecurringBooking.objects.create_recurring_booking(
+        recurring_booking, conflicts = RecurringBooking.objects.create_recurring_booking(
             self.start_date,
             self.end_date,
             self.start_time,
