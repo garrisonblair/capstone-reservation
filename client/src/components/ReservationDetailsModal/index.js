@@ -25,7 +25,7 @@ class ReservationDetailsModal extends Component {
     tabIndex: 0,
     inputOption0: {
       startDate: toDateInputValue(this.props.selectedDate),
-      endDate: null
+      endDate: toDateInputValue(this.props.selectedDate)
     }
   }
 
@@ -131,7 +131,6 @@ class ReservationDetailsModal extends Component {
 
   verifyRecurringOption0 = () => {
     const {startDate, endDate} = this.state.inputOption0;
-    console.log('hhoura');
     if (endDate == null) {
       console.log(endDate);
       throw new Error('Please enter an end date.');
@@ -248,11 +247,25 @@ class ReservationDetailsModal extends Component {
     this.setState({isRecurring: !isRecurring})
   }
 
-  handleStartDateChangeOption0 = (event) =>{this.setState({inputOption0:{startDate:event.target.value}}) }
-  handleEndDateChangeOption0 = (event) =>{this.setState({inputOption0:{endDate:event.target.value}}) }
+  handleDateChangeOption0 = (event) =>{
+    let {startDate, endDate}  = this.state.inputOption0;
+    if(event.target.id == 'startDateOption0'){
+      startDate = event.target.value;
+    }
+    else{
+      endDate = event.target.value;
+    }
+
+    this.setState({
+      inputOption0:{
+        startDate:startDate,
+        endDate: endDate
+      }
+    })
+  }
 
   renderRecurringBookingOption0 = () => {
-    let {startDate} = this.state.inputOption0;
+    let {startDate, endDate} = this.state.inputOption0;
     return (
       <div>
         <div className="modal-description">
@@ -264,10 +277,11 @@ class ReservationDetailsModal extends Component {
             <Input
               size='small'
               icon='user'
-              type="text"
+              type="date"
+              id="startDateOption0"
               iconPosition='left'
               value={startDate}
-              onChange={this.handleStartDateChangeOption0}
+              onChange={this.handleDateChangeOption0}
             />
           </Form.Field>
         </div>
@@ -280,9 +294,11 @@ class ReservationDetailsModal extends Component {
             <Input
               size='small'
               icon='user'
-              type="text"
+              id="endDateOption0"
+              type="date"
+              value={endDate}
               iconPosition='left'
-              onChange={this.handleEndDateChangeOption0}
+              onChange={this.handleDateChangeOption0}
             />
           </Form.Field>
         </div>
