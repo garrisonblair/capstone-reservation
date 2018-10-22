@@ -3,6 +3,7 @@ from django.test import TestCase
 from datetime import timedelta
 
 from apps.booking.models.RecurringBooking import RecurringBooking
+from apps.booking.models.Booking import Booking
 from apps.accounts.models.Student import Student
 from apps.groups.models.StudentGroup import StudentGroup
 from apps.rooms.models.Room import Room
@@ -142,6 +143,28 @@ class TestRecurringBooking(TestCase):
                 self.end_date,
                 self.end_time,
                 self.start_time,
+                self.room,
+                self.group,
+                self.group.students.get(student_id='00000001'),
+                False
+            )
+        self.assertEqual(RecurringBooking.objects.count(), 0)
+
+    def testRecurringBookingSingleConflictFlagNotSet(self):
+        Booking(
+            student=self.group.students.get(student_id='00000001'),
+            room=self.room,
+            date=self.start_date,
+            start_time=self.start_time,
+            end_time=self.end_time
+        ).save()
+
+        with self.assertRaises(ValidationError):
+            RecurringBooking.objects.create_recurring_booking(
+                self.start_date,
+                self.end_date,
+                self.start_time,
+                self.end_time,
                 self.room,
                 self.group,
                 self.group.students.get(student_id='00000001'),
