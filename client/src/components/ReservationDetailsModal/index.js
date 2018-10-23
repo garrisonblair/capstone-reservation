@@ -5,6 +5,7 @@ import {Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab} from 
 import SweetAlert from 'sweetalert2-react';
 import settings from '../../config/settings'
 import {getTokenHeader} from '../../utils/requestHeaders';
+import {getMeRequest} from '../../utils/requestUser';
 import './ReservationDetailsModal.scss';
 import {toDateInputValue} from '../../utils/dateFormatter';
 
@@ -135,12 +136,12 @@ class ReservationDetailsModal extends Component {
       console.log(endDate);
       throw new Error('Please enter an end date.');
     }
-    if(!(new Date(startDate) < new Date(endDate))){
+    if (!(new Date(startDate) < new Date(endDate))) {
       throw new Error('End date should be after starting date.');
     }
   }
 
-  sendPostRequestBooking = (headers) =>{
+  sendPostRequestBooking = (headers) => {
     // Handle time zone
     let tzoffset = (this.props.selectedDate).getTimezoneOffset() * 60000;
     let date = new Date(this.props.selectedDate - tzoffset);
@@ -178,30 +179,33 @@ class ReservationDetailsModal extends Component {
       })
   }
 
-  sendPostRequestRecurringBooking = (headers, skipConflicts) =>{
+  sendPostRequestRecurringBooking = (headers, skipConflicts) => {
     const {startDate, endDate} = this.state.inputOption0;
-    const data = {
-      "start_date": startDate,
-      "end_date": endDate,
-      "booking_start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
-      "booking_end_time": `${this.state.endHour}:${this.state.endMinute}:00`,
-      "room":this.props.selectedRoomId,
-      "student_group":1,
-      "student":1,
-      "skip_conflicts":skipConflicts,
-    };
-    axios({
-      method: 'POST',
-      url: `${settings.API_ROOT}/recurring_booking`,
-      headers,
-      data,
-      withCredentials: true,
-    })
-    .then((response) =>{
+    let me = getMeRequest(headers);
+    me.then((response) => {
+      const data = {
+        "start_date": startDate,
+        "end_date": endDate,
+        "booking_start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
+        "booking_end_time": `${this.state.endHour}:${this.state.endMinute}:00`,
+        "room": this.props.selectedRoomId,
+        "student_group": 1,
+        "student": response.data.id,
+        "skip_conflicts": skipConflicts,
+      };
+      axios({
+        method: 'POST',
+        url: `${settings.API_ROOT}/recurring_booking`,
+        headers,
+        data,
+        withCredentials: true,
+      })
+        .then((response) => {
 
-    })
-    .catch((error) =>{
+        })
+        .catch((error) => {
 
+        })
     })
   }
 
@@ -233,10 +237,10 @@ class ReservationDetailsModal extends Component {
     }
 
     const headers = getTokenHeader();
-    if(isRecurring){
+    if (isRecurring) {
       this.sendPostRequestRecurringBooking(headers);
     }
-    else{
+    else {
       this.sendPostRequestBooking(headers, false);
     }
 
@@ -284,18 +288,18 @@ class ReservationDetailsModal extends Component {
     this.setState({isRecurring: !isRecurring})
   }
 
-  handleDateChangeOption0 = (event) =>{
-    let {startDate, endDate}  = this.state.inputOption0;
-    if(event.target.id == 'startDateOption0'){
+  handleDateChangeOption0 = (event) => {
+    let {startDate, endDate} = this.state.inputOption0;
+    if (event.target.id == 'startDateOption0') {
       startDate = event.target.value;
     }
-    else{
+    else {
       endDate = event.target.value;
     }
 
     this.setState({
-      inputOption0:{
-        startDate:startDate,
+      inputOption0: {
+        startDate: startDate,
         endDate: endDate
       }
     })
