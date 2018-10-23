@@ -6,6 +6,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 PROJECT_APPS = [
+    'apps.groups.apps.GroupsConfig',
     'apps.accounts.apps.AccountsConfig',
     'apps.rooms.apps.RoomsConfig',
     'apps.booking.apps.BookingConfig',
