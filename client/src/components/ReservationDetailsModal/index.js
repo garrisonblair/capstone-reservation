@@ -184,10 +184,18 @@ class ReservationDetailsModal extends Component {
         withCredentials: true,
       })
         .then((response) => {
+          let conflictsMessage = 'Except for:';
+          if(response.data.length > 0){
+            response.data.map((date)=>{
+              conflictsMessage = conflictsMessage +"["+ date+"]";
+            });
+          }
+          console.log(conflictsMessage);
+          // const text =  `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.`
           console.log(response);
           this.sweetAlert(
             'Completed',
-            `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.`,
+            `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.<br/><span style='font-weight: bold;'>${conflictsMessage}</span>`,
             'success')
             .then((result) => {
               if (result.value) {
