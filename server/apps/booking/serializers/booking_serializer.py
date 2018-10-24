@@ -4,5 +4,5 @@ from ..models.Booking import Booking
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = ('id', 'student', 'room', 'date', 'start_time', 'end_time')
+        fields = ('id', 'student', 'student_group', 'room', 'date', 'start_time', 'end_time')
         read_only_fields = ('id',)
