@@ -1,8 +1,8 @@
 from django.urls import path
 
 from .views.booking import BookingView
-<<<<<<< HEAD
 from .views.campon import CampOnView
+from .views.recurring_booking import RecurringBookingView
 
 urlpatterns = [
     path(r'booking', BookingView.as_view()),
