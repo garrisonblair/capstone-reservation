@@ -89,6 +89,8 @@ class RecurringBooking(models.Model):
                         bookings += 1
                     else:
                         raise ValidationError("Recurring booking at specified time overlaps with another booking.")
+                else:
+                    bookings += 1
                 date += timedelta(days=7)
             if self.skip_conflicts and bookings == 0:
                 raise ValidationError("Recurring booking at specified time overlaps with another booking every week.")
