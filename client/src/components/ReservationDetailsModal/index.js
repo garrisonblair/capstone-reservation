@@ -181,18 +181,20 @@ class ReservationDetailsModal extends Component {
 
   sendPostRequestRecurringBooking = (headers, skipConflicts) => {
     const {startDate, endDate} = this.state.inputOption0;
-    let me = getMeRequest(headers);
-    me.then((response) => {
+    let meRequest = getMeRequest(headers);
+    meRequest.then((response) => {
       const data = {
         "start_date": startDate,
         "end_date": endDate,
-        "booking_start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
-        "booking_end_time": `${this.state.endHour}:${this.state.endMinute}:00`,
+        "booking_start_time": `${this.state.startHour}:${this.state.startMinute}`,
+        "booking_end_time": `${this.state.endHour}:${this.state.endMinute}`,
         "room": this.props.selectedRoomId,
         "student_group": 1,
         "student": response.data.id,
-        "skip_conflicts": skipConflicts,
+        "skip_conflicts": skipConflicts ? "True" : "False"
       };
+      console.log(data);
+      console.log(headers);
       axios({
         method: 'POST',
         url: `${settings.API_ROOT}/recurring_booking`,
@@ -201,10 +203,16 @@ class ReservationDetailsModal extends Component {
         withCredentials: true,
       })
         .then((response) => {
-
+          this.setState({
+            showModal: true,
+            modalTitle: 'Completed',
+            modalText: `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.`,
+            modalType: 'success'
+          })
         })
         .catch((error) => {
-
+          console.log("recurring booking failed.");
+          console.log(error)
         })
     })
   }
@@ -223,7 +231,6 @@ class ReservationDetailsModal extends Component {
           default:
             throw new Error('Something went wrong')
         }
-        return;
       }
     }
     catch (err) {
@@ -238,12 +245,11 @@ class ReservationDetailsModal extends Component {
 
     const headers = getTokenHeader();
     if (isRecurring) {
-      this.sendPostRequestRecurringBooking(headers);
+      this.sendPostRequestRecurringBooking(headers, false);
     }
     else {
-      this.sendPostRequestBooking(headers, false);
+      this.sendPostRequestBooking(headers);
     }
-
   }
 
   componentWillReceiveProps(nextProps) {
