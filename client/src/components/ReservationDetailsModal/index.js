@@ -2,13 +2,11 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab} from 'semantic-ui-react';
-import SweetAlert from 'sweetalert2-react';
 import settings from '../../config/settings'
 import {getTokenHeader} from '../../utils/requestHeaders';
 import {getMeRequest} from '../../utils/requestUser';
 import './ReservationDetailsModal.scss';
 import {toDateInputValue} from '../../utils/dateFormatter';
-
 
 class ReservationDetailsModal extends Component {
   state = {
@@ -19,9 +17,6 @@ class ReservationDetailsModal extends Component {
     endMinute: this.props.endMinute,
     hourOptions: [],
     reservedOptions: [],
-    modalTitle: '',
-    modalText: '',
-    modalType: 'success',
     isRecurring: false,
     tabIndex: 0,
     inputOption0: {
@@ -29,6 +24,7 @@ class ReservationDetailsModal extends Component {
       endDate: toDateInputValue(this.props.selectedDate)
     }
   }
+  sweetAlert = require('sweetalert2');
 
   generateHourOptions(minHour, maxHour) {
     let result = [];
@@ -69,19 +65,6 @@ class ReservationDetailsModal extends Component {
     this.setState({
       show: false,
     });
-  }
-
-  closeAlertModal = () => {
-    const {modalType} = this.state;
-
-    this.setState({
-      showModal: false
-    })
-
-    // Handle successful reservation
-    if (modalType === 'success') {
-      this.closeModalWithReservation();
-    }
   }
 
   handleOpen = () => this.setState({show: true});
@@ -162,20 +145,20 @@ class ReservationDetailsModal extends Component {
       withCredentials: true,
     })
       .then((response) => {
-        this.setState({
-          showModal: true,
-          modalTitle: 'Completed',
-          modalText: `Room ${this.props.selectedRoomName} was successfuly booked.`,
-          modalType: 'success'
-        })
+        this.sweetAlert('Completed',
+          `Room ${this.props.selectedRoomName} was successfuly booked.`,
+          'success')
+          .then((result) => {
+            if (result.value) {
+              this.closeModalWithReservation()
+            }
+          })
       })
       .catch((error) => {
-        this.setState({
-          showModal: true,
-          modalTitle: 'Reservation failed',
-          modalText: 'We are sorry, this reservation overlaps with other reservations. Try different times.',
-          modalType: 'error'
-        });
+        this.sweetAlert(
+          'Reservation failed',
+          'We are sorry, this reservation overlaps with other reservations. Try different times.',
+          'error')
       })
   }
 
@@ -193,8 +176,6 @@ class ReservationDetailsModal extends Component {
         "student": response.data.id,
         "skip_conflicts": skipConflicts ? "True" : "False"
       };
-      console.log(data);
-      console.log(headers);
       axios({
         method: 'POST',
         url: `${settings.API_ROOT}/recurring_booking`,
@@ -203,16 +184,32 @@ class ReservationDetailsModal extends Component {
         withCredentials: true,
       })
         .then((response) => {
-          this.setState({
-            showModal: true,
-            modalTitle: 'Completed',
-            modalText: `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.`,
-            modalType: 'success'
-          })
+          console.log(response);
+          this.sweetAlert(
+            'Completed',
+            `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.`,
+            'success')
+            .then((result) => {
+              if (result.value) {
+                this.closeModalWithReservation()
+              }
+            });
         })
         .catch((error) => {
-          console.log("recurring booking failed.");
-          console.log(error)
+          if (error.message.includes('409')) {
+            this.sweetAlert({
+              title:'Reservation blocked',
+              text:'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
+              type:'warning',
+              confirmButtonText:'YES',
+              cancelButtonText:'NO',
+              showCancelButton:true
+            }).then((response)=>{
+              if(response.value){
+                this.sendPostRequestRecurringBooking(headers, true);
+              }
+            })
+          }
         })
     })
   }
@@ -234,12 +231,7 @@ class ReservationDetailsModal extends Component {
       }
     }
     catch (err) {
-      this.setState({
-        showModal: true,
-        modalTitle: 'Reservation blocked',
-        modalText: err.message,
-        modalType: 'warning'
-      })
+      this.Swal('Reservation blocked',err.message,'warning');
       return;
     }
 
@@ -452,7 +444,7 @@ class ReservationDetailsModal extends Component {
   }
 
   render() {
-    const {show, showModal, modalTitle, modalText, modalType} = this.state;
+    const {show} = this.state;
     const {selectedRoomName} = this.props;
     return (
       <div id="reservation-details-modal">
@@ -462,12 +454,6 @@ class ReservationDetailsModal extends Component {
             Room {selectedRoomName}
           </Modal.Header>
           {this.renderDescription()}
-          <SweetAlert
-            show={showModal}
-            title={modalTitle}
-            text={modalText}
-            type={modalType}
-            onConfirm={this.closeAlertModal}
           />
         </Modal>
       </div>
