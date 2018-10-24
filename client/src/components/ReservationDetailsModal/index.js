@@ -94,8 +94,8 @@ class ReservationDetailsModal extends Component {
   }
 
   verifyEndTime() {
-    const {endHour, endMinute} = this.props;
-    if (endHour.length === 0 || endMinute.length === 0) {
+    const {endHour, endMinute} = this.state;
+    if (endHour === "-1" || endMinute === "-1") {
       throw new Error("Please provide an end time to make a reservation.");
     }
   }
@@ -231,7 +231,7 @@ class ReservationDetailsModal extends Component {
       }
     }
     catch (err) {
-      this.Swal('Reservation blocked',err.message,'warning');
+      this.sweetAlert('Reservation blocked',err.message,'warning');
       return;
     }
 
@@ -481,7 +481,7 @@ ReservationDetailsModal.defaultProps = {
   startHour: "8",
   startMinute: "00",
   endHour: "-1",
-  endMinute: "0",
+  endMinute: "-1",
   reservationProfiles: ['me']
 }
 
