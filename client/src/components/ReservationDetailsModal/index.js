@@ -185,14 +185,11 @@ class ReservationDetailsModal extends Component {
       })
         .then((response) => {
           let conflictsMessage = 'Except for:';
-          if(response.data.length > 0){
-            response.data.map((date)=>{
-              conflictsMessage = conflictsMessage +"["+ date+"]";
+          if (response.data.length > 0) {
+            response.data.map((date) => {
+              conflictsMessage = conflictsMessage + "[" + date + "]";
             });
           }
-          console.log(conflictsMessage);
-          // const text =  `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.`
-          console.log(response);
           this.sweetAlert(
             'Completed',
             `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.<br/><span style='font-weight: bold;'>${conflictsMessage}</span>`,
@@ -206,14 +203,14 @@ class ReservationDetailsModal extends Component {
         .catch((error) => {
           if (error.message.includes('409')) {
             this.sweetAlert({
-              title:'Reservation blocked',
-              text:'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
-              type:'warning',
-              confirmButtonText:'YES',
-              cancelButtonText:'NO',
-              showCancelButton:true
-            }).then((response)=>{
-              if(response.value){
+              title: 'Reservation blocked',
+              text: 'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
+              type: 'warning',
+              confirmButtonText: 'YES',
+              cancelButtonText: 'NO',
+              showCancelButton: true
+            }).then((response) => {
+              if (response.value) {
                 this.sendPostRequestRecurringBooking(headers, true);
               }
             })
@@ -239,7 +236,7 @@ class ReservationDetailsModal extends Component {
       }
     }
     catch (err) {
-      this.sweetAlert('Reservation blocked',err.message,'warning');
+      this.sweetAlert('Reservation blocked', err.message, 'warning');
       return;
     }
 
