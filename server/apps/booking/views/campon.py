@@ -75,7 +75,7 @@ class CampOnView(APIView):
             else:
                 campons = CampOn.objects.all()
         except ValueError:
-            return Response("CampOn not found.", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Input value is invalid.", status=status.HTTP_400_BAD_REQUEST)
         
         campon_list = list()
         for campon in campons:
