@@ -58,14 +58,27 @@ class CampOnView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
+        request_id = request.GET.get('id')
+        request_booking = request.GET.get('booking')
+        request_start_time = request.GET.get('start_time')
+        request_end_time = request.GET.get('end_time')
+
         try:
-            cmapons = CampOn.objects.all()
-            camponsList = list()
-            for campon in cmapons:
-                serializer = CampOnSerializer(campon)
-                camponsList.append(serializer.data)
-            return Response(camponsList, status=status.HTTP_200_OK)
-        except ValidationError as error:
-            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
-
-
+            if request_id is not None:
+                campons = CampOn.objects.filter(id=request_id)
+            elif request_booking is not None and request_start_time is not None and request_end_time is not None:
+                campons = CampOn.objects.filter(booking=request_booking, start_time=request_start_time, end_time=request_end_time)
+            elif request_start_time is not None and request_end_time is not None:
+                campons = CampOn.objects.filter(start_time=request_start_time, end_time=request_end_time)
+            elif request_booking is not None:
+                campons = CampOn.objects.filter(booking=request_booking)
+            else:
+                campons = CampOn.objects.all()
+        except ValueError:
+            return Response("CampOn not found.", status=status.HTTP_400_BAD_REQUEST)
+        
+        campon_list = list()
+        for campon in campons:
+            serializer = CampOnSerializer(campon)
+            campon_list.append(serializer.data)
+        return Response(campon_list, status=status.HTTP_200_OK)
