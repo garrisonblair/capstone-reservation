@@ -16,11 +16,11 @@ class CampOn(models.Model):
         super(CampOn, self).save(*args, **kwargs)
 
     def __str__(self):
-        return 'Campon: %d, Student: %s, Booking: %d, Start time: %s, End time: %s' % (self.id, self.student.student_id, self.booking.id, self.start_time, self.end_time)
+        return 'Campon: {}, Student: {}, Booking: {}, Start time: {}, End time: {},'.format(self.id, self.student.student_id, self.booking.id, self.start_time, self.end_time)
 
     def validate_model(self):
         today = datetime.now().strftime("%Y-%m-%d")
-        if (self.booking.date!=today):
+        if (str(self.booking.date)!=today):
             raise ValidationError("Camp-on can only be done for today.")
         elif self.start_time >= self.end_time:
             raise ValidationError("End time must be later than the start time")
