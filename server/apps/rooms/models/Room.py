@@ -7,4 +7,6 @@ class Room(models.Model):
     number_of_computers = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self):
-        return '%s, Capacity: %d, Number of computers: %d' % (self.room_id, self.capacity, self.number_of_computers)
+        return '{}, Capacity: {}, Number of computers: {}'.format(
+            self.room_id, self.capacity, self.number_of_computers
+        )
