@@ -44,13 +44,30 @@ class Booking(models.Model):
         )
 
     def validate_model(self):
+        invalid_start_time = datetime.strptime("8:00", "%H:%M").time()
+        invalid_end_time = datetime.strptime("23:00", "%H:%M").time()
+
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
+
+        elif (self.end_time < invalid_start_time):
+            raise ValidationError("End time cannot be earlier than 8:00.")
+
+        elif (self.end_time > invalid_end_time):
+            raise ValidationError("End time cannot be later than 23:00.")
+
+        elif (self.start_time < invalid_start_time):
+            raise ValidationError("Start time cannot be earlier than 8:00.")
+
+        elif (self.start_time > invalid_end_time):
+            raise ValidationError("Start time cannot be later than 23:00.")
+
         elif Booking.objects.filter(~Q(start_time=self.end_time),
                                     room=self.room,
                                     date=self.date,
                                     start_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
+
         elif Booking.objects.filter(~Q(end_time=self.start_time), room=self.room, date=self.date, end_time__range=(
                 self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
