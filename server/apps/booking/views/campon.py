@@ -41,7 +41,6 @@ class CampOnView(APIView):
                     new_campon_serializer = CampOnSerializer(data=campon_data)
                     if new_campon_serializer.is_valid():
                         new_campon = new_campon_serializer.save()
-                        print("new Campon")
                         Response_List.append(CampOnSerializer(new_campon).data)
 
                     found_bookings = Booking.objects.filter(
@@ -63,7 +62,7 @@ class CampOnView(APIView):
                         # If empty slot found, create a new Booking
                         extra_start_time = current_booking.end_time
                         for found_booking in found_bookings:
-                            if extra_start_time > found_booking.start_time:
+                            if extra_start_time < found_booking.start_time:
                                 new_booking_result = self.createNewBooking(request.user.student.student_id,
                                                                            current_booking.room.id,
                                                                            current_booking.date,

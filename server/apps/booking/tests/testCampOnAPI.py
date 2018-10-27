@@ -13,7 +13,7 @@ from ..models.Booking import Booking
 from ..models.CampOn import CampOn
 
 from ..views.campon import CampOnView
-
+from unittest import skip
 
 class CampOnAPITest(TestCase):
     def setUp(self):
@@ -54,9 +54,9 @@ class CampOnAPITest(TestCase):
         self.student.user = self.user
         self.student.save()
 
-# First CampOn start time should be the current time. However,
-# the current time cannot be used in the test, otherwise, the test will fail if it runs at invalid period
-# So the start time in this test will be assigned values
+    # First CampOn start time should be the current time. However,
+    # the current time cannot be used in the test, otherwise, the test will fail if it runs at invalid period
+    # So the start time in this test will be assigned values
 
     def testCreateCampOnSuccess(self):
         request = self.factory.post("/campon", {
@@ -150,6 +150,144 @@ class CampOnAPITest(TestCase):
         self.assertEqual(created_campon.booking, Booking.objects.get(id=1))
         self.assertEqual(created_campon.start_time, datetime.time(12, 20))
         self.assertEqual(created_campon.end_time, datetime.time(14, 00))
+
+    def testCreateCampOnTwoBookingWithNewBookingsInBetween(self):
+
+        # Setup a second Booking
+        second_start_time = datetime.datetime.strptime("15:00", "%H:%M").time()
+        second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
+        second_booking = Booking(student=self.student,
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=second_start_time,
+                                 end_time=second_end_time)
+        second_booking.save()
+
+        request = self.factory.post("/campon", {
+                                        "booking": 1,
+                                        "start_time": "12:20",
+                                        "end_time": "17:00"
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="solji"))
+        response = CampOnView.as_view()(request)
+
+        # Verify response status code
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Verify number of CampOns
+        self.assertEqual(len(CampOn.objects.all()), 2)
+
+        # Verify number of Bookings
+        self.assertEqual(len(Booking.objects.all()), 4)
+
+        # Verify the content of the created CampOns
+        created_campons = CampOn.objects.all()
+        self.assertEqual(created_campons[0].start_time, datetime.time(12, 20))
+        self.assertEqual(created_campons[0].end_time, datetime.time(14, 00))
+        self.assertEqual(created_campons[1].start_time, datetime.time(15, 00))
+        self.assertEqual(created_campons[1].end_time, datetime.time(16, 00))
+
+        # Verify the content of the created Bookings
+        created_bookings = Booking.objects.all()
+        self.assertEqual(created_bookings[2].start_time, datetime.time(14, 00))
+        self.assertEqual(created_bookings[2].end_time, datetime.time(15, 00))
+        self.assertEqual(created_bookings[3].start_time, datetime.time(16, 00))
+        self.assertEqual(created_bookings[3].end_time, datetime.time(17, 00))
+
+    def testCreateCampOnTwoBookingWithOneNewBooking(self):
+
+        # Setup a second Booking
+        second_start_time = datetime.datetime.strptime("14:00", "%H:%M").time()
+        second_end_time = datetime.datetime.strptime("15:00", "%H:%M").time()
+        second_booking = Booking(student=self.student,
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=second_start_time,
+                                 end_time=second_end_time)
+        second_booking.save()
+
+        request = self.factory.post("/campon", {
+                                        "booking": 1,
+                                        "start_time": "12:20",
+                                        "end_time": "17:00"
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="solji"))
+        response = CampOnView.as_view()(request)
+
+        # Verify response status code
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Verify number of CampOns
+        self.assertEqual(len(CampOn.objects.all()), 2)
+
+        # Verify number of Bookings
+        self.assertEqual(len(Booking.objects.all()), 3)
+
+        # Verify the content of the created CampOns
+        created_campons = CampOn.objects.all()
+        self.assertEqual(created_campons[0].start_time, datetime.time(12, 20))
+        self.assertEqual(created_campons[0].end_time, datetime.time(14, 00))
+        self.assertEqual(created_campons[1].start_time, datetime.time(14, 00))
+        self.assertEqual(created_campons[1].end_time, datetime.time(15, 00))
+
+        # Verify the content of the created Bookings
+        created_booking = Booking.objects.last()
+        self.assertEqual(created_booking.start_time, datetime.time(15, 00))
+        self.assertEqual(created_booking.end_time, datetime.time(17, 00))
+
+    def testCreateCampOnThreeBookings(self):
+
+        # Setup a second Booking
+        second_start_time = datetime.datetime.strptime("14:00", "%H:%M").time()
+        second_end_time = datetime.datetime.strptime("15:00", "%H:%M").time()
+        second_booking = Booking(student=self.student,
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=second_start_time,
+                                 end_time=second_end_time)
+        second_booking.save()
+
+        # Setup a third Booking
+        third_start_time = datetime.datetime.strptime("15:00", "%H:%M").time()
+        third_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
+        third_booking = Booking(student=self.student,
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=third_start_time,
+                                 end_time=third_end_time)
+        third_booking.save()
+
+        request = self.factory.post("/campon", {
+                                        "booking": 1,
+                                        "start_time": "12:20",
+                                        "end_time": "16:00"
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="solji"))
+        response = CampOnView.as_view()(request)
+
+        # Verify response status code
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Verify number of CampOns
+        self.assertEqual(len(CampOn.objects.all()), 3)
+
+        # Verify number of Bookings. No new booking should be created
+        self.assertEqual(len(Booking.objects.all()), 3)
+
+        # Verify the content of the created CampOns
+        created_campons = CampOn.objects.all()
+        self.assertEqual(created_campons[0].start_time, datetime.time(12, 20))
+        self.assertEqual(created_campons[0].end_time, datetime.time(14, 00))
+        self.assertEqual(created_campons[1].start_time, datetime.time(14, 00))
+        self.assertEqual(created_campons[1].end_time, datetime.time(15, 00))
+        self.assertEqual(created_campons[2].start_time, datetime.time(15, 00))
+        self.assertEqual(created_campons[2].end_time, datetime.time(16, 00))
 
     def testCreateCampOnNotAuthenticated(self):
         request = self.factory.post("/campon", {
