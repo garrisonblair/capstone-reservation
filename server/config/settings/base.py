@@ -29,7 +29,8 @@ PROJECT_APPS = [
     'apps.rooms.apps.RoomsConfig',
     'apps.booking.apps.BookingConfig',
     'apps.booking_exporter.apps.BookingExporterConfig',
-    'apps.configuration_administration.apps.CalendarAdminConfig'
+    'apps.configuration_administration.apps.CalendarAdminConfig',
+    'apps.groups.apps.GroupsConfig'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
