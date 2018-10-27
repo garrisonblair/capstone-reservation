@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 from datetime import datetime
 
+
 class BookingManager(models.Manager):
     def create_booking(self, student, student_group, room, date, start_time, end_time, recurring_booking):
         booking = self.create(
@@ -46,9 +47,9 @@ class Booking(models.Model):
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
         elif Booking.objects.filter(~Q(start_time=self.end_time),
-                                  room=self.room,
-                                  date=self.date,
-                                  start_time__range=(self.start_time, self.end_time)).exists():
+                                    room=self.room,
+                                    date=self.date,
+                                    start_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
         elif Booking.objects.filter(~Q(end_time=self.start_time), room=self.room, date=self.date, end_time__range=(
                 self.start_time, self.end_time)).exists():

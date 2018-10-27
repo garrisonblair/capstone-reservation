@@ -14,6 +14,7 @@ from ..models.CampOn import CampOn
 
 from ..views.campon import CampOnView
 
+
 class CampOnAPITest(TestCase):
     def setUp(self):
         # Setup one Booking
@@ -25,8 +26,8 @@ class CampOnAPITest(TestCase):
         rid = "H800-1"
         capacity = 7
         number_of_computers = 2
-        self.room = Room(room_id=rid, 
-                         capacity=capacity, 
+        self.room = Room(room_id=rid,
+                         capacity=capacity,
                          number_of_computers=number_of_computers)
         self.room.save()
 
@@ -35,13 +36,13 @@ class CampOnAPITest(TestCase):
         self.end_time = datetime.datetime.strptime("14:00", "%H:%M").time()
 
         self.booking = Booking(student=self.student,
-                               room=self.room, 
+                               room=self.room,
                                date=self.date,
                                start_time=self.start_time,
                                end_time=self.end_time)
         self.booking.save()
 
-         # Setup one user for CampOn
+        # Setup one user for CampOn
         self.factory = APIRequestFactory()
         self.user = User.objects.create_user(username='solji',
                                              email='solji@exid.com',
@@ -53,12 +54,12 @@ class CampOnAPITest(TestCase):
         self.student.user = self.user
         self.student.save()
 
-# CampOn start time by default is the current time. However, the current time cannot be used in the test, otherwise, the test will fail if it runs at midnight
+# CampOn start time by default is the current time. However,
+# the current time cannot be used in the test, otherwise, the test will fail if it runs at midnight
 # So the start time in this test will be assigned values
 
     def testCreateCampOnSuccess(self):
-        request = self.factory.post("/campon",
-                                    {
+        request = self.factory.post("/campon", {
                                         "booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "14:00"
@@ -82,8 +83,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(created_campon.end_time, datetime.time(14, 00))
 
     def testCreateCampOnWithBooking(self):
-        request = self.factory.post("/campon",
-                                    {
+        request = self.factory.post("/campon", {
                                         "booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "15:00"
@@ -122,14 +122,13 @@ class CampOnAPITest(TestCase):
         # Setup a second Booking right after the first one
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         second_booking = Booking(student=self.student,
-                               room=self.room, 
-                               date=self.date,
-                               start_time=self.end_time,
-                               end_time=second_end_time)
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=self.end_time,
+                                 end_time=second_end_time)
         second_booking.save()
 
-        request = self.factory.post("/campon",
-                                    {
+        request = self.factory.post("/campon", {
                                         "booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "15:00"
@@ -153,8 +152,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(created_campon.end_time, datetime.time(15, 00))
 
     def testCreateCampOnNotAuthenticated(self):
-        request = self.factory.post("/campon",
-                                    {
+        request = self.factory.post("/campon", {
                                         "booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "15:00"
@@ -166,11 +164,10 @@ class CampOnAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def testCreateCampOnInvalidTime(self):
-        request = self.factory.post("/campon",
-                                    {
+        request = self.factory.post("/campon", {
                                         "booking": 1,
                                         "start_time": "12:20",
-                                        "end_time": "11:00" # end time is smaller than start time
+                                        "end_time": "11:00"  # end time is smaller than start time
                                     },
                                     format="json")
         force_authenticate(request, user=User.objects.get(username="solji"))
@@ -180,9 +177,8 @@ class CampOnAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def testCreateCampOnInvalidBooking(self):
-        request = self.factory.post("/campon",
-                                    {
-                                        "booking": 10, # Booking id does not exist
+        request = self.factory.post("/campon", {
+                                        "booking": 10,  # Booking id does not exist
                                         "start_time": "12:20",
                                         "end_time": "11:00"
                                     },
@@ -196,8 +192,7 @@ class CampOnAPITest(TestCase):
     def testCreateCampOnWithSameBooking(self):
 
         # First CampOn
-        first_request = self.factory.post("/campon",
-                                    {
+        first_request = self.factory.post("/campon", {
                                         "booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "14:00"
@@ -211,8 +206,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(first_response.status_code, status.HTTP_201_CREATED)
 
         # Second CampOn with different start time
-        second_request = self.factory.post("/campon",
-                                    {
+        second_request = self.factory.post("/campon", {
                                         "booking": 1,
                                         "start_time": "12:30",
                                         "end_time": "14:00"
@@ -229,31 +223,30 @@ class CampOnAPITest(TestCase):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         second_booking = Booking(student=self.student,
-                               room=self.room, 
-                               date=self.date,
-                               start_time=self.end_time,
-                               end_time=second_end_time)
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=self.end_time,
+                                 end_time=second_end_time)
         second_booking.save()
 
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        campon_1 = CampOn(student=self.student, 
-                          booking=self.booking, 
+        campon_1 = CampOn(student=self.student,
+                          booking=self.booking,
                           start_time=start_time_1,
                           end_time=end_time_1)
         campon_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        campon_2 = CampOn(student=self.student, 
-                          booking=second_booking, 
+        campon_2 = CampOn(student=self.student,
+                          booking=second_booking,
                           start_time=start_time_2,
                           end_time=end_time_2)
         campon_2.save()
         self.assertEqual(len(CampOn.objects.all()), 2)
 
-        request = self.factory.get("/campon",
-                                    {
+        request = self.factory.get("/campon", {
                                         "id": 1
                                     },
                                    format="json")
@@ -268,31 +261,30 @@ class CampOnAPITest(TestCase):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         second_booking = Booking(student=self.student,
-                               room=self.room, 
-                               date=self.date,
-                               start_time=self.end_time,
-                               end_time=second_end_time)
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=self.end_time,
+                                 end_time=second_end_time)
         second_booking.save()
 
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        campon_1 = CampOn(student=self.student, 
-                          booking=self.booking, 
+        campon_1 = CampOn(student=self.student,
+                          booking=self.booking,
                           start_time=start_time_1,
                           end_time=end_time_1)
         campon_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        campon_2 = CampOn(student=self.student, 
-                          booking=second_booking, 
+        campon_2 = CampOn(student=self.student,
+                          booking=second_booking,
                           start_time=start_time_2,
                           end_time=end_time_2)
         campon_2.save()
         self.assertEqual(len(CampOn.objects.all()), 2)
 
-        request = self.factory.get("/campon",
-                                    {
+        request = self.factory.get("/campon", {
                                         "booking": 1
                                     },
                                    format="json")
@@ -307,31 +299,30 @@ class CampOnAPITest(TestCase):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         second_booking = Booking(student=self.student,
-                               room=self.room, 
-                               date=self.date,
-                               start_time=self.end_time,
-                               end_time=second_end_time)
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=self.end_time,
+                                 end_time=second_end_time)
         second_booking.save()
 
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        campon_1 = CampOn(student=self.student, 
-                          booking=self.booking, 
+        campon_1 = CampOn(student=self.student,
+                          booking=self.booking,
                           start_time=start_time_1,
                           end_time=end_time_1)
         campon_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        campon_2 = CampOn(student=self.student, 
-                          booking=second_booking, 
+        campon_2 = CampOn(student=self.student,
+                          booking=second_booking,
                           start_time=start_time_2,
                           end_time=end_time_2)
         campon_2.save()
         self.assertEqual(len(CampOn.objects.all()), 2)
 
-        request = self.factory.get("/campon",
-                                    {
+        request = self.factory.get("/campon", {
                                         "booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "13:00"
@@ -348,31 +339,30 @@ class CampOnAPITest(TestCase):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         second_booking = Booking(student=self.student,
-                               room=self.room, 
-                               date=self.date,
-                               start_time=self.end_time,
-                               end_time=second_end_time)
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=self.end_time,
+                                 end_time=second_end_time)
         second_booking.save()
 
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        campon_1 = CampOn(student=self.student, 
-                          booking=self.booking, 
+        campon_1 = CampOn(student=self.student,
+                          booking=self.booking,
                           start_time=start_time_1,
                           end_time=end_time_1)
         campon_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        campon_2 = CampOn(student=self.student, 
-                          booking=second_booking, 
+        campon_2 = CampOn(student=self.student,
+                          booking=second_booking,
                           start_time=start_time_2,
                           end_time=end_time_2)
         campon_2.save()
         self.assertEqual(len(CampOn.objects.all()), 2)
 
-        request = self.factory.get("/campon",
-                                    {
+        request = self.factory.get("/campon", {
                                         "start_time": "12:20",
                                         "end_time": "13:00"
                                     },
@@ -388,31 +378,30 @@ class CampOnAPITest(TestCase):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         second_booking = Booking(student=self.student,
-                               room=self.room, 
-                               date=self.date,
-                               start_time=self.end_time,
-                               end_time=second_end_time)
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=self.end_time,
+                                 end_time=second_end_time)
         second_booking.save()
 
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        campon_1 = CampOn(student=self.student, 
-                          booking=self.booking, 
+        campon_1 = CampOn(student=self.student,
+                          booking=self.booking,
                           start_time=start_time_1,
                           end_time=end_time_1)
         campon_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        campon_2 = CampOn(student=self.student, 
-                          booking=second_booking, 
+        campon_2 = CampOn(student=self.student,
+                          booking=second_booking,
                           start_time=start_time_2,
                           end_time=end_time_2)
         campon_2.save()
         self.assertEqual(len(CampOn.objects.all()), 2)
 
-        request = self.factory.get("/campon",
-                                    {
+        request = self.factory.get("/campon", {
                                     },
                                    format="json")
         response = CampOnView.as_view()(request)
@@ -426,31 +415,30 @@ class CampOnAPITest(TestCase):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         second_booking = Booking(student=self.student,
-                               room=self.room, 
-                               date=self.date,
-                               start_time=self.end_time,
-                               end_time=second_end_time)
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=self.end_time,
+                                 end_time=second_end_time)
         second_booking.save()
 
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        campon_1 = CampOn(student=self.student, 
-                          booking=self.booking, 
+        campon_1 = CampOn(student=self.student,
+                          booking=self.booking,
                           start_time=start_time_1,
                           end_time=end_time_1)
         campon_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        campon_2 = CampOn(student=self.student, 
-                          booking=second_booking, 
+        campon_2 = CampOn(student=self.student,
+                          booking=second_booking,
                           start_time=start_time_2,
                           end_time=end_time_2)
         campon_2.save()
         self.assertEqual(len(CampOn.objects.all()), 2)
 
-        request = self.factory.get("/campon",
-                                    {
+        request = self.factory.get("/campon", {
                                         "id": 10,
                                     },
                                    format="json")
@@ -462,8 +450,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(len(retrieved_campon), 0)
 
     def testGetEmptyCampOn(self):
-        request = self.factory.get("/campon",
-                                    {
+        request = self.factory.get("/campon", {
                                     },
                                    format="json")
         response = CampOnView.as_view()(request)
@@ -477,34 +464,32 @@ class CampOnAPITest(TestCase):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         second_booking = Booking(student=self.student,
-                               room=self.room, 
-                               date=self.date,
-                               start_time=self.end_time,
-                               end_time=second_end_time)
+                                 room=self.room,
+                                 date=self.date,
+                                 start_time=self.end_time,
+                                 end_time=second_end_time)
         second_booking.save()
 
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        campon_1 = CampOn(student=self.student, 
-                          booking=self.booking, 
+        campon_1 = CampOn(student=self.student,
+                          booking=self.booking,
                           start_time=start_time_1,
                           end_time=end_time_1)
         campon_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        campon_2 = CampOn(student=self.student, 
-                          booking=second_booking, 
+        campon_2 = CampOn(student=self.student,
+                          booking=second_booking,
                           start_time=start_time_2,
                           end_time=end_time_2)
         campon_2.save()
         self.assertEqual(len(CampOn.objects.all()), 2)
 
-        request = self.factory.get("/campon",
-                                    {
+        request = self.factory.get("/campon", {
                                         "id": str,
-                                    },
-                                   format="json")
+                                    }, format="json")
         response = CampOnView.as_view()(request)
 
         # Verify response status code

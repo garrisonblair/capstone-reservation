@@ -9,6 +9,7 @@ from apps.booking.serializers.campon_serializer import CampOnSerializer
 from apps.booking.serializers.booking_serializer import BookingSerializer
 import datetime
 
+
 class CampOnView(APIView):
 
     def post(self, request):
@@ -23,22 +24,25 @@ class CampOnView(APIView):
 
         if serializer.is_valid():
             try:
-                # If the CampOn end time is bigger than Booking end time, the system will check if there is Booking between the Booking end time and CampOn end time
-                # If there is Booking, the system will create a CampOn with current time as start time and the specified end time as end time
+                # If the CampOn end time is bigger than Booking end time,
+                # the system will check if there is Booking between the Booking end time and CampOn end time
+                # If there is Booking, the system will create a CampOn
+                # with current time as start time and the specified end time as end time
                 # Otherwise, the system will create a Booking and a CampOn for the student
 
                 current_booking = Booking.objects.get(id=campon_data["booking"])
                 request_end_time = datetime.datetime.strptime(campon_data["end_time"], "%H:%M").time()
 
                 if request_end_time > current_booking.end_time:
-                    found_booking = Booking.objects.filter(start_time__range=(current_booking.end_time, request_end_time))
-                    if not found_booking: 
+                    found_booking = Booking.objects.filter(
+                                    start_time__range=(current_booking.end_time, request_end_time))
+                    if not found_booking:
 
                         # No Booking found, create new Booking and create CampOn
-                        new_booking_serializer = BookingSerializer(data={'student': request.user.student.student_id, 
-                                                                         'room': current_booking.room.id, 
-                                                                         'date': current_booking.date, 
-                                                                         'start_time': current_booking.end_time, 
+                        new_booking_serializer = BookingSerializer(data={'student': request.user.student.student_id,
+                                                                         'room': current_booking.room.id,
+                                                                         'date': current_booking.date,
+                                                                         'start_time': current_booking.end_time,
                                                                          'end_time': request_end_time})
 
                         campon_data["end_time"] = current_booking.end_time
@@ -66,9 +70,11 @@ class CampOnView(APIView):
         try:
             if request_id is not None:
                 campons = CampOn.objects.filter(id=request_id)
-            elif request_booking is not None and request_start_time is not None and request_end_time is not None:
-                campons = CampOn.objects.filter(booking=request_booking, start_time=request_start_time, end_time=request_end_time)
-            elif request_start_time is not None and request_end_time is not None:
+            elif not(not request_booking or not request_start_time or not request_end_time):
+                campons = CampOn.objects.filter(booking=request_booking,
+                                                start_time=request_start_time,
+                                                end_time=request_end_time)
+            elif not(not request_start_time or not request_end_time):
                 campons = CampOn.objects.filter(start_time=request_start_time, end_time=request_end_time)
             elif request_booking is not None:
                 campons = CampOn.objects.filter(booking=request_booking)
@@ -76,7 +82,7 @@ class CampOnView(APIView):
                 campons = CampOn.objects.all()
         except ValueError:
             return Response("Input value is invalid.", status=status.HTTP_400_BAD_REQUEST)
-        
+
         campon_list = list()
         for campon in campons:
             serializer = CampOnSerializer(campon)

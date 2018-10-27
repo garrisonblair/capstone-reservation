@@ -4,6 +4,7 @@ from ..models.CampOn import CampOn
 from ..models.Booking import Booking
 from apps.accounts.models.Student import Student
 
+
 class CampOnSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampOn

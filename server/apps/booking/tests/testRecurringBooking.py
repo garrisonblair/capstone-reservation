@@ -9,6 +9,7 @@ from apps.groups.models.StudentGroup import StudentGroup
 from apps.rooms.models.Room import Room
 from datetime import datetime
 
+
 class TestRecurringBooking(TestCase):
     def setUp(self):
         # Create 2 students

@@ -13,6 +13,7 @@ from apps.rooms.models.Room import Room
 
 from ..views.recurring_booking import RecurringBookingView
 
+
 class BookingAPITest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
