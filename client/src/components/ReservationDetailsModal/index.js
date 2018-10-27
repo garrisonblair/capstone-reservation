@@ -56,6 +56,10 @@ class ReservationDetailsModal extends Component {
   closeModal = () => {
     this.props.onClose();
     this.setState({
+      inputOption0:{
+        startDate:toDateInputValue(this.props.selectedDate),
+        endDate:toDateInputValue(this.props.selectedDate)
+      },
       show: false,
       isRecurring:false
     });
@@ -185,15 +189,17 @@ class ReservationDetailsModal extends Component {
         withCredentials: true,
       })
         .then((response) => {
-          let conflictsMessage = 'Except for:';
+          let conflictsMessage = '';
           if (response.data.length > 0) {
+            conflictsMessage = 'Except for:<ul>'
             response.data.map((date) => {
-              conflictsMessage = conflictsMessage + "[" + date + "]";
+              conflictsMessage = conflictsMessage + `<li>${date}</li>`;
             });
+            conflictsMessage = conflictsMessage + '</ul>'
           }
           this.sweetAlert(
             'Completed',
-            `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.<br/><span style='font-weight: bold;'>${conflictsMessage}</span>`,
+            `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.<br/><div id="exception-dates">${conflictsMessage}</div>`,
             'success')
             .then((result) => {
               if (result.value) {
