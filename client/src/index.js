@@ -4,7 +4,8 @@ import {HashRouter as Router, Route, Switch} from 'react-router-dom';
 import Home from './components/Home';
 import Login from './components/Login';
 import NotFound from './components/NotFound';
-import ReservationDetailsModal from './components/ReservationDetailsModal';
+import Registration from './components/Registration';
+import Verification from './components/Verification';
 
 
 ReactDOM.render(
@@ -13,10 +14,8 @@ ReactDOM.render(
       <Switch>
         <Route exact path="/" component={Home}/>
         <Route exact path="/login" component={Login}/>
-
-        {/* This Route is only for development testing. Remove after.*/}
-<Route exact path="/andresModal" render={() => <ReservationDetailsModal date ={new Date()} defaultHour={8} defaultMinute={30} roomNumber={1}/>}/>
-
+        <Route exact path="/registration" component={Registration}/>
+        <Route exact path="/verify/:token" component={Verification}/>
         <Route component={NotFound}/>
       </Switch>
     </div>
