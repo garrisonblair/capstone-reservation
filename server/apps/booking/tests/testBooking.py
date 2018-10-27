@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 
 
 class TestBooking(TestCase):
-
     def setUp(self):
         # Setup one Student
         sid = '12345678'
@@ -60,6 +59,7 @@ class TestBooking(TestCase):
         # Case with existing time 12:00 to 13:00, compare to 12:30 to 13:00
         start_time2 = datetime.strptime("12:30", "%H:%M").time()
         end_time2 = datetime.strptime("13:00", "%H:%M").time()
+
         booking = Booking(student=self.student,
                           room=self.room,
                           date=self.date,
@@ -80,6 +80,7 @@ class TestBooking(TestCase):
         # Case with existing time 12:00 to 13:00, compare to 11:30 to 12:30
         start_time3 = datetime.strptime("11:30", "%H:%M").time()
         end_time3 = datetime.strptime("12:30", "%H:%M").time()
+
         booking = Booking(student=self.student,
                           room=self.room,
                           date=self.date,
@@ -152,8 +153,13 @@ class TestBooking(TestCase):
 
     def testFailWhenEndTimeBeforeStartTime(self):
         end_time = datetime.strptime("11:00", "%H:%M").time()
-        booking = Booking(student=self.student, room=self.room, date=self.date, start_time=self.start_time,
-                          end_time=end_time)
+        booking = Booking(
+            student=self.student,
+            room=self.room,
+            date=self.date,
+            start_time=self.start_time,
+            end_time=end_time
+        )
 
         try:
             booking.save()
