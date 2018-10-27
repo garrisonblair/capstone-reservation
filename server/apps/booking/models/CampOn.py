@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 class CampOn(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
-    start_time = models.TimeField(default=datetime.now().strftime("%H:%M"))
+    start_time = models.TimeField()
     end_time = models.TimeField()
 
     def save(self, *args, **kwargs):
@@ -25,8 +25,8 @@ class CampOn(models.Model):
 
     def validate_model(self):
         today = datetime.now().strftime("%Y-%m-%d")
-        invalid_start_time = datetime.strftime("8:00", "%H:%M").time()
-        invalid_end_time = datetime.strftime("23:00", "%H:%M").time()
+        invalid_start_time = datetime.strptime("8:00", "%H:%M").time()
+        invalid_end_time = datetime.strptime("23:00", "%H:%M").time()
 
         if (str(self.booking.date) != today):
             raise ValidationError("Camp-on can only be done for today.")

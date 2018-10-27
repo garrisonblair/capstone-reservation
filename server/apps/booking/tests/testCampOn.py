@@ -111,3 +111,55 @@ class TestCampOn(TestCase):
         with self.assertRaises(ValidationError) as ex:
             campon.save()
         self.assertEqual(len(CampOn.objects.all()), 1)
+
+    def testCamponStartTimeEarlierThanBooking(self):
+        # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
+        campon_start_time = datetime.strptime("11:00", "%H:%M").time()
+        campon_end_time = datetime.strptime("13:00", "%H:%M").time()
+
+        campon = CampOn(student=self.campStudent,
+                        booking=self.booking,
+                        start_time=campon_start_time,
+                        end_time=campon_end_time)
+        with self.assertRaises(ValidationError) as ex:
+            campon.save()
+        self.assertEqual(len(CampOn.objects.all()), 0)
+
+    def testCamponStartTimeLaterThanBooking(self):
+        # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
+        campon_start_time = datetime.strptime("14:15", "%H:%M").time()
+        campon_end_time = datetime.strptime("15:00", "%H:%M").time()
+
+        campon = CampOn(student=self.campStudent,
+                        booking=self.booking,
+                        start_time=campon_start_time,
+                        end_time=campon_end_time)
+        with self.assertRaises(ValidationError) as ex:
+            campon.save()
+        self.assertEqual(len(CampOn.objects.all()), 0)
+
+    def testCamponEndTimeLaterThan23PM(self):
+        # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
+        campon_start_time = datetime.strptime("13:00", "%H:%M").time()
+        campon_end_time = datetime.strptime("23:05", "%H:%M").time()
+
+        campon = CampOn(student=self.campStudent,
+                        booking=self.booking,
+                        start_time=campon_start_time,
+                        end_time=campon_end_time)
+        with self.assertRaises(ValidationError) as ex:
+            campon.save()
+        self.assertEqual(len(CampOn.objects.all()), 0)
+
+    def testCamponEndTimeEarlierThan8AM(self):
+        # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
+        campon_start_time = datetime.strptime("13:00", "%H:%M").time()
+        campon_end_time = datetime.strptime("1:05", "%H:%M").time()
+
+        campon = CampOn(student=self.campStudent,
+                        booking=self.booking,
+                        start_time=campon_start_time,
+                        end_time=campon_end_time)
+        with self.assertRaises(ValidationError) as ex:
+            campon.save()
+        self.assertEqual(len(CampOn.objects.all()), 0)
