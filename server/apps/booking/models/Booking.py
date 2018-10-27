@@ -5,7 +5,7 @@ from apps.rooms.models.Room import Room
 from apps.booking.models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
-from datetime import datetime
+import datetime
 
 
 class BookingManager(models.Manager):
@@ -44,22 +44,27 @@ class Booking(models.Model):
         )
 
     def validate_model(self):
-        invalid_start_time = datetime.strptime("8:00", "%H:%M").time()
-        invalid_end_time = datetime.strptime("23:00", "%H:%M").time()
+        invalid_start_time = datetime.time(8, 0)
+        invalid_end_time = datetime.time(23, 0)
+
+        if not isinstance(self.start_time, datetime.time):
+            self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
+        if not isinstance(self.end_time, datetime.time):
+            self.end_time = datetime.datetime.strptime(self.end_time, "%H:%M").time()
 
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
 
-        elif (self.end_time < invalid_start_time):
+        elif self.end_time < invalid_start_time:
             raise ValidationError("End time cannot be earlier than 8:00.")
 
-        elif (self.end_time > invalid_end_time):
+        elif self.end_time > invalid_end_time:
             raise ValidationError("End time cannot be later than 23:00.")
 
-        elif (self.start_time < invalid_start_time):
+        elif self.start_time < invalid_start_time:
             raise ValidationError("Start time cannot be earlier than 8:00.")
 
-        elif (self.start_time > invalid_end_time):
+        elif self.start_time > invalid_end_time:
             raise ValidationError("Start time cannot be later than 23:00.")
 
         elif Booking.objects.filter(~Q(start_time=self.end_time),

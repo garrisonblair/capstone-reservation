@@ -8,6 +8,7 @@ from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
 
 from ..views.room import RoomView
+from datetime import datetime
 
 
 class RoomAPITest(TestCase):
