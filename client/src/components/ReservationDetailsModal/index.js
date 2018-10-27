@@ -57,6 +57,7 @@ class ReservationDetailsModal extends Component {
     this.props.onClose();
     this.setState({
       show: false,
+      isRecurring:false
     });
   }
 
@@ -459,7 +460,6 @@ class ReservationDetailsModal extends Component {
             Room {selectedRoomName}
           </Modal.Header>
           {this.renderDescription()}
-          />
         </Modal>
       </div>
     )
