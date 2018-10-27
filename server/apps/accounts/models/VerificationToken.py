@@ -1,6 +1,7 @@
 import binascii
 import datetime
 import os
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -16,7 +17,7 @@ class VerificationToken(models.Model):
 
         # Set token expiration to 1 hour
         if not self.expiration:
-            self.expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
+            self.expiration = timezone.now() + datetime.timedelta(hours=1)
 
         return super(VerificationToken, self).save(*args, **kwargs)
 
