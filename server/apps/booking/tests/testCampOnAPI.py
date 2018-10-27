@@ -42,7 +42,7 @@ class CampOnAPITest(TestCase):
                                end_time=self.end_time)
         self.booking.save()
 
-        # Setup one user for CampOn
+        # Setup one user for testing CampOn
         self.factory = APIRequestFactory()
         self.user = User.objects.create_user(username='solji',
                                              email='solji@exid.com',
@@ -54,8 +54,8 @@ class CampOnAPITest(TestCase):
         self.student.user = self.user
         self.student.save()
 
-# CampOn start time by default is the current time. However,
-# the current time cannot be used in the test, otherwise, the test will fail if it runs at midnight
+# First CampOn start time should be the current time. However,
+# the current time cannot be used in the test, otherwise, the test will fail if it runs at invalid period
 # So the start time in this test will be assigned values
 
     def testCreateCampOnSuccess(self):
@@ -142,14 +142,14 @@ class CampOnAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Verify number of CampOn
-        self.assertEqual(len(CampOn.objects.all()), 1)
+        self.assertEqual(len(CampOn.objects.all()), 2)
 
         # Verify the content of the created CampOn
-        created_campon = CampOn.objects.last()
+        created_campon = CampOn.objects.first()
         self.assertEqual(created_campon.student, Student.objects.get(student_id='sol_ji'))
         self.assertEqual(created_campon.booking, Booking.objects.get(id=1))
         self.assertEqual(created_campon.start_time, datetime.time(12, 20))
-        self.assertEqual(created_campon.end_time, datetime.time(15, 00))
+        self.assertEqual(created_campon.end_time, datetime.time(14, 00))
 
     def testCreateCampOnNotAuthenticated(self):
         request = self.factory.post("/campon", {
@@ -460,35 +460,42 @@ class CampOnAPITest(TestCase):
         retrieved_campon = response.data
         self.assertEqual(len(retrieved_campon), 0)
 
-    def testGetCampOnWithInvalidArgument(self):
-        # Setup a second booking
-        second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
-        second_booking = Booking(student=self.student,
-                                 room=self.room,
-                                 date=self.date,
-                                 start_time=self.end_time,
-                                 end_time=second_end_time)
-        second_booking.save()
-
-        # Setup two CampOns
-        start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
-        end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        campon_1 = CampOn(student=self.student,
-                          booking=self.booking,
-                          start_time=start_time_1,
-                          end_time=end_time_1)
-        campon_1.save()
-        start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
-        end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        campon_2 = CampOn(student=self.student,
-                          booking=second_booking,
-                          start_time=start_time_2,
-                          end_time=end_time_2)
-        campon_2.save()
-        self.assertEqual(len(CampOn.objects.all()), 2)
+    def testGetCampOnWithInvalidCampOnId(self):
 
         request = self.factory.get("/campon", {
-                                        "id": str,
+                                        "id": str
+                                    }, format="json")
+        response = CampOnView.as_view()(request)
+
+        # Verify response status code
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testGetCampOnWithInvalidBookingId(self):
+
+        request = self.factory.get("/campon", {
+                                        "booking": str
+                                    }, format="json")
+        response = CampOnView.as_view()(request)
+
+        # Verify response status code
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testGetCampOnWithInvalidStartTime(self):
+
+        request = self.factory.get("/campon", {
+                                        "start_time": "str",
+                                        "end_time": self.end_time,
+                                    }, format="json")
+        response = CampOnView.as_view()(request)
+
+        # Verify response status code
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testGetCampOnWithInvalidEndTime(self):
+
+        request = self.factory.get("/campon", {
+                                        "start_time": self.start_time,
+                                        "end_time": str,
                                     }, format="json")
         response = CampOnView.as_view()(request)
 
