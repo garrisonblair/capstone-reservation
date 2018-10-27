@@ -13,7 +13,7 @@ from ..models.Booking import Booking
 from ..models.CampOn import CampOn
 
 from ..views.campon import CampOnView
-from unittest import skip
+
 
 class CampOnAPITest(TestCase):
     def setUp(self):
@@ -255,10 +255,10 @@ class CampOnAPITest(TestCase):
         third_start_time = datetime.datetime.strptime("15:00", "%H:%M").time()
         third_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         third_booking = Booking(student=self.student,
-                                 room=self.room,
-                                 date=self.date,
-                                 start_time=third_start_time,
-                                 end_time=third_end_time)
+                                room=self.room,
+                                date=self.date,
+                                start_time=third_start_time,
+                                end_time=third_end_time)
         third_booking.save()
 
         request = self.factory.post("/campon", {
