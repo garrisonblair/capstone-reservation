@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 
 
 class TestBooking(TestCase):
-
     def setUp(self):
         # Setup one Student
         sid = '12345678'
@@ -33,7 +32,8 @@ class TestBooking(TestCase):
 
     def testBookingCreation(self):
         booking = Booking(student=self.student,
-                          room=self.room, date=self.date,
+                          room=self.room,
+                          date=self.date,
                           start_time=self.start_time,
                           end_time=self.end_time)
         booking.save()
@@ -45,11 +45,18 @@ class TestBooking(TestCase):
 
         self.assertEqual(read_booking, booking)
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
+        assert re.match(r'^Booking: \d+,'
+                        r' Student: 12345678,'
+                        r' Room: 1,'
+                        r' Date: 2019-09-29,'
+                        r' Start time: 12:00:00,'
+                        r' End Time: 13:00:00$', str(read_booking))
 
     def testOverlappedStartTimeBooking(self):
         # Case with existing time 12:00 to 13:00, compare to 12:30 to 13:00
         start_time2 = datetime.strptime("12:30", "%H:%M").time()
         end_time2 = datetime.strptime("13:00", "%H:%M").time()
+
         booking = Booking(student=self.student,
                           room=self.room,
                           date=self.date,
@@ -70,6 +77,7 @@ class TestBooking(TestCase):
         # Case with existing time 12:00 to 13:00, compare to 11:30 to 12:30
         start_time3 = datetime.strptime("11:30", "%H:%M").time()
         end_time3 = datetime.strptime("12:30", "%H:%M").time()
+
         booking = Booking(student=self.student,
                           room=self.room,
                           date=self.date,

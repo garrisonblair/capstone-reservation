@@ -7,6 +7,8 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 import datetime
 
+from apps.util.SubjectModel import SubjectModel
+
 
 class BookingManager(models.Manager):
     def create_booking(self, student, student_group, room, date, start_time, end_time, recurring_booking):
@@ -23,7 +25,7 @@ class BookingManager(models.Manager):
         return booking
 
 
-class Booking(models.Model):
+class Booking(models.Model, SubjectModel):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE, blank=True, null=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
@@ -34,9 +36,22 @@ class Booking(models.Model):
 
     objects = BookingManager()
 
+    observers = list()
+
     def save(self, *args, **kwargs):
         self.validate_model()
-        super(Booking, self).save(*args, **kwargs)
+        is_create = False
+        if self.id is None:
+            is_create = True
+
+        this = super(Booking, self).save(*args, **kwargs)
+
+        if is_create:
+            self.object_created()
+        else:
+            self.object_updated()
+
+        return this
 
     def __str__(self):
         return 'Booking: {}, Student: {}, Room: {}, Date: {}, Start time: {}, End Time: {}'.format(
@@ -76,3 +91,6 @@ class Booking(models.Model):
         elif Booking.objects.filter(~Q(end_time=self.start_time), room=self.room, date=self.date, end_time__range=(
                 self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
+
+    def get_observers(self):
+        return Booking.observers

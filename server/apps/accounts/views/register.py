@@ -33,8 +33,8 @@ class RegisterView(APIView):
         except User.DoesNotExist:
             pass
 
-        if user and not user.is_active:
-            print("Non-verified user")
+        if user:
+            print("User exists in the system")
             return Response(status=status.HTTP_302_FOUND)
 
         # New user from LDAP

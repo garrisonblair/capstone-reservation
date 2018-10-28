@@ -5,7 +5,7 @@ import SweetAlert from 'sweetalert2-react';
 import settings from '../../config/settings';
 import {getTokenHeader} from '../../utils/requestHeaders';
 import './Login.scss';
-
+import {Link} from 'react-router-dom';
 
 class Login extends Component {
 
@@ -110,6 +110,7 @@ class Login extends Component {
                 onConfirm={this.closeModal}
               />
               <div className="ui divider"/>
+              <span>First time? <Link to="/registration">Register!</Link></span>
             </div>
           </div>
         </div>
