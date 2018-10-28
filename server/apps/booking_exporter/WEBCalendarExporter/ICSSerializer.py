@@ -25,7 +25,6 @@ class ICSSerializer:
 
         dt_start_date = str(dt_start_yyyy) + str(dt_start_mm) + str(dt_start_dd)
 
-
         dt_end_yyyy = booking.date.year
         dt_end_mm = booking.date.month
         dt_end_dd = booking.date.day
@@ -38,7 +37,6 @@ class ICSSerializer:
 
         dt_end_date = str(dt_end_yyyy) + str(dt_end_mm) + str(dt_end_dd)
 
-
         dt_start_h = booking.start_time.hour
         dt_start_m = booking.start_time.minute
         dt_start_s = booking.start_time.second
@@ -50,10 +48,9 @@ class ICSSerializer:
             dt_start_m = '0' + str(dt_start_m)
 
         if len(str(dt_start_s)) == 1:
-             dt_start_s = '0' + str(dt_start_s)
+            dt_start_s = '0' + str(dt_start_s)
 
         dt_start_time = str(dt_start_h) + str(dt_start_m) + str(dt_start_s)
-
 
         dt_end_h = booking.end_time.hour
         dt_end_m = booking.end_time.minute
@@ -66,7 +63,7 @@ class ICSSerializer:
             dt_end_m = '0' + str(dt_end_m)
 
         if len(str(dt_end_s)) == 1:
-             dt_end_s = '0' + str(dt_end_s)
+            dt_end_s = '0' + str(dt_end_s)
 
         dt_end_time = str(dt_end_h) + str(dt_end_m) + str(dt_end_s)
 

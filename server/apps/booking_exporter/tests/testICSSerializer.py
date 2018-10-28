@@ -34,7 +34,6 @@ class testWebCalendarExporter(TestCase):
         group = StudentGroup(name='Test Group',
                              is_verified=True)
 
-
         group.save()
 
         group.students.set(student.student_id)
@@ -48,7 +47,6 @@ class testWebCalendarExporter(TestCase):
                                 room=room)
 
         self.booking2.save()
-
 
     def returnSerializedICSPredefinedNoGroup(self):
 
@@ -83,23 +81,20 @@ END:VCALENDAR"""
 
         return ics_file
 
-
     def testICSSerializeBookingNoGroup(self):
 
         test = ICSSerializer()
 
         generated = test.serialize_booking(self.booking)
-        predefinedNoGroup = str(self.returnSerializedICSPredefinedNoGroup())
+        predefined_no_group = str(self.returnSerializedICSPredefinedNoGroup())
 
-        self.assertEquals(generated, predefinedNoGroup)
-
-
+        self.assertEquals(generated, predefined_no_group)
 
     def testICSSerializeBookingWithGroup(self):
 
         test = ICSSerializer()
 
         generated = test.serialize_booking(self.booking2)
-        predefinedWithGroup = str(self.returnSerializedICSPredefinedWithGroup())
+        predefined_with_group = str(self.returnSerializedICSPredefinedWithGroup())
 
-        self.assertEquals(generated, predefinedWithGroup)
+        self.assertEquals(generated, predefined_with_group)
