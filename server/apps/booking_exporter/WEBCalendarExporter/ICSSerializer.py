@@ -5,9 +5,11 @@ class ICSSerializer:
     def serialize_booking(self, booking):
 
         student_id = booking.student.student_id
-        student_group = booking.student_group
-
-        summary = 'Student: ' + str(student_id) + ', ' + 'Group: ' + str(student_group)
+        if booking.student_group is not None:
+            student_group = booking.student_group.name
+            summary = 'Student: ' + str(student_id) + ', ' + 'Group: ' + str(student_group)
+        else:
+            summary = 'Student: ' + str(student_id) + ', ' + 'Group: ' + 'None'
 
         description = summary
 
@@ -91,5 +93,3 @@ END:VEVENT
 END:VCALENDAR""" % (str(arg0), str(arg1), str(arg2), str(arg3), str(arg4))
 
         return ics_file
-
-
