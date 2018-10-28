@@ -35,7 +35,6 @@ class Admin extends Component {
       url: `${settings.API_ROOT}/settings`
     })
     .then((response) => {
-      console.log(response.data)
       this.setState({
         webcalendar_backup: response.data.is_webcalendar_backup_active
       })
@@ -49,7 +48,6 @@ class Admin extends Component {
   }
 
   saveSettings = () => {
-    console.log(this.state.webcalendar_backup)
     const headers = getTokenHeader();
     let data = {
       is_webcalendar_backup_active: this.state.webcalendar_backup ? 'true' : 'false'
@@ -84,7 +82,6 @@ class Admin extends Component {
   handleChangeSetting = (e) => {
     let setting = e.target.getAttribute('value');
     this.setState({[setting]: !this.state[setting]})
-    console.log(this.state)
   }
 
   /************ COMPONENT RENDERING *************/
