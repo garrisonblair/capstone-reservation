@@ -54,7 +54,7 @@ class Admin extends Component {
     const {webcalendarPassword, webcalendarUsername} = this.state
     const headers = getTokenHeader();
     let data = {
-      is_webcalendar_backup_active: this.state.webcalendarBackup ? 'true' : 'false',
+      is_webcalendar_backup_active: this.state.webcalendarBackup ? 'True' : 'False',
       webcalendar_username: webcalendarUsername,
       webcalendar_password: webcalendarPassword
 
