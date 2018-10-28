@@ -39,6 +39,7 @@ class WEBCalendarExporter(BookingExporter):
         response = self.session.post(self.LOGIN_URL, data={"login": username, "password": password})
 
         if self.LOGIN_FAILED_MESSAGE in response.text:
+            print("Login to WebCalendar failed.")
             # TODO: handle login failure (Log it)
             pass
 
@@ -53,10 +54,9 @@ class WEBCalendarExporter(BookingExporter):
                 "calUser": booking.room.externalroomid.external_id}
         response = self.session.post(self.IMPORT_HANDLER_URL, files=file, data=data)
 
-        print(response.text)
-
         if self.NOT_AUTHORIZED_MESSAGE in response.text:
             # TODO: handle request failure (Log it)
+            print("ICS upload failed.")
             pass
 
     # BookingExporter
