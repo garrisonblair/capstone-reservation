@@ -48,8 +48,12 @@ class Login extends Component {
       response.data
     )
     .then((data) => {
-      localStorage.setItem('CapstoneReservationUser', JSON.stringify(data));
-      history.push('/');
+      if(data.is_superuser) {
+        history.push('/admin');
+      } else{
+        localStorage.setItem('CapstoneReservationUser', JSON.stringify(data));
+        history.push('/');
+      }
     })
     .catch((error) => {
       this.setState({
