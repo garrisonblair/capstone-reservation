@@ -8,7 +8,7 @@
   --cellsDivisionNum: 0;
 }
 
-$textColor: white;
+$textColor: black;
 $borderColor: #ececec;
 $eventBackgroundColor: aqua;
 $borderWidth: 2px;
@@ -72,7 +72,6 @@ body {
 }
 
 .calendar__booking {
-  background-color: $eventBackgroundColor;
   border-top: 4px solid #3194EA;
   padding: 10px;
   display: grid;

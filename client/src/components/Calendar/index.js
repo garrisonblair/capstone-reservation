@@ -128,8 +128,10 @@ class Calendar extends Component {
     let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(hoursSettings.start);
     let campOn = 1;
+    let color = 'yellow'
     if (!!booking.isCampOn) {
       campOn = 100;
+      color = 'orange'
     }
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
     let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
@@ -140,7 +142,8 @@ class Calendar extends Component {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
         gridColumn: 1,
-        zIndex: campOn
+        zIndex: campOn,
+        backgroundColor: color
       }
     }
     return style;
@@ -220,7 +223,7 @@ class Calendar extends Component {
         campOnBookings.push({
           date: date,
           start_time: campOn.start_time,
-          end_time: campOn.start_time,
+          end_time: campOn.end_time,
           student: campOn.student,
           room: room,
           id: `camp${campOn.id}`,
@@ -368,6 +371,7 @@ class Calendar extends Component {
     bookings.forEach(booking => {
       bookingsDiv.push(
         <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} onClick={this.handleClickBooking}>
+          { !!booking.isCampOn ? <span>[CAMP ON]</span> : null }
           <div className="calendar__booking__booker">{booking.student} </div>
           <div className="calendar__booking__time">
             <div>{booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time}</div>
