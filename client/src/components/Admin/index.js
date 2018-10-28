@@ -39,7 +39,7 @@ class Admin extends Component {
     })
     .then((response) => {
       this.setState({
-        webcalendar_backup: response.data.is_webcalendar_backup_active
+        webcalendarBackup: response.data.is_webcalendar_backup_active
       })
     })
     .catch(function (error) {
@@ -54,7 +54,7 @@ class Admin extends Component {
     const {webcalendarPassword, webcalendarUsername} = this.state
     const headers = getTokenHeader();
     let data = {
-      is_webcalendar_backup_active: this.state.webcalendar_backup ? 'true' : 'false',
+      is_webcalendar_backup_active: this.state.webcalendarBackup ? 'true' : 'false',
       webcalendar_username: webcalendarUsername,
       webcalendar_password: webcalendarPassword
 
@@ -95,7 +95,7 @@ class Admin extends Component {
   handleChangeSetting = (e) => {
     let setting = e.target.getAttribute('value');
     this.setState({[setting]: !this.state[setting]})
-    if(setting == "webcalendar_backup") {
+    if(setting == "webcalendarBackup") {
       this.toggleLoginModal();
     }
   }
@@ -155,7 +155,7 @@ class Admin extends Component {
       <form onSubmit={this.saveSettings}>
         <label>
           Automatically export to Web Calendar
-          <input type="checkbox" checked={!!this.state.webcalendar_backup} value="webcalendar_backup" onChange={this.handleChangeSetting} />
+          <input type="checkbox" checked={!!this.state.webcalendarBackup} value="webcalendarBackup" onChange={this.handleChangeSetting} />
         </label>
         <br/>
         {/* <input type="submit" value="Save" /> */}
