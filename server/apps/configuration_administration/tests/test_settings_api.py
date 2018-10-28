@@ -37,11 +37,11 @@ class TestSettingsAPI(TestCase):
     def testUpdateWebCalendarBackup(self):
         settings = SystemSettings.get_settings()
         updated_settings = {
-                                 "is_webcalendar_backup_active": "True",
+                                 "is_webcalendar_backup_active": True,
                                  "webcalendar_username": "f_daigl",
                                  "webcalendar_password": "mySafePassword"
                              }
-        request = self.factory.patch("/settings", updated_settings)
+        request = self.factory.patch("/settings", updated_settings, format="json")
         force_authenticate(request, self.user)
         response = SystemSettingsAPI().as_view()(request)
 
