@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import settings from '../../config/settings';
 import axios from 'axios';
 import './Admin.scss';
-import SweetAlert from 'sweetalert2-react';
 import {Button, Form, Modal, Input, Header} from 'semantic-ui-react';
 import {getTokenHeader} from '../../utils/requestHeaders';
 
@@ -96,7 +95,7 @@ class Admin extends Component {
   handleChangeSetting = (e) => {
     let setting = e.target.getAttribute('value');
     this.setState({[setting]: !this.state[setting]})
-    if(setting = "webcalendar_backup") {
+    if(setting == "webcalendar_backup") {
       this.toggleLoginModal();
     }
   }
