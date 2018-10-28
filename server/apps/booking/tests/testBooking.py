@@ -30,9 +30,6 @@ class TestBooking(TestCase):
         # Get current size of the bookings
         self.lengthOfBookings = len(Booking.objects.all())
 
-    def tearDown(self):
-        pass
-
     def testBookingCreation(self):
         booking = Booking(student=self.student,
                           room=self.room,
@@ -147,21 +144,62 @@ class TestBooking(TestCase):
                            date=self.date,
                            start_time=self.end_time,
                            end_time=end_time4)
-
         booking5.save()
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 2)
 
     def testFailWhenEndTimeBeforeStartTime(self):
         end_time = datetime.strptime("11:00", "%H:%M").time()
-        booking = Booking(
-            student=self.student,
-            room=self.room,
-            date=self.date,
-            start_time=self.start_time,
-            end_time=end_time
-        )
+        booking = Booking(student=self.student,
+                          room=self.room,
+                          date=self.date,
+                          start_time=self.start_time,
+                          end_time=end_time)
 
         try:
             booking.save()
         except ValidationError:
             self.assertTrue(True)
+
+    def testBookingStartTimeEarlierThanEarliestTime(self):
+        booking_start_time = datetime.strptime("7:00", "%H:%M").time()
+        booking = Booking(student=self.student,
+                          room=self.room,
+                          date=self.date,
+                          start_time=booking_start_time,
+                          end_time=self.end_time)
+
+        with self.assertRaises(ValidationError) as ex:
+            booking.save()
+
+    def testBookingStartTimeLaterThanLastTime(self):
+        booking_start_time = datetime.strptime("23:05", "%H:%M").time()
+        booking = Booking(student=self.student,
+                          room=self.room,
+                          date=self.date,
+                          start_time=booking_start_time,
+                          end_time=self.end_time)
+
+        with self.assertRaises(ValidationError) as ex:
+            booking.save()
+
+    def testBookingEndTimeEarlierThanEarliestTime(self):
+        booking_end_time = datetime.strptime("7:00", "%H:%M").time()
+        booking = Booking(student=self.student,
+                          room=self.room,
+                          date=self.date,
+                          start_time=self.start_time,
+                          end_time=booking_end_time)
+
+        with self.assertRaises(ValidationError) as ex:
+            booking.save()
+
+    def testBookingEndTimeLaterThanLastTime(self):
+        booking_end_time = datetime.strptime("23:05", "%H:%M").time()
+        booking = Booking(student=self.student,
+                          room=self.room,
+                          date=self.date,
+                          start_time=self.start_time,
+                          end_time=booking_end_time)
+
+        with self.assertRaises(ValidationError) as ex:
+            booking.save()
