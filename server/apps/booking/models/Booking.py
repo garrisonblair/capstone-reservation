@@ -5,6 +5,7 @@ from apps.rooms.models.Room import Room
 from apps.booking.models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
+import datetime
 
 from apps.util.SubjectModel import SubjectModel
 
@@ -58,11 +59,35 @@ class Booking(models.Model, SubjectModel):
         )
 
     def validate_model(self):
+        invalid_start_time = datetime.time(8, 0)
+        invalid_end_time = datetime.time(23, 0)
+
+        if not isinstance(self.start_time, datetime.time):
+            self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
+        if not isinstance(self.end_time, datetime.time):
+            self.end_time = datetime.datetime.strptime(self.end_time, "%H:%M").time()
+
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
-        if Booking.objects.filter(~Q(start_time=self.end_time), room=self.room, date=self.date, start_time__range=(
-                self.start_time, self.end_time)).exists():
+
+        elif self.end_time < invalid_start_time:
+            raise ValidationError("End time cannot be earlier than 8:00.")
+
+        elif self.end_time > invalid_end_time:
+            raise ValidationError("End time cannot be later than 23:00.")
+
+        elif self.start_time < invalid_start_time:
+            raise ValidationError("Start time cannot be earlier than 8:00.")
+
+        elif self.start_time > invalid_end_time:
+            raise ValidationError("Start time cannot be later than 23:00.")
+
+        elif Booking.objects.filter(~Q(start_time=self.end_time),
+                                    room=self.room,
+                                    date=self.date,
+                                    start_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
+
         elif Booking.objects.filter(~Q(end_time=self.start_time), room=self.room, date=self.date, end_time__range=(
                 self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")

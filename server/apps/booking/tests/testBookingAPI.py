@@ -93,9 +93,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
         booking1.save()
-        booking2 = Booking(student=student, room=room, date="2018-10-7", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-7", start_time="16:00", end_time="17:00")
         booking2.save()
 
         all_bookings = Booking.objects.all()
@@ -127,9 +127,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2018-10-7", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
         booking1.save()
-        booking2 = Booking(student=student, room=room, date="2018-10-7", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-7", start_time="16:00", end_time="17:00")
         booking2.save()
 
         all_bookings = Booking.objects.all()
@@ -160,9 +160,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
         booking1.save()
-        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
         booking2.save()
 
         all_bookings = Booking.objects.all()
@@ -193,9 +193,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
         booking1.save()
-        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
         booking2.save()
 
         all_bookings = Booking.objects.all()
@@ -220,9 +220,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
         booking1.save()
-        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
         booking2.save()
 
         all_bookings = Booking.objects.all()
@@ -249,9 +249,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
         booking1.save()
-        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
         booking2.save()
 
         all_bookings = Booking.objects.all()
@@ -276,9 +276,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
         booking1.save()
-        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
         booking2.save()
 
         all_bookings = Booking.objects.all()
@@ -303,9 +303,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
         booking1.save()
-        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
         booking2.save()
 
         all_bookings = Booking.objects.all()
@@ -330,9 +330,9 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00:00", end_time="15:00:00")
+        booking1 = Booking(student=student, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
         booking1.save()
-        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00:00", end_time="17:00:00")
+        booking2 = Booking(student=student, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
         booking2.save()
 
         all_bookings = Booking.objects.all()
