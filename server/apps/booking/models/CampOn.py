@@ -28,19 +28,19 @@ class CampOn(models.Model):
         invalid_start_time = datetime.strptime("8:00", "%H:%M").time()
         invalid_end_time = datetime.strptime("23:00", "%H:%M").time()
 
-        if (str(self.booking.date) != today):
+        if str(self.booking.date) != today:
             raise ValidationError("Camp-on can only be done for today.")
 
-        elif (self.start_time < self.booking.start_time):
+        elif self.start_time < self.booking.start_time:
             raise ValidationError("Start time has to be in between the selected Booking period.")
 
-        elif (self.start_time >= self.booking.end_time):
+        elif self.start_time >= self.booking.end_time:
             raise ValidationError("Start time has to be in between the selected Booking period.")
 
-        elif (self.end_time < invalid_start_time):
+        elif self.end_time < invalid_start_time:
             raise ValidationError("End time cannot be earlier than 8:00.")
 
-        elif (self.end_time > invalid_end_time):
+        elif self.end_time > invalid_end_time:
             raise ValidationError("End time cannot be later than 23:00.")
 
         elif self.start_time >= self.end_time:

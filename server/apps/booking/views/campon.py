@@ -34,14 +34,16 @@ class CampOnView(APIView):
                 request_end_time = datetime.datetime.strptime(campon_data["end_time"], "%H:%M").time()
 
                 if request_end_time > current_booking.end_time:
-                    Response_List = list()
+                    response_dict = dict()
+                    campon_response_list = list()
+                    booking_response_list = list()
 
                     # Create first CampOn for all cases
                     campon_data["end_time"] = current_booking.end_time
                     new_campon_serializer = CampOnSerializer(data=campon_data)
                     if new_campon_serializer.is_valid():
                         new_campon = new_campon_serializer.save()
-                        Response_List.append(CampOnSerializer(new_campon).data)
+                        campon_response_list.append(CampOnSerializer(new_campon).data)
 
                     found_bookings = Booking.objects.filter(
                                     start_time__range=(current_booking.end_time, request_end_time))
@@ -54,7 +56,7 @@ class CampOnView(APIView):
                                                                    current_booking.end_time,
                                                                    request_end_time)
 
-                        Response_List.append(new_booking_result)
+                        booking_response_list.append(new_booking_result)
 
                     else:
                         # For each existing Booking in between request_start_time and request_end_time
@@ -68,7 +70,7 @@ class CampOnView(APIView):
                                                                            current_booking.date,
                                                                            extra_start_time,
                                                                            found_booking.start_time)
-                                Response_List.append(new_booking_result)
+                                booking_response_list.append(new_booking_result)
                                 extra_start_time = found_booking.start_time
 
                             new_campon_result = self.createNewCampOn(campon_data,
@@ -76,7 +78,7 @@ class CampOnView(APIView):
                                                                      extra_start_time,
                                                                      request_end_time,
                                                                      found_booking.end_time)
-                            Response_List.append(new_campon_result)
+                            campon_response_list.append(new_campon_result)
                             extra_start_time = found_booking.end_time
 
                         if request_end_time > extra_start_time:
@@ -85,9 +87,14 @@ class CampOnView(APIView):
                                                                        current_booking.date,
                                                                        extra_start_time,
                                                                        request_end_time)
-                            Response_List.append(new_booking_result)
+                            booking_response_list.append(new_booking_result)
 
-                    return Response(Response_List, status=status.HTTP_201_CREATED)
+                    if not campon_response_list:
+                        response_dict["Campon"] = campon_response_list
+                    if not booking_response_list:
+                        response_dict["Booking"] = booking_response_list
+
+                    return Response(response_dict, status=status.HTTP_201_CREATED)
 
                 campon = serializer.save()
                 return Response(CampOnSerializer(campon).data, status=status.HTTP_201_CREATED)
