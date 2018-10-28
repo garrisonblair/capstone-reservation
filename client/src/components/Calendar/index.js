@@ -37,7 +37,39 @@ class Calendar extends Component {
         params: params
       })
       .then((response) => {
+        console.log(response.data)
         this.setState({bookings: response.data})
+
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+      .then(function () {
+      });
+    }
+    this.getCampOns()
+  }
+
+  getCampOns() {
+    if(this.props.propsTestingCampOns) {
+      this.setState({campOns: this.props.propsTestingCampOns})
+    } else {
+      let params = {
+        year: this.state.selectedDate.getFullYear(),
+        month: this.state.selectedDate.getMonth() + 1,
+        day: this.state.selectedDate.getDate()
+      }
+  
+      axios({
+        method: 'GET',
+        url: `${settings.API_ROOT}/campon`,
+        params: params
+      })
+      .then((response) => {
+        console.log(response.data)
+        this.setState({campOns: response.data}, () => {
+          this.campOnToBooking();
+        })
       })
       .catch(function (error) {
         console.log(error);
@@ -163,6 +195,37 @@ class Calendar extends Component {
       minutes: parseInt(tokens[1]),
     }
     return timeInt;
+  }
+
+  campOnToBooking = () => {
+    const {bookings, campOns} = this.state;
+    
+      let campOnBookings = []
+      campOns.map((campOn) => {
+        let date = ''
+        let room = ''
+        for(let i =0; i<bookings.length; i++) {
+          if(bookings[i].id == campOn.id) {
+            date = bookings[i].date
+            room = bookings[i].room
+            break
+          }
+        }
+        campOnBookings.push({
+          date: date,
+          start_time: campOn.start_time,
+          end_time: campOn.start_time,
+          student: campOn.student,
+          room: room,
+          id: `camp${campOn.id}`,
+          campOn: true
+        });
+      })
+      campOnBookings.map((campOnBooking) => {
+        bookings.push(campOnBooking)
+      })
+      this.setState({bookings: bookings})
+    
   }
 
   /************* COMPONENT LIFE CYCLE *************/
