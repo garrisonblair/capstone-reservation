@@ -29,11 +29,29 @@ class testWebCalendarExporter(TestCase):
         self.booking.save()
 
 
+    def returnSerializedICSComplete(self):
+
+        ics_file = """BEGIN:VCALENDAR
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID: 1
+SUMMARY:Student: s_loc, Group: None
+DESCRIPTION:Student: s_loc, Group: None
+CLASS:PUBLIC
+STATUS:TENTATIVE
+DTSTART:DTSTART:20181028T130000
+DTEND:DTEND:20181028T140000
+END:VEVENT
+END:VCALENDAR"""
+
+        return ics_file
+
+
     def testSerializeBooking(self):
 
         test = ICSSerializer()
-        test.serialize_booking(self.booking)
 
-        self.assertEquals(True, True)
+        generated = test.serialize_booking(self.booking)
+        predefined = str(self.returnSerializedICSComplete())
 
-
+        self.assertEquals(generated, predefined)

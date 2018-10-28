@@ -71,9 +71,6 @@ class ICSSerializer:
         dt_start = 'DTSTART:' + str(dt_start_date) + 'T' + str(dt_start_time)
         dt_end = 'DTEND:' + str(dt_end_date) + 'T' + str(dt_end_time)
 
-#        print('Constructed DTSTART', str(dt_start))
-#        print('Constructed DTEND', str(dt_end))
-
         arg0 = booking.id
         arg1 = summary
         arg2 = description
@@ -92,8 +89,6 @@ DTSTART:%s
 DTEND:%s
 END:VEVENT
 END:VCALENDAR""" % (str(arg0), str(arg1), str(arg2), str(arg3), str(arg4))
-
-        print(str(ics_file))
 
         return ics_file
 
