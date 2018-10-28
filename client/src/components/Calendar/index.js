@@ -127,7 +127,10 @@ class Calendar extends Component {
     let bookingStart = this.timeStringToInt(booking.start_time);
     let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(hoursSettings.start);
-
+    let campOn = 1;
+    if (!!booking.isCampOn) {
+      campOn = 100;
+    }
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
     let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
     let rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
@@ -136,7 +139,8 @@ class Calendar extends Component {
       booking_style: {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
-        gridColumn: 1
+        gridColumn: 1,
+        zIndex: campOn
       }
     }
     return style;
@@ -204,11 +208,13 @@ class Calendar extends Component {
       campOns.map((campOn) => {
         let date = ''
         let room = ''
-        for(let i =0; i<bookings.length; i++) {
-          if(bookings[i].id == campOn.id) {
-            date = bookings[i].date
-            room = bookings[i].room
-            break
+        if(bookings) {
+          for(let i =0; i<bookings.length; i++) {
+            if(bookings[i].id == campOn.id) {
+              date = bookings[i].date
+              room = bookings[i].room
+              break
+            }
           }
         }
         campOnBookings.push({
@@ -218,7 +224,7 @@ class Calendar extends Component {
           student: campOn.student,
           room: room,
           id: `camp${campOn.id}`,
-          campOn: true
+          isCampOn: true
         });
       })
       campOnBookings.map((campOnBooking) => {
