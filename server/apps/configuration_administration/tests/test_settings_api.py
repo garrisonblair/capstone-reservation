@@ -41,7 +41,7 @@ class TestSettingsAPI(TestCase):
                                  "webcalendar_username": "f_daigl",
                                  "webcalendar_password": "mySafePassword"
                              }
-        request = self.factory.patch("/settings", updated_settings)
+        request = self.factory.patch("/settings", updated_settings, format="json")
         force_authenticate(request, self.user)
         response = SystemSettingsAPI().as_view()(request)
 
