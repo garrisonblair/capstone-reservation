@@ -70,12 +70,6 @@ class ICSSerializer:
         dt_start = 'DTSTART:' + str(dt_start_date) + 'T' + str(dt_start_time)
         dt_end = 'DTEND:' + str(dt_end_date) + 'T' + str(dt_end_time)
 
-        arg0 = booking.id
-        arg1 = summary
-        arg2 = description
-        arg3 = dt_start
-        arg4 = dt_end
-
         ics_file = """BEGIN:VCALENDAR
 METHOD:PUBLISH
 BEGIN:VEVENT
@@ -87,6 +81,6 @@ STATUS:TENTATIVE
 DTSTART:%s
 DTEND:%s
 END:VEVENT
-END:VCALENDAR""" % (str(arg0), str(arg1), str(arg2), str(arg3), str(arg4))
+END:VCALENDAR""" % (str(booking.id), str(summary), str(description), str(dt_start), str(dt_end))
 
         return ics_file
