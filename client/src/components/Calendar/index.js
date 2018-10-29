@@ -208,33 +208,34 @@ class Calendar extends Component {
     const {bookings, campOns} = this.state;
     
       let campOnBookings = []
-      campOns.map((campOn) => {
-        let date = ''
-        let room = ''
-        if(bookings) {
-          for(let i =0; i<bookings.length; i++) {
-            if(bookings[i].id == campOn.id) {
-              date = bookings[i].date
-              room = bookings[i].room
-              break
+      if(!!campOns && !!bookings) {
+        campOns.map((campOn) => {
+          let date = ''
+          let room = ''
+          if(bookings) {
+            for(let i =0; i<bookings.length; i++) {
+              if(bookings[i].id == campOn.id) {
+                date = bookings[i].date
+                room = bookings[i].room
+                break
+              }
             }
           }
-        }
-        campOnBookings.push({
-          date: date,
-          start_time: campOn.start_time,
-          end_time: campOn.end_time,
-          student: campOn.student,
-          room: room,
-          id: `camp${campOn.id}`,
-          isCampOn: true
-        });
-      })
-      campOnBookings.map((campOnBooking) => {
-        bookings.push(campOnBooking)
-      })
-      this.setState({bookings: bookings})
-    
+          campOnBookings.push({
+            date: date,
+            start_time: campOn.start_time,
+            end_time: campOn.end_time,
+            student: campOn.student,
+            room: room,
+            id: `camp${campOn.id}`,
+            isCampOn: true
+          });
+        })
+        campOnBookings.map((campOnBooking) => {
+          bookings.push(campOnBooking)
+        })
+        this.setState({bookings: bookings})
+      }
   }
 
   /************* COMPONENT LIFE CYCLE *************/

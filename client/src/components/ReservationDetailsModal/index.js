@@ -160,9 +160,48 @@ class ReservationDetailsModal extends Component {
           })
       })
       .catch((error) => {
+        // this.sweetAlert(
+        //   'Reservation failed',
+        //   'We are sorry, this reservation overlaps with other reservations. Try different times.',
+        //   'error')
+        this.sweetAlert({
+          title: "Overlap detected",
+          text: "Your reservation is overlapping with an existing one. Do you want to camp-on?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonClass: "btn-danger",
+          confirmButtonText: "Camp-on"
+        }).then((result) => {
+          if (result.value) {
+            this.sendPostRequestCampOn(headers, data);
+          }
+        })
+      })
+  }
+
+  sendPostRequestCampOn = (headers, data) => {
+    axios({
+      method: 'POST',
+      url: `${settings.API_ROOT}/campon`,
+      headers,
+      data,
+      withCredentials: true,
+    })
+      .then((response) => {
+        this.sweetAlert('Completed',
+          `Room ${this.props.selectedRoomName} was successfuly booked.`,
+          'success')
+          .then((result) => {
+            if (result.value) {
+              this.closeModalWithReservation()
+            }
+          })
+      })
+      .catch((error) => {
+        console.log(error)
         this.sweetAlert(
           'Reservation failed',
-          'We are sorry, this reservation overlaps with other reservations. Try different times.',
+          'We are sorry, there was a problem with the server. Please try again.',
           'error')
       })
   }
