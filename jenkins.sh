@@ -32,10 +32,10 @@ set -x
 function staticAnalysis() {
 	echo 'Running static analysis... from jenkins.sh'
 	pycodestyle --exclude='**/migrations/**, **/__init__.py' --config='./../../setup.cfg' server
-	#source activate ${BUILD_TAG}
-    #coverage run irisvmpy/iris.py 1 1 2 3
-    #python -m coverage xml -o ./reports/coverage.xml
-    #tox -e coverage
+	source activate ${BUILD_TAG}
+    coverage run irisvmpy/iris.py 1 1 2 3
+    python -m coverage xml -o ./reports/coverage.xml
+    tox -e coverage
 }
 
 
