@@ -219,7 +219,7 @@ class Calendar extends Component {
           let room = ''
           if(bookings) {
             for(let i =0; i<bookings.length; i++) {
-              if(bookings[i].id == campOn.id) {
+              if(bookings[i].id == campOn.booking) {
                 date = bookings[i].date
                 room = bookings[i].room
                 break
@@ -232,7 +232,7 @@ class Calendar extends Component {
             end_time: campOn.end_time,
             student: campOn.student,
             room: room,
-            id: `camp${campOn.id}`,
+            id: `camp${campOn.booking}`,
             isCampOn: true
           });
         })
