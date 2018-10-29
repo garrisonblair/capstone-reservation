@@ -35,6 +35,7 @@ function staticAnalysis() {
 	#source activate ${BUILD_TAG}
     #coverage run irisvmpy/iris.py 1 1 2 3
     #python -m coverage xml -o ./reports/coverage.xml
+    #tox -e coverage
 }
 
 
