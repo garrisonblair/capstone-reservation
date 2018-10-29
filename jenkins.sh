@@ -69,15 +69,19 @@ function staticAnalysis() {
 	pycodestyle --exclude='**/migrations/**, **/__init__.py' --config='./../../setup.cfg' server
 	#source $WORKSPACE/venv/venvironment/bin/activate}
     #coverage run irisvmpy/iris.py 1 1 2 3
+    
     # The following seems to work but fails due to having no data to report...
-    #coverage run
-    #python -m coverage xml -o ./reports/coverage.xml
+    coverage run
+    python -m coverage xml -o ./reports/coverage.xml
     #tox -e coverage
-    pip3 install --quiet nosexcover
-	pip3 install --quiet pylint
+    
+    #pip3 install --quiet nosexcover
 	#pip3 install --quiet $WORKSPACE/
 	#nosetests --with-xcoverage --with-xunit --cover-package=myapp --cover-erase
-	pylint -f parseable $WORKSPACE/server/apps | tee pylint.out
+	
+	# This works but may contradict pep8 standards
+	#pip3 install --quiet pylint
+	#pylint -f parseable $WORKSPACE/server/apps | tee pylint.out
 }
 
 function unitTests() {
