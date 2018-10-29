@@ -29,16 +29,6 @@ echo "**************************************************************************
 echo "*"
 set -x
 
-function staticAnalysis() {
-	echo 'Running static analysis... from jenkins.sh'
-	pycodestyle --exclude='**/migrations/**, **/__init__.py' --config='./../../setup.cfg' server
-	#source $WORKSPACE/venv/venvironment/bin/activate}
-    #coverage run irisvmpy/iris.py 1 1 2 3
-    # The following seems to work but fails due to having no data to report...
-    #python -m coverage xml -o ./reports/coverage.xml
-    #tox -e coverage
-}
-
 
 function build() {
 	echo 'Building... from jenkins.sh'
@@ -74,6 +64,21 @@ function build() {
 	python3 manage.py migrate
 }
 
+function staticAnalysis() {
+	echo 'Running static analysis... from jenkins.sh'
+	pycodestyle --exclude='**/migrations/**, **/__init__.py' --config='./../../setup.cfg' server
+	#source $WORKSPACE/venv/venvironment/bin/activate}
+    #coverage run irisvmpy/iris.py 1 1 2 3
+    # The following seems to work but fails due to having no data to report...
+    #python -m coverage xml -o ./reports/coverage.xml
+    #tox -e coverage
+    pip3 install --quiet nosexcover
+	pip3 install --quiet nosexcover
+	pip3 install --quiet $WORKSPACE/
+	nosetests --with-xcoverage --with-xunit --cover-package=myapp --cover-erase
+	pylint -f parseable myapp/ | tee pylint.out
+}
+
 function unitTests() {
 	echo 'Running unit tests... from jenkins.sh'
 	source $WORKSPACE/venv/venvironment/bin/activate
@@ -98,11 +103,11 @@ COMMAND=$1
 shift
 
 case $COMMAND in
-	staticAnalysis )
-		staticAnalysis
-		;;
 	build )
 		build
+		;;
+	staticAnalysis )
+		staticAnalysis
 		;;
 	unitTests )
 		unitTests
