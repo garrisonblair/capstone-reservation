@@ -1,14 +1,7 @@
 from django.db import models
 from apps.accounts.models.Student import Student
 from apps.booking.models.Booking import Booking
-from django.db.models import Q
-from datetime import datetime
 from django.core.exceptions import ValidationError
-
-
-class CampOnMangager(models.Manager):
-    def create_camp_on(self, student, booking, start_time, end_time):
-        pass
 
 
 class CampOn(models.Model):
@@ -37,27 +30,20 @@ class CampOn(models.Model):
                                                                                             self.end_time)
 
     def validate_model(self):
-        today = datetime.now().strftime("%Y-%m-%d")
-        invalid_start_time = datetime.strptime("8:00", "%H:%M").time()
-        invalid_end_time = datetime.strptime("23:00", "%H:%M").time()
-
-        if str(self.camped_on_booking.date) != today:
-            raise ValidationError("Camp-on can only be done for today.")
-
-        elif self.start_time < self.camped_on_booking.start_time:
+        if self.start_time < self.camped_on_booking.start_time:
             raise ValidationError("Start time has to be in between the selected Booking period.")
 
         elif self.start_time >= self.camped_on_booking.end_time:
             raise ValidationError("Start time has to be in between the selected Booking period.")
 
-        elif self.end_time < invalid_start_time:
-            raise ValidationError("End time cannot be earlier than 8:00.")
-
-        elif self.end_time > invalid_end_time:
-            raise ValidationError("End time cannot be later than 23:00.")
-
         elif self.start_time >= self.end_time:
             raise ValidationError("End time must be later than the start time")
 
-        elif CampOn.objects.filter(student=self.student, booking=self.camped_on_booking).exists():
+        elif self.end_time > self.camped_on_booking.end_time:
+            found_bookings = Booking.objects.filter(
+                start_time__range=(self.camped_on_booking.end_time, self.end_time))
+            if found_bookings is not None:
+                raise ValidationError("Camp-on can not end after another booking has started")
+
+        elif CampOn.objects.filter(student=self.student, camped_on_booking=self.camped_on_booking).exists():
             raise ValidationError("Cannot camp-on the same Booking.")
