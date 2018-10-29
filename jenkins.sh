@@ -77,7 +77,7 @@ function staticAnalysis() {
 	pip3 install --quiet pylint
 	#pip3 install --quiet $WORKSPACE/
 	#nosetests --with-xcoverage --with-xunit --cover-package=myapp --cover-erase
-	pylint -f parseable myapp/ | tee pylint.out
+	pylint -f parseable $WORKSPACE/server/apps | tee pylint.out
 }
 
 function unitTests() {
