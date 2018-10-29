@@ -74,7 +74,7 @@ function staticAnalysis() {
     #tox -e coverage
     pip3 install --quiet nosexcover
 	pip3 install --quiet nosexcover
-	pip3 install --quiet $WORKSPACE/
+	#pip3 install --quiet $WORKSPACE/
 	nosetests --with-xcoverage --with-xunit --cover-package=myapp --cover-erase
 	pylint -f parseable myapp/ | tee pylint.out
 }
