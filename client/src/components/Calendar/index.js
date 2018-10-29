@@ -371,12 +371,17 @@ class Calendar extends Component {
     bookings.forEach(booking => {
       bookingsDiv.push(
         <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} onClick={this.handleClickBooking}>
-          { !!booking.isCampOn ? <span>[CAMP ON]</span> : null }
+          {/* { !!booking.isCampOn ? <span>[CAMP ON]</span> : null }
           <div className="calendar__booking__booker">{booking.student} </div>
           <div className="calendar__booking__time">
             <div>{booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time}</div>
             <div>{booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}</div>
-          </div>
+          </div> */}
+
+          {booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time} - {booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}
+          <br/>
+          { !!booking.isCampOn ? <span>[CAMP ON]<br/></span> : null }
+          <span>{booking.student}</span>
         </div>
       )
     });
