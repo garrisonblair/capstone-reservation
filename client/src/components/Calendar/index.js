@@ -15,6 +15,7 @@ class Calendar extends Component {
     selectedHour: "",
     selectedRoomName: "",
     selectedRoomId: "",
+    selectedRoomCurrentBookings: [],
     selectedDate: new Date()
   };
 
@@ -37,7 +38,6 @@ class Calendar extends Component {
         params: params
       })
       .then((response) => {
-        console.log(response.data)
         this.setState({bookings: response.data})
 
       })
@@ -66,7 +66,6 @@ class Calendar extends Component {
         params: params
       })
       .then((response) => {
-        console.log(response.data)
         this.setState({campOns: response.data}, () => {
           this.campOnToBooking();
         })
@@ -155,13 +154,19 @@ class Calendar extends Component {
     let selectedRoomId = e.target.getAttribute('data-room-id');
     let selectedRoomName = e.target.getAttribute('data-room-name');
     let selectedHour = e.target.getAttribute('data-hour');
-
-    this.toggleBookingModal();
+    let selectedRoomCurrentBookings = []
+    this.state.bookings.map((booking) => {
+      if (booking.room == selectedRoomId) {
+        selectedRoomCurrentBookings.push(booking)
+      }
+    })
     this.setState({
       selectedHour: selectedHour,
       selectedRoomId: selectedRoomId,
-      selectedRoomName: selectedRoomName
+      selectedRoomName: selectedRoomName,
+      selectedRoomCurrentBookings: selectedRoomCurrentBookings
     });
+    this.toggleBookingModal();
   }
 
   // TODO: Handle click on an existing booking
@@ -404,6 +409,7 @@ class Calendar extends Component {
           selectedRoomName={this.state.selectedRoomName}
           selectedHour={this.state.selectedHour}
           selectedDate={this.state.selectedDate}
+          selectedRoomCurrentBookings={this.state.selectedRoomCurrentBookings}
           onClose={this.toggleBookingModal}
           onCloseWithReservation={this.toggleBookingModalWithReservation}
         />
