@@ -34,7 +34,8 @@ function staticAnalysis() {
 	pycodestyle --exclude='**/migrations/**, **/__init__.py' --config='./../../setup.cfg' server
 	#source source $WORKSPACE/venv/venvironment/bin/activate}
     #coverage run irisvmpy/iris.py 1 1 2 3
-    python -m coverage xml -o ./reports/coverage.xml
+    # The following seems to work but fails due to having no data to report...
+    #python -m coverage xml -o ./reports/coverage.xml
     tox -e coverage
 }
 
