@@ -71,7 +71,7 @@ function staticAnalysis() {
     #coverage run irisvmpy/iris.py 1 1 2 3
     
     # The following seems to work but fails due to having no data to report...
-    coverage run manage.py test
+    coverage run $WORKSPACE/server/manage.py test
     coverage report -m 
     python -m coverage xml -o ./reports/coverage.xml
 
