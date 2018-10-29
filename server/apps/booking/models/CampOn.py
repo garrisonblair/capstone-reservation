@@ -1,6 +1,8 @@
 from django.db import models
 from apps.accounts.models.Student import Student
 from apps.booking.models.Booking import Booking
+from django.db.models import Q
+from datetime import datetime
 from django.core.exceptions import ValidationError
 
 
@@ -30,11 +32,24 @@ class CampOn(models.Model):
                                                                                             self.end_time)
 
     def validate_model(self):
-        if self.start_time < self.camped_on_booking.start_time:
+        today = datetime.now().today().date()
+        invalid_start_time = datetime.strptime("8:00", "%H:%M").time()
+        invalid_end_time = datetime.strptime("23:00", "%H:%M").time()
+
+        if self.camped_on_booking.date != today:
+            raise ValidationError("Camp-on can only be done for today.")
+
+        elif self.start_time < self.camped_on_booking.start_time:
             raise ValidationError("Start time has to be in between the selected Booking period.")
 
         elif self.start_time >= self.camped_on_booking.end_time:
             raise ValidationError("Start time has to be in between the selected Booking period.")
+
+        elif self.end_time < invalid_start_time:
+            raise ValidationError("End time cannot be earlier than 8:00.")
+
+        elif self.end_time > invalid_end_time:
+            raise ValidationError("End time cannot be later than 23:00.")
 
         elif self.start_time >= self.end_time:
             raise ValidationError("End time must be later than the start time")
