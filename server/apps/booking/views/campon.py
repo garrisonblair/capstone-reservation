@@ -20,90 +20,48 @@ class CampOnView(APIView):
 
         campon_data = dict(request.data)
         campon_data["student"] = request.user.student.student_id
+        campon_data["start_time"] = datetime.datetime.now().time()
         serializer = CampOnSerializer(data=campon_data)
+
+        print(campon_data["start_time"])
 
         if not serializer.is_valid():
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # If the CampOn end time is bigger than Booking end time,
-            # the system will check if there is Booking between the Booking end time and CampOn end time
-            # If there is Booking, the system will create a CampOn
-            # with current time as start time and the specified end time as end time
-            # Otherwise, the system will create a Booking and a CampOn for the student
 
             current_booking = Booking.objects.get(id=campon_data["booking"])
             request_end_time = datetime.datetime.strptime(campon_data["end_time"], "%H:%M").time()
 
             if request_end_time > current_booking.end_time:
-                response_dict = dict()
-                campon_response_list = list()
-                booking_response_list = list()
-
-                # Create first CampOn for all cases
-                campon_data["end_time"] = current_booking.end_time
-                new_campon_serializer = CampOnSerializer(data=campon_data)
-                if not new_campon_serializer.is_valid():
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
-                new_campon = new_campon_serializer.save()
-                campon_response_list.append(CampOnSerializer(new_campon).data)
 
                 found_bookings = Booking.objects.filter(
                                     start_time__range=(current_booking.end_time, request_end_time))
 
-                if not found_bookings:
-                    # No Booking found, create new Booking and create CampOn
-                    new_booking_result = self.createNewBooking(request.user.student.student_id,
-                                                               current_booking.room.id,
-                                                               current_booking.date,
-                                                               current_booking.end_time,
-                                                               request_end_time)
+                if found_bookings:
+                    return Response("End time overlaps with future booking", status=status.HTTP_409_CONFLICT)
+                # No Booking found, create new Booking and create CampOn
 
-                    booking_response_list.append(new_booking_result)
+                campon_data["end_time"] = current_booking.end_time
+                new_campon_serializer = CampOnSerializer(data=campon_data)
+                campon = new_campon_serializer.save()
 
-                else:
-                    # For each existing Booking in between request_start_time and request_end_time
-                    # Loop to check if there is empty slot in between the existing Booking
-                    # If empty slot found, create a new Booking
-                    extra_start_time = current_booking.end_time
-                    for found_booking in found_bookings:
-                        if extra_start_time < found_booking.start_time:
-                            new_booking_result = self.createNewBooking(request.user.student.student_id,
-                                                                       current_booking.room.id,
-                                                                       current_booking.date,
-                                                                       extra_start_time,
-                                                                       found_booking.start_time)
-                            booking_response_list.append(new_booking_result)
-                            extra_start_time = found_booking.start_time
+                new_booking = Booking(student=campon.student,
+                                      student_group=campon.camped_on_booking.student_group,
+                                      room=campon.camped_on_booking.room,
+                                      date=campon.camped_on_booking.date,
+                                      start_time=campon.end_time,
+                                      end_time=request_end_time)
 
-                        new_campon_result = self.createNewCampOn(campon_data,
-                                                                 found_booking.id,
-                                                                 extra_start_time,
-                                                                 request_end_time,
-                                                                 found_booking.end_time)
-                        campon_response_list.append(new_campon_result)
-                        extra_start_time = found_booking.end_time
-
-                    if request_end_time > extra_start_time:
-                        new_booking_result = self.createNewBooking(request.user.student.student_id,
-                                                                   current_booking.room.id,
-                                                                   current_booking.date,
-                                                                   extra_start_time,
-                                                                   request_end_time)
-                        booking_response_list.append(new_booking_result)
-
-                if not campon_response_list:
-                    response_dict["Campon"] = campon_response_list
-                if not booking_response_list:
-                    response_dict["Booking"] = booking_response_list
-
-                return Response(response_dict, status=status.HTTP_201_CREATED)
+                response_data = {"CampOn": CampOnSerializer(campon).data,
+                                 "Booking": BookingSerializer(new_booking).data}
+                return Response(response_data, status=status.HTTP_201_CREATED)
 
             campon = serializer.save()
-            return Response(CampOnSerializer(campon).data, status=status.HTTP_201_CREATED)
+            return Response({"CampOn": CampOnSerializer(campon).data}, status=status.HTTP_201_CREATED)
 
         except (ValueError, ValidationError) as error:
-            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
         request_id = request.GET.get('id')

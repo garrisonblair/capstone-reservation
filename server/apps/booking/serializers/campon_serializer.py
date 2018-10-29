@@ -8,5 +8,5 @@ from apps.accounts.models.Student import Student
 class CampOnSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampOn
-        fields = ('id', 'student', 'booking', 'start_time', 'end_time')
+        fields = ('id', 'student', 'camped_on_booking', 'generated_booking', 'start_time', 'end_time')
         read_only_fields = ('id',)

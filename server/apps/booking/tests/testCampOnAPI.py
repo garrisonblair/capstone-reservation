@@ -60,7 +60,7 @@ class CampOnAPITest(TestCase):
 
     def testCreateCampOnSuccess(self):
         request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "14:00"
                                     },
@@ -84,7 +84,7 @@ class CampOnAPITest(TestCase):
 
     def testCreateCampOnWithBooking(self):
         request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "15:00"
                                     },
@@ -129,7 +129,7 @@ class CampOnAPITest(TestCase):
         second_booking.save()
 
         request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "15:00"
                                     },
@@ -164,7 +164,7 @@ class CampOnAPITest(TestCase):
         second_booking.save()
 
         request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "17:00"
                                     },
@@ -209,7 +209,7 @@ class CampOnAPITest(TestCase):
         second_booking.save()
 
         request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "17:00"
                                     },
@@ -262,7 +262,7 @@ class CampOnAPITest(TestCase):
         third_booking.save()
 
         request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "16:00"
                                     },
@@ -291,7 +291,7 @@ class CampOnAPITest(TestCase):
 
     def testCreateCampOnNotAuthenticated(self):
         request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "15:00"
                                     },
@@ -303,7 +303,7 @@ class CampOnAPITest(TestCase):
 
     def testCreateCampOnInvalidTime(self):
         request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "11:00"  # end time is smaller than start time
                                     },
@@ -316,7 +316,7 @@ class CampOnAPITest(TestCase):
 
     def testCreateCampOnInvalidBooking(self):
         request = self.factory.post("/campon", {
-                                        "booking": 10,  # Booking id does not exist
+                                        "camped_on_booking": 10,  # Booking id does not exist
                                         "start_time": "12:20",
                                         "end_time": "11:00"
                                     },
@@ -331,7 +331,7 @@ class CampOnAPITest(TestCase):
 
         # First CampOn
         first_request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "14:00"
                                     },
@@ -345,7 +345,7 @@ class CampOnAPITest(TestCase):
 
         # Second CampOn with different start time
         second_request = self.factory.post("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:30",
                                         "end_time": "14:00"
                                     },
@@ -423,7 +423,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(len(CampOn.objects.all()), 2)
 
         request = self.factory.get("/campon", {
-                                        "booking": 1
+                                        "camped_on_booking": 1
                                     },
                                    format="json")
         response = CampOnView.as_view()(request)
@@ -461,7 +461,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(len(CampOn.objects.all()), 2)
 
         request = self.factory.get("/campon", {
-                                        "booking": 1,
+                                        "camped_on_booking": 1,
                                         "start_time": "12:20",
                                         "end_time": "13:00"
                                     },
@@ -611,7 +611,7 @@ class CampOnAPITest(TestCase):
     def testGetCampOnWithInvalidBookingId(self):
 
         request = self.factory.get("/campon", {
-                                        "booking": str
+                                        "camped_on_booking": str
                                     }, format="json")
         response = CampOnView.as_view()(request)
 
