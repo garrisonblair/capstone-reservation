@@ -38,6 +38,8 @@ class Calendar extends Component {
         params: params
       })
       .then((response) => {
+        console.log("BOOKINGS")
+        console.log(response.data)
         this.setState({bookings: response.data})
 
       })
@@ -66,6 +68,8 @@ class Calendar extends Component {
         params: params
       })
       .then((response) => {
+        console.log("CAMPONS")
+        console.log(response.data)
         this.setState({campOns: response.data}, () => {
           this.campOnToBooking();
         })
@@ -171,7 +175,13 @@ class Calendar extends Component {
 
   // TODO: Handle click on an existing booking
   handleClickBooking = (e) => {
-    console.log(e)
+    console.log(e.target)
+    console.log
+    if (this.testCampOnPossible(e.target.getAttribute('data-start-time'), e.target.getAttribute('data-end-time'))) {
+      let id = e.target.getAttribute('data-id')
+      this.setState({selectedBookingId: id})
+      this.toggleBookingModal();
+    }
   }
 
   handleClickNextDate = (e) => {
@@ -189,6 +199,25 @@ class Calendar extends Component {
   }
 
   /************ HELPER METHOD *************/
+
+  testCampOnPossible(start, end) {
+    let currentDate = new Date()
+    let currentHour = currentDate.getHours()
+    let currentMin = currentDate.getMinutes()
+    if (currentMin < 10) {
+      currentMin = `0${currentMin}`
+    }
+    currentDate = `${currentHour}${currentMin}00`
+    let startTime = start.replace(/:/g, '')
+    let endTime = end.replace(/:/g, '')
+    
+    if(currentDate < (parseInt(startTime) + 3000) || currentDate > parseInt(endTime)) {
+      return false
+    } else {
+      return true
+    }
+
+  }
 
   toggleBookingModal = () => {
     this.setState({isBooking: !this.state.isBooking})
@@ -219,7 +248,7 @@ class Calendar extends Component {
           let room = ''
           if(bookings) {
             for(let i =0; i<bookings.length; i++) {
-              if(bookings[i].id == campOn.booking) {
+              if(bookings[i].id == campOn.camped_on_booking) {
                 date = bookings[i].date
                 room = bookings[i].room
                 break
@@ -232,7 +261,7 @@ class Calendar extends Component {
             end_time: campOn.end_time,
             student: campOn.student,
             room: room,
-            id: `camp${campOn.booking}`,
+            id: `camp${campOn.camped_on_booking}`,
             isCampOn: true
           });
         })
@@ -376,7 +405,7 @@ class Calendar extends Component {
 
     bookings.forEach(booking => {
       bookingsDiv.push(
-        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} onClick={this.handleClickBooking}>
+        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} data-id={booking.id} data-start-time= {booking.start_time} data-end-time={booking.end_time} onClick={this.handleClickBooking}>
           {/* { !!booking.isCampOn ? <span>[CAMP ON]</span> : null }
           <div className="calendar__booking__booker">{booking.student} </div>
           <div className="calendar__booking__time">
@@ -410,6 +439,7 @@ class Calendar extends Component {
           selectedHour={this.state.selectedHour}
           selectedDate={this.state.selectedDate}
           selectedRoomCurrentBookings={this.state.selectedRoomCurrentBookings}
+          selectedBookingId={this.state.selectedBookingId}
           onClose={this.toggleBookingModal}
           onCloseWithReservation={this.toggleBookingModalWithReservation}
         />
