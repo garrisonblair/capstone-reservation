@@ -94,10 +94,12 @@ class Admin extends Component {
 
   handleChangeSetting = (e) => {
     let setting = e.target.getAttribute('value');
-    this.setState({[setting]: !this.state[setting]})
-    if(setting == "webcalendarBackup") {
-      this.toggleLoginModal();
-    }
+    this.setState({[setting]: !this.state[setting]}, () => {
+      if(setting == "webcalendarBackup") {
+        console.log(this.state.webcalendarBackup)
+        this.toggleLoginModal();
+      }
+    })
   }
 
   handleWebCalendarPasswordChange = (e) => {
@@ -163,39 +165,47 @@ class Admin extends Component {
     )
   }
 
+  renderCredentialsInputs() {
+    return(
+      <div>
+        <Form.Field>
+          <Input
+            fluid
+            size='small'
+            icon='user'
+            iconPosition='left'
+            placeholder='Username'
+            onChange={this.handleWebCalendarUsernameChange}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Input
+            fluid
+            size='small'
+            icon='lock'
+            iconPosition='left'
+            placeholder='Password'
+            type='password'
+            onChange={this.handleWebCalendarPasswordChange}
+          />
+        </Form.Field>
+      </div>
+    )
+  }
+
   renderLoginModal() {
     return (
       <Modal open={this.state.loginModal} onClose={this.toggleLoginModal}>
           <Header>
-            <h1 className="login__container__header__title"> Please enter your Webcalendar credentials </h1>
+            <h1 className="login__container__header__title"> { this.state.webcalendarBackup ? 'Please enter your Webcalendar credentials' : 'Disable automatic backup?'} </h1>
           </Header>
           <div className="login__container__main">
             <div className="ui divider"/>
             <div className="login__container__main__form-wrapper">
-              <Form.Field>
-                <Input
-                  fluid
-                  size='small'
-                  icon='user'
-                  iconPosition='left'
-                  placeholder='Username'
-                  onChange={this.handleWebCalendarUsernameChange}
-                />
-              </Form.Field>
-              <Form.Field>
-                <Input
-                  fluid
-                  size='small'
-                  icon='lock'
-                  iconPosition='left'
-                  placeholder='Password'
-                  type='password'
-                  onChange={this.handleWebCalendarPasswordChange}
-                />
-              </Form.Field>
+              {this.state.webcalendarBackup ? this.renderCredentialsInputs() : null}
               <Form.Field>
                 <Button fluid size='small' icon onClick={this.saveSettings}>
-                  Save
+                  Confirm
                 </Button>
               </Form.Field>
               <div className="ui divider"/>
