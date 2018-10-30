@@ -26,7 +26,7 @@ class SystemSettingsAPI(APIView):
         settings = SystemSettings.get_settings()
 
         for key in settings_updates:
-            setattr(settings, key, settings_updates[key][0])
+            setattr(settings, key, settings_updates[key])
 
         try:
             settings.save()
