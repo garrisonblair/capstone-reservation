@@ -87,11 +87,10 @@ class CampOnView(APIView):
             else:
                 camp_ons = CampOn.objects.all()
         except (ValueError, ValidationError) as error:
-            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
         camp_on_list = list()
         for camp_on in camp_ons:
             serializer = CampOnSerializer(camp_on)
             camp_on_list.append(serializer.data)
         return Response(camp_on_list, status=status.HTTP_200_OK)
-
