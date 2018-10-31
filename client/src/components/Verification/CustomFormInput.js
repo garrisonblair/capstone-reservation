@@ -24,7 +24,7 @@ class CustomFormInput extends Component {
     render() {
       return (
         <Form.Field>
-          <label>Student ID:</label>
+          <label>{this.props.title}</label>
           {this.renderErrorMessage()}
           <Input
             {...this.props}
