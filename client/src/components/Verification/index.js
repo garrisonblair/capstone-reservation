@@ -1,19 +1,20 @@
 import React, {Component} from 'react';
 import {Loader, Form, Input, Button, Icon, Step, Label} from 'semantic-ui-react';
-import api from '../../utils/api';
 import sweetAlert from 'sweetalert2';
+import api from '../../utils/api';
+import CustomFormInput from './CustomFormInput';
 import './Verification.scss';
 
 
 // TODO: Check if user already set its student ID
 class Verification extends Component {
   state = {
-    password1: {
+    password: {
       value: '',
       showErrorMessage: false,
       errorMessageText: ''
     },
-    password2: {
+    confirmPassword: {
       value: '',
       showErrorMessage: false,
       errorMessageText: ''
@@ -24,6 +25,7 @@ class Verification extends Component {
       errorMessageText: ''
     },
     isLoading: true,
+    preventSubmit: true,
     firstName: '',
     userId: 0
   }
@@ -54,9 +56,9 @@ class Verification extends Component {
     }
   }
 
-  handleChangePassword1 = (event) => {
+  handleChangepassword = (event) => {
     this.setState({
-      password1: {
+      password: {
         showErrorMessage: false,
         errorMessageText: '',
         value: event.target.value
@@ -64,9 +66,9 @@ class Verification extends Component {
     })
   }
 
-  handleChangePassword2 = (event) => {
+  handleChangeConfirmPassword = (event) => {
     this.setState({
-      password2: {
+      confirmPassword: {
         showErrorMessage: false,
         errorMessageText: '',
         value: event.target.value
@@ -75,12 +77,12 @@ class Verification extends Component {
   }
 
   verifyPasswords() {
-    const value1 = this.state.password1.value;
-    const value2 = this.state.password2.value;
+    const value1 = this.state.password.value;
+    const value2 = this.state.confirmPassword.value;
 
     if (value1 === '') {
       this.setState({
-        password1: {
+        password: {
           showErrorMessage: true,
           errorMessageText: 'Please enter a password'
         }
@@ -89,7 +91,7 @@ class Verification extends Component {
     }
     if (value2 === '') {
       this.setState({
-        password2: {
+        confirmPassword: {
           showErrorMessage: true,
           errorMessageText: 'Please re-enter the password'
         }
@@ -98,57 +100,45 @@ class Verification extends Component {
     }
     if (value1 !== value2) {
       this.setState({
-        password1: {
+        password: {
           showErrorMessage: true,
           errorMessageText: 'Passwords do not match'
         },
-        password2: {
+        confirmPassword: {
           showErrorMessage: true,
           errorMessageText: 'Passwords do not match'
         },
-      })
-      throw new Error();
-    }
-  }
-
-  verifyStudentId() {
-    const {studentId} = this.state;
-
-    if (studentId.value.length === 0) {
-      this.setState({
-        studentId: {
-          showErrorMessage: true,
-          errorMessageText: 'Please enter your student ID number'
-        }
-      })
-      throw new Error();
-    }
-    if (studentId.value.length !== 8) {
-      this.setState({
-        studentId: {
-          showErrorMessage: true,
-          errorMessageText: 'Field should have 8 digits'
-        }
-      })
-      throw new Error();
-    }
-    if (!studentId.value.match('^[0-9]*$')) {
-      this.setState({
-        studentId: {
-          showErrorMessage: true,
-          errorMessageText: 'Student ID should have only digits'
-        }
       })
       throw new Error();
     }
   }
 
   handleChangeStudentId = (event) => {
+    let value = event.target.value;
+    let preventSubmit = false;
+    let showErrorMessage = false;
+    let errorMessageText = '';
+
+    if (value.length === 0) {
+      preventSubmit = true;
+      showErrorMessage = true;
+      errorMessageText = 'Please enter your student ID number';
+    } else if (value.length !== 8) {
+      preventSubmit = true;
+      showErrorMessage = true;
+      errorMessageText = 'Field should have 8 digits';
+    } else if (!value.match('^[0-9]*$')) {
+      preventSubmit = true;
+      showErrorMessage = true;
+      errorMessageText = 'Student ID should have only digits';
+    }
+
     this.setState({
+      preventSubmit,
       studentId: {
-        value: event.target.value,
-        showErrorMessage: false,
-        errorMessageText: ''
+        value,
+        showErrorMessage,
+        errorMessageText,
       }
     })
   }
@@ -157,14 +147,18 @@ class Verification extends Component {
     //Verify form before continuing transaction.
     try {
       this.verifyPasswords();
-      this.verifyStudentId();
     }
     catch (error) {
       return;
     }
 
-    let {studentId, userId} = this.state;
-    const password = this.state.password1.value;
+    let {studentId, userId, preventSubmit} = this.state;
+
+    if (preventSubmit) {
+      return;
+    }
+
+    const password = this.state.password.value;
     const data = {
       "student_id": `${studentId.value}`,
       "password": `${password}`
@@ -207,7 +201,7 @@ class Verification extends Component {
   }
 
   renderMainForm() {
-    let {password1, password2, studentId} = this.state;
+    let {password, confirmPassword, studentId} = this.state;
     return (
       <div>
         <h1> Account settings </h1>
@@ -228,51 +222,49 @@ class Verification extends Component {
           </Step>
         </Step.Group>
 
-        <h4>Welcome {this.state.firstName}</h4>
+        <h2>Welcome {this.state.firstName}</h2>
         <Form>
-          <label >Enter Password:</label>
           <Form.Field>
-            {this.renderInputErrorMessage(password1)}
+            <label >Enter Password:</label>
+            {this.renderInputErrorMessage(password)}
             <Input
               fluid
               size='medium'
               icon='key'
               iconPosition='left'
               type="password"
-              onChange={this.handleChangePassword1}
-            />
-          </Form.Field>
-          <label>Re-enter password:</label>
-          <Form.Field>
-            {this.renderInputErrorMessage(password2)}
-            <Input
-              fluid
-              size='medium'
-              icon='key'
-              type="password"
-              iconPosition='left'
-              onChange={this.handleChangePassword2}
+              onChange={this.handleChangepassword}
             />
           </Form.Field>
 
-          <label>Student ID:</label>
           <Form.Field>
-            {this.renderInputErrorMessage(studentId)}
+            <label>Confirm Password:</label>
+            {this.renderInputErrorMessage(confirmPassword)}
             <Input
               fluid
               size='medium'
-              icon='id card'
+              icon='key'
+              type="password"
               iconPosition='left'
-              placeholder='12345678'
-              onChange={this.handleChangeStudentId}
+              onChange={this.handleChangeConfirmPassword}
             />
           </Form.Field>
+
+          <CustomFormInput
+            fluid
+            size='medium'
+            icon='id card'
+            iconPosition='left'
+            placeholder='12345678'
+            onChange={this.handleChangeStudentId}
+            errormessage={studentId.errorMessageText}
+          />
         </Form>
         <Form.Field>
-          <br />
+          <br/>
           <Button fluid size='small' icon onClick={this.handleUserSettings}>
             Set settings
-      </Button>
+          </Button>
         </Form.Field>
       </div>
     )

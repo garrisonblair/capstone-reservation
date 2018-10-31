@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
 import {Button, Form, Icon, Input} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
 import './Login.scss';
-import {Link} from 'react-router-dom';
 
 
 class Login extends Component {
