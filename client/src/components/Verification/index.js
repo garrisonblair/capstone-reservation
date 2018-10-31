@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {Loader, Form, Input, Button, Icon, Step, Label} from 'semantic-ui-react';
 import api from '../../utils/api';
-import SweetAlert from 'sweetalert2-react';
+import sweetAlert from 'sweetalert2';
 import './Verification.scss';
 
 
+// TODO: Check if user already set its student ID
 class Verification extends Component {
   state = {
     password1: {
@@ -24,13 +25,7 @@ class Verification extends Component {
     },
     isLoading: true,
     firstName: '',
-    userId: 0,
-    sweetAlertModal: {
-      title: '',
-      description: '',
-      visible: false,
-      type:'error'
-    }
+    userId: 0
   }
 
   componentDidMount() {
@@ -50,20 +45,13 @@ class Verification extends Component {
         localStorage.setItem('CapstoneReservationUser', JSON.stringify(response.data));
       })
       .catch((error) => {
-        this.setState({
-          sweetAlertModal: {
-            visible: true,
-            description: "something happened",
-            title: ":(",
-            type:'error'
-          }
-        })
+        sweetAlert(
+          ":(",
+          "something happened",
+          "error"
+        )
       })
     }
-  }
-
-  closeModal = () => {
-    this.props.history.push('/');
   }
 
   handleChangePassword1 = (event) => {
@@ -184,24 +172,19 @@ class Verification extends Component {
 
     api.updateUser(userId, data)
     .then((response) => {
-      this.setState({
-        sweetAlertModal: {
-          visible: true,
-          description: "Settings recorded successfuly",
-          title: "Settings",
-          type:'success'
-        }
-      })
+      sweetAlert(
+        "Settings",
+        "Settings recorded successfuly",
+        'success'
+      )
+      this.props.history.push('/');
     })
     .catch((error) => {
-      this.setState({
-        sweetAlertModal: {
-          visible: true,
-          description: "There was an error.",
-          title: ":(",
-          type:'error'
-        }
-      })
+      sweetAlert(
+        ":(",
+        "There was an error.",
+        "error"
+      )
     })
   }
 
@@ -296,19 +279,11 @@ class Verification extends Component {
   }
 
   render() {
-    let {sweetAlertModal} = this.state;
     return (
       <div id="verification">
         <div className="container">
           {this.state.isLoading ? this.renderLoader() : this.renderMainForm()}
         </div>
-        <SweetAlert
-          show={sweetAlertModal.visible}
-          title={sweetAlertModal.title}
-          text={sweetAlertModal.description}
-          type={sweetAlertModal.type}
-          onConfirm={this.closeModal}
-        />
       </div>
     )
   }
