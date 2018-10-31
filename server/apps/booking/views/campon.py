@@ -19,7 +19,16 @@ class CampOnView(APIView):
 
         camp_on_data = dict(request.data)
         camp_on_data["student"] = request.user.student.student_id
-        camp_on_data["start_time"] = datetime.datetime.now().now().replace(microsecond=0).time()
+
+        time = datetime.datetime.now().replace(microsecond=0)
+        discard = datetime.timedelta(minutes=time.minute % 10,
+                                     seconds=time.second,
+                                     microseconds=time.microsecond)
+        time -= discard
+        if discard >= datetime.timedelta(minutes=5):
+            time += datetime.timedelta(minutes=10)
+
+        camp_on_data["start_time"] = time.time()
         serializer = CampOnSerializer(data=camp_on_data)
 
         if not serializer.is_valid():
