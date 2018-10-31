@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import settings from '../../config/settings';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
+import BookingInfoModal from '../BookingInfoModal';
 import axios from 'axios';
 import {Button, Icon} from 'semantic-ui-react';
 
@@ -11,12 +12,14 @@ class Calendar extends Component {
   state = {
     roomsList: [],
     hoursList: [],
-    isBooking: false,
     selectedHour: "",
     selectedRoomName: "",
     selectedRoomId: "",
     selectedRoomCurrentBookings: [],
-    selectedDate: new Date()
+    selectedDate: new Date(),
+    selectedBooking: {},
+    bookingModal: false,
+    bookingInfoModal: false,
   };
 
   /************ REQUESTS *************/
@@ -38,8 +41,6 @@ class Calendar extends Component {
         params: params
       })
       .then((response) => {
-        console.log("BOOKINGS")
-        console.log(response.data)
         this.setState({bookings: response.data})
 
       })
@@ -68,8 +69,6 @@ class Calendar extends Component {
         params: params
       })
       .then((response) => {
-        console.log("CAMPONS")
-        console.log(response.data)
         this.setState({campOns: response.data}, () => {
           this.campOnToBooking();
         })
@@ -173,15 +172,17 @@ class Calendar extends Component {
     this.toggleBookingModal();
   }
 
-  // TODO: Handle click on an existing booking
-  handleClickBooking = (e) => {
-    console.log(e.target)
-    console.log
-    if (this.testCampOnPossible(e.target.getAttribute('data-start-time'), e.target.getAttribute('data-end-time'))) {
-      let id = e.target.getAttribute('data-id')
-      this.setState({selectedBookingId: id})
-      this.toggleBookingModal();
-    }
+  handleClickBooking = (booking) => {
+    let roomName = ""
+    this.state.roomsList.map((room) => {
+      if (room.id == booking.room) {
+        roomName = room.room_id
+        return
+      }
+    })
+    this.setState({selectedBooking: booking, selectedRoomName: roomName}, () => {
+      this.toggleBookingInfoModal();
+    })
   }
 
   handleClickNextDate = (e) => {
@@ -199,33 +200,22 @@ class Calendar extends Component {
   }
 
   /************ HELPER METHOD *************/
-
-  testCampOnPossible(start, end) {
-    let currentDate = new Date()
-    let currentHour = currentDate.getHours()
-    let currentMin = currentDate.getMinutes()
-    if (currentMin < 10) {
-      currentMin = `0${currentMin}`
-    }
-    currentDate = `${currentHour}${currentMin}00`
-    let startTime = start.replace(/:/g, '')
-    let endTime = end.replace(/:/g, '')
-    
-    if(currentDate < (parseInt(startTime) + 3000) || currentDate > parseInt(endTime)) {
-      return false
-    } else {
-      return true
-    }
-
+  
+  toggleBookingModal = () => {
+    this.setState({bookingModal: !this.state.bookingModal})
   }
 
-  toggleBookingModal = () => {
-    this.setState({isBooking: !this.state.isBooking})
+  toggleBookingInfoModal = () => {
+    this.setState({bookingInfoModal: !this.state.bookingInfoModal})
   }
 
   toggleBookingModalWithReservation = () => {
     //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on.
     //With reload, the view will come back to the current day.
+    window.location.reload();
+  }
+
+  toggleBookingInfoWithCampOn = () => {
     window.location.reload();
   }
 
@@ -405,7 +395,7 @@ class Calendar extends Component {
 
     bookings.forEach(booking => {
       bookingsDiv.push(
-        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} data-id={booking.id} data-start-time= {booking.start_time} data-end-time={booking.end_time} onClick={this.handleClickBooking}>
+        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} data-id={booking.id} data-start-time= {booking.start_time} data-end-time={booking.end_time} onClick={() => this.handleClickBooking(booking)}>
           {/* { !!booking.isCampOn ? <span>[CAMP ON]</span> : null }
           <div className="calendar__booking__booker">{booking.student} </div>
           <div className="calendar__booking__time">
@@ -433,7 +423,7 @@ class Calendar extends Component {
           {this.renderCells()}
         </div>
         <ReservationDetailsModal
-          show={this.state.isBooking}
+          show={this.state.bookingModal}
           selectedRoomId={this.state.selectedRoomId}
           selectedRoomName={this.state.selectedRoomName}
           selectedHour={this.state.selectedHour}
@@ -442,6 +432,14 @@ class Calendar extends Component {
           selectedBookingId={this.state.selectedBookingId}
           onClose={this.toggleBookingModal}
           onCloseWithReservation={this.toggleBookingModalWithReservation}
+        />
+
+        <BookingInfoModal
+          show={this.state.bookingInfoModal}
+          booking={this.state.selectedBooking}
+          selectedRoomName={this.state.selectedRoomName}
+          onClose={this.toggleBookingInfoModal}
+          onCloseWithCampOn={this.toggleBookingInfoWithCampOn}
         />
       </div>
     )
