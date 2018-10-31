@@ -2,7 +2,8 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab} from 'semantic-ui-react';
-import settings from '../../config/settings'
+import sweetAlert from 'sweetalert2';
+import settings from '../../config/settings';
 import {getTokenHeader} from '../../utils/requestHeaders';
 import {getMeRequest} from '../../utils/requestUser';
 import './ReservationDetailsModal.scss';
@@ -25,7 +26,6 @@ class ReservationDetailsModal extends Component {
       endDate: toDateInputValue(this.props.selectedDate)
     }
   }
-  sweetAlert = require('sweetalert2');
 
   generateHourOptions(minHour, maxHour) {
     let result = [];
@@ -150,17 +150,18 @@ class ReservationDetailsModal extends Component {
       withCredentials: true,
     })
     .then((response) => {
-      this.sweetAlert('Completed',
+      sweetAlert('Completed',
         `Room ${this.props.selectedRoomName} was successfuly booked.`,
-        'success')
-        .then((result) => {
-          if (result.value) {
-            this.closeModalWithReservation()
-          }
-        })
+        'success'
+      )
+      .then((result) => {
+        if (result.value) {
+          this.closeModalWithReservation()
+        }
+      })
     })
     .catch((error) => {
-      this.sweetAlert(
+      sweetAlert(
         'Reservation failed',
         error.response.data[0],
         'error'
@@ -198,26 +199,28 @@ class ReservationDetailsModal extends Component {
           });
           conflictsMessage = conflictsMessage + '</ul>'
         }
-        this.sweetAlert(
+        sweetAlert(
           'Completed',
           `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.<br/><div id="exception-dates">${conflictsMessage}</div>`,
-          'success')
-          .then((result) => {
-            if (result.value) {
-              this.closeModalWithReservation()
-            }
-          });
+          'success'
+        )
+        .then((result) => {
+          if (result.value) {
+            this.closeModalWithReservation()
+          }
+        });
       })
       .catch((error) => {
         if (error.message.includes('409')) {
-          this.sweetAlert({
+          sweetAlert({
             title: 'Reservation blocked',
             text: 'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
             type: 'warning',
             confirmButtonText: 'YES',
             cancelButtonText: 'NO',
             showCancelButton: true
-          }).then((response) => {
+          })
+          .then((response) => {
             if (response.value) {
               this.sendPostRequestRecurringBooking(headers, true);
             }
@@ -243,8 +246,8 @@ class ReservationDetailsModal extends Component {
         }
       }
     }
-    catch (err) {
-      this.sweetAlert('Reservation blocked', err.message, 'warning');
+    catch(err) {
+      sweetAlert('Reservation blocked', err.message, 'warning');
       return;
     }
 

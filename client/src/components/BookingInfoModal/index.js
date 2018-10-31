@@ -2,11 +2,13 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab} from 'semantic-ui-react';
-import settings from '../../config/settings'
+import sweetAlert from 'sweetalert2';
+import settings from '../../config/settings';
 import {getTokenHeader} from '../../utils/requestHeaders';
 import {getMeRequest} from '../../utils/requestUser';
 import './BookingInfoModal.scss';
 import {toDateInputValue} from '../../utils/dateFormatter';
+
 
 class BookingInfoModal extends Component {
   state = {
@@ -18,7 +20,6 @@ class BookingInfoModal extends Component {
     isRecurring: false,
     tabIndex: 0,
   }
-  sweetAlert = require('sweetalert2');
 
   generateHourOptions(maxHour) {
     let result = [];
@@ -110,20 +111,22 @@ class BookingInfoModal extends Component {
       withCredentials: true,
     })
     .then((response) => {
-      this.sweetAlert('Completed',
+      sweetAlert('Completed',
         `Room ${this.props.selectedRoomName} was successfuly booked.`,
-        'success')
-        .then((result) => {
-          if (result.value) {
-            this.closeModalWithCampOn()
-          }
-        })
+        'success'
+      )
+      .then((result) => {
+        if (result.value) {
+          this.closeModalWithCampOn()
+        }
+      })
     })
     .catch((error) => {
-      this.sweetAlert(
+      sweetAlert(
         'Reservation failed',
         error.response.data[0],
-        'error')
+        'error'
+      )
     })
   }
 
@@ -133,8 +136,8 @@ class BookingInfoModal extends Component {
       this.verifyEndTime();
       this.verifyReservationTimes();
     }
-    catch (err) {
-      this.sweetAlert('Camp on blocked', err.message, 'warning');
+    catch(err) {
+      sweetAlert('Camp on blocked', err.message, 'warning');
       return;
     }
 

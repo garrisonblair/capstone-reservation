@@ -6,6 +6,7 @@ import {Loader, Form, Input, Button, Icon, Step, Label} from 'semantic-ui-react'
 import {getTokenHeader} from '../../utils/requestHeaders';
 import SweetAlert from 'sweetalert2-react';
 
+
 class Verification extends Component {
   state = {
     password1: {
