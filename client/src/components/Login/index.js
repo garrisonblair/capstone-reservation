@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
-import axios from 'axios';
 import {Button, Form, Icon, Input} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
-import settings from '../../config/settings';
-import {getTokenHeader} from '../../utils/requestHeaders';
+import api from '../../utils/api';
 import './Login.scss';
 import {Link} from 'react-router-dom';
 
@@ -26,15 +24,8 @@ class Login extends Component {
   handleLogin = () => {
     const {history} = this.props;
     const {username, password} = this.state;
-    let data = {
-      username,
-      password
-    }
-    axios({
-      method: 'POST',
-      url: `${settings.API_ROOT}/login`,
-      data: data
-    })
+
+    api.login(username, password)
     .then((response) =>
       response.data
     )

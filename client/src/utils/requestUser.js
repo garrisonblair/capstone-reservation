@@ -1,6 +1,6 @@
-import {getTokenHeader} from './requestHeaders';
 import axios from 'axios';
 import settings from '../config/settings';
+import {getTokenHeader} from './requestHeaders';
 
 export function getMeRequest(headers) {
 
