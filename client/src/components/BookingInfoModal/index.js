@@ -100,7 +100,7 @@ class BookingInfoModal extends Component {
     
     const data = {
       "camped_on_booking": booking.id,
-      "end_time": `${this.state.endHour}:${this.state.endMinute}:00`
+      "end_time": `${this.state.endHour}:${this.state.endMinute}`
     };
     axios({
       method: 'POST',
