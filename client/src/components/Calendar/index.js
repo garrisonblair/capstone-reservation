@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import settings from '../../config/settings';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
+import BookingInfoModal from '../BookingInfoModal';
 import axios from 'axios';
 import {Button, Icon} from 'semantic-ui-react';
 
@@ -11,11 +12,14 @@ class Calendar extends Component {
   state = {
     roomsList: [],
     hoursList: [],
-    isBooking: false,
     selectedHour: "",
     selectedRoomName: "",
     selectedRoomId: "",
-    selectedDate: new Date()
+    selectedRoomCurrentBookings: [],
+    selectedDate: new Date(),
+    selectedBooking: {},
+    bookingModal: false,
+    bookingInfoModal: false,
   };
 
   /************ REQUESTS *************/
@@ -38,6 +42,36 @@ class Calendar extends Component {
       })
       .then((response) => {
         this.setState({bookings: response.data})
+
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+      .then(function () {
+      });
+    }
+    this.getCampOns()
+  }
+
+  getCampOns() {
+    if(this.props.propsTestingCampOns) {
+      this.setState({campOns: this.props.propsTestingCampOns})
+    } else {
+      let params = {
+        year: this.state.selectedDate.getFullYear(),
+        month: this.state.selectedDate.getMonth() + 1,
+        day: this.state.selectedDate.getDate()
+      }
+  
+      axios({
+        method: 'GET',
+        url: `${settings.API_ROOT}/campon`,
+        params: params
+      })
+      .then((response) => {
+        this.setState({campOns: response.data}, () => {
+          this.campOnToBooking();
+        })
       })
       .catch(function (error) {
         console.log(error);
@@ -95,7 +129,12 @@ class Calendar extends Component {
     let bookingStart = this.timeStringToInt(booking.start_time);
     let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(hoursSettings.start);
-
+    let campOn = 1;
+    let color = 'yellow'
+    if (!!booking.isCampOn) {
+      campOn = 100;
+      color = 'orange'
+    }
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
     let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
     let rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
@@ -104,7 +143,9 @@ class Calendar extends Component {
       booking_style: {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
-        gridColumn: 1
+        gridColumn: 1,
+        zIndex: campOn,
+        backgroundColor: color
       }
     }
     return style;
@@ -116,18 +157,32 @@ class Calendar extends Component {
     let selectedRoomId = e.target.getAttribute('data-room-id');
     let selectedRoomName = e.target.getAttribute('data-room-name');
     let selectedHour = e.target.getAttribute('data-hour');
-
-    this.toggleBookingModal();
+    let selectedRoomCurrentBookings = []
+    this.state.bookings.map((booking) => {
+      if (booking.room == selectedRoomId) {
+        selectedRoomCurrentBookings.push(booking)
+      }
+    })
     this.setState({
       selectedHour: selectedHour,
       selectedRoomId: selectedRoomId,
-      selectedRoomName: selectedRoomName
+      selectedRoomName: selectedRoomName,
+      selectedRoomCurrentBookings: selectedRoomCurrentBookings
     });
+    this.toggleBookingModal();
   }
 
-  // TODO: Handle click on an existing booking
-  handleClickBooking = (e) => {
-    console.log(e)
+  handleClickBooking = (booking) => {
+    let roomName = ""
+    this.state.roomsList.map((room) => {
+      if (room.id == booking.room) {
+        roomName = room.room_id
+        return
+      }
+    })
+    this.setState({selectedBooking: booking, selectedRoomName: roomName}, () => {
+      this.toggleBookingInfoModal();
+    })
   }
 
   handleClickNextDate = (e) => {
@@ -145,14 +200,22 @@ class Calendar extends Component {
   }
 
   /************ HELPER METHOD *************/
-
+  
   toggleBookingModal = () => {
-    this.setState({isBooking: !this.state.isBooking})
+    this.setState({bookingModal: !this.state.bookingModal})
+  }
+
+  toggleBookingInfoModal = () => {
+    this.setState({bookingInfoModal: !this.state.bookingInfoModal})
   }
 
   toggleBookingModalWithReservation = () => {
     //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on.
     //With reload, the view will come back to the current day.
+    window.location.reload();
+  }
+
+  toggleBookingInfoWithCampOn = () => {
     window.location.reload();
   }
 
@@ -163,6 +226,40 @@ class Calendar extends Component {
       minutes: parseInt(tokens[1]),
     }
     return timeInt;
+  }
+
+  campOnToBooking = () => {
+    const {bookings, campOns} = this.state;
+    
+      let campOnBookings = []
+      if(!!campOns && !!bookings) {
+        campOns.map((campOn) => {
+          let date = ''
+          let room = ''
+          if(bookings) {
+            for(let i =0; i<bookings.length; i++) {
+              if(bookings[i].id == campOn.camped_on_booking) {
+                date = bookings[i].date
+                room = bookings[i].room
+                break
+              }
+            }
+          }
+          campOnBookings.push({
+            date: date,
+            start_time: campOn.start_time,
+            end_time: campOn.end_time,
+            student: campOn.student,
+            room: room,
+            id: `camp${campOn.camped_on_booking}`,
+            isCampOn: true
+          });
+        })
+        campOnBookings.map((campOnBooking) => {
+          bookings.push(campOnBooking)
+        })
+        this.setState({bookings: bookings})
+      }
   }
 
   /************* COMPONENT LIFE CYCLE *************/
@@ -298,12 +395,18 @@ class Calendar extends Component {
 
     bookings.forEach(booking => {
       bookingsDiv.push(
-        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} onClick={this.handleClickBooking}>
+        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} data-id={booking.id} data-start-time= {booking.start_time} data-end-time={booking.end_time} onClick={() => this.handleClickBooking(booking)}>
+          {/* { !!booking.isCampOn ? <span>[CAMP ON]</span> : null }
           <div className="calendar__booking__booker">{booking.student} </div>
           <div className="calendar__booking__time">
             <div>{booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time}</div>
             <div>{booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}</div>
-          </div>
+          </div> */}
+
+          {booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time} - {booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}
+          <br/>
+          { !!booking.isCampOn ? <span>[CAMP ON]<br/></span> : null }
+          <span>{booking.student}</span>
         </div>
       )
     });
@@ -320,13 +423,23 @@ class Calendar extends Component {
           {this.renderCells()}
         </div>
         <ReservationDetailsModal
-          show={this.state.isBooking}
+          show={this.state.bookingModal}
           selectedRoomId={this.state.selectedRoomId}
           selectedRoomName={this.state.selectedRoomName}
           selectedHour={this.state.selectedHour}
           selectedDate={this.state.selectedDate}
+          selectedRoomCurrentBookings={this.state.selectedRoomCurrentBookings}
+          selectedBookingId={this.state.selectedBookingId}
           onClose={this.toggleBookingModal}
           onCloseWithReservation={this.toggleBookingModalWithReservation}
+        />
+
+        <BookingInfoModal
+          show={this.state.bookingInfoModal}
+          booking={this.state.selectedBooking}
+          selectedRoomName={this.state.selectedRoomName}
+          onClose={this.toggleBookingInfoModal}
+          onCloseWithCampOn={this.toggleBookingInfoWithCampOn}
         />
       </div>
     )

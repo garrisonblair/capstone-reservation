@@ -4,12 +4,10 @@ from apps.booking.models.CampOn import CampOn
 from apps.accounts.models.Student import Student
 from apps.rooms.models.Room import Room
 from datetime import datetime, timedelta
-import re
 from django.core.exceptions import ValidationError
 
 
 class TestCampOn(TestCase):
-
     def setUp(self):
         # Setup one Student
         sid = '12345678'
@@ -33,7 +31,7 @@ class TestCampOn(TestCase):
         self.room.save()
 
         # Setup one Date and Time
-        self.date = datetime.now().strftime("%Y-%m-%d")
+        self.date = datetime.now().today().date()
         self.start_time = datetime.strptime("12:00", "%H:%M").time()
         self.end_time = datetime.strptime("14:00", "%H:%M").time()
 
@@ -49,22 +47,22 @@ class TestCampOn(TestCase):
         # Get the current time
 
         # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
-        campon_start_time = datetime.strptime("12:15", "%H:%M").time()
-        campon = CampOn(student=self.campStudent,
-                        booking=self.booking,
-                        start_time=campon_start_time,
-                        end_time=self.end_time)
-        campon.save()
-        read_campon = CampOn.objects.get(student=self.campStudent,
-                                         booking=self.booking,
-                                         start_time=campon_start_time,
-                                         end_time=self.end_time)
-        self.assertEqual(read_campon, campon)
+        camp_on_start_time = datetime.strptime("12:15", "%H:%M").time()
+        camp_on = CampOn.objects.create(student=self.campStudent,
+                                        camped_on_booking=self.booking,
+                                        start_time=camp_on_start_time,
+                                        end_time=self.end_time)
+
+        read_camp_on = CampOn.objects.get(student=self.campStudent,
+                                          camped_on_booking=self.booking,
+                                          start_time=camp_on_start_time,
+                                          end_time=self.end_time)
+        self.assertEqual(read_camp_on, camp_on)
         self.assertEqual(len(CampOn.objects.all()), 1)
 
     def testCampOnNotToday(self):
         # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
-        campon_start_time = datetime.strptime("12:15", "%H:%M").time()
+        camp_on_start_time = datetime.strptime("12:15", "%H:%M").time()
 
         yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         yesterday_booking = Booking(student=self.student,
@@ -73,93 +71,87 @@ class TestCampOn(TestCase):
                                     start_time=self.start_time,
                                     end_time=self.end_time)
         yesterday_booking.save()
-        campon = CampOn(student=self.campStudent,
-                        booking=yesterday_booking,
-                        start_time=campon_start_time,
-                        end_time=self.end_time)
-        with self.assertRaises(ValidationError) as ex:
-            campon.save()
+
+        with self.assertRaises(ValidationError):
+            CampOn.objects.create(student=self.campStudent,
+                                  camped_on_booking=yesterday_booking,
+                                  start_time=camp_on_start_time,
+                                  end_time=self.end_time)
         self.assertEqual(len(CampOn.objects.all()), 0)
 
-    def testCamponEndTimeSmallerThanStartTime(self):
+    def testCampOnEndTimeSmallerThanStartTime(self):
         # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
-        campon_start_time = datetime.strptime("12:15", "%H:%M").time()
-        campon_end_time = datetime.strptime("11:00", "%H:%M").time()
+        camp_on_start_time = datetime.strptime("12:15", "%H:%M").time()
+        camp_on_end_time = datetime.strptime("11:00", "%H:%M").time()
 
-        campon = CampOn(student=self.campStudent,
-                        booking=self.booking,
-                        start_time=campon_start_time,
-                        end_time=campon_end_time)
-        with self.assertRaises(ValidationError) as ex:
-            campon.save()
+        with self.assertRaises(ValidationError):
+            CampOn.objects.create(student=self.campStudent,
+                                  camped_on_booking=self.booking,
+                                  start_time=camp_on_start_time,
+                                  end_time=camp_on_end_time)
         self.assertEqual(len(CampOn.objects.all()), 0)
 
     def testCampOnSameStudentOnSameBooking(self):
         # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
-        campon_start_time = datetime.strptime("12:15", "%H:%M").time()
-        campon = CampOn(student=self.campStudent,
-                        booking=self.booking,
-                        start_time=campon_start_time,
-                        end_time=self.end_time)
-        campon.save()
+        camp_on_start_time = datetime.strptime("12:15", "%H:%M").time()
+        CampOn.objects.create(student=self.campStudent,
+                              camped_on_booking=self.booking,
+                              start_time=camp_on_start_time,
+                              end_time=self.end_time)
 
-        campon_start_time = datetime.strptime("12:30", "%H:%M").time()
-        campon = CampOn(student=self.campStudent,
-                        booking=self.booking,
-                        start_time=campon_start_time,
-                        end_time=self.end_time)
-        with self.assertRaises(ValidationError) as ex:
-            campon.save()
+        camp_on_start_time = datetime.strptime("12:30", "%H:%M").time()
+
+        with self.assertRaises(ValidationError):
+            CampOn.objects.create(student=self.campStudent,
+                                  camped_on_booking=self.booking,
+                                  start_time=camp_on_start_time,
+                                  end_time=self.end_time)
         self.assertEqual(len(CampOn.objects.all()), 1)
 
-    def testCamponStartTimeEarlierThanBooking(self):
+    def testCampOnStartTimeEarlierThanBooking(self):
         # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
-        campon_start_time = datetime.strptime("11:00", "%H:%M").time()
-        campon_end_time = datetime.strptime("13:00", "%H:%M").time()
+        camp_on_start_time = datetime.strptime("11:00", "%H:%M").time()
+        camp_on_end_time = datetime.strptime("13:00", "%H:%M").time()
 
-        campon = CampOn(student=self.campStudent,
-                        booking=self.booking,
-                        start_time=campon_start_time,
-                        end_time=campon_end_time)
-        with self.assertRaises(ValidationError) as ex:
-            campon.save()
+        with self.assertRaises(ValidationError):
+            CampOn.objects.create(student=self.campStudent,
+                                  camped_on_booking=self.booking,
+                                  start_time=camp_on_start_time,
+                                  end_time=camp_on_end_time)
         self.assertEqual(len(CampOn.objects.all()), 0)
 
-    def testCamponStartTimeLaterThanBooking(self):
+    def testCampOnStartTimeLaterThanBooking(self):
         # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
-        campon_start_time = datetime.strptime("14:15", "%H:%M").time()
-        campon_end_time = datetime.strptime("15:00", "%H:%M").time()
+        camp_on_start_time = datetime.strptime("14:15", "%H:%M").time()
+        camp_on_end_time = datetime.strptime("15:00", "%H:%M").time()
 
-        campon = CampOn(student=self.campStudent,
-                        booking=self.booking,
-                        start_time=campon_start_time,
-                        end_time=campon_end_time)
-        with self.assertRaises(ValidationError) as ex:
-            campon.save()
+        with self.assertRaises(ValidationError):
+            CampOn.objects.create(student=self.campStudent,
+                                  camped_on_booking=self.booking,
+                                  start_time=camp_on_start_time,
+                                  end_time=camp_on_end_time)
         self.assertEqual(len(CampOn.objects.all()), 0)
 
-    def testCamponEndTimeLaterThan23PM(self):
+    def testCampOnEndTimeLaterThan23PM(self):
         # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
-        campon_start_time = datetime.strptime("13:00", "%H:%M").time()
-        campon_end_time = datetime.strptime("23:05", "%H:%M").time()
+        camp_on_start_time = datetime.strptime("13:00", "%H:%M").time()
+        camp_on_end_time = datetime.strptime("23:05", "%H:%M").time()
 
-        campon = CampOn(student=self.campStudent,
-                        booking=self.booking,
-                        start_time=campon_start_time,
-                        end_time=campon_end_time)
-        with self.assertRaises(ValidationError) as ex:
-            campon.save()
+        with self.assertRaises(ValidationError):
+            CampOn.objects.create(student=self.campStudent,
+                                  camped_on_booking=self.booking,
+                                  start_time=camp_on_start_time,
+                                  end_time=camp_on_end_time)
         self.assertEqual(len(CampOn.objects.all()), 0)
 
-    def testCamponEndTimeEarlierThan8AM(self):
+    def testCampOnEndTimeEarlierThan8AM(self):
         # Fake the start time other than current time. Otherwise, the test will fail if it runs between 23:00-00:00
-        campon_start_time = datetime.strptime("13:00", "%H:%M").time()
-        campon_end_time = datetime.strptime("1:05", "%H:%M").time()
+        camp_on_start_time = datetime.strptime("13:00", "%H:%M").time()
+        camp_on_end_time = datetime.strptime("1:05", "%H:%M").time()
 
-        campon = CampOn(student=self.campStudent,
-                        booking=self.booking,
-                        start_time=campon_start_time,
-                        end_time=campon_end_time)
-        with self.assertRaises(ValidationError) as ex:
-            campon.save()
+        with self.assertRaises(ValidationError):
+            CampOn.objects.create(student=self.campStudent,
+                                  camped_on_booking=self.booking,
+                                  start_time=camp_on_start_time,
+                                  end_time=camp_on_end_time)
         self.assertEqual(len(CampOn.objects.all()), 0)
