@@ -114,19 +114,6 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  verifyCampOn(startTime) {
-    let currentStartTime = parseFloat(startTime.replace(/:/g, ""))
-    let bookingId = -1
-    this.props.selectedRoomCurrentBookings.map((booking) => {
-      let bookingStartTime = parseFloat(booking.start_time.replace(/:/g, ""))
-      let bookingEndTime = parseFloat(booking.end_time.replace(/:/g, ""))
-      if (currentStartTime >= bookingStartTime && currentStartTime < bookingEndTime){
-        bookingId = booking.id
-      }
-    })
-    return bookingId
-  }
-
   handleTabChange = (e, {activeIndex}) => {
     this.setState({tabIndex: activeIndex})
   }
@@ -147,66 +134,16 @@ class ReservationDetailsModal extends Component {
     let tzoffset = (this.props.selectedDate).getTimezoneOffset() * 60000;
     let date = new Date(this.props.selectedDate - tzoffset);
     let localISOTime = date.toISOString().slice(0, -1);
-    let bookingId = this.verifyCampOn(`${this.state.startHour}:${this.state.startMinute}:00`);
     
-    if (bookingId == -1) {
-      const data = {
-        "room": this.props.selectedRoomId,
-        "date": localISOTime.slice(0, 10),
-        "start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
-        "end_time": `${this.state.endHour}:${this.state.endMinute}:00`
-      };
-      axios({
-        method: 'POST',
-        url: `${settings.API_ROOT}/booking`,
-        headers,
-        data,
-        withCredentials: true,
-      })
-        .then((response) => {
-          this.sweetAlert('Completed',
-            `Room ${this.props.selectedRoomName} was successfuly booked.`,
-            'success')
-            .then((result) => {
-              if (result.value) {
-                this.closeModalWithReservation()
-              }
-            })
-        })
-        .catch((error) => {
-          this.sweetAlert(
-            'Reservation failed',
-            'We are sorry, this reservation overlaps with other reservations. Try different times.',
-            'error')
-        })
-    } else {
-      this.sweetAlert({
-        title: "Overlap detected",
-        text: "Your reservation is overlapping with an existing one. Do you want to camp-on?",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonClass: "btn-danger",
-        confirmButtonText: "Camp-on"
-      }).then((result) => {
-        if (result.value) {
-          const data = {
-            "room": this.props.selectedRoomId,
-            "date": localISOTime.slice(0, 10),
-            "start_time": `${this.state.startHour}:${this.state.startMinute}`,
-            "end_time": `${this.state.endHour}:${this.state.endMinute}`,
-            "booking": bookingId
-          };
-          this.sendPostRequestCampOn(headers, data);
-        }
-      })
-    }
-  }
-
-  sendPostRequestCampOn = (headers, data) => {
-    console.log(data)
+    const data = {
+      "room": this.props.selectedRoomId,
+      "date": localISOTime.slice(0, 10),
+      "start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
+      "end_time": `${this.state.endHour}:${this.state.endMinute}:00`
+    };
     axios({
       method: 'POST',
-      url: `${settings.API_ROOT}/campon`,
+      url: `${settings.API_ROOT}/booking`,
       headers,
       data,
       withCredentials: true,
@@ -222,10 +159,10 @@ class ReservationDetailsModal extends Component {
           })
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error.message)
         this.sweetAlert(
           'Reservation failed',
-          'We are sorry, there was a problem with the server. Please try again.',
+          'We are sorry, this reservation overlaps with other reservations. Try different times.',
           'error')
       })
   }
