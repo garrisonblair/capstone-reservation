@@ -1,10 +1,8 @@
-import axios from 'axios';
-import settings from '../../config/settings';
 import React, {Component} from 'react';
-import './Verification.scss';
-import {Loader, Form, Input, Button, Icon, Step, Label} from 'semantic-ui-react'
-import {getTokenHeader} from '../../utils/requestHeaders';
+import {Loader, Form, Input, Button, Icon, Step, Label} from 'semantic-ui-react';
+import api from '../../utils/api';
 import SweetAlert from 'sweetalert2-react';
+import './Verification.scss';
 
 
 class Verification extends Component {
@@ -34,45 +32,40 @@ class Verification extends Component {
       type:'error'
     }
   }
-  componentWillMount() {
+
+  componentDidMount() {
     //This props value is for testing.
     if(this.props.showFormForTesting){
       this.setState({isLoading:false})
     }
     const {token} = this.props.match.params;
     if (token) {
-      const data = {"token": `${token}`}
-      axios({
-        method: 'POST',
-        url: `${settings.API_ROOT}/verify`,
-        data: data
+      api.verify(token)
+      .then((response) => {
+        this.setState({
+          isLoading: false,
+          firstName: response.data.first_name,
+          userId: response.data.id
+        });
+        localStorage.setItem('CapstoneReservationUser', JSON.stringify(response.data));
       })
-        .then((response) => {
-          this.setState({
-            isLoading: false,
-            firstName: response.data.first_name,
-            userId: response.data.id
-          });
-          const localStorageObject = {
-            "token": response.data.token
-          };
-          localStorage.setItem('CapstoneReservationUser', JSON.stringify(localStorageObject));
+      .catch((error) => {
+        this.setState({
+          sweetAlertModal: {
+            visible: true,
+            description: "something happened",
+            title: ":(",
+            type:'error'
+          }
         })
-        .catch((error) => {
-          this.setState({
-            sweetAlertModal: {
-              visible: true,
-              description: "something happened",
-              title: ":(",
-              type:'error'
-            }
-          })
-        })
+      })
     }
   }
+
   closeModal = () => {
     this.props.history.push('/');
   }
+
   handleChangePassword1 = (event) => {
     this.setState({
       password1: {
@@ -82,6 +75,7 @@ class Verification extends Component {
       }
     })
   }
+
   handleChangePassword2 = (event) => {
     this.setState({
       password2: {
@@ -182,40 +176,35 @@ class Verification extends Component {
     }
 
     let {studentId, userId} = this.state;
-    const headers = getTokenHeader();
     const password = this.state.password1.value;
     const data = {
       "student_id": `${studentId.value}`,
       "password": `${password}`
     }
 
-    axios({
-      method: 'PATCH',
-      url: `${settings.API_ROOT}/user/${userId}`,
-      headers,
-      data: data
+    api.updateUser(userId, data)
+    .then((response) => {
+      this.setState({
+        sweetAlertModal: {
+          visible: true,
+          description: "Settings recorded successfuly",
+          title: "Settings",
+          type:'success'
+        }
+      })
     })
-      .then((response) => {
-        this.setState({
-          sweetAlertModal: {
-            visible: true,
-            description: "Settings recorded successfuly",
-            title: "Settings",
-            type:'success'
-          }
-        })
+    .catch((error) => {
+      this.setState({
+        sweetAlertModal: {
+          visible: true,
+          description: "There was an error.",
+          title: ":(",
+          type:'error'
+        }
       })
-      .catch((error) => {
-        this.setState({
-          sweetAlertModal: {
-            visible: true,
-            description: "There was an error.",
-            title: ":(",
-            type:'error'
-          }
-        })
-      })
+    })
   }
+
   renderInputErrorMessage(input) {
     if (input.showErrorMessage) {
       return (
