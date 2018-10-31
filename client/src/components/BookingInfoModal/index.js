@@ -97,7 +97,7 @@ class BookingInfoModal extends Component {
 
   sendPostRequestCampOn = (headers) => {
     const {booking} = this.props;
-    
+
     const data = {
       "camped_on_booking": booking.id,
       "end_time": `${this.state.endHour}:${this.state.endMinute}`
@@ -109,22 +109,22 @@ class BookingInfoModal extends Component {
       data,
       withCredentials: true,
     })
-      .then((response) => {
-        this.sweetAlert('Completed',
-          `Room ${this.props.selectedRoomName} was successfuly booked.`,
-          'success')
-          .then((result) => {
-            if (result.value) {
-              this.closeModalWithCampOn()
-            }
-          })
-      })
-      .catch((error) => {
-        this.sweetAlert(
-          'Reservation failed',
-          'We are sorry, there was a problem with the server. Please try again.',
-          'error')
-      })
+    .then((response) => {
+      this.sweetAlert('Completed',
+        `Room ${this.props.selectedRoomName} was successfuly booked.`,
+        'success')
+        .then((result) => {
+          if (result.value) {
+            this.closeModalWithCampOn()
+          }
+        })
+    })
+    .catch((error) => {
+      this.sweetAlert(
+        'Reservation failed',
+        error.response.data[0],
+        'error')
+    })
   }
 
   handleSubmit = () => {
@@ -176,7 +176,7 @@ class BookingInfoModal extends Component {
       if(currentTime < bookingEndTime) {
         camponPossible = true;
       }
-    }    
+    }
 
     return (
       <Modal.Content>
@@ -219,7 +219,7 @@ class BookingInfoModal extends Component {
       <div>
         <div className="modal-description">
           <h3 className="header--inline">
-            <span>Camp on until  </span> 
+            <span>Camp on until  </span>
           </h3>
           <Dropdown
             selection

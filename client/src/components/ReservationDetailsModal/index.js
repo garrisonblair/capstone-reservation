@@ -8,6 +8,7 @@ import {getMeRequest} from '../../utils/requestUser';
 import './ReservationDetailsModal.scss';
 import {toDateInputValue} from '../../utils/dateFormatter';
 
+
 class ReservationDetailsModal extends Component {
   state = {
     show: false,
@@ -134,7 +135,7 @@ class ReservationDetailsModal extends Component {
     let tzoffset = (this.props.selectedDate).getTimezoneOffset() * 60000;
     let date = new Date(this.props.selectedDate - tzoffset);
     let localISOTime = date.toISOString().slice(0, -1);
-    
+
     const data = {
       "room": this.props.selectedRoomId,
       "date": localISOTime.slice(0, 10),
@@ -148,23 +149,23 @@ class ReservationDetailsModal extends Component {
       data,
       withCredentials: true,
     })
-      .then((response) => {
-        this.sweetAlert('Completed',
-          `Room ${this.props.selectedRoomName} was successfuly booked.`,
-          'success')
-          .then((result) => {
-            if (result.value) {
-              this.closeModalWithReservation()
-            }
-          })
-      })
-      .catch((error) => {
-        console.log(error.message)
-        this.sweetAlert(
-          'Reservation failed',
-          'We are sorry, this reservation overlaps with other reservations. Try different times.',
-          'error')
-      })
+    .then((response) => {
+      this.sweetAlert('Completed',
+        `Room ${this.props.selectedRoomName} was successfuly booked.`,
+        'success')
+        .then((result) => {
+          if (result.value) {
+            this.closeModalWithReservation()
+          }
+        })
+    })
+    .catch((error) => {
+      this.sweetAlert(
+        'Reservation failed',
+        error.response.data[0],
+        'error'
+      )
+    })
   }
 
   sendPostRequestRecurringBooking = (headers, skipConflicts) => {
@@ -188,41 +189,41 @@ class ReservationDetailsModal extends Component {
         data,
         withCredentials: true,
       })
-        .then((response) => {
-          let conflictsMessage = '';
-          if (response.data.length > 0) {
-            conflictsMessage = 'Except for:<ul>'
-            response.data.map((date) => {
-              conflictsMessage = conflictsMessage + `<li>${date}</li>`;
-            });
-            conflictsMessage = conflictsMessage + '</ul>'
-          }
-          this.sweetAlert(
-            'Completed',
-            `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.<br/><div id="exception-dates">${conflictsMessage}</div>`,
-            'success')
-            .then((result) => {
-              if (result.value) {
-                this.closeModalWithReservation()
-              }
-            });
-        })
-        .catch((error) => {
-          if (error.message.includes('409')) {
-            this.sweetAlert({
-              title: 'Reservation blocked',
-              text: 'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
-              type: 'warning',
-              confirmButtonText: 'YES',
-              cancelButtonText: 'NO',
-              showCancelButton: true
-            }).then((response) => {
-              if (response.value) {
-                this.sendPostRequestRecurringBooking(headers, true);
-              }
-            })
-          }
-        })
+      .then((response) => {
+        let conflictsMessage = '';
+        if (response.data.length > 0) {
+          conflictsMessage = 'Except for:<ul>'
+          response.data.map((date) => {
+            conflictsMessage = conflictsMessage + `<li>${date}</li>`;
+          });
+          conflictsMessage = conflictsMessage + '</ul>'
+        }
+        this.sweetAlert(
+          'Completed',
+          `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.<br/><div id="exception-dates">${conflictsMessage}</div>`,
+          'success')
+          .then((result) => {
+            if (result.value) {
+              this.closeModalWithReservation()
+            }
+          });
+      })
+      .catch((error) => {
+        if (error.message.includes('409')) {
+          this.sweetAlert({
+            title: 'Reservation blocked',
+            text: 'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
+            type: 'warning',
+            confirmButtonText: 'YES',
+            cancelButtonText: 'NO',
+            showCancelButton: true
+          }).then((response) => {
+            if (response.value) {
+              this.sendPostRequestRecurringBooking(headers, true);
+            }
+          })
+        }
+      })
     })
   }
 
