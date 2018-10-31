@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Loader, Form, Input, Button, Icon, Step, Label} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import {Loader, Form, Button, Icon, Step} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
 import CustomFormInput from './CustomFormInput';
@@ -240,6 +241,10 @@ class Verification extends Component {
       </div>
     )
   }
+}
+
+Verification.propTypes = {
+  showFormForTesting: PropTypes.bool
 }
 
 export default Verification;
