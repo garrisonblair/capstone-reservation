@@ -1,9 +1,8 @@
-import axios from 'axios';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Form, Input, Button, Icon, Step, Loader} from 'semantic-ui-react';
-import settings from '../../config/settings';
 import sweetAlert from 'sweetalert2';
+import api from '../../utils/api';
 import './Registration.scss';
 
 
@@ -38,49 +37,45 @@ class Registration extends Component {
   }
 
   sendEmail = () => {
+    const {encsUsername} = this.state
+
     this.setState({showLoader: true})
-    const data = {"username": `${this.state.encsUsername}`};
-    console.log(data);
-    axios({
-      method: 'POST',
-      url: `${settings.API_ROOT}/register`,
-      data: data
+
+    api.register(encsUsername)
+    .then((response) => {
+      if (response.status == 201) {
+        this.setState({
+          showLoader: false
+        })
+        sweetAlert(
+          'A verification link has been sent to your ENCS email account.',
+          'Please click on the link to continue the registration process.',
+          'success'
+        )
+      }
     })
-      .then((response) => {
-        if (response.status == 201) {
-          this.setState({
-            showLoader: false
-          })
-          sweetAlert(
-            'A verification link has been sent to your ENCS email account.',
-            'Please click on the link to continue the registration process.',
-            'success'
-          )
-        }
-      })
-      .catch((error) => {
-        this.setState({showLoader: false})
-        if (error.message.includes('302')) {
-          this.setState({
-            showModal: true
-          })
-          sweetAlert(
-            'You are already registered',
-            'A verification email has already been sent to your ENCS email. Please double check.',
-            'warning',
-          )
-        }
-        else if (error.message.includes('400')) {
-          this.setState({
-            showModal: true
-          })
-          sweetAlert(
-            'Error',
-            "We couldn't find this user in the system.",
-            'error'
-          )
-        }
-      })
+    .catch((error) => {
+      this.setState({showLoader: false})
+      if (error.message.includes('302')) {
+        this.setState({
+          showModal: true
+        })
+        sweetAlert(
+          'You are already registered',
+          'A verification email has already been sent to your ENCS email. Please double check.',
+          'warning',
+        )
+      } else if (error.message.includes('400')) {
+        this.setState({
+          showModal: true
+        })
+        sweetAlert(
+          'Error',
+          "We couldn't find this user in the system.",
+          'error'
+        )
+      }
+    })
   }
 
   renderLoader() {
