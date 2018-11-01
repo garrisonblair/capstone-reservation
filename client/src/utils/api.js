@@ -49,6 +49,7 @@ function updateUser(id, data) {
 }
 
 const api = {
+  register,
   login,
   verify,
   updateUser
