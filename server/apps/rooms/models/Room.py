@@ -1,10 +1,12 @@
 from django.db import models
 
 from django.db.models import Q
-from django.core.exceptions import ValidationError
-import datetime
 
-from apps.util.SubjectModel import SubjectModel
+# Add room #21
+# Modify Room #22
+# Delete Room #23
+
+
 
 
 class RoomManager(models.Manager):
@@ -42,9 +44,6 @@ class Room(models.Model):
 
         return this
 
-    def validate_model(self):
-        pass
-
     def modify_room_id(self, room_id):
         self.room_id = room_id
         self.save()
@@ -56,8 +55,5 @@ class Room(models.Model):
     def modify_number_of_computers(self, number_of_computers):
         self.number_of_computers = number_of_computers
         self.save()
-
-    def delete_room(self):
-        self.delete()
 
 
