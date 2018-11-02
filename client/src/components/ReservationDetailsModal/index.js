@@ -155,9 +155,7 @@ class ReservationDetailsModal extends Component {
         'success'
       )
       .then((result) => {
-        if (result.value) {
-          this.closeModalWithReservation()
-        }
+        this.closeModalWithReservation()
       })
     })
     .catch((error) => {
@@ -205,9 +203,7 @@ class ReservationDetailsModal extends Component {
           'success'
         )
         .then((result) => {
-          if (result.value) {
-            this.closeModalWithReservation()
-          }
+          this.closeModalWithReservation()
         });
       })
       .catch((error) => {
