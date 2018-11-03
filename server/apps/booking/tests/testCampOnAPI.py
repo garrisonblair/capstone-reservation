@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
 
-from apps.accounts.models.Student import Student
+from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 from ..models.CampOn import CampOn
@@ -19,9 +19,9 @@ class CampOnAPITest(TestCase):
     def setUp(self):
         # Setup one Booking
         sid = '12345678'
-        self.student = Student(student_id=sid)
-        self.student.user = None
-        self.student.save()
+        self.booker = Booker(booker_id=sid)
+        self.booker.user = None
+        self.booker.save()
 
         rid = "H800-1"
         capacity = 7
@@ -35,7 +35,7 @@ class CampOnAPITest(TestCase):
         self.start_time = datetime.datetime.strptime("12:00", "%H:%M").time()
         self.end_time = datetime.datetime.strptime("14:00", "%H:%M").time()
 
-        self.booking = Booking(student=self.student,
+        self.booking = Booking(booker=self.booker,
                                room=self.room,
                                date=self.date,
                                start_time=self.start_time,
@@ -49,10 +49,10 @@ class CampOnAPITest(TestCase):
                                              password='kingmask')
         self.user.save()
 
-        # Setup one student for the user
-        self.student = Student(student_id="sol_ji")
-        self.student.user = self.user
-        self.student.save()
+        # Setup one booker for the user
+        self.booker = Booker(booker_id="sol_ji")
+        self.booker.user = self.user
+        self.booker.save()
 
     # CampOn start time should be the current time. However,
     # the current time cannot be used in the test, otherwise, the test will fail if it runs at invalid period
@@ -78,7 +78,7 @@ class CampOnAPITest(TestCase):
 
         # Verify the content of the created CampOn
         created_camp_on = CampOn.objects.last()
-        self.assertEqual(created_camp_on.student, Student.objects.get(student_id='sol_ji'))
+        self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
         self.assertEqual(created_camp_on.booking, Booking.objects.get(id=1))
         self.assertEqual(created_camp_on.start_time, datetime.time(12, 20))
         self.assertEqual(created_camp_on.end_time, datetime.time(14, 00))
@@ -102,7 +102,7 @@ class CampOnAPITest(TestCase):
 
         # Verify the content of the created CampOn
         created_camp_on = CampOn.objects.last()
-        self.assertEqual(created_camp_on.student, Student.objects.get(student_id='sol_ji'))
+        self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
         self.assertEqual(created_camp_on.booking, Booking.objects.get(id=1))
         self.assertEqual(created_camp_on.start_time, datetime.time(12, 20))
         self.assertEqual(created_camp_on.end_time, datetime.time(14, 00))
@@ -112,7 +112,7 @@ class CampOnAPITest(TestCase):
 
         # Verify the content of the created Booking
         created_booking = Booking.objects.last()
-        self.assertEqual(created_booking.student, Student.objects.get(student_id='sol_ji'))
+        self.assertEqual(created_booking.booker, Booker.objects.get(booker_id='sol_ji'))
         self.assertEqual(created_booking.room, Room.objects.get(room_id="H800-1"))
         self.assertEqual(created_booking.date, datetime.datetime.now().date())
         self.assertEqual(created_booking.start_time, datetime.time(14, 00))
@@ -122,7 +122,7 @@ class CampOnAPITest(TestCase):
     def testCreateCampOnTwoBooking(self):
         # Setup a second Booking right after the first one
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
-        second_booking = Booking(student=self.student,
+        second_booking = Booking(booker=self.booker,
                                  room=self.room,
                                  date=self.date,
                                  start_time=self.end_time,
@@ -146,7 +146,7 @@ class CampOnAPITest(TestCase):
 
         # Verify the content of the created CampOn
         created_camp_on = CampOn.objects.first()
-        self.assertEqual(created_camp_on.student, Student.objects.get(student_id='sol_ji'))
+        self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
         self.assertEqual(created_camp_on.booking, Booking.objects.get(id=1))
         self.assertEqual(created_camp_on.start_time, datetime.time(12, 20))
         self.assertEqual(created_camp_on.end_time, datetime.time(14, 00))
@@ -220,7 +220,7 @@ class CampOnAPITest(TestCase):
     def testGetOneCampOnById(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
-        second_booking = Booking(student=self.student,
+        second_booking = Booking(booker=self.booker,
                                  room=self.room,
                                  date=self.date,
                                  start_time=self.end_time,
@@ -230,14 +230,14 @@ class CampOnAPITest(TestCase):
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        camp_on_1 = CampOn(student=self.student,
+        camp_on_1 = CampOn(booker=self.booker,
                            camped_on_booking=self.booking,
                            start_time=start_time_1,
                            end_time=end_time_1)
         camp_on_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        camp_on_2 = CampOn(student=self.student,
+        camp_on_2 = CampOn(booker=self.booker,
                            camped_on_booking=second_booking,
                            start_time=start_time_2,
                            end_time=end_time_2)
@@ -259,7 +259,7 @@ class CampOnAPITest(TestCase):
     def testGetCampOnByBooking(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
-        second_booking = Booking(student=self.student,
+        second_booking = Booking(booker=self.booker,
                                  room=self.room,
                                  date=self.date,
                                  start_time=self.end_time,
@@ -269,14 +269,14 @@ class CampOnAPITest(TestCase):
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        camp_on_1 = CampOn(student=self.student,
+        camp_on_1 = CampOn(booker=self.booker,
                            camped_on_booking=self.booking,
                            start_time=start_time_1,
                            end_time=end_time_1)
         camp_on_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        camp_on_2 = CampOn(student=self.student,
+        camp_on_2 = CampOn(booker=self.booker,
                            camped_on_booking=second_booking,
                            start_time=start_time_2,
                            end_time=end_time_2)
@@ -298,7 +298,7 @@ class CampOnAPITest(TestCase):
     def testGetCampOnByBookingAndTime(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
-        second_booking = Booking(student=self.student,
+        second_booking = Booking(booker=self.booker,
                                  room=self.room,
                                  date=self.date,
                                  start_time=self.end_time,
@@ -308,14 +308,14 @@ class CampOnAPITest(TestCase):
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        camp_on_1 = CampOn(student=self.student,
+        camp_on_1 = CampOn(booker=self.booker,
                            camped_on_booking=self.booking,
                            start_time=start_time_1,
                            end_time=end_time_1)
         camp_on_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        camp_on_2 = CampOn(student=self.student,
+        camp_on_2 = CampOn(booker=self.booker,
                            camped_on_booking=second_booking,
                            start_time=start_time_2,
                            end_time=end_time_2)
@@ -339,7 +339,7 @@ class CampOnAPITest(TestCase):
     def testGetCampOnByTime(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
-        second_booking = Booking(student=self.student,
+        second_booking = Booking(booker=self.booker,
                                  room=self.room,
                                  date=self.date,
                                  start_time=self.end_time,
@@ -349,14 +349,14 @@ class CampOnAPITest(TestCase):
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        camp_on_1 = CampOn(student=self.student,
+        camp_on_1 = CampOn(booker=self.booker,
                            camped_on_booking=self.booking,
                            start_time=start_time_1,
                            end_time=end_time_1)
         camp_on_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        camp_on_2 = CampOn(student=self.student,
+        camp_on_2 = CampOn(booker=self.booker,
                            camped_on_booking=second_booking,
                            start_time=start_time_2,
                            end_time=end_time_2)
@@ -379,7 +379,7 @@ class CampOnAPITest(TestCase):
     def testGetAllCampOn(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
-        second_booking = Booking(student=self.student,
+        second_booking = Booking(booker=self.booker,
                                  room=self.room,
                                  date=self.date,
                                  start_time=self.end_time,
@@ -389,14 +389,14 @@ class CampOnAPITest(TestCase):
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        CampOn.objects.create(student=self.student,
+        CampOn.objects.create(booker=self.booker,
                               camped_on_booking=self.booking,
                               start_time=start_time_1,
                               end_time=end_time_1)
 
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        CampOn.objects.create(student=self.student,
+        CampOn.objects.create(booker=self.booker,
                               booking=second_booking,
                               start_time=start_time_2,
                               end_time=end_time_2)
@@ -417,7 +417,7 @@ class CampOnAPITest(TestCase):
     def testGetCampOnNotFound(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
-        second_booking = Booking(student=self.student,
+        second_booking = Booking(booker=self.booker,
                                  room=self.room,
                                  date=self.date,
                                  start_time=self.end_time,
@@ -427,14 +427,14 @@ class CampOnAPITest(TestCase):
         # Setup two CampOns
         start_time_1 = datetime.datetime.strptime("12:20", "%H:%M").time()
         end_time_1 = datetime.datetime.strptime("13:00", "%H:%M").time()
-        camp_on_1 = CampOn(student=self.student,
+        camp_on_1 = CampOn(booker=self.booker,
                            camped_on_booking=self.booking,
                            start_time=start_time_1,
                            end_time=end_time_1)
         camp_on_1.save()
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
-        camp_on_2 = CampOn(student=self.student,
+        camp_on_2 = CampOn(booker=self.booker,
                            camped_on_booking=second_booking,
                            start_time=start_time_2,
                            end_time=end_time_2)

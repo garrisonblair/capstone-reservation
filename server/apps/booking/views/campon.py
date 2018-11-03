@@ -14,11 +14,11 @@ class CampOnView(APIView):
     def post(self, request):
 
         # Must be logged in as student
-        if not request.user or not request.user.student:
+        if not request.user or not request.user.booker:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         camp_on_data = dict(request.data)
-        camp_on_data["student"] = request.user.student.student_id
+        camp_on_data["student"] = request.user.booker.booker_id
 
         time = datetime.datetime.now().replace(microsecond=0)
         discard = datetime.timedelta(minutes=time.minute % 10,
@@ -56,7 +56,7 @@ class CampOnView(APIView):
 
                 camp_on = new_camp_on_serializer.save()
 
-                new_booking = Booking(student=camp_on.student,
+                new_booking = Booking(booker=camp_on.booker,
                                       student_group=camp_on.camped_on_booking.student_group,
                                       room=camp_on.camped_on_booking.room,
                                       date=camp_on.camped_on_booking.date,

@@ -1,5 +1,5 @@
 from django.db import models
-from apps.accounts.models.Student import Student
+from apps.accounts.models.Booker import Booker
 from apps.groups.models.StudentGroup import StudentGroup
 from apps.rooms.models.Room import Room
 from apps.booking.models.RecurringBooking import RecurringBooking
@@ -11,9 +11,9 @@ from apps.util.SubjectModel import SubjectModel
 
 
 class BookingManager(models.Manager):
-    def create_booking(self, student, student_group, room, date, start_time, end_time, recurring_booking):
+    def create_booking(self, booker, student_group, room, date, start_time, end_time, recurring_booking):
         booking = self.create(
-            student=student,
+            booker=booker,
             student_group=student_group,
             room=room,
             date=date,
@@ -26,7 +26,7 @@ class BookingManager(models.Manager):
 
 
 class Booking(models.Model, SubjectModel):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    booker = models.ForeignKey(Booker, on_delete=models.CASCADE)
     student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE, blank=True, null=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     date = models.DateField()
@@ -54,8 +54,8 @@ class Booking(models.Model, SubjectModel):
         return this
 
     def __str__(self):
-        return 'Booking: {}, Student: {}, Room: {}, Date: {}, Start time: {}, End Time: {}'.format(
-            self.id, self.student.student_id, self.room.room_id, self.date, self.start_time, self.end_time
+        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}'.format(
+            self.id, self.booker.booker_id, self.room.room_id, self.date, self.start_time, self.end_time
         )
 
     def validate_model(self):

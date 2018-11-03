@@ -4,12 +4,12 @@ class ICSSerializer:
 
     def serialize_booking(self, booking):
 
-        student_id = booking.student.student_id
+        booker_id = booking.booker.booker_id
         if booking.student_group is not None:
             student_group = booking.student_group.name
-            summary = 'Student: ' + str(student_id) + ', ' + 'Group: ' + str(student_group)
+            summary = 'Booker: ' + str(booker_id) + ', ' + 'Group: ' + str(student_group)
         else:
-            summary = 'Student: ' + str(student_id) + ', ' + 'Group: ' + 'None'
+            summary = 'Booker: ' + str(booker_id) + ', ' + 'Group: ' + 'None'
 
         description = summary
 

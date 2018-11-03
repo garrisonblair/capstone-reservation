@@ -1,2 +1,2 @@
-from .Student import Student
+from .Booker import Booker
 from .PrivilegeCategory import PrivilegeCategory
