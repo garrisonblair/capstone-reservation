@@ -1,20 +1,16 @@
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab} from 'semantic-ui-react';
+import {Button, Dropdown, Header, Icon, Modal} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
-import settings from '../../config/settings';
-import {getTokenHeader} from '../../utils/requestHeaders';
-import {getMeRequest} from '../../utils/requestUser';
+import api from '../../utils/api';
 import './BookingInfoModal.scss';
-import {toDateInputValue} from '../../utils/dateFormatter';
 
 
 class BookingInfoModal extends Component {
   state = {
     show: false,
-    endHour: "-1",
-    endMinute: "-1",
+    endHour: "00",
+    endMinute: "00",
     hourOptions: [],
     reservedOptions: [],
     isRecurring: false,
@@ -24,10 +20,11 @@ class BookingInfoModal extends Component {
   generateHourOptions(maxHour) {
     let result = [];
     let minHour = new Date().getHours();
+    this.setState({endHour: `${minHour < 10 ? `0${minHour}` : minHour}`})
     for (let i = minHour; i < maxHour; i++) {
       result.push({
-        text: `${i}`,
-        value: `${i}`
+        text: `${i < 10 ? `0${i}` : i}`,
+        value: `${i < 10 ? `0${i}` : i}`
       });
     }
     return result;
@@ -77,13 +74,6 @@ class BookingInfoModal extends Component {
     });
   }
 
-  verifyEndTime() {
-    const {endHour, endMinute} = this.state;
-    if (endHour === "-1" || endMinute === "-1") {
-      throw new Error("Please provide an end time to make a reservation.");
-    }
-  }
-
   verifyReservationTimes() {
     const {endHour, endMinute} = this.state;
     let currentTime = new Date();
@@ -94,22 +84,32 @@ class BookingInfoModal extends Component {
     }
   }
 
+  checkCamponPossible(booking) {
+    if(booking.id) {
+      let currentDate = new Date();
+      let currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}`;
+      let bookingEndTime = booking.end_time.replace(/:/g, '');
+      bookingEndTime = bookingEndTime / 100;
+      if(currentTime < bookingEndTime) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   /************ REQUESTS *************/
 
-  sendPostRequestCampOn = (headers) => {
+  sendPostRequestCampOn = () => {
     const {booking} = this.props;
 
     const data = {
       "camped_on_booking": booking.id,
       "end_time": `${this.state.endHour}:${this.state.endMinute}`
     };
-    axios({
-      method: 'POST',
-      url: `${settings.API_ROOT}/campon`,
-      headers,
-      data,
-      withCredentials: true,
-    })
+    api.postCampOn(data)
     .then((response) => {
       sweetAlert('Completed',
         `Room ${this.props.selectedRoomName} was successfuly booked.`,
@@ -133,7 +133,6 @@ class BookingInfoModal extends Component {
   handleSubmit = () => {
     // Verify requirements before sending the POST request
     try {
-      this.verifyEndTime();
       this.verifyReservationTimes();
     }
     catch(err) {
@@ -141,8 +140,7 @@ class BookingInfoModal extends Component {
       return;
     }
 
-    const headers = getTokenHeader();
-    this.sendPostRequestCampOn(headers);
+    this.sendPostRequestCampOn();
   }
 
   /************* COMPONENT LIFE CYCLE *************/
@@ -155,7 +153,7 @@ class BookingInfoModal extends Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const {maxHour, minuteInterval, reservationProfiles} = this.props;
     this.setState({
       hourOptions: this.generateHourOptions(maxHour),
@@ -167,36 +165,22 @@ class BookingInfoModal extends Component {
   /************* COMPONENT RENDERING *************/
 
   renderDescription() {
-    const {hourOptions, minuteOptions, reservedOptions} = this.state;
     const {booking} = this.props;
-    let camponPossible = false;
-
-    if(booking.id) {
-      let currentDate = new Date();
-      let currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}`;
-      let bookingEndTime = booking.end_time.replace(/:/g, '');
-      bookingEndTime = bookingEndTime / 100
-      if(currentTime < bookingEndTime) {
-        camponPossible = true;
-      }
-    }
+    let camponPossible = checkCamponPossible(booking);
 
     return (
       <Modal.Content>
         <Modal.Description>
           <Header>
-            {/* <Icon name="calendar" /> */}
             {booking.date}
           </Header>
           <div className="modal-description">
             <h3 className="header--inline">
-              {/* <Icon className="hourglass start" /> */}
               {`from ${booking.start_time ? booking.start_time.slice(0,-3) : ''}`}
             </h3>
           </div>
           <div className="modal-description">
             <h3 className="header--inline">
-              {/* <Icon className="hourglass end" /> */}
               {`to ${booking.end_time? booking.end_time.slice(0,-3) : ''}`}
             </h3>
           </div>

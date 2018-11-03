@@ -44,7 +44,19 @@ function updateUser(id, data) {
     method: 'PATCH',
     url: `${settings.API_ROOT}/user/${id}`,
     headers,
-    data
+    data,
+    withCredentials: true
+  })
+}
+
+function postCampOn(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/campon`,
+    headers,
+    data,
+    withCredentials: true
   })
 }
 
@@ -52,7 +64,8 @@ const api = {
   register,
   login,
   verify,
-  updateUser
+  updateUser,
+  postCampOn
 }
 
 export default api;
