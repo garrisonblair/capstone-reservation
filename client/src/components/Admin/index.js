@@ -54,7 +54,7 @@ class Admin extends Component {
 
     }
 
-    api.saveAdminSettings(data)
+    api.updateAdminSettings(data)
     .then((response) => {
       sweetAlert('Completed',
           `Settings were successfuly saved.`,
