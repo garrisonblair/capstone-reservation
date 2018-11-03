@@ -38,6 +38,15 @@ function verify(token) {
   })
 }
 
+function getMyUser(token) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/me`,
+    headers
+  })
+}
+
 function updateUser(id, data) {
   const headers = getTokenHeader();
   return axios({
@@ -52,6 +61,7 @@ const api = {
   register,
   login,
   verify,
+  getMyUser,
   updateUser
 }
 
