@@ -60,6 +60,29 @@ function createCampOn(data) {
   })
 }
 
+function getBookings(params) {
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/booking`,
+    params: params
+  })
+}
+
+function getCampOns(params) {
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/campon`,
+    params: params
+  })
+}
+
+function getRooms() {
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/room`
+  })
+}
+
 function getAdminSettings() {
   const headers = getTokenHeader();
   return axios({
@@ -87,6 +110,9 @@ const api = {
   verify,
   updateUser,
   createCampOn,
+  getBookings,
+  getCampOns,
+  getRooms,
   getAdminSettings,
   updateAdminSettings
 }

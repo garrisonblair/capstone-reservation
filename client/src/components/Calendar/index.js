@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
-import settings from '../../config/settings';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
-import axios from 'axios';
+import api from '../../utils/api';
 import {Button, Icon} from 'semantic-ui-react';
 
 
@@ -35,11 +34,7 @@ class Calendar extends Component {
         day: this.state.selectedDate.getDate()
       }
   
-      axios({
-        method: 'GET',
-        url: `${settings.API_ROOT}/booking`,
-        params: params
-      })
+      api.getBookings(params)
       .then((response) => {
         this.setState({bookings: response.data})
 
@@ -50,24 +45,14 @@ class Calendar extends Component {
       .then(function () {
       });
     }
-    this.getCampOns()
+    this.getCampOns(params)
   }
 
-  getCampOns() {
+  getCampOns(params) {
     if(this.props.propsTestingCampOns) {
       this.setState({campOns: this.props.propsTestingCampOns})
     } else {
-      let params = {
-        year: this.state.selectedDate.getFullYear(),
-        month: this.state.selectedDate.getMonth() + 1,
-        day: this.state.selectedDate.getDate()
-      }
-  
-      axios({
-        method: 'GET',
-        url: `${settings.API_ROOT}/campon`,
-        params: params
-      })
+      api.getCampOns(params)
       .then((response) => {
         this.setState({campOns: response.data}, () => {
           this.campOnToBooking();
@@ -86,10 +71,7 @@ class Calendar extends Component {
     if(this.props.propsTestingRooms) {
       this.setState({roomsList: this.props.propsTestingRooms})
     } else {
-      axios({
-        method: 'GET',
-        url: `${settings.API_ROOT}/room`
-      })
+      api.getRooms()
       .then((response) => {
         this.setState({roomsList: response.data})
         let colNumber = response.data.length;
