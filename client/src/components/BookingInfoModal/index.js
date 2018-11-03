@@ -166,7 +166,7 @@ class BookingInfoModal extends Component {
 
   renderDescription() {
     const {booking} = this.props;
-    let camponPossible = checkCamponPossible(booking);
+    let camponPossible = this.checkCamponPossible(booking);
 
     return (
       <Modal.Content>

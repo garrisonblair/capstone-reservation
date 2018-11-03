@@ -60,12 +60,33 @@ function postCampOn(data) {
   })
 }
 
+function getAdminSettings() {
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/settings`,
+    withCredentials: true
+  })
+}
+
+function saveAdminSettings(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/settings`,
+    data,
+    headers,
+    withCredentials: true,
+  })
+}
+
 const api = {
   register,
   login,
   verify,
   updateUser,
-  postCampOn
+  postCampOn,
+  getAdminSettings,
+  saveAdminSettings
 }
 
 export default api;
