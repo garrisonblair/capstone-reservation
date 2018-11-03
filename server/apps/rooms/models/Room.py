@@ -24,19 +24,19 @@ class Room(models.Model):
     capacity = models.PositiveIntegerField(blank=True, null=True)
     number_of_computers = models.PositiveIntegerField(blank=True, null=True)
 
-    def save(self):
-        is_create = False
-        if self.id is None:
-            is_create = True
-
-        this = super(Room, self).save(*args, **kwargs)
-
-        if is_create:
-            self.object_created()
-        else:
-            self.object_updated()
-
-        return this
+#    def save(self):
+#        is_create = False
+#        if self.id is None:
+#            is_create = True
+#
+#        this = super(Room, self).save(*args, **kwargs)
+#
+#        if is_create:
+#            self.object_created()
+#        else:
+#            self.object_updated()
+#
+#        return this
 
     def modify_room_id(self, room_id):
         self.room_id = room_id
