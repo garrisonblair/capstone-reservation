@@ -109,7 +109,7 @@ class BookingInfoModal extends Component {
       "camped_on_booking": booking.id,
       "end_time": `${this.state.endHour}:${this.state.endMinute}`
     };
-    api.postCampOn(data)
+    api.createCampOn(data)
     .then((response) => {
       sweetAlert('Completed',
         `Room ${this.props.selectedRoomName} was successfuly booked.`,

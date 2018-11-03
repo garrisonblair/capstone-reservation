@@ -49,7 +49,7 @@ function updateUser(id, data) {
   })
 }
 
-function postCampOn(data) {
+function createCampOn(data) {
   const headers = getTokenHeader();
   return axios({
     method: 'POST',
@@ -61,14 +61,16 @@ function postCampOn(data) {
 }
 
 function getAdminSettings() {
+  const headers = getTokenHeader();
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/settings`,
+    headers,
     withCredentials: true
   })
 }
 
-function saveAdminSettings(data) {
+function updateAdminSettings(data) {
   const headers = getTokenHeader();
   return axios({
     method: 'PATCH',
@@ -84,9 +86,9 @@ const api = {
   login,
   verify,
   updateUser,
-  postCampOn,
+  createCampOn,
   getAdminSettings,
-  saveAdminSettings
+  updateAdminSettings
 }
 
 export default api;
