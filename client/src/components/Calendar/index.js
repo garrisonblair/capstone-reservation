@@ -37,14 +37,13 @@ class Calendar extends Component {
       api.getBookings(params)
       .then((response) => {
         this.setState({bookings: response.data})
-
+        this.getCampOns(params)
       })
       .catch(function (error) {
         console.log(error);
       })
       .then(function () {
       });
-      this.getCampOns(params)
     }
   }
 
@@ -54,8 +53,9 @@ class Calendar extends Component {
     } else {
       api.getCampOns(params)
       .then((response) => {
+        console.log(response.data)
         this.setState({campOns: response.data}, () => {
-          this.campOnToBooking();
+          // this.campOnToBooking();
         })
       })
       .catch(function (error) {
@@ -104,15 +104,13 @@ class Calendar extends Component {
   }
 
   //Style for .calendar__booking
-  setBookingStyle(booking) {
+  setBookingStyle(booking, campOnsNumber) {
     const {hoursSettings} = this.state;
     let bookingStart = this.timeStringToInt(booking.start_time);
     let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(hoursSettings.start);
-    let campOn = 1;
     let color = '#4285f4'
-    if (!!booking.isCampOn) {
-      campOn = 100;
+    if (campOnsNumber > 0) {
       color = 'orange'
     }
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
@@ -124,7 +122,6 @@ class Calendar extends Component {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
         gridColumn: 1,
-        zIndex: campOn,
         backgroundColor: color
       }
     }
@@ -243,13 +240,21 @@ class Calendar extends Component {
       }
   }
 
+  getCamponsForBooking(booking) {
+    let campOns = []
+    if(!!this.state.campOns) {
+      this.state.campOns.map((campOn) => {
+        if(campOn.camped_on_booking == booking.id) {
+          campOns.push(campOn)
+        }
+      })
+    }
+    return campOns
+  }
+
   /************* COMPONENT LIFE CYCLE *************/
 
   componentDidMount() {
-    // console.log(settings)
-  }
-
-  componentWillMount() {
     /*** Get bookings ***/
     this.getBookings();
 
@@ -375,15 +380,27 @@ class Calendar extends Component {
     let bookingsDiv = [];
 
     bookings.forEach(booking => {
+      let campOns = this.getCamponsForBooking(booking);
       bookingsDiv.push(
-        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} onClick={() => this.handleClickBooking(booking)}>
+        <div className="calendar__booking" style={this.setBookingStyle(booking, campOns.length).booking_style} key={booking.id} onClick={() => this.handleClickBooking(booking)}>
           {booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time} - {booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}
           <br/>        
-          <span>{booking.student} { !!booking.isCampOn ? <span>[CAMP]</span> : null }</span>
+          <span>{booking.student}</span>
+          {campOns.length > 0 ? this.renderCampOns(campOns) : ''}
         </div>
       )
     });
     return bookingsDiv;
+  }
+
+  renderCampOns(campOns) {
+    let text = [<span key='-1'>[CAMP]<br/></span>]
+    campOns.forEach(campOn => {
+      text.push(
+        <span key={campOn.id}>{campOn.start_time.substring(0, campOn.start_time.length-3)} - {campOn.end_time.substring(0, campOn.end_time.length-3)}<br/></span>
+      )
+    })
+    return <span><br/>{text}</span>
   }
 
   render() {
