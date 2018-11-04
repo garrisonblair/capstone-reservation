@@ -1,5 +1,6 @@
 import datetime
 import unittest
+from unittest import mock
 
 from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory
@@ -11,8 +12,8 @@ from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 from ..models.CampOn import CampOn
-
 from ..views.campon import CampOnView
+from apps.util.mock_datetime import mock_datetime
 
 
 class CampOnAPITest(TestCase):
@@ -57,18 +58,17 @@ class CampOnAPITest(TestCase):
     # CampOn start time should be the current time. However,
     # the current time cannot be used in the test, otherwise, the test will fail if it runs at invalid period
     # So the start time in this test will be assigned values
-
-    @unittest.skip("tests to be changed to account for actual time")
     def testCreateCampOnSuccess(self):
         request = self.factory.post("/campon", {
             "camped_on_booking": 1,
-            "start_time": "12:20",
             "end_time": "14:00"
         },
                                     format="json")
 
         force_authenticate(request, user=User.objects.get(username="sol_ji"))
-        response = CampOnView.as_view()(request)
+
+        with mock_datetime(datetime.datetime(2018, 1, 1, 12, 30, 0, 0), datetime):
+            response = CampOnView.as_view()(request)
 
         # Verify response status code
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -78,21 +78,24 @@ class CampOnAPITest(TestCase):
 
         # Verify the content of the created CampOn
         created_camp_on = CampOn.objects.last()
+
         self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
         self.assertEqual(created_camp_on.booking, Booking.objects.get(id=1))
         self.assertEqual(created_camp_on.start_time, datetime.time(12, 20))
+
         self.assertEqual(created_camp_on.end_time, datetime.time(14, 00))
 
-    @unittest.skip("tests to be changed to account for actual time")
     def testCreateCampOnWithBooking(self):
         request = self.factory.post("/campon", {
             "camped_on_booking": 1,
-            "start_time": "12:20",
             "end_time": "15:00"
         }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="sol_ji"))
-        response = CampOnView.as_view()(request)
+
+        # using 12:28 to test rounding
+        with mock_datetime(datetime.datetime(2018, 1, 1, 12, 28, 0, 0), datetime):
+            response = CampOnView.as_view()(request)
 
         # Verify response status code
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -102,9 +105,11 @@ class CampOnAPITest(TestCase):
 
         # Verify the content of the created CampOn
         created_camp_on = CampOn.objects.last()
+
         self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
         self.assertEqual(created_camp_on.booking, Booking.objects.get(id=1))
         self.assertEqual(created_camp_on.start_time, datetime.time(12, 20))
+
         self.assertEqual(created_camp_on.end_time, datetime.time(14, 00))
 
         # Verify number of Booking
@@ -118,8 +123,8 @@ class CampOnAPITest(TestCase):
         self.assertEqual(created_booking.start_time, datetime.time(14, 00))
         self.assertEqual(created_booking.end_time, datetime.time(15, 00))
 
-    @unittest.skip("tests to be changed to account for actual time")
-    def testCreateCampOnTwoBooking(self):
+    # @unittest.skip("tests to be changed to account for actual time")
+    def testCreateCampOnSecondBooking(self):
         # Setup a second Booking right after the first one
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
         second_booking = Booking(booker=self.booker,
@@ -131,25 +136,18 @@ class CampOnAPITest(TestCase):
 
         request = self.factory.post("/campon", {
             "camped_on_booking": 1,
-            "start_time": "12:20",
             "end_time": "15:00"
         }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="sol_ji"))
-        response = CampOnView.as_view()(request)
+        with mock_datetime(datetime.datetime(2018, 1, 1, 12, 30, 0, 0), datetime):
+            response = CampOnView.as_view()(request)
 
         # Verify response status code
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
         # Verify number of CampOn
-        self.assertEqual(len(CampOn.objects.all()), 2)
-
-        # Verify the content of the created CampOn
-        created_camp_on = CampOn.objects.first()
-        self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
-        self.assertEqual(created_camp_on.booking, Booking.objects.get(id=1))
-        self.assertEqual(created_camp_on.start_time, datetime.time(12, 20))
-        self.assertEqual(created_camp_on.end_time, datetime.time(14, 00))
+        self.assertEqual(len(CampOn.objects.all()), 0)
 
     def testCreateCampOnNotAuthenticated(self):
         request = self.factory.post("/campon", {
@@ -161,24 +159,9 @@ class CampOnAPITest(TestCase):
         # Verify none authorized request
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    @unittest.skip("tests to be changed to account for actual time")
-    def testCreateCampOnInvalidTime(self):
-        request = self.factory.post("/campon", {
-            "camped_on_booking": 1,
-            "start_time": "12:20",
-            "end_time": "11:00"  # end time is smaller than start time
-        }, format="json")
-
-        force_authenticate(request, user=User.objects.get(username="sol_ji"))
-        response = CampOnView.as_view()(request)
-
-        # Verify none authorized request
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
     def testCreateCampOnInvalidBooking(self):
         request = self.factory.post("/campon", {
             "camped_on_booking": 10,  # Booking id does not exist
-            "start_time": "12:20",
             "end_time": "11:00"
         }, format="json")
 
@@ -188,35 +171,6 @@ class CampOnAPITest(TestCase):
         # Verify none authorized request
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @unittest.skip("tests to be changed to account for actual time")
-    def testCreateCampOnWithSameBooking(self):
-        # First CampOn
-        first_request = self.factory.post("/campon", {
-            "camped_on_booking": 1,
-            "start_time": "12:20",
-            "end_time": "14:00"
-        }, format="json")
-
-        force_authenticate(first_request, user=User.objects.get(username="sol_ji"))
-        first_response = CampOnView.as_view()(first_request)
-
-        # Verify the first CampOn response status code
-        self.assertEqual(first_response.status_code, status.HTTP_201_CREATED)
-
-        # Second CampOn with different start time
-        second_request = self.factory.post("/campon", {
-            "camped_on_booking": 1,
-            "start_time": "12:30",
-            "end_time": "14:00"
-        }, format="json")
-
-        force_authenticate(second_request, user=User.objects.get(username="sol_ji"))
-        second_response = CampOnView.as_view()(second_request)
-
-        # Verify the second CampOn response status code
-        self.assertEqual(second_response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    @unittest.skip("tests to be changed to account for actual time")
     def testGetOneCampOnById(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
@@ -255,7 +209,6 @@ class CampOnAPITest(TestCase):
         retrieved_camp_on = response.data
         self.assertEqual(len(retrieved_camp_on), 1)
 
-    @unittest.skip("tests to be changed to account for actual time")
     def testGetCampOnByBooking(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
@@ -294,7 +247,6 @@ class CampOnAPITest(TestCase):
         retrieved_camp_on = response.data
         self.assertEqual(len(retrieved_camp_on), 1)
 
-    @unittest.skip("tests to be changed to account for actual time")
     def testGetCampOnByBookingAndTime(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
@@ -335,7 +287,6 @@ class CampOnAPITest(TestCase):
         retrieved_camp_on = response.data
         self.assertEqual(len(retrieved_camp_on), 1)
 
-    @unittest.skip("tests to be changed to account for actual time")
     def testGetCampOnByTime(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
@@ -375,7 +326,6 @@ class CampOnAPITest(TestCase):
         retrieved_camp_on = response.data
         self.assertEqual(len(retrieved_camp_on), 1)
 
-    @unittest.skip("tests to be changed to account for actual time")
     def testGetAllCampOn(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()
@@ -396,8 +346,9 @@ class CampOnAPITest(TestCase):
 
         start_time_2 = datetime.datetime.strptime("14:00", "%H:%M").time()
         end_time_2 = datetime.datetime.strptime("15:00", "%H:%M").time()
+
         CampOn.objects.create(booker=self.booker,
-                              booking=second_booking,
+                              camped_on_booking=second_booking,
                               start_time=start_time_2,
                               end_time=end_time_2)
 
@@ -413,7 +364,6 @@ class CampOnAPITest(TestCase):
         retrieved_camp_on = response.data
         self.assertEqual(len(retrieved_camp_on), 2)
 
-    @unittest.skip("tests to be changed to account for actual time")
     def testGetCampOnNotFound(self):
         # Setup a second booking
         second_end_time = datetime.datetime.strptime("16:00", "%H:%M").time()

@@ -12,7 +12,6 @@ import datetime
 class CampOnView(APIView):
 
     def post(self, request):
-
         # Must be logged in as student
         if not request.user or not request.user.booker:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
