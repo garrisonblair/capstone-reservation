@@ -60,10 +60,10 @@ class CampOnAPITest(TestCase):
     # So the start time in this test will be assigned values
     def testCreateCampOnSuccess(self):
         request = self.factory.post("/campon", {
-            "camped_on_booking": 1,
-            "end_time": "14:00"
-        },
-                                    format="json")
+                "camped_on_booking": 1,
+                "end_time": "14:00"
+            },
+            format="json")
 
         force_authenticate(request, user=User.objects.get(username="sol_ji"))
 
@@ -80,8 +80,8 @@ class CampOnAPITest(TestCase):
         created_camp_on = CampOn.objects.last()
 
         self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
-        self.assertEqual(created_camp_on.booking, Booking.objects.get(id=1))
-        self.assertEqual(created_camp_on.start_time, datetime.time(12, 20))
+        self.assertEqual(created_camp_on.camped_on_booking, Booking.objects.get(id=1))
+        self.assertEqual(created_camp_on.start_time, datetime.time(12, 30))
 
         self.assertEqual(created_camp_on.end_time, datetime.time(14, 00))
 
@@ -107,8 +107,8 @@ class CampOnAPITest(TestCase):
         created_camp_on = CampOn.objects.last()
 
         self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
-        self.assertEqual(created_camp_on.booking, Booking.objects.get(id=1))
-        self.assertEqual(created_camp_on.start_time, datetime.time(12, 20))
+        self.assertEqual(created_camp_on.camped_on_booking, Booking.objects.get(id=1))
+        self.assertEqual(created_camp_on.start_time, datetime.time(12, 30))
 
         self.assertEqual(created_camp_on.end_time, datetime.time(14, 00))
 

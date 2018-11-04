@@ -17,7 +17,7 @@ class CampOnView(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         camp_on_data = dict(request.data)
-        camp_on_data["student"] = request.user.booker.booker_id
+        camp_on_data["booker"] = request.user.booker.booker_id
 
         time = datetime.datetime.now().replace(microsecond=0)
         discard = datetime.timedelta(minutes=time.minute % 10,
