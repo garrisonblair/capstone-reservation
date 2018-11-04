@@ -1,0 +1,2 @@
+class PrivilegeError(Exception):
+    pass
