@@ -14,16 +14,16 @@ class TestBookingPrivileges(TestCase):
     def setUp(self):
         self.p_c_booker = PrivilegeCategory(name="Booker Category")
 
-        self.p_c_booker.num_days_to_booking = 3
-        self.p_c_booker.max_num_bookings = 2
+        self.p_c_booker.max_days_until_booking = 3
+        self.p_c_booker.max_bookings = 2
         self.p_c_booker.save()
 
         self.booker = Booker(booker_id="11111111", privilege_category=self.p_c_booker)
         self.booker.save()
 
         self.p_c_group = PrivilegeCategory(name="Group Category")
-        self.p_c_group.num_days_to_booking = 5
-        self.p_c_group.max_num_bookings = 1
+        self.p_c_group.max_days_until_booking = 5
+        self.p_c_group.max_bookings = 1
         self.p_c_group.save()
 
         self.group = Group(name="Group 1",
@@ -89,7 +89,7 @@ class TestBookingPrivileges(TestCase):
         try:
             booking.save()
         except PrivilegeError as error:
-            self.assertEqual(error.message, self.p_c_booker.get_error_text("num_days_to_booking"))
+            self.assertEqual(error.message, self.p_c_booker.get_error_text("max_days_until_booking"))
 
         self.assertEqual(len(Booking.objects.all()), 0)
 
@@ -108,7 +108,7 @@ class TestBookingPrivileges(TestCase):
         try:
             booking.save()
         except PrivilegeError as error:
-            self.assertEqual(error.message, self.p_c_group.get_error_text("num_days_to_booking"))
+            self.assertEqual(error.message, self.p_c_group.get_error_text("max_days_until_booking"))
 
         self.assertEqual(len(Booking.objects.all()), 0)
 
@@ -140,7 +140,7 @@ class TestBookingPrivileges(TestCase):
         try:
             booking3.save()
         except PrivilegeError as error:
-            self.assertEqual(error.message, self.p_c_booker.get_error_text("max_num_bookings"))
+            self.assertEqual(error.message, self.p_c_booker.get_error_text("max_bookings"))
 
         self.assertEqual(len(Booking.objects.all()), 2)
 
@@ -166,6 +166,6 @@ class TestBookingPrivileges(TestCase):
         try:
             booking2.save()
         except PrivilegeError as error:
-            self.assertEqual(error.message, self.p_c_group.get_error_text("max_num_bookings"))
+            self.assertEqual(error.message, self.p_c_group.get_error_text("max_bookings"))
 
         self.assertEqual(len(Booking.objects.all()), 1)

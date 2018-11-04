@@ -118,21 +118,21 @@ class Booking(models.Model, SubjectModel):
 
         p_c = booker_entity.privilege_category  # type: PrivilegeCategory
 
-        num_days_to_booking = p_c.get_parameter("num_days_to_booking")
-        max_bookings = p_c.get_parameter("max_num_bookings")
+        max_days_until_booking = p_c.get_parameter("max_days_until_booking")
+        max_bookings = p_c.get_parameter("max_bookings")
 
-        # num_days_to_booking
+        # max_days_until_booking
         today = datetime.date.today()
 
         day_delta = self.date - today
-        if day_delta.days > num_days_to_booking and self.recurring_booking is None:
-            raise PrivilegeError(p_c.get_error_text("num_days_to_booking"))
+        if day_delta.days > max_days_until_booking and self.recurring_booking is None:
+            raise PrivilegeError(p_c.get_error_text("max_days_until_booking"))
 
-        # max_num_bookings
+        # max_bookings
         num_bookings = len(booker_entity.booking_set.all())
 
         if num_bookings == max_bookings:
-            raise PrivilegeError(p_c.get_error_text("max_num_bookings"))
+            raise PrivilegeError(p_c.get_error_text("max_bookings"))
 
     def get_observers(self):
         return Booking.observers
