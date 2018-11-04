@@ -147,3 +147,68 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(PrivilegeCategory.objects.count(), 1)
+
+    def testViewAllCategories(self):
+        self.category1 = PrivilegeCategory(name="Second Tier")
+        self.category1.num_days_to_booking = 4
+        self.category1.can_make_recurring_booking = True
+        self.category1.max_num_bookings = 8
+        self.category1.max_num_recurring_bookings = 2
+        self.category1.save()
+
+        request = self.factory.get("privilege_categories",
+                                   {
+                                   },
+                                   format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returned_categories = response.data
+        self.assertEqual(len(returned_categories), 2)
+
+    def testViewCategoriesByName(self):
+        self.category1 = PrivilegeCategory(name="Second Tier")
+        self.category1.num_days_to_booking = 4
+        self.category1.can_make_recurring_booking = True
+        self.category1.max_num_bookings = 8
+        self.category1.max_num_recurring_bookings = 2
+        self.category1.save()
+
+        request = self.factory.get("privilege_categories",
+                                   {
+                                       "name": "Base Category"
+                                   },
+                                   format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returned_categories = response.data
+        self.assertEqual(len(returned_categories), 1)
+
+    def testViewCategoriesByNameNoResults(self):
+        self.category1 = PrivilegeCategory(name="Second Tier")
+        self.category1.num_days_to_booking = 4
+        self.category1.can_make_recurring_booking = True
+        self.category1.max_num_bookings = 8
+        self.category1.max_num_recurring_bookings = 2
+        self.category1.save()
+
+        request = self.factory.get("privilege_categories",
+                                   {
+                                       "Name": "Premium Category"
+                                   },
+                                   format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        returned_categories = response.data
+        self.assertEqual(len(returned_categories), 0)
