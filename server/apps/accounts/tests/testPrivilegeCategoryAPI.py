@@ -165,6 +165,8 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         response = PrivilegeCategoryView.as_view()(request)
 
+        self.category1.delete()
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_categories = response.data
         self.assertEqual(len(returned_categories), 2)
@@ -187,6 +189,8 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         response = PrivilegeCategoryView.as_view()(request)
 
+        self.category1.delete()
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_categories = response.data
         self.assertEqual(len(returned_categories), 1)
@@ -201,7 +205,7 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         request = self.factory.get("privilege_categories",
                                    {
-                                       "Name": "Premium Category"
+                                       "name": "Premium Category"
                                    },
                                    format="json")
 
@@ -209,6 +213,6 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         response = PrivilegeCategoryView.as_view()(request)
 
+        self.category1.delete()
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        returned_categories = response.data
-        self.assertEqual(len(returned_categories), 0)
