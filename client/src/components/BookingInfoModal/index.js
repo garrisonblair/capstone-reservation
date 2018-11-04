@@ -9,7 +9,7 @@ import './BookingInfoModal.scss';
 class BookingInfoModal extends Component {
   state = {
     show: false,
-    endHour: "00",
+    endHour: "08",
     endMinute: "00",
     hourOptions: [],
     reservedOptions: [],
@@ -201,7 +201,7 @@ class BookingInfoModal extends Component {
   }
 
   renderCampOnForm() {
-    const {hourOptions, minuteOptions, reservedOptions} = this.state;
+    const {hourOptions, minuteOptions, reservedOptions, endHour, endMinute} = this.state;
     return(
       <div>
         <div className="modal-description">
@@ -215,6 +215,7 @@ class BookingInfoModal extends Component {
             placeholder='hh'
             options={hourOptions}
             onChange={this.handleEndHourChange}
+            defaultValue={endHour}
           />
           <Dropdown
             selection
@@ -223,6 +224,7 @@ class BookingInfoModal extends Component {
             placeholder='mm'
             options={minuteOptions}
             onChange={this.handleEndMinuteChange}
+            defaultValue={endMinute}
           />
         </div>
         <div className="modal-description">
@@ -236,7 +238,7 @@ class BookingInfoModal extends Component {
               className="dropdown--fixed-width"
               placeholder='hh'
               options={reservedOptions}
-              defaultValue={this.state.reservedOptions[0].value}
+              defaultValue={reservedOptions[0].value}
             />
           </div>
           <Button content='Camp on' primary onClick={this.handleSubmit} />
