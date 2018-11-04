@@ -54,3 +54,39 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.assertEqual(created_category.can_make_recurring_booking, True)
         self.assertEqual(created_category.max_num_bookings, 2)
         self.assertEqual(created_category.max_num_recurring_bookings, 3)
+
+    def testCreatePrivilegeCategoryInvalidPayload(self):
+        request = self.factory.post("/privilege_categories",
+                                    {
+                                        "name": 4,
+                                        "parent_category": "WrongFormat",
+                                        "num_days_to_booking": 4,
+                                        "can_make_recurring_booking": "True",
+                                        "max_num_bookings": 2,
+                                        "max_num_recurring_bookings": 3
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(PrivilegeCategory.objects.count(), 1)
+
+    def testCreatePrivilegeCategoryNotAuthorized(self):
+        request = self.factory.post("/privilege_categories",
+                                    {
+                                        "name": "Second Tier",
+                                        "parent_category": self.category.id,
+                                        "num_days_to_booking": 4,
+                                        "can_make_recurring_booking": "True",
+                                        "max_num_bookings": 2,
+                                        "max_num_recurring_bookings": 3
+                                    },
+                                    format="json")
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(PrivilegeCategory.objects.count(), 1)
