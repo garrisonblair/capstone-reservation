@@ -8,7 +8,7 @@ from apps.booking.models import Booking
 from apps.rooms.models import Room
 from apps.accounts.models import Booker
 from ..WEBCalendarExporter.ICSSerializer import ICSSerializer
-from apps.groups.models import StudentGroup
+from apps.groups.models import Group
 
 
 class testWebCalendarExporter(TestCase):
@@ -31,8 +31,8 @@ class testWebCalendarExporter(TestCase):
 
         self.booking.save()
 
-        group = StudentGroup(name='Test Group',
-                             is_verified=True)
+        group = Group(name='Test Group',
+                      is_verified=True)
 
         group.save()
 

@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from ..models.Booking import RecurringBooking
 from apps.rooms.models.Room import Room
-from apps.groups.models.StudentGroup import StudentGroup
+from apps.groups.models.Group import Group
 from apps.accounts.models.Booker import Booker
 
 
@@ -12,7 +12,7 @@ class RecurringBookingSerializer(serializers.ModelSerializer):
     booking_start_time = serializers.TimeField()
     booking_end_time = serializers.TimeField()
     room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
-    student_group = serializers.PrimaryKeyRelatedField(queryset=StudentGroup.objects.all())
+    student_group = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all())
     booker = serializers.PrimaryKeyRelatedField(queryset=Booker.objects.all())
     skip_conflicts = serializers.BooleanField()
 

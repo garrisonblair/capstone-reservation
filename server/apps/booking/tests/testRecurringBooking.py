@@ -5,7 +5,7 @@ from datetime import timedelta
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.Booking import Booking
 from apps.accounts.models.Booker import Booker
-from apps.groups.models.StudentGroup import StudentGroup
+from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
 from datetime import datetime
 
@@ -25,7 +25,7 @@ class TestRecurringBooking(TestCase):
 
         # Create student group
         name = "Students group"
-        self.group = StudentGroup(name=name, is_verified=True)
+        self.group = Group(name=name, is_verified=True)
         self.group.save()
         self.group.bookers.add(booker1)
         self.group.bookers.add(booker2)

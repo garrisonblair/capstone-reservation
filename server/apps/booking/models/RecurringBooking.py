@@ -4,7 +4,7 @@ from django.db.models import Q
 
 from apps.rooms.models.Room import Room
 from apps.accounts.models.Booker import Booker
-from apps.groups.models.StudentGroup import StudentGroup
+from apps.groups.models.Group import Group
 from datetime import timedelta
 
 
@@ -53,7 +53,7 @@ class RecurringBooking(models.Model):
     booking_start_time = models.TimeField()
     booking_end_time = models.TimeField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
+    student_group = models.ForeignKey(Group, on_delete=models.CASCADE)
     booker = models.ForeignKey(Booker, on_delete=models.CASCADE)
     skip_conflicts = models.BooleanField(default=False)
 

@@ -8,7 +8,7 @@ from datetime import timedelta, datetime
 from apps.accounts.models.Booker import Booker
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.Booking import Booking
-from apps.groups.models import StudentGroup
+from apps.groups.models import Group
 from apps.rooms.models.Room import Room
 
 from ..views.recurring_booking import RecurringBookingView
@@ -34,7 +34,7 @@ class BookingAPITest(TestCase):
 
         # Create student group
         name = "Students group"
-        self.group = StudentGroup(name=name, is_verified=True)
+        self.group = Group(name=name, is_verified=True)
         self.group.save()
         self.group.bookers.add(booker1)
         self.group.bookers.add(booker2)

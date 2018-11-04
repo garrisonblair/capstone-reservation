@@ -1,6 +1,6 @@
 from django.db import models
 from apps.accounts.models.Booker import Booker
-from apps.groups.models.StudentGroup import StudentGroup
+from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
 from apps.booking.models.RecurringBooking import RecurringBooking
 from django.db.models import Q, ForeignKey
@@ -29,9 +29,9 @@ class BookingManager(models.Manager):
 
 class Booking(models.Model, SubjectModel):
     booker = models.ForeignKey(Booker, on_delete=models.CASCADE)  # type: Booker
-    student_group = models.ForeignKey(StudentGroup,
+    student_group = models.ForeignKey(Group,
                                       on_delete=models.CASCADE,
-                                      blank=True, null=True)  # type: StudentGroup
+                                      blank=True, null=True)  # type: Group
     room = models.ForeignKey(Room,
                              on_delete=models.CASCADE)
     date = models.DateField()

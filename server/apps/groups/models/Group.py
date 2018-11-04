@@ -4,7 +4,7 @@ from apps.accounts.models.Booker import Booker
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 
-class StudentGroup(models.Model):
+class Group(models.Model):
     name = models.CharField(max_length=50)
     bookers = models.ManyToManyField(Booker)
     is_verified = models.BooleanField(default=False)

@@ -5,7 +5,7 @@ from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
-from apps.groups.models.StudentGroup import StudentGroup
+from apps.groups.models.Group import Group
 from apps.accounts.exceptions import PrivilegeError
 
 
@@ -26,9 +26,9 @@ class TestBookingPrivileges(TestCase):
         self.p_c_group.max_num_bookings = 1
         self.p_c_group.save()
 
-        self.group = StudentGroup(name="Group 1",
-                                  is_verified=True,
-                                  privilege_category=self.p_c_group)
+        self.group = Group(name="Group 1",
+                           is_verified=True,
+                           privilege_category=self.p_c_group)
         self.group.save()
         self.group.bookers.add(self.booker)
         self.group.save()
