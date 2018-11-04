@@ -3,6 +3,9 @@ import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
 import './Admin.scss';
 import {Button, Form, Modal, Input, Header} from 'semantic-ui-react';
+import AdminRequired from '../HOC/AdminRequired';
+import {getTokenHeader} from '../../utils/requestHeaders';
+
 
 class Admin extends Component {
 
@@ -120,7 +123,7 @@ class Admin extends Component {
 
   renderNav() {
     const options = ['Settings', 'Stats']
-    const menu = options.map((option) => 
+    const menu = options.map((option) =>
       <li className={this.state.current == option ? "active" : ""} key={option} value={option} onClick={this.handleClickNav}>{option}</li>
     )
     return <ul className="admin__navigation">{menu}</ul>
@@ -130,7 +133,7 @@ class Admin extends Component {
     const {current} = this.state
     let content
     switch (current) {
-      case "Settings": 
+      case "Settings":
         content = this.renderContentSettings()
         return content
       case "Stats":
@@ -201,7 +204,7 @@ class Admin extends Component {
         </Modal>
     )
   }
-  
+
 
   render() {
     const {responseModal, responseModalText, responseModalTitle, responseModalType} = this.state
@@ -209,9 +212,9 @@ class Admin extends Component {
       <div>
         {this.renderSettings()}
         {this.renderLoginModal()}
-      </div>     
+      </div>
     )
   }
 }
 
-export default Admin;
+export default AdminRequired(Admin);

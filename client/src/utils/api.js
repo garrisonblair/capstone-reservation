@@ -38,6 +38,15 @@ function verify(token) {
   })
 }
 
+function getMyUser(token) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/me`,
+    headers
+  })
+}
+
 function updateUser(id, data) {
   const headers = getTokenHeader();
   return axios({
@@ -114,7 +123,8 @@ const api = {
   getCampOns,
   getRooms,
   getAdminSettings,
-  updateAdminSettings
+  updateAdminSettings,
+  getMyUser,
 }
 
 export default api;
