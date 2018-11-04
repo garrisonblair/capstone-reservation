@@ -26,6 +26,7 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.category.save()
 
     def tearDown(self):
+        self.user.delete()
         self.category.delete()
 
     def testCreatePrivilegeCategorySuccess(self):
@@ -34,7 +35,7 @@ class TestPrivilegeCategoryAPI(TestCase):
                                         "name": "Second Tier",
                                         "parent_category": self.category.id,
                                         "num_days_to_booking": 4,
-                                        "can_make_recurring_booking": "True",
+                                        "can_make_recurring_booking": True,
                                         "max_num_bookings": 2,
                                         "max_num_recurring_bookings": 3
                                     },

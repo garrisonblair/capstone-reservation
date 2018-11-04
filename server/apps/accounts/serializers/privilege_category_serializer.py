@@ -16,6 +16,7 @@ class PrivilegeCategorySerializer(serializers.ModelSerializer):
             name=validated_data["name"],
             parent_category=validated_data["parent_category"],
             num_days_to_booking=validated_data["num_days_to_booking"],
+            can_make_recurring_booking=validated_data["can_make_recurring_booking"],
             max_num_bookings=validated_data["max_num_bookings"],
             max_num_recurring_bookings=validated_data["max_num_recurring_bookings"]
         )
