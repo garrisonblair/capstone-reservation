@@ -108,7 +108,7 @@ class TestBookingPrivileges(TestCase):
         try:
             booking.save()
         except PrivilegeError as error:
-            self.assertEqual(error.message, self.p_c_booker.get_error_text("num_days_to_booking"))
+            self.assertEqual(error.message, self.p_c_group.get_error_text("num_days_to_booking"))
 
         self.assertEqual(len(Booking.objects.all()), 0)
 
@@ -156,6 +156,7 @@ class TestBookingPrivileges(TestCase):
         booking1.save()
 
         booking2 = Booking(booker=self.booker,
+                           student_group=self.group,
                            room=self.room,
                            date=date.today(),
                            start_time=time(13, 0, 0),
@@ -165,6 +166,6 @@ class TestBookingPrivileges(TestCase):
         try:
             booking2.save()
         except PrivilegeError as error:
-            self.assertEqual(error.message, self.p_c_booker.get_error_text("max_num_bookings"))
+            self.assertEqual(error.message, self.p_c_group.get_error_text("max_num_bookings"))
 
         self.assertEqual(len(Booking.objects.all()), 1)
