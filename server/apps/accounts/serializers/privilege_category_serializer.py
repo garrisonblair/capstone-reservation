@@ -7,7 +7,7 @@ class PrivilegeCategorySerializer(serializers.ModelSerializer):
     name = serializers.CharField()
     parent_category = serializers.PrimaryKeyRelatedField(queryset=PrivilegeCategory.objects.all())
     num_days_to_booking = serializers.IntegerField(allow_null=True)
-    can_make_recurring_booking = serializers.BooleanField(allow_null=True)
+    can_make_recurring_booking = serializers.NullBooleanField()
     max_num_bookings = serializers.IntegerField(allow_null=True)
     max_num_recurring_bookings = serializers.IntegerField(allow_null=True)
 

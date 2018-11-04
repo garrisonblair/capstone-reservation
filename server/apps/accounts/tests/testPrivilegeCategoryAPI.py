@@ -13,9 +13,9 @@ class TestPrivilegeCategoryAPI(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
 
-        self.user = User.objects.create_user(username='john',
-                                             email='jlennon@beatles.com',
-                                             password='glass onion')
+        self.user = User.objects.create_user(username='jerry',
+                                             email='jseinfeld@email.com',
+                                             password='constanza')
         self.user.save()
 
         self.category = PrivilegeCategory(name="Base Category")
@@ -40,7 +40,7 @@ class TestPrivilegeCategoryAPI(TestCase):
                                     },
                                     format="json")
 
-        force_authenticate(request, user=User.objects.get(username="john"))
+        force_authenticate(request, user=User.objects.get(username="jerry"))
 
         response = PrivilegeCategoryView.as_view()(request)
 
@@ -67,7 +67,7 @@ class TestPrivilegeCategoryAPI(TestCase):
                                     },
                                     format="json")
 
-        force_authenticate(request, user=User.objects.get(username="john"))
+        force_authenticate(request, user=User.objects.get(username="jerry"))
 
         response = PrivilegeCategoryView.as_view()(request)
 

@@ -26,7 +26,7 @@ class BookingView(APIView):
         serializer = BookingSerializer(data=booking_data)
 
         if not serializer.is_valid():
-            return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             try:
