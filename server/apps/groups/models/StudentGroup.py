@@ -6,7 +6,7 @@ from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 class StudentGroup(models.Model):
     name = models.CharField(max_length=50)
-    students = models.ManyToManyField(Booker)
+    bookers = models.ManyToManyField(Booker)
     is_verified = models.BooleanField(default=False)
 
     privilege_category = models.ForeignKey(PrivilegeCategory, null=True, on_delete=models.SET_NULL)

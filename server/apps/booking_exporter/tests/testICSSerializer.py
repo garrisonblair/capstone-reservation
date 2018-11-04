@@ -36,8 +36,8 @@ class testWebCalendarExporter(TestCase):
 
         group.save()
 
-        group.students.set(booker.booker_id)
-        group.students.set(booker2.booker_id)
+        group.bookers.set(booker.booker_id)
+        group.bookers.set(booker2.booker_id)
 
         self.booking2 = Booking(start_time=datetime.time(14, 0, 0),
                                 end_time=datetime.time(15, 0, 0),
