@@ -12,7 +12,7 @@ class RecurringBookingSerializer(serializers.ModelSerializer):
     booking_start_time = serializers.TimeField()
     booking_end_time = serializers.TimeField()
     room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
-    student_group = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all())
+    group = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all())
     booker = serializers.PrimaryKeyRelatedField(queryset=Booker.objects.all())
     skip_conflicts = serializers.BooleanField()
 
@@ -23,7 +23,7 @@ class RecurringBookingSerializer(serializers.ModelSerializer):
             start_time=validated_data["booking_start_time"],
             end_time=validated_data["booking_end_time"],
             room=validated_data["room"],
-            student_group=validated_data["student_group"],
+            group=validated_data["group"],
             booker=validated_data["booker"],
             skip_conflicts=validated_data["skip_conflicts"]
         )

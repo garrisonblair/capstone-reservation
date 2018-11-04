@@ -57,7 +57,7 @@ class CampOnView(APIView):
                 camp_on = new_camp_on_serializer.save()
 
                 new_booking = Booking(booker=camp_on.booker,
-                                      student_group=camp_on.camped_on_booking.student_group,
+                                      group=camp_on.camped_on_booking.group,
                                       room=camp_on.camped_on_booking.room,
                                       date=camp_on.camped_on_booking.date,
                                       start_time=camp_on.end_time,

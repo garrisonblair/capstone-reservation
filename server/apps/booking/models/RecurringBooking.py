@@ -9,7 +9,7 @@ from datetime import timedelta
 
 
 class RecurringBookingManager(models.Manager):
-    def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, student_group,
+    def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, group,
                                  booker, skip_conflicts):
         recurring_booking = self.create(
             start_date=start_date,
@@ -17,7 +17,7 @@ class RecurringBookingManager(models.Manager):
             booking_start_time=start_time,
             booking_end_time=end_time,
             room=room,
-            student_group=student_group,
+            group=group,
             booker=booker,
             skip_conflicts=skip_conflicts
         )
@@ -29,7 +29,7 @@ class RecurringBookingManager(models.Manager):
             try:
                 booking = Booking.objects.create_booking(
                     booker=recurring_booking.booker,
-                    student_group=recurring_booking.student_group,
+                    group=recurring_booking.group,
                     room=recurring_booking.room,
                     date=date,
                     start_time=recurring_booking.booking_start_time,
@@ -53,7 +53,7 @@ class RecurringBooking(models.Model):
     booking_start_time = models.TimeField()
     booking_end_time = models.TimeField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    student_group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     booker = models.ForeignKey(Booker, on_delete=models.CASCADE)
     skip_conflicts = models.BooleanField(default=False)
 
@@ -64,7 +64,7 @@ class RecurringBooking(models.Model):
         super(RecurringBooking, self).save(*args, **kwargs)
 
     def validate_model(self):
-        if not self.student_group.is_verified:
+        if not self.group.is_verified:
             raise ValidationError("You must book as part of a verified group to create a recurring booking")
         elif self.start_date >= self.end_date:
             raise ValidationError("Start date can not be after End date.")

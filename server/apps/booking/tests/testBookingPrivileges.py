@@ -60,7 +60,7 @@ class TestBookingPrivileges(TestCase):
         date_in_5_days = date.today() + timedelta(days=5)
 
         booking = Booking(booker=self.booker,
-                          student_group=self.group,
+                          group=self.group,
                           room=self.room,
                           date=date_in_5_days,
                           start_time=time(12, 0, 0),
@@ -98,7 +98,7 @@ class TestBookingPrivileges(TestCase):
         date_in_6_days = date.today() + timedelta(days=6)
 
         booking = Booking(booker=self.booker,
-                          student_group=self.group,
+                          group=self.group,
                           room=self.room,
                           date=date_in_6_days,
                           start_time=time(12, 0, 0),
@@ -147,7 +147,7 @@ class TestBookingPrivileges(TestCase):
     def testTooManyBookingsGroup(self):
 
         booking1 = Booking(booker=self.booker,
-                           student_group=self.group,
+                           group=self.group,
                            room=self.room,
                            date=date.today(),
                            start_time=time(12, 0, 0),
@@ -156,7 +156,7 @@ class TestBookingPrivileges(TestCase):
         booking1.save()
 
         booking2 = Booking(booker=self.booker,
-                           student_group=self.group,
+                           group=self.group,
                            room=self.room,
                            date=date.today(),
                            start_time=time(13, 0, 0),

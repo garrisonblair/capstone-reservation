@@ -13,10 +13,10 @@ from apps.accounts.exceptions import PrivilegeError
 
 
 class BookingManager(models.Manager):
-    def create_booking(self, booker, student_group, room, date, start_time, end_time, recurring_booking):
+    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking):
         booking = self.create(
             booker=booker,
-            student_group=student_group,
+            group=group,
             room=room,
             date=date,
             start_time=start_time,
@@ -28,10 +28,11 @@ class BookingManager(models.Manager):
 
 
 class Booking(models.Model, SubjectModel):
-    booker = models.ForeignKey(Booker, on_delete=models.CASCADE)  # type: Booker
-    student_group = models.ForeignKey(Group,
-                                      on_delete=models.CASCADE,
-                                      blank=True, null=True)  # type: Group
+    booker = models.ForeignKey(Booker,
+                               on_delete=models.CASCADE)  # type: Booker
+    group = models.ForeignKey(Group,
+                              on_delete=models.CASCADE,
+                              blank=True, null=True)  # type: Group
     room = models.ForeignKey(Room,
                              on_delete=models.CASCADE)
     date = models.DateField()
@@ -106,8 +107,8 @@ class Booking(models.Model, SubjectModel):
 
     def evaluate_privilege(self):
 
-        if self.student_group is not None:
-            booker_entity = self.student_group
+        if self.group is not None:
+            booker_entity = self.group
         else:
             booker_entity = self.booker
 

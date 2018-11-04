@@ -43,7 +43,7 @@ class testWebCalendarExporter(TestCase):
                                 end_time=datetime.time(15, 0, 0),
                                 date=datetime.date(2018, 10, 28),
                                 booker=booker,
-                                student_group=group,
+                                group=group,
                                 room=room)
 
         self.booking2.save()

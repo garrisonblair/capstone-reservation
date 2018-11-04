@@ -58,7 +58,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "12:00",
                                         "booking_end_time": "15:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -74,7 +74,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking1.start_time, self.start_time)
         self.assertEqual(booking1.end_time, self.end_time)
         self.assertEqual(booking1.room, self.room)
-        self.assertEqual(booking1.student_group, self.group)
+        self.assertEqual(booking1.group, self.group)
         self.assertEqual(booking1.booker, self.group.bookers.get(booker_id='j_lenn'))
 
         booking2 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=7))
@@ -82,7 +82,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking2.start_time, self.start_time)
         self.assertEqual(booking2.end_time, self.end_time)
         self.assertEqual(booking2.room, self.room)
-        self.assertEqual(booking2.student_group, self.group)
+        self.assertEqual(booking2.group, self.group)
         self.assertEqual(booking2.booker, self.group.bookers.get(booker_id='j_lenn'))
 
         booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
@@ -90,7 +90,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking3.start_time, self.start_time)
         self.assertEqual(booking3.end_time, self.end_time)
         self.assertEqual(booking3.room, self.room)
-        self.assertEqual(booking3.student_group, self.group)
+        self.assertEqual(booking3.group, self.group)
         self.assertEqual(booking3.booker, self.group.bookers.get(booker_id='j_lenn'))
 
     def testCreateRecurringBookingFailureDateStartAfterEnd(self):
@@ -102,7 +102,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "12:00",
                                         "booking_end_time": "15:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -121,7 +121,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "15:00",
                                         "booking_end_time": "12:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -140,7 +140,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "15:00",
                                         "booking_end_time": "12:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -178,7 +178,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "12:00",
                                         "booking_end_time": "15:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -204,7 +204,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "12:00",
                                         "booking_end_time": "15:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": True
                                     }, format="json")

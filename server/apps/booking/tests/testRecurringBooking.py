@@ -64,7 +64,7 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking1.start_time, self.start_time)
         self.assertEqual(booking1.end_time, self.end_time)
         self.assertEqual(booking1.room, self.room)
-        self.assertEqual(booking1.student_group, self.group)
+        self.assertEqual(booking1.group, self.group)
         self.assertEqual(booking1.booker, self.group.bookers.get(booker_id='00000001'))
 
         booking2 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=7))
@@ -72,7 +72,7 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking2.start_time, self.start_time)
         self.assertEqual(booking2.end_time, self.end_time)
         self.assertEqual(booking2.room, self.room)
-        self.assertEqual(booking2.student_group, self.group)
+        self.assertEqual(booking2.group, self.group)
         self.assertEqual(booking2.booker, self.group.bookers.get(booker_id='00000001'))
 
         booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
@@ -80,7 +80,7 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking3.start_time, self.start_time)
         self.assertEqual(booking3.end_time, self.end_time)
         self.assertEqual(booking3.room, self.room)
-        self.assertEqual(booking3.student_group, self.group)
+        self.assertEqual(booking3.group, self.group)
         self.assertEqual(booking3.booker, self.group.bookers.get(booker_id='00000001'))
 
     def testRecurringBookingCreationConflict(self):
@@ -194,7 +194,7 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(RecurringBooking.objects.count(), 1)
 
         # In the first week the booking should not be made, but will be made the following weeks
-        recurring_booking = RecurringBooking.objects.get(student_group=self.group)
+        recurring_booking = RecurringBooking.objects.get(group=self.group)
         self.assertEqual(recurring_booking.booking_set.count(), 2)
 
         booking2 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=7))
@@ -202,7 +202,7 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking2.start_time, self.start_time)
         self.assertEqual(booking2.end_time, self.end_time)
         self.assertEqual(booking2.room, self.room)
-        self.assertEqual(booking2.student_group, self.group)
+        self.assertEqual(booking2.group, self.group)
         self.assertEqual(booking2.booker, self.group.bookers.get(booker_id='00000001'))
 
         booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
@@ -210,5 +210,5 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking3.start_time, self.start_time)
         self.assertEqual(booking3.end_time, self.end_time)
         self.assertEqual(booking3.room, self.room)
-        self.assertEqual(booking3.student_group, self.group)
+        self.assertEqual(booking3.group, self.group)
         self.assertEqual(booking3.booker, self.group.bookers.get(booker_id='00000001'))
