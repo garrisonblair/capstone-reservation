@@ -49,12 +49,40 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.assertEqual(PrivilegeCategory.objects.count(), 2)
 
         created_category = PrivilegeCategory.objects.all()[1]
-        self.assertEqual(created_category.name, "Second Tier")
-        self.assertEqual(created_category.parent_category, self.category)
-        self.assertEqual(created_category.num_days_to_booking, 4)
-        self.assertEqual(created_category.can_make_recurring_booking, True)
-        self.assertEqual(created_category.max_num_bookings, 2)
-        self.assertEqual(created_category.max_num_recurring_bookings, 3)
+        self.assertEqual(created_category.get_parameter("name"), "Second Tier")
+        self.assertEqual(created_category.get_parameter("parent_category"), self.category)
+        self.assertEqual(created_category.get_parameter("num_days_to_booking"), 4)
+        self.assertEqual(created_category.get_parameter("can_make_recurring_booking"), True)
+        self.assertEqual(created_category.get_parameter("max_num_bookings"), 2)
+        self.assertEqual(created_category.get_parameter("max_num_recurring_bookings"), 3)
+
+    def testCreatePrivilegeCategorySuccessPartialParams(self):
+        request = self.factory.post("/privilege_categories",
+                                    {
+                                        "name": "Second Tier",
+                                        "parent_category": self.category.id,
+                                        "num_days_to_booking": None,
+                                        "can_make_recurring_booking": True,
+                                        "max_num_bookings": 2,
+                                        "max_num_recurring_bookings": 3
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(PrivilegeCategory.objects.count(), 2)
+
+        created_category = PrivilegeCategory.objects.all()[1]
+        self.assertEqual(created_category.get_parameter("name"), "Second Tier")
+        self.assertEqual(created_category.get_parameter("parent_category"), self.category)
+        # Uses parent category for num_days_to_booking
+        self.assertEqual(created_category.get_parameter("num_days_to_booking"), self.category.num_days_to_booking)
+        self.assertEqual(created_category.get_parameter("can_make_recurring_booking"), True)
+        self.assertEqual(created_category.get_parameter("max_num_bookings"), 2)
+        self.assertEqual(created_category.get_parameter("max_num_recurring_bookings"), 3)
 
     def testCreatePrivilegeCategoryInvalidPayload(self):
         request = self.factory.post("/privilege_categories",
