@@ -107,25 +107,31 @@ class Booking(models.Model, SubjectModel):
     def evaluate_privilege(self):
 
         if self.student_group is not None:
-            booking_entity = self.student_group
+            booker_entity = self.student_group
         else:
-            booking_entity = self.booker
+            booker_entity = self.booker
 
-        p_c = booking_entity.privilege_category  # type: PrivilegeCategory
+        # no checks if no category assigned
+        if booker_entity.privilege_category is None:
+            return
+
+        p_c = booker_entity.privilege_category  # type: PrivilegeCategory
 
         num_days_to_booking = p_c.get_parameter("num_days_to_booking")
-        max_bookings = p_c.get_parameter("max_number_bookings")
+        max_bookings = p_c.get_parameter("max_num_bookings")
 
+        # num_days_to_booking
         today = datetime.date.today()
 
         day_delta = self.date - today
-        if day_delta.days > num_days_to_booking:
+        if day_delta.days > num_days_to_booking and self.recurring_booking is None:
             raise PrivilegeError(p_c.get_error_text("num_days_to_booking"))
 
-        num_bookings = len(booking_entity.bookings)
+        # max_num_bookings
+        num_bookings = len(booker_entity.booking_set.all())
 
-        if num_bookings > max_bookings:
-            raise PrivilegeError(p_c.get_error_text("max_bookings"))
+        if num_bookings == max_bookings:
+            raise PrivilegeError(p_c.get_error_text("max_num_bookings"))
 
     def get_observers(self):
         return Booking.observers

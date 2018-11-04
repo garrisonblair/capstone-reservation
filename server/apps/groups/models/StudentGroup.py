@@ -9,4 +9,4 @@ class StudentGroup(models.Model):
     students = models.ManyToManyField(Booker)
     is_verified = models.BooleanField(default=False)
 
-    privilege_category = models.ForeignKey(PrivilegeCategory, on_delete=models.DO_NOTHING)
+    privilege_category = models.ForeignKey(PrivilegeCategory, null=True, on_delete=models.SET_NULL)

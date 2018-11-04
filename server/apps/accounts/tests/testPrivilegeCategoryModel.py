@@ -1,4 +1,4 @@
-from unittest import TestCase
+from django.test import TestCase
 
 from ..models.PrivilegeCategory import PrivilegeCategory
 
@@ -12,9 +12,6 @@ class TestPrivilegeCategoryModel(TestCase):
         self.category.max_num_bookings = 5
         self.category.max_num_recurring_bookings = 2
         self.category.save()
-
-    def tearDown(self):
-        self.category.delete()
 
     def testCreation(self):
 
