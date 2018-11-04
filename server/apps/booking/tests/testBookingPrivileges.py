@@ -50,7 +50,7 @@ class TestBookingPrivileges(TestCase):
         try:
             booking.save()
         except PrivilegeError:
-            self.fail("Booking should be saved.")
+            self.fail("Booking should be saved, no privilege contradiction.")
             return
 
         self.assertTrue(True)
@@ -70,7 +70,7 @@ class TestBookingPrivileges(TestCase):
         try:
             booking.save()
         except PrivilegeError:
-            self.fail("Booking should be saved.")
+            self.fail("Booking should be saved, no privilege contradiction.")
             return
 
         self.assertTrue(True)
