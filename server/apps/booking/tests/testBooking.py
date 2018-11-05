@@ -113,7 +113,7 @@ class TestBooking(TestCase):
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
 
     def testPassEndTimeSameAsStartTimeBooking(self):
-        # Case with existing time 12:00 to 13:00, compare to 11:00 to 12:00. No error should be found
+        # Case with existing time 12:00 to 13:00, compare to 11:00 to 12:00. No errors should be found
         start_time4 = datetime.strptime("11:00", "%H:%M").time()
         booking = Booking(booker=self.booker,
                           room=self.room,
@@ -131,7 +131,7 @@ class TestBooking(TestCase):
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 2)
 
     def testPassStartTimeSameAsEndTimeBooking(self):
-        # Case with existing time 12:00 to 13:00, compare to 11:00 to 12:00. No error should be found
+        # Case with existing time 12:00 to 13:00, compare to 11:00 to 12:00. No errors should be found
         end_time4 = datetime.strptime("14:00", "%H:%M").time()
         booking = Booking(booker=self.booker,
                           room=self.room,

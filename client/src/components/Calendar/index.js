@@ -249,7 +249,7 @@ class Calendar extends Component {
             date: date,
             start_time: campOn.start_time,
             end_time: campOn.end_time,
-            student: campOn.student,
+            booker: campOn.booker,
             room: room,
             id: `camp${campOn.camped_on_booking}`,
             isCampOn: true
@@ -397,7 +397,7 @@ class Calendar extends Component {
       bookingsDiv.push(
         <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} key={booking.id} data-id={booking.id} data-start-time= {booking.start_time} data-end-time={booking.end_time} onClick={() => this.handleClickBooking(booking)}>
           {/* { !!booking.isCampOn ? <span>[CAMP ON]</span> : null }
-          <div className="calendar__booking__booker">{booking.student} </div>
+          <div className="calendar__booking__booker">{booking.booker} </div>
           <div className="calendar__booking__time">
             <div>{booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time}</div>
             <div>{booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}</div>
@@ -406,7 +406,7 @@ class Calendar extends Component {
           {booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time} - {booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}
           <br/>
           { !!booking.isCampOn ? <span>[CAMP ON]<br/></span> : null }
-          <span>{booking.student}</span>
+          <span>{booking.booker}</span>
         </div>
       )
     });
