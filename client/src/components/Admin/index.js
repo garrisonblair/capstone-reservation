@@ -209,7 +209,7 @@ class Admin extends Component {
   render() {
     const {responseModal, responseModalText, responseModalTitle, responseModalType} = this.state
     return (
-      <div>
+      <div id="admin">
         {this.renderSettings()}
         {this.renderLoginModal()}
       </div>
