@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import settings from '../../config/settings';
-import axios from 'axios';
+import sweetAlert from 'sweetalert2';
+import api from '../../utils/api';
 import './Admin.scss';
 import {Button, Form, Modal, Input, Header} from 'semantic-ui-react';
+import AdminRequired from '../HOC/AdminRequired';
 import {getTokenHeader} from '../../utils/requestHeaders';
 
 
@@ -14,7 +15,6 @@ class Admin extends Component {
     webcalendarUsername: '',
     webcalendarPassword: ''
   }
-  sweetAlert = require('sweetalert2');
 
   componentDidMount = () => {
     document.title = 'Capstone Settings'
@@ -33,10 +33,7 @@ class Admin extends Component {
   /************ REQUESTS *************/
 
   getSettings() {
-    axios({
-      method: 'GET',
-      url: `${settings.API_ROOT}/settings`
-    })
+    api.getAdminSettings()
     .then((response) => {
       this.setState({
         webcalendarBackup: response.data.is_webcalendar_backup_active
@@ -52,30 +49,24 @@ class Admin extends Component {
 
   saveSettings = () => {
     const {webcalendarPassword, webcalendarUsername} = this.state
-    const headers = getTokenHeader();
+
     let data = {
       is_webcalendar_backup_active: this.state.webcalendarBackup ? 'True' : 'False',
       webcalendar_username: webcalendarUsername,
       webcalendar_password: webcalendarPassword
 
     }
-    axios({
-      method: 'PATCH',
-      url: `${settings.API_ROOT}/settings`,
-      data,
-      headers,
-      withCredentials: true,
-    })
+
+    api.updateAdminSettings(data)
     .then((response) => {
-      this.sweetAlert('Completed',
+      sweetAlert('Completed',
           `Settings were successfuly saved.`,
           'success')
       this.toggleLoginModal();
     })
     .catch(function (error) {
-      console.log(error);
       if (error.message.includes('401')) {
-        this.sweetAlert('Autenthication error',
+        sweetAlert('Autenthication error',
           'The credentials you entered are invalid.',
           'error')
       }
@@ -96,7 +87,6 @@ class Admin extends Component {
     let setting = e.target.getAttribute('value');
     this.setState({[setting]: !this.state[setting]}, () => {
       if(setting == "webcalendarBackup") {
-        console.log(this.state.webcalendarBackup)
         this.toggleLoginModal();
       }
     })
@@ -133,7 +123,7 @@ class Admin extends Component {
 
   renderNav() {
     const options = ['Settings', 'Stats']
-    const menu = options.map((option) => 
+    const menu = options.map((option) =>
       <li className={this.state.current == option ? "active" : ""} key={option} value={option} onClick={this.handleClickNav}>{option}</li>
     )
     return <ul className="admin__navigation">{menu}</ul>
@@ -143,7 +133,7 @@ class Admin extends Component {
     const {current} = this.state
     let content
     switch (current) {
-      case "Settings": 
+      case "Settings":
         content = this.renderContentSettings()
         return content
       case "Stats":
@@ -214,17 +204,17 @@ class Admin extends Component {
         </Modal>
     )
   }
-  
+
 
   render() {
     const {responseModal, responseModalText, responseModalTitle, responseModalType} = this.state
     return (
-      <div>
+      <div id="admin">
         {this.renderSettings()}
         {this.renderLoginModal()}
-      </div>     
+      </div>
     )
   }
 }
 
-export default Admin;
+export default AdminRequired(Admin);

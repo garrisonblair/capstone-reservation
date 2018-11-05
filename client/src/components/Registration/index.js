@@ -1,9 +1,10 @@
-import axios from 'axios';
 import React, {Component} from 'react';
-import settings from '../../config/settings';
-import './Registration.scss';
-import SweetAlert from 'sweetalert2-react';
+import PropTypes from 'prop-types';
 import {Form, Input, Button, Icon, Step, Loader} from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
+import api from '../../utils/api';
+import './Registration.scss';
+
 
 class Registration extends Component {
 
@@ -17,7 +18,7 @@ class Registration extends Component {
   }
 
   componentWillMount(){
-    //This is only for testing.
+    // This is only for testing.
     if(this.props.showLoaderForTest){
       this.setState({showLoader:true});
     }
@@ -36,45 +37,45 @@ class Registration extends Component {
   }
 
   sendEmail = () => {
-    this.setState({showLoader: true})
-    const data = {"username": `${this.state.encsUsername}`};
-    console.log(data);
-    axios({
-      method: 'POST',
-      url: `${settings.API_ROOT}/register`,
-      data: data
-    })
-      .then((response) => {
-        if (response.status == 201) {
-          this.setState({
-            showLoader: false,
-            showModal: true,
-            modalTitle: 'A verification link has been sent to your ENCS email account.',
-            modalText: 'Please click on the link to continue the registration process.',
-            modalType: 'success',
-          })
-        }
+    const {encsUsername} = this.state
 
-      })
-      .catch((error) => {
-        this.setState({showLoader: false})
-        if (error.message.includes('302')) {
-          this.setState({
-            showModal: true,
-            modalTitle: 'You are already registered',
-            modalText: 'A verification email has already been sent to your ENCS email. Please double check.',
-            modalType: 'warning',
-          })
-        }
-        else if (error.message.includes('400')) {
-          this.setState({
-            showModal: true,
-            modalTitle: 'Error',
-            modalText: "We couldn't find this user in the system.",
-            modalType: 'error',
-          })
-        }
-      })
+    this.setState({showLoader: true})
+
+    api.register(encsUsername)
+    .then((response) => {
+      if (response.status == 201) {
+        this.setState({
+          showLoader: false
+        })
+        sweetAlert(
+          'A verification link has been sent to your ENCS email account.',
+          'Please click on the link to continue the registration process.',
+          'success'
+        )
+      }
+    })
+    .catch((error) => {
+      this.setState({showLoader: false})
+      if (error.message.includes('302')) {
+        this.setState({
+          showModal: true
+        })
+        sweetAlert(
+          'You are already registered',
+          'A verification email has already been sent to your ENCS email. Please double check.',
+          'warning',
+        )
+      } else if (error.message.includes('400')) {
+        this.setState({
+          showModal: true
+        })
+        sweetAlert(
+          'Error',
+          "We couldn't find this user in the system.",
+          'error'
+        )
+      }
+    })
   }
 
   renderLoader() {
@@ -132,16 +133,13 @@ class Registration extends Component {
         <div className="container">
           {this.state.showLoader ? this.renderLoader() : this.renderMainForm()}
         </div>
-        <SweetAlert
-          show={this.state.showModal}
-          title={this.state.modalTitle}
-          text={this.state.modalText}
-          type={this.state.modalType}
-          onConfirm={this.closeModal}
-        />
       </div>
     )
   }
+}
+
+Registration.propTypes = {
+  showFormForTesting: PropTypes.bool
 }
 
 export default Registration;
