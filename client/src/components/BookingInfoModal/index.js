@@ -200,7 +200,7 @@ class BookingInfoModal extends Component {
           <div className="modal-description">
             <h3 className="header--inline">
               <Icon name="user" /> {" "}
-              {`by ${booking.student}`}
+              {`by ${booking.booker}`}
             </h3>
           </div>
           <div className="ui divider" />

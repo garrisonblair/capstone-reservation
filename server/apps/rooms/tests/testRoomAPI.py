@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from django.contrib.auth.models import User
 
-from apps.accounts.models.Student import Student
+from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
 
@@ -19,9 +19,9 @@ class RoomAPITest(TestCase):
                                              password='glass onion')
         self.user.save()
 
-        student = Student(student_id="j_lenn")
-        student.user = self.user
-        student.save()
+        booker = Booker(booker_id="j_lenn")
+        booker.user = self.user
+        booker.save()
 
         room1 = Room(room_id="H833-17", capacity=4, number_of_computers=1)
         room1.save()
@@ -29,7 +29,7 @@ class RoomAPITest(TestCase):
         room2 = Room(room_id="H833-03", capacity=8, number_of_computers=2)
         room2.save()
 
-        booking = Booking(student=student, room=room1, date="2018-10-22", start_time="12:00", end_time="16:00")
+        booking = Booking(booker=booker, room=room1, date="2018-10-22", start_time="12:00", end_time="16:00")
         booking.save()
 
     def testGetAllRooms(self):

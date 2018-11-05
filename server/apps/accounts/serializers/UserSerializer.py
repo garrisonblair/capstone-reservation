@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
-from apps.accounts.models.Student import Student
+from apps.accounts.models.Booker import Booker
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -45,16 +45,16 @@ class UserSerializerLogin(UserSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
-    student_id = serializers.SerializerMethodField()
+    booker_id = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'student_id', 'first_name', 'last_name', 'email')
+        fields = ('id', 'username', 'booker_id', 'first_name', 'last_name', 'email')
 
-    def get_student_id(self, user):
+    def get_booker_id(self, user):
         """
             Get student ID
         """
 
-        student = Student.objects.get(user=user)
-        return student.student_id
+        student = Booker.objects.get(user=user)
+        return student.booker_id

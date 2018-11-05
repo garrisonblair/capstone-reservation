@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models.Student import Student
+from .models.Booker import Booker
 from .models.VerificationToken import VerificationToken
 
 
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('user_id', 'student_id', 'user', 'email', 'first_name', 'last_name')
+class BookerAdmin(admin.ModelAdmin):
+    list_display = ('user_id', 'booker_id', 'user', 'email', 'first_name', 'last_name')
 
     def user_id(self, instance):
         return instance.user.id
@@ -29,5 +29,5 @@ class VerificationTokenAdmin(admin.ModelAdmin):
         return instance.user.email
 
 
-admin.site.register(Student, StudentAdmin)
+admin.site.register(Booker, BookerAdmin)
 admin.site.register(VerificationToken, VerificationTokenAdmin)

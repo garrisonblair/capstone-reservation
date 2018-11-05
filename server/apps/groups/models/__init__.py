@@ -1,1 +1,1 @@
-from .StudentGroup import StudentGroup
+from .Group import Group

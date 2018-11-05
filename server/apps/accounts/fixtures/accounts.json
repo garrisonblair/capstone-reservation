@@ -1,13 +1,13 @@
 [
 {
-  "model": "accounts.student",
+  "model": "accounts.booker",
   "pk": "11111111",
   "fields": {
     "user": 2
   }
 },
 {
-  "model": "accounts.student",
+  "model": "accounts.booker",
   "pk": "22222222",
   "fields": {
     "user": 3

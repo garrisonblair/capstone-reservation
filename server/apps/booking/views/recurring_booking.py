@@ -9,12 +9,12 @@ from apps.booking.serializers.recurring_booking_serializer import RecurringBooki
 
 class RecurringBookingView(APIView):
     def post(self, request):
-        # Must be logged in as student
-        if not request.user or not request.user.student:
+        # Must be logged in as booker
+        if not request.user or not request.user.booker:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         recurring_booking_data = dict(request.data)
-        recurring_booking_data["student"] = request.user.student.student_id
+        recurring_booking_data["booker"] = request.user.booker.booker_id
 
         serializer = RecurringBookingSerializer(data=recurring_booking_data)
 

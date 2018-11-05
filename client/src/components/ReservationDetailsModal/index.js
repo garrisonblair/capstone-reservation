@@ -178,8 +178,8 @@ class ReservationDetailsModal extends Component {
         "booking_start_time": `${this.state.startHour}:${this.state.startMinute}`,
         "booking_end_time": `${this.state.endHour}:${this.state.endMinute}`,
         "room": this.props.selectedRoomId,
-        "student_group": 1,
-        "student": response.data.id,
+        "group": 1,
+        "booker": response.data.id,
         "skip_conflicts": skipConflicts ? "True" : "False"
       };
       axios({
