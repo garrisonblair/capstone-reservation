@@ -55,7 +55,7 @@ class RecurringBooking(models.Model):
     booking_start_time = models.TimeField()
     booking_end_time = models.TimeField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
     booker = models.ForeignKey(Booker, on_delete=models.CASCADE)
     skip_conflicts = models.BooleanField(default=False)
 
@@ -67,9 +67,7 @@ class RecurringBooking(models.Model):
         super(RecurringBooking, self).save(*args, **kwargs)
 
     def validate_model(self):
-        if not self.group.is_verified:
-            raise ValidationError("You must book as part of a verified group to create a recurring booking")
-        elif self.start_date >= self.end_date:
+        if self.start_date >= self.end_date:
             raise ValidationError("Start date can not be after End date.")
         elif self.end_date < self.start_date + timedelta(days=7):
             raise ValidationError("You must book for at least two consecutive weeks.")
