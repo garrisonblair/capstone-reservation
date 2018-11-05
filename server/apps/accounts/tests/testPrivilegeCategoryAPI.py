@@ -1,4 +1,4 @@
-from unittest import TestCase
+from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
@@ -25,10 +25,6 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.category.max_bookings = 5
         self.category.max_recurring_bookings = 0
         self.category.save()
-
-    def tearDown(self):
-        self.user.delete()
-        self.category.delete()
 
     def testCreatePrivilegeCategorySuccess(self):
         request = self.factory.post("/privilege_categories",
@@ -166,8 +162,6 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         response = PrivilegeCategoryView.as_view()(request)
 
-        self.category1.delete()
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_categories = response.data
         self.assertEqual(len(returned_categories), 2)
@@ -190,8 +184,6 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         response = PrivilegeCategoryView.as_view()(request)
 
-        self.category1.delete()
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_categories = response.data
         self.assertEqual(len(returned_categories), 1)
@@ -213,8 +205,6 @@ class TestPrivilegeCategoryAPI(TestCase):
         force_authenticate(request, user=User.objects.get(username="jerry"))
 
         response = PrivilegeCategoryView.as_view()(request)
-
-        self.category1.delete()
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
