@@ -38,7 +38,7 @@ function verify(token) {
   })
 }
 
-function getMyUser(token) {
+function getMyUser() {
   const headers = getTokenHeader();
   return axios({
     method: 'GET',

@@ -2,8 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Button, Dropdown, Header, Icon, Modal} from 'semantic-ui-react';
 import CampOnForm from './CampOnForm.js';
-import sweetAlert from 'sweetalert2';
-import api from '../../utils/api';
+import EditBookingForm from './EditBookingForm.js';
 import './BookingInfoModal.scss';
 
 
@@ -19,6 +18,7 @@ class BookingInfoModal extends Component {
     });
   }
 
+  //Close the modal if any api POST requests succeeded
   closeModalWithCampOn = () => {
     this.props.onCloseWithCampOn();
     this.setState({
@@ -30,6 +30,7 @@ class BookingInfoModal extends Component {
 
   checkCamponPossible(booking) {
     if(booking.id) {
+      //TODO: Check if it's the same user as the one who created the booking
       let currentDate = new Date();
       let currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}`;
       let bookingEndTime = booking.end_time.replace(/:/g, '');
@@ -42,6 +43,12 @@ class BookingInfoModal extends Component {
     } else {
       return false;
     }
+  }
+
+  // TODO: Put the test to see if the user match.
+  checkEditBooking(booking) {
+    return true
+    // return booking.booker == localStorage.getItem('CapstoneReservationUser')
   }
 
   /************* COMPONENT LIFE CYCLE *************/
@@ -57,7 +64,7 @@ class BookingInfoModal extends Component {
   /************* COMPONENT RENDERING *************/
 
   renderDescription() {
-    const {booking, selectedRoomName} = this.props;
+    const {booking} = this.props;
     let camponPossible = this.checkCamponPossible(booking);
 
     return (
@@ -83,7 +90,7 @@ class BookingInfoModal extends Component {
             </h3>
           </div>
           <div className="ui divider" />
-          {camponPossible ? <CampOnForm booking={booking} selectedRoomName={selectedRoomName} onCloseWithCampOn={this.closeModalWithCampOn}/> : null}
+          {this.renderForm(booking)}
           <div>
             <Button content='Close' secondary onClick={this.closeModal} />
           </div>
@@ -92,52 +99,16 @@ class BookingInfoModal extends Component {
     )
   }
 
-  renderCampOnForm() {
-    const {hourOptions, minuteOptions, reservedOptions, endHour, endMinute} = this.state;
-    return(
-      <div>
-        <div className="modal-description">
-          <h3 className="header--inline">
-            <span>Camp on until  </span>
-          </h3>
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder='hh'
-            options={hourOptions}
-            onChange={this.handleEndHourChange}
-            defaultValue={endHour}
-          />
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder='mm'
-            options={minuteOptions}
-            onChange={this.handleEndMinuteChange}
-            defaultValue={endMinute}
-          />
-        </div>
-        <div className="modal-description">
-            <h3 className="header--inline">
-              <Icon name="user" /> {" "}
-              {`by `}
-            </h3>
-            <Dropdown
-              selection
-              compact
-              className="dropdown--fixed-width"
-              placeholder='hh'
-              options={reservedOptions}
-              defaultValue={reservedOptions[0].value}
-            />
-          </div>
-          <Button content='Camp on' primary onClick={this.handleSubmit} />
-          <div className="ui divider" />
-      </div>
-
-    )
+  renderForm(booking) {
+    if(this.checkEditBooking(booking)) {
+      return <EditBookingForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithEditBooking={this.closeModalWithCampOn}/>
+    } else {
+      if(this.checkCamponPossible(booking)) {
+        return <CampOnForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithCampOn={this.closeModalWithCampOn}/>
+      } else {
+        return null
+      }
+    }
   }
 
   render() {

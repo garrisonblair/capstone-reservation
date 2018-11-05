@@ -102,7 +102,6 @@ class CampOnForm extends Component {
 
   handleSubmit = () => {
     // Verify requirements before sending the POST request
-    this.setState({endHour: "22"})
     try {
       this.verifyReservationTimes();
     }
