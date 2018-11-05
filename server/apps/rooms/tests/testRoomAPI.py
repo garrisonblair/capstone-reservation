@@ -1,11 +1,13 @@
 from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
+from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
 
 from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
+
 
 from ..views.room import RoomView
 
@@ -83,6 +85,8 @@ class RoomAPITest(TestCase):
 
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         error_msg = "Invalid times: start time must be before end time"
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -96,6 +100,8 @@ class RoomAPITest(TestCase):
 
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         error_msg = "Invalid times: please supply a start time and an end time"
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -108,6 +114,8 @@ class RoomAPITest(TestCase):
                                    }, format="json")
 
         response = RoomView.as_view()(request)
+
+        force_authenticate(request, user=User.objects.get(username="john"))
 
         error_msg = "Invalid times: please supply a start time and an end time"
 
@@ -123,6 +131,8 @@ class RoomAPITest(TestCase):
 
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         error_msg = "Invalid parameters, please input parameters in the YYYY-MM-DD HH:mm format"
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -136,6 +146,8 @@ class RoomAPITest(TestCase):
                                        "number_of_computers": '2'
                                     }, format="json")
         response = RoomView.as_view()(request)
+
+        force_authenticate(request, user=User.objects.get(username="john"))
 
         error_msg = "Invalid room. Please provide an existing room"
 
@@ -151,6 +163,8 @@ class RoomAPITest(TestCase):
                                     }, format="json")
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         error_msg = "Invalid room. Please provide an existing room"
 
         self.assertEqual(response.data, error_msg)
@@ -165,6 +179,8 @@ class RoomAPITest(TestCase):
                                     }, format="json")
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def testRoomUpdateRoomInvalidRoomIdNoRoomId(self):
@@ -175,6 +191,8 @@ class RoomAPITest(TestCase):
                                        "number_of_computers": '2'
                                     }, format="json")
         response = RoomView.as_view()(request)
+
+        force_authenticate(request, user=User.objects.get(username="john"))
 
         error_msg = "Invalid room. Please provide an existing room"
 
@@ -190,6 +208,8 @@ class RoomAPITest(TestCase):
                                     }, format="json")
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         error_msg = "Invalid room. Please provide an existing room"
 
         self.assertEqual(response.data, error_msg)
@@ -204,6 +224,8 @@ class RoomAPITest(TestCase):
                                     }, format="json")
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def testRoomUpdateValidNumberOfComputers(self):
@@ -215,6 +237,8 @@ class RoomAPITest(TestCase):
                                     }, format="json")
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNegativeNumber(self):
@@ -225,6 +249,8 @@ class RoomAPITest(TestCase):
                                        "number_of_computers": '-1'
                                     }, format="json")
         response = RoomView.as_view()(request)
+
+        force_authenticate(request, user=User.objects.get(username="john"))
 
         error_msg = "Invalid room. Please provide an existing room"
 
@@ -240,6 +266,8 @@ class RoomAPITest(TestCase):
                                     }, format="json")
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         error_msg = "Invalid room. Please provide an existing room"
 
         self.assertEqual(response.data, error_msg)
@@ -254,6 +282,8 @@ class RoomAPITest(TestCase):
                                     }, format="json")
         response = RoomView.as_view()(request)
 
+        force_authenticate(request, user=User.objects.get(username="john"))
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def testUpdateCapacityInvalidCapacityNegativeNumber(self):
@@ -264,6 +294,8 @@ class RoomAPITest(TestCase):
                                        "number_of_computers": '2'
                                     }, format="json")
         response = RoomView.as_view()(request)
+
+        force_authenticate(request, user=User.objects.get(username="john"))
 
         error_msg = "Invalid room. Please provide an existing room"
 
@@ -278,6 +310,8 @@ class RoomAPITest(TestCase):
                                        "number_of_computers": '2'
                                     }, format="json")
         response = RoomView.as_view()(request)
+
+        force_authenticate(request, user=User.objects.get(username="john"))
 
         error_msg = "Invalid room. Please provide an existing room"
 
