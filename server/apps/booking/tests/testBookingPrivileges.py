@@ -93,7 +93,7 @@ class TestBookingPrivileges(TestCase):
         except PrivilegeError as error:
             self.assertEqual(error.message, self.p_c_booker.get_error_text("max_days_until_booking"))
 
-        self.assertEqual(len(Booking.objects.all()), 0)
+        self.assertEqual(self.group.booking_set.count(), 0)
 
     def testBookingTooFarInFutureGroup(self):
 
@@ -112,7 +112,7 @@ class TestBookingPrivileges(TestCase):
         except PrivilegeError as error:
             self.assertEqual(error.message, self.p_c_group.get_error_text("max_days_until_booking"))
 
-        self.assertEqual(len(Booking.objects.all()), 0)
+        self.assertEqual(self.group.booking_set.count(), 0)
 
     def testTooManyBookingsBooker(self):
 
@@ -147,7 +147,7 @@ class TestBookingPrivileges(TestCase):
             except PrivilegeError as error:
                 self.assertEqual(error.message, self.p_c_booker.get_error_text("max_bookings"))
 
-        self.assertEqual(Booking.objects.all().count(), 2)
+        self.assertEqual(self.booker.booking_set.count(), 2)
 
     def testTooManyBookingsGroup(self):
 
@@ -176,4 +176,4 @@ class TestBookingPrivileges(TestCase):
             except PrivilegeError as error:
                 self.assertEqual(error.message, self.p_c_group.get_error_text("max_bookings"))
 
-        self.assertEqual(Booking.objects.all().count(), 1)
+        self.assertEqual(self.group.booking_set.count(), 1)
