@@ -1,6 +1,4 @@
 import datetime
-import unittest
-from unittest import mock
 
 from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory
@@ -13,7 +11,7 @@ from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 from ..models.CampOn import CampOn
 from ..views.campon import CampOnView
-from apps.util.mock_datetime import mock_datetime
+from utils.mock_datetime import mock_datetime
 
 
 class CampOnAPITest(TestCase):

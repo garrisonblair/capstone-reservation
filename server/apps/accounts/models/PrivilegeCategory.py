@@ -1,7 +1,9 @@
 from django.db import models
 
+from utils.AbstractPrivilege import AbstractPrivilege
 
-class PrivilegeCategory(models.Model):
+
+class PrivilegeCategory(models.Model, AbstractPrivilege):
     name = models.CharField(max_length=100, blank=False, unique=True)
     parent_category = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE)
 

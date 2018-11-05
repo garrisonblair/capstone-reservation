@@ -8,7 +8,7 @@ from apps.rooms.models.Room import Room
 from ..models.Booking import RecurringBooking
 from apps.groups.models.Group import Group
 from apps.accounts.exceptions import PrivilegeError
-from apps.util.mock_datetime import mock_datetime
+from utils.mock_datetime import mock_datetime
 
 
 class TestBookingPrivileges(TestCase):
@@ -17,6 +17,8 @@ class TestBookingPrivileges(TestCase):
         self.p_c_booker = PrivilegeCategory(name="Booker Category")
         self.p_c_booker.max_days_until_booking = 3
         self.p_c_booker.max_bookings = 2
+        self.p_c_booker.booking_start_time = time(9, 0, 0)
+        self.p_c_booker.booking_end_time = time(22, 0, 0)
         self.p_c_booker.save()
 
         self.booker = Booker(booker_id="11111111", privilege_category=self.p_c_booker)
@@ -25,6 +27,8 @@ class TestBookingPrivileges(TestCase):
         self.p_c_group = PrivilegeCategory(name="Group Category")
         self.p_c_group.max_days_until_booking = 5
         self.p_c_group.max_bookings = 1
+        self.p_c_group.booking_start_time = time(8, 0, 0)
+        self.p_c_group.booking_end_time = time(23, 0, 0)
         self.p_c_group.save()
 
         self.group = Group(name="Group 1",
