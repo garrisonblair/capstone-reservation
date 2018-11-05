@@ -1,9 +1,11 @@
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from django.core.exceptions import ValidationError
 
+from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.serializers.privilege_category_serializer import PrivilegeCategorySerializer
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 

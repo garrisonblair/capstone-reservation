@@ -129,6 +129,9 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.assertEqual(PrivilegeCategory.objects.count(), 1)
 
     def testCreatePrivilegeCategoryNotAuthorized(self):
+        self.user.is_superuser = False
+        self.user.save()
+
         request = self.factory.post("/privilege_categories",
                                     {
                                         "name": "Second Tier",
@@ -139,6 +142,8 @@ class TestPrivilegeCategoryAPI(TestCase):
                                         "max_recurring_bookings": 3
                                     },
                                     format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
 
         response = PrivilegeCategoryView.as_view()(request)
 
@@ -207,27 +212,6 @@ class TestPrivilegeCategoryAPI(TestCase):
         response = PrivilegeCategoryView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def testCreateFailureUnauthorized(self):
-        self.user.is_superuser = False
-        self.user.save()
-
-        request = self.factory.post("/privilege_categories",
-                                    {
-                                        "name": "Second Tier",
-                                        "parent_category": self.category.id,
-                                        "max_days_until_booking": None,
-                                        "can_make_recurring_booking": True,
-                                        "max_bookings": 2,
-                                        "max_recurring_bookings": 3
-                                    },
-                                    format="json")
-
-        force_authenticate(request, user=User.objects.get(username="jerry"))
-
-        response = PrivilegeCategoryView.as_view()(request)
-
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def testViewFailureUnauthorized(self):
         self.user.is_superuser = False
