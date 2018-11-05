@@ -88,9 +88,20 @@ class RoomView(APIView):
             room = Room.objects.get(room_id=room_data['room_id'])
         except Room.DoesNotExist:
             return Response("Invalid room. Please provide an existing room",
-                            status=status.HTTP_404_NOT_FOUND)
+                            status=status.HTTP_400_BAD_REQUEST)
 
         capacity = room_data['capacity']
+
+        if not isinstance(capacity, int):
+            return Response("Invalid capacity. Please enter a positive integer value or zero",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        number_of_computers = room_data['number_of_computers']
+
+        if not isinstance(number_of_computers, int):
+            return Response("Invalid number of computers. Please enter a positive integer value or zero",
+                            status=status.HTTP_400_BAD_REQUEST)
+
         if capacity < 0:
             return Response("Invalid capacity. Please enter a positive integer value or zero",
                             status=status.HTTP_400_BAD_REQUEST)
@@ -99,8 +110,7 @@ class RoomView(APIView):
             return Response("Invalid capacity. Please enter a positive integer value or zero",
                             status=status.HTTP_400_BAD_REQUEST)
 
-        number_of_computers = room_data['number_of_computers']
-        if number_of_computers < 0:
+        if int(number_of_computers) < 0:
             return Response("Invalid number of computers. Please enter a positive integer value or zero",
                             status=status.HTTP_400_BAD_REQUEST)
 
@@ -108,18 +118,25 @@ class RoomView(APIView):
             return Response("Invalid Number of computers. Please enter a positive integer value or zero",
                             status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = RoomSerializer(data=room_data)
+        # serializer = RoomSerializer(data=room_data)
+        room_id = room_data.get('room_id')
+        room = Room.objects.get(room_id=room_id)
+        room.capacity = capacity
+        room.number_of_computers = number_of_computers
 
-        if not serializer.is_valid():
-            return Response(serializer.error_messages,
-                            status=status.HTTP_400_BAD_REQUEST)
+        # if not serializer.is_valid():
+        #     print('D')
+        #     print(serializer.errors)
+        #     return Response(serializer.errors,
+        #                     status=status.HTTP_400_BAD_REQUEST)
 
-        else:
-            try:
-                room = serializer.save()
-                return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
-            except ValidationError as error:
-                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+        # else:
+        try:
+            room.save()
+            return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+        except ValidationError as error:
+            print('E')
+            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
     @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
     def delete(self, request, *args, **kwargs):
@@ -135,7 +152,9 @@ class RoomView(APIView):
                             status=status.HTTP_404_NOT_FOUND)
 
         try:
-            room.delete_room()
+            room.delete()
             return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
         except ValidationError as error:
-            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+            print(error.message)
+            print('hello')
+            return Response(error.message, status=status.HTTP_400_BAD_REQUEST)

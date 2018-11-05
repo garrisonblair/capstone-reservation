@@ -8,7 +8,6 @@ from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
 
-
 from ..views.room import RoomView
 
 
@@ -21,18 +20,26 @@ class RoomAPITest(TestCase):
                                              password='glass onion')
         self.user.save()
 
-        booker = Booker(booker_id="j_lenn")
-        booker.user = self.user
-        booker.save()
+        self.booker = Booker(booker_id="j_lenn")
+        self.booker.user = self.user
+        self.booker.save()
 
-        room1 = Room(room_id="H833-17", capacity=4, number_of_computers=1)
-        room1.save()
+        self.room1 = Room(room_id="H833-17",
+                          capacity=4,
+                          number_of_computers=1)
+        self.room1.save()
 
-        room2 = Room(room_id="H833-03", capacity=8, number_of_computers=2)
-        room2.save()
+        self.room2 = Room(room_id="H833-03",
+                          capacity=8,
+                          number_of_computers=2)
+        self.room2.save()
 
-        booking = Booking(booker=booker, room=room1, date="2018-10-22", start_time="12:00", end_time="16:00")
-        booking.save()
+        self.booking = Booking(booker=self.booker,
+                               room=self.room1,
+                               date="2018-10-22",
+                               start_time="12:00",
+                               end_time="16:00")
+        self.booking.save()
 
     def testGetAllRooms(self):
         request = self.factory.get("/room")
@@ -83,9 +90,9 @@ class RoomAPITest(TestCase):
                                        "end_date_time": '2018-10-22 11:00'
                                    }, format="json")  # start time after end time
 
-        response = RoomView.as_view()(request)
-
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         error_msg = "Invalid times: start time must be before end time"
 
@@ -129,9 +136,9 @@ class RoomAPITest(TestCase):
                                        "end_date_time": '1234'
                                    }, format="json")
 
-        response = RoomView.as_view()(request)
-
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         error_msg = "Invalid parameters, please input parameters in the YYYY-MM-DD HH:mm format"
 
@@ -139,31 +146,37 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.data, error_msg)
 
     def testRoomDeleteInvalidRoomIdNoRoomId(self):
-        request = self.factory.post("/room",
-                                    {
-                                       "room_id": '',
-                                       "capacity": '4',
-                                       "number_of_computers": '2'
-                                    }, format="json")
-        response = RoomView.as_view()(request)
+        self.user.is_superuser = True
+        self.user.save()
+
+        request = self.factory.delete("/room",
+                                      {
+                                          "room_id": '',
+                                          "capacity": '4',
+                                          "number_of_computers": '2'
+                                      }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         error_msg = "Invalid room. Please provide an existing room"
 
-        self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data, error_msg)
 
     def testRoomDeleteInvalidRoomIdNegativeId(self):
-        request = self.factory.post("/room",
-                                    {
-                                       "room_id": '-99',
-                                       "capacity": '4',
-                                       "number_of_computers": '2'
-                                    }, format="json")
-        response = RoomView.as_view()(request)
+
+        request = self.factory.delete("/room",
+                                      {
+                                          "room_id": '-99',
+                                          "capacity": '4',
+                                          "number_of_computers": '2'
+                                      }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         error_msg = "Invalid room. Please provide an existing room"
 
@@ -171,88 +184,93 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def testRoomDeleteValidRoomId(self):
-        request = self.factory.post("/room",
-                                    {
-                                       "room_id": '19',
-                                       "capacity": '4',
-                                       "number_of_computers": '2'
-                                    }, format="json")
-        response = RoomView.as_view()(request)
+        request = self.factory.delete("/room",
+                                      {
+                                          "room_id": 'H833-03',
+                                          "capacity": 4,
+                                          "number_of_computers": 2
+                                      }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def testRoomUpdateRoomInvalidRoomIdNoRoomId(self):
         request = self.factory.post("/room",
                                     {
-                                       "room_id": '',
-                                       "capacity": '4',
-                                       "number_of_computers": '2'
+                                        "room_id": '',
+                                        "capacity": 4,
+                                        "number_of_computers": 2
                                     }, format="json")
-        response = RoomView.as_view()(request)
 
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         error_msg = "Invalid room. Please provide an existing room"
 
         self.assertEqual(response.data, error_msg)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def testRoomUpdateRoomInvalidRoomIdNegativeId(self):
         request = self.factory.post("/room",
                                     {
-                                       "room_id": '-99',
-                                       "capacity": '4',
-                                       "number_of_computers": '2'
+                                        "room_id": '-99',
+                                        "capacity": 4,
+                                        "number_of_computers": 2
                                     }, format="json")
-        response = RoomView.as_view()(request)
 
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         error_msg = "Invalid room. Please provide an existing room"
 
         self.assertEqual(response.data, error_msg)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def testRoomUpdateRoomValidRoomId(self):
         request = self.factory.post("/room",
                                     {
-                                       "room_id": '20',
-                                       "capacity": '4',
-                                       "number_of_computers": '2'
+                                        "room_id": self.room1.room_id,
+                                        "capacity": 4,
+                                        "number_of_computers": 2
                                     }, format="json")
-        response = RoomView.as_view()(request)
 
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def testRoomUpdateValidNumberOfComputers(self):
         request = self.factory.post("/room",
                                     {
-                                       "room_id": '21',
-                                       "capacity": '4',
-                                       "number_of_computers": '2'
+                                        "room_id": 'H833-03',
+                                        "capacity": 4,
+                                        "number_of_computers": 2
                                     }, format="json")
-        response = RoomView.as_view()(request)
-
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNegativeNumber(self):
         request = self.factory.post("/room",
                                     {
-                                       "room_id": '22',
-                                       "capacity": '4',
-                                       "number_of_computers": '-1'
+                                        "room_id": 'H833-03',
+                                        "capacity": 4,
+                                        "number_of_computers": -1
                                     }, format="json")
-        response = RoomView.as_view()(request)
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        error_msg = "Invalid room. Please provide an existing room"
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid number of computers. Please enter a positive integer value or zero"
 
         self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -260,15 +278,16 @@ class RoomAPITest(TestCase):
     def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNoNumber(self):
         request = self.factory.post("/room",
                                     {
-                                       "room_id": '22',
-                                       "capacity": '4',
-                                       "number_of_computers": '-1'
+                                        "room_id": 'H833-03',
+                                        "capacity": 4,
+                                        "number_of_computers": -1
                                     }, format="json")
-        response = RoomView.as_view()(request)
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        error_msg = "Invalid room. Please provide an existing room"
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid number of computers. Please enter a positive integer value or zero"
 
         self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -276,28 +295,30 @@ class RoomAPITest(TestCase):
     def testUpdateCapacityValidCapacity(self):
         request = self.factory.post("/room",
                                     {
-                                       "room_id": '24',
-                                       "capacity": '4',
-                                       "number_of_computers": '2'
+                                        "room_id": 'H833-03',
+                                        "capacity": 4,
+                                        "number_of_computers": 2
                                     }, format="json")
-        response = RoomView.as_view()(request)
 
         force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RoomView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def testUpdateCapacityInvalidCapacityNegativeNumber(self):
         request = self.factory.post("/room",
                                     {
-                                       "room_id": '25',
-                                       "capacity": '-1',
-                                       "number_of_computers": '2'
+                                        "room_id": 'H833-03',
+                                        "capacity": -1,
+                                        "number_of_computers": 2
                                     }, format="json")
-        response = RoomView.as_view()(request)
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        error_msg = "Invalid room. Please provide an existing room"
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid capacity. Please enter a positive integer value or zero"
 
         self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -305,15 +326,16 @@ class RoomAPITest(TestCase):
     def testUpdateCapacityInvalidCapacityNoNumber(self):
         request = self.factory.post("/room",
                                     {
-                                       "room_id": '25',
-                                       "capacity": '',
-                                       "number_of_computers": '2'
+                                        "room_id": 'H833-03',
+                                        "capacity": '',
+                                        "number_of_computers": 2
                                     }, format="json")
-        response = RoomView.as_view()(request)
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        error_msg = "Invalid room. Please provide an existing room"
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid capacity. Please enter a positive integer value or zero"
 
         self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
