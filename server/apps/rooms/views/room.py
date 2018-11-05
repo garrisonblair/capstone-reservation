@@ -77,7 +77,6 @@ class RoomView(APIView):
             return Response(error_msg,
                             status=status.HTTP_400_BAD_REQUEST)
 
-    #@permission_classes((IsAuthenticated, IsOwnerOrAdmin))
     def post(self, request, *args, **kwargs):
 
         room_data = dict(request.data)
@@ -121,7 +120,6 @@ class RoomView(APIView):
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
-    #@permission_classes((IsAuthenticated, IsOwnerOrAdmin))
     def delete(self, request, *args, **kwargs):
 
         room_data = dict(request.data)
