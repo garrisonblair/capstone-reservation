@@ -75,7 +75,7 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.data, response_data)
 
     def testGetRoomsInvalidRequestEndBeforeStart(self):
-        request = self.factory.post("/room",
+        request = self.factory.get("/room",
                                     {
                                        "start_date_time": '2018-10-22 17:00',
                                        "end_date_time": '2018-10-22 11:00'
@@ -89,7 +89,7 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.data, error_msg)
 
     def testGetRoomsInvalidRequestMissingLastParam(self):
-        request = self.factory.post("/room",
+        request = self.factory.get("/room",
                                     {
                                        "start_date_time": '2018-10-22 11:00'
                                     }, format="json")
@@ -102,7 +102,7 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.data, error_msg)
 
     def testGetRoomsInvalidRequestMissingFirstParam(self):
-        request = self.factory.post("/room",
+        request = self.factory.get("/room",
                                     {
                                        "end_date_time": '2018-10-22 17:00'
                                     }, format="json")
@@ -115,7 +115,7 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.data, error_msg)
 
     def testGetRoomsInvalidRequestWrongParameterFormat(self):
-        request = self.factory.post("/room",
+        request = self.factory.get("/room",
                                     {
                                        "start_date_time": 'AdhG4gf',
                                        "end_date_time": '1234'
