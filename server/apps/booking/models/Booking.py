@@ -105,6 +105,11 @@ class Booking(models.Model, SubjectModel):
                                     end_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
+    def get_active_bookings_count(self, booker_entity):
+        today = datetime.datetime.now().date()
+        now = datetime.datetime.now().time()
+        return booker_entity.booking_set.filter(date__gte=today, end_time__gte=now).count()
+
     def evaluate_privilege(self):
 
         if self.group is not None:
@@ -129,9 +134,9 @@ class Booking(models.Model, SubjectModel):
             raise PrivilegeError(p_c.get_error_text("max_days_until_booking"))
 
         # max_bookings
-        num_bookings = len(booker_entity.booking_set.all())
+        num_bookings = self.get_active_bookings_count(booker_entity)
 
-        if num_bookings == max_bookings:
+        if num_bookings >= max_bookings:
             raise PrivilegeError(p_c.get_error_text("max_bookings"))
 
     def get_observers(self):
