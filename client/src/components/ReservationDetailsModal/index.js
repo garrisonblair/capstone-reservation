@@ -169,7 +169,7 @@ class ReservationDetailsModal extends Component {
       "room": this.props.selectedRoomId,
       "group": 1,
       "booker": user.id,
-      "skip_conflicts": skipConflicts ? "True" : "False"
+      "skip_conflicts": skipConflicts
     };
     api.createRecurringBooking(data)
       .then((response) => {
