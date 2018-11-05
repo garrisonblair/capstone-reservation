@@ -16,6 +16,7 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.user = User.objects.create_user(username='jerry',
                                              email='jseinfeld@email.com',
                                              password='constanza')
+        self.user.is_superuser = True
         self.user.save()
 
         self.category = PrivilegeCategory(name="Base Category")
@@ -216,3 +217,39 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.category1.delete()
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def testCreateFailureUnauthorized(self):
+        self.user.is_superuser = False
+        self.user.save()
+
+        request = self.factory.post("/privilege_categories",
+                                    {
+                                        "name": "Second Tier",
+                                        "parent_category": self.category.id,
+                                        "max_days_until_booking": None,
+                                        "can_make_recurring_booking": True,
+                                        "max_bookings": 2,
+                                        "max_recurring_bookings": 3
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def testViewFailureUnauthorized(self):
+        self.user.is_superuser = False
+        self.user.save()
+
+        request = self.factory.get("privilege_categories",
+                                   {
+                                   },
+                                   format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

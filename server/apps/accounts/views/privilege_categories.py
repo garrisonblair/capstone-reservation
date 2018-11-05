@@ -12,7 +12,8 @@ class PrivilegeCategoryView(APIView):
 
     def post(self, request):
         # Must be logged in as admin
-        # TODO: admin authentication
+        if not request.user.is_superuser:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         category_data = dict(request.data)
         serializer = PrivilegeCategorySerializer(data=category_data)
@@ -27,6 +28,10 @@ class PrivilegeCategoryView(APIView):
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
+        # Must be logged in as admin
+        if not request.user.is_superuser:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         request_name = request.query_params.get('name', None)
 
         if request_name is not None:
