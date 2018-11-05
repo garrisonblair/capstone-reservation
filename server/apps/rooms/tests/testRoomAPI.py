@@ -76,10 +76,10 @@ class RoomAPITest(TestCase):
 
     def testGetRoomsInvalidRequestEndBeforeStart(self):
         request = self.factory.get("/room",
-                                    {
+                                   {
                                        "start_date_time": '2018-10-22 17:00',
                                        "end_date_time": '2018-10-22 11:00'
-                                    }, format="json")  # start time after end time
+                                   }, format="json")  # start time after end time
 
         response = RoomView.as_view()(request)
 
@@ -90,9 +90,9 @@ class RoomAPITest(TestCase):
 
     def testGetRoomsInvalidRequestMissingLastParam(self):
         request = self.factory.get("/room",
-                                    {
+                                   {
                                        "start_date_time": '2018-10-22 11:00'
-                                    }, format="json")
+                                   }, format="json")
 
         response = RoomView.as_view()(request)
 
@@ -103,9 +103,9 @@ class RoomAPITest(TestCase):
 
     def testGetRoomsInvalidRequestMissingFirstParam(self):
         request = self.factory.get("/room",
-                                    {
+                                   {
                                        "end_date_time": '2018-10-22 17:00'
-                                    }, format="json")
+                                   }, format="json")
 
         response = RoomView.as_view()(request)
 
@@ -116,10 +116,10 @@ class RoomAPITest(TestCase):
 
     def testGetRoomsInvalidRequestWrongParameterFormat(self):
         request = self.factory.get("/room",
-                                    {
+                                   {
                                        "start_date_time": 'AdhG4gf',
                                        "end_date_time": '1234'
-                                    }, format="json")
+                                   }, format="json")
 
         response = RoomView.as_view()(request)
 
