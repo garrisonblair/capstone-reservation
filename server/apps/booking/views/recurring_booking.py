@@ -27,7 +27,7 @@ class RecurringBookingView(APIView):
                 recurring_booking, conflicts = serializer.create(validated_data=serializer.validated_data)
                 return Response(conflicts, status=status.HTTP_201_CREATED)
             except (ValidationError, PrivilegeError) as error:
-                if error.__class__.__name__ == "PrivilegeError":
+                if isinstance(error, PrivilegeError):
                     return Response(error.message, status=status.HTTP_401_UNAUTHORIZED)
                 elif ((error.message == "Start date can not be after End date.") or
                         (error.message == "You must book for at least two consecutive weeks.") or
