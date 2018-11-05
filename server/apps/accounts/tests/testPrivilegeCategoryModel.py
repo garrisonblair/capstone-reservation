@@ -18,13 +18,15 @@ class TestPrivilegeCategoryModel(TestCase):
         privilege_category = PrivilegeCategory(name="Category 1")
         privilege_category.save()
 
-        read_category = PrivilegeCategory.objects.get(name="Category 1")
+        read_category = PrivilegeCategory.objects.get(name="Category 1")  # type: PrivilegeCategory
 
         self.assertEqual(read_category.name, privilege_category.name)
         self.assertEqual(read_category.max_days_until_booking, None)
         self.assertEqual(read_category.can_make_recurring_booking, None)
         self.assertEqual(read_category.max_bookings, None)
         self.assertEqual(read_category.max_recurring_bookings, None)
+        self.assertEqual(read_category.booking_start_time, None)
+        self.assertEqual(read_category.booking_end_time, None)
 
     def testParameterDelegation(self):
 

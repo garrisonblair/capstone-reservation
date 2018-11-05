@@ -128,6 +128,8 @@ class Booking(models.Model, SubjectModel):
 
         max_days_until_booking = p_c.get_parameter("max_days_until_booking")
         max_bookings = p_c.get_parameter("max_bookings")
+        start_time = p_c.get_parameter("booking_start_time")
+        end_time = p_c.get_parameter("booking_end_time")
 
         # max_days_until_booking
         today = datetime.date.today()
@@ -141,6 +143,14 @@ class Booking(models.Model, SubjectModel):
 
         if num_bookings >= max_bookings:
             raise PrivilegeError(p_c.get_error_text("max_bookings"))
+
+        # booking_start_time
+        if self.start_time < start_time:
+            raise PrivilegeError(p_c.get_error_text("booking_start_time"))
+
+        # booking_end_time
+        if self.end_time > end_time:
+            raise PrivilegeError(p_c.get_error_text("booking_end_time"))
 
     def get_observers(self):
         return Booking.observers

@@ -114,6 +114,8 @@ class RecurringBooking(models.Model):
 
         can_make_recurring_booking = p_c.get_parameter("can_make_recurring_booking")
         max_recurring_bookings = p_c.get_parameter("max_recurring_bookings")
+        start_time = p_c.get_parameter("booking_start_time")
+        end_time = p_c.get_parameter("booking_end_time")
 
         if not can_make_recurring_booking:
             raise PrivilegeError(p_c.get_error_text("can_make_recurring_booking"))
@@ -123,3 +125,11 @@ class RecurringBooking(models.Model):
 
         if num_recurring_bookings >= max_recurring_bookings:
             raise PrivilegeError(p_c.get_error_text("max_recurring_bookings"))
+
+        # booking_start_time
+        if self.booking_start_time < start_time:
+            raise PrivilegeError(p_c.get_error_text("booking_start_time"))
+
+        # booking_end_time
+        if self.booking_end_time > end_time:
+            raise PrivilegeError(p_c.get_error_text("booking_end_time"))

@@ -13,9 +13,11 @@ class PrivilegeCategory(models.Model):
     max_bookings = models.PositiveIntegerField(null=True)
     max_recurring_bookings = models.PositiveIntegerField(null=True)
 
+    booking_start_time = models.TimeField(null=True)
+    booking_end_time = models.TimeField(null=True)
+
     def get_parameter(self, param_name):
         value = getattr(self, param_name)
-
         if value is not None:
             return value
 
@@ -34,7 +36,10 @@ class PrivilegeCategory(models.Model):
             "can_make_recurring_bookings": "Not permitted to make recurring bookings.",
             "max_bookings": "Booker has too many bookings. Maximum: " + str(self.max_bookings),
             "max_recurring_bookings": "Booker has too many recurring bookings. Maximum: " +
-                                      str(self.max_recurring_bookings)
+                                      str(self.max_recurring_bookings),
+
+            "booking_start_time": "Cannot book before " + str(self.booking_start_time),
+            "booking_end_time": "Cannot book after " + str(self.booking_end_time)
         }
 
         return error_messages.get(param_name)

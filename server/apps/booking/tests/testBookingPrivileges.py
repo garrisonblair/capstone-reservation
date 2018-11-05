@@ -18,6 +18,9 @@ class TestBookingPrivileges(TestCase):
 
         self.p_c_booker.max_days_until_booking = 3
         self.p_c_booker.max_bookings = 2
+        self.p_c_booker.booking_start_time = time(9, 0, 0)
+        self.p_c_booker.booking_end_time = time(22, 0, 0)
+
         self.p_c_booker.save()
 
         self.booker = Booker(booker_id="11111111", privilege_category=self.p_c_booker)
@@ -26,6 +29,8 @@ class TestBookingPrivileges(TestCase):
         self.p_c_group = PrivilegeCategory(name="Group Category")
         self.p_c_group.max_days_until_booking = 5
         self.p_c_group.max_bookings = 1
+        self.p_c_group.booking_start_time = time(8, 0, 0)
+        self.p_c_group.booking_end_time = time(23, 0, 0)
         self.p_c_group.save()
 
         self.group = Group(name="Group 1",
@@ -45,8 +50,8 @@ class TestBookingPrivileges(TestCase):
         booking = Booking(booker=self.booker,
                           room=self.room,
                           date=date_in_3_days,
-                          start_time=time(12, 0, 0),
-                          end_time=time(13, 0, 0)
+                          start_time=time(9, 30, 0),
+                          end_time=time(21, 30, 0)
                           )
 
         try:
@@ -65,8 +70,8 @@ class TestBookingPrivileges(TestCase):
                           group=self.group,
                           room=self.room,
                           date=date_in_5_days,
-                          start_time=time(12, 0, 0),
-                          end_time=time(13, 0, 0)
+                          start_time=time(8, 30, 0),
+                          end_time=time(22, 30, 0)
                           )
 
         try:
@@ -76,6 +81,68 @@ class TestBookingPrivileges(TestCase):
             return
 
         self.assertTrue(True)
+
+    def testBookingTooEarlyBooker(self):
+        booking = Booking(booker=self.booker,
+                          room=self.room,
+                          date=date.today(),
+                          start_time=time(8, 30, 0),
+                          end_time=time(13, 0, 0)
+                          )
+
+        try:
+            booking.save()
+        except PrivilegeError as error:
+            self.assertEqual(error.message, self.p_c_booker.get_error_text("booking_start_time"))
+
+        self.assertEqual(self.group.booking_set.count(), 0)
+
+    def testBookingTooEarlyGroup(self):
+        booking = Booking(booker=self.booker,
+                          group=self.group,
+                          room=self.room,
+                          date=date.today(),
+                          start_time=time(7, 30, 0),
+                          end_time=time(13, 0, 0)
+                          )
+
+        try:
+            booking.save()
+        except PrivilegeError as error:
+            self.assertEqual(error.message, self.p_c_group.get_error_text("booking_start_time"))
+
+        self.assertEqual(self.group.booking_set.count(), 0)
+
+    def testBookingTooLateBooker(self):
+        booking = Booking(booker=self.booker,
+                          room=self.room,
+                          date=date.today(),
+                          start_time=time(10, 30, 0),
+                          end_time=time(22, 30, 0)
+                          )
+
+        try:
+            booking.save()
+        except PrivilegeError as error:
+            self.assertEqual(error.message, self.p_c_booker.get_error_text("booking_end_time"))
+
+        self.assertEqual(self.group.booking_set.count(), 0)
+
+    def testBookingTooLateGroup(self):
+        booking = Booking(booker=self.booker,
+                          group=self.group,
+                          room=self.room,
+                          date=date.today(),
+                          start_time=time(10, 30, 0),
+                          end_time=time(23, 30, 0)
+                          )
+
+        try:
+            booking.save()
+        except PrivilegeError as error:
+            self.assertEqual(error.message, self.p_c_group.get_error_text("booking_end_time"))
+
+        self.assertEqual(self.group.booking_set.count(), 0)
 
     def testBookingTooFarInFutureBooker(self):
 
@@ -93,7 +160,7 @@ class TestBookingPrivileges(TestCase):
         except PrivilegeError as error:
             self.assertEqual(error.message, self.p_c_booker.get_error_text("max_days_until_booking"))
 
-        self.assertEqual(self.group.booking_set.count(), 0)
+        self.assertEqual(self.booker.booking_set.count(), 0)
 
     def testBookingTooFarInFutureGroup(self):
 
