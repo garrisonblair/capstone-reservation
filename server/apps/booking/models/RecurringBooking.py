@@ -1,11 +1,13 @@
 from django.core.exceptions import ValidationError
+from apps.accounts.exceptions import PrivilegeError
 from django.db import models
 from django.db.models import Q
 
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.rooms.models.Room import Room
 from apps.accounts.models.Booker import Booker
 from apps.groups.models.Group import Group
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 class RecurringBookingManager(models.Manager):
@@ -60,6 +62,7 @@ class RecurringBooking(models.Model):
     objects = RecurringBookingManager()
 
     def save(self, *args, **kwargs):
+        self.evaluate_privilege()
         self.validate_model()
         super(RecurringBooking, self).save(*args, **kwargs)
 
@@ -94,3 +97,31 @@ class RecurringBooking(models.Model):
                 date += timedelta(days=7)
             if self.skip_conflicts and bookings == 0:
                 raise ValidationError("Recurring booking at specified time overlaps with another booking every week.")
+
+    def get_active_recurring_bookings_count(self, booker_entity):
+        today = datetime.now().date()
+        return booker_entity.recurringbooking_set.filter(end_date__gt=today).count()
+
+    def evaluate_privilege(self):
+        if self.group is not None:
+            booker_entity = self.group
+        else:
+            booker_entity = self.booker
+
+        # no checks if no category assigned
+        if booker_entity.privilege_category is None:
+            return
+
+        p_c = booker_entity.privilege_category  # type: PrivilegeCategory
+
+        can_make_recurring_booking = p_c.get_parameter("can_make_recurring_booking")
+        max_recurring_bookings = p_c.get_parameter("max_recurring_bookings")
+
+        if not can_make_recurring_booking:
+            raise PrivilegeError(p_c.get_error_text("can_make_recurring_booking"))
+
+        # max_recurring_bookings
+        num_recurring_bookings = self.get_active_recurring_bookings_count(booker_entity)
+
+        if num_recurring_bookings >= max_recurring_bookings:
+            raise PrivilegeError(p_c.get_error_text("max_recurring_bookings"))
