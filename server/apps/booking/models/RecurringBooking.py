@@ -96,9 +96,9 @@ class RecurringBooking(models.Model):
             if self.skip_conflicts and bookings == 0:
                 raise ValidationError("Recurring booking at specified time overlaps with another booking every week.")
 
-    def get_active_recurring_bookings_count(self, booker_entity):
+    def get_active_recurring_bookings(self, booker_entity):
         today = datetime.now().date()
-        return booker_entity.recurringbooking_set.filter(end_date__gt=today).count()
+        return booker_entity.recurringbooking_set.filter(end_date__gt=today)
 
     def evaluate_privilege(self):
         if self.group is not None:
@@ -119,7 +119,7 @@ class RecurringBooking(models.Model):
             raise PrivilegeError(p_c.get_error_text("can_make_recurring_booking"))
 
         # max_recurring_bookings
-        num_recurring_bookings = self.get_active_recurring_bookings_count(booker_entity)
+        num_recurring_bookings = self.get_active_recurring_bookings(booker_entity).count()
 
         if num_recurring_bookings >= max_recurring_bookings:
             raise PrivilegeError(p_c.get_error_text("max_recurring_bookings"))
