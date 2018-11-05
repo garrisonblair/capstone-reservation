@@ -1,14 +1,10 @@
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
-import settings from '../../config/settings';
-import {getTokenHeader} from '../../utils/requestHeaders';
-import {getMeRequest} from '../../utils/requestUser';
 import './ReservationDetailsModal.scss';
 import {toDateInputValue} from '../../utils/dateFormatter';
-
+import api from '../../utils/api';
 
 class ReservationDetailsModal extends Component {
   state = {
@@ -57,12 +53,12 @@ class ReservationDetailsModal extends Component {
   closeModal = () => {
     this.props.onClose();
     this.setState({
-      inputOption0:{
-        startDate:toDateInputValue(this.props.selectedDate),
-        endDate:toDateInputValue(this.props.selectedDate)
+      inputOption0: {
+        startDate: toDateInputValue(this.props.selectedDate),
+        endDate: toDateInputValue(this.props.selectedDate)
       },
       show: false,
-      isRecurring:false
+      isRecurring: false
     });
   }
 
@@ -130,7 +126,7 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  sendPostRequestBooking = (headers) => {
+  sendPostRequestBooking = () => {
     // Handle time zone
     let tzoffset = (this.props.selectedDate).getTimezoneOffset() * 60000;
     let date = new Date(this.props.selectedDate - tzoffset);
@@ -142,52 +138,40 @@ class ReservationDetailsModal extends Component {
       "start_time": `${this.state.startHour}:${this.state.startMinute}:00`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}:00`
     };
-    axios({
-      method: 'POST',
-      url: `${settings.API_ROOT}/booking`,
-      headers,
-      data,
-      withCredentials: true,
-    })
-    .then((response) => {
-      sweetAlert('Completed',
-        `Room ${this.props.selectedRoomName} was successfuly booked.`,
-        'success'
-      )
-      .then((result) => {
-        this.closeModalWithReservation()
+    api.createBooking(data)
+      .then((response) => {
+        sweetAlert('Completed',
+          `Room ${this.props.selectedRoomName} was successfuly booked.`,
+          'success'
+        )
+          .then((result) => {
+            this.closeModalWithReservation()
+          })
       })
-    })
-    .catch((error) => {
-      sweetAlert(
-        'Reservation failed',
-        error.response.data[0],
-        'error'
-      )
-    })
+      .catch((error) => {
+        sweetAlert(
+          'Reservation failed',
+          error.response.data[0],
+          'error'
+        )
+      })
   }
 
-  sendPostRequestRecurringBooking = (headers, skipConflicts) => {
+  sendPostRequestRecurringBooking = (skipConflicts) => {
     const {startDate, endDate} = this.state.inputOption0;
-    let meRequest = getMeRequest(headers);
-    meRequest.then((response) => {
-      const data = {
-        "start_date": startDate,
-        "end_date": endDate,
-        "booking_start_time": `${this.state.startHour}:${this.state.startMinute}`,
-        "booking_end_time": `${this.state.endHour}:${this.state.endMinute}`,
-        "room": this.props.selectedRoomId,
-        "group": 1,
-        "booker": response.data.id,
-        "skip_conflicts": skipConflicts ? "True" : "False"
-      };
-      axios({
-        method: 'POST',
-        url: `${settings.API_ROOT}/recurring_booking`,
-        headers,
-        data,
-        withCredentials: true,
-      })
+    const user = JSON.parse(localStorage.CapstoneReservationUser);
+
+    const data = {
+      "start_date": startDate,
+      "end_date": endDate,
+      "booking_start_time": `${this.state.startHour}:${this.state.startMinute}`,
+      "booking_end_time": `${this.state.endHour}:${this.state.endMinute}`,
+      "room": this.props.selectedRoomId,
+      "group": 1,
+      "booker": user.id,
+      "skip_conflicts": skipConflicts ? "True" : "False"
+    };
+    api.createRecurringBooking(data)
       .then((response) => {
         let conflictsMessage = '';
         if (response.data.length > 0) {
@@ -202,9 +186,9 @@ class ReservationDetailsModal extends Component {
           `Room ${this.props.selectedRoomName} was successfuly booked for the selected dates.<br/><div id="exception-dates">${conflictsMessage}</div>`,
           'success'
         )
-        .then((result) => {
-          this.closeModalWithReservation()
-        });
+          .then((result) => {
+            this.closeModalWithReservation()
+          });
       })
       .catch((error) => {
         if (error.message.includes('409')) {
@@ -216,14 +200,13 @@ class ReservationDetailsModal extends Component {
             cancelButtonText: 'NO',
             showCancelButton: true
           })
-          .then((response) => {
-            if (response.value) {
-              this.sendPostRequestRecurringBooking(headers, true);
-            }
-          })
+            .then((response) => {
+              if (response.value) {
+                this.sendPostRequestRecurringBooking(true);
+              }
+            })
         }
       })
-    })
   }
 
   handleSubmit = () => {
@@ -242,17 +225,16 @@ class ReservationDetailsModal extends Component {
         }
       }
     }
-    catch(err) {
+    catch (err) {
       sweetAlert('Reservation blocked', err.message, 'warning');
       return;
     }
 
-    const headers = getTokenHeader();
     if (isRecurring) {
-      this.sendPostRequestRecurringBooking(headers, false);
+      this.sendPostRequestRecurringBooking(false);
     }
     else {
-      this.sendPostRequestBooking(headers);
+      this.sendPostRequestBooking();
     }
   }
 

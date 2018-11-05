@@ -9,4 +9,4 @@ class Group(models.Model):
     bookers = models.ManyToManyField(Booker)
     is_verified = models.BooleanField(default=False)
 
-    privilege_category = models.ForeignKey(PrivilegeCategory, null=True, on_delete=models.SET_NULL)
+    privilege_category = models.ForeignKey(PrivilegeCategory, blank=True, null=True, on_delete=models.SET_NULL)
