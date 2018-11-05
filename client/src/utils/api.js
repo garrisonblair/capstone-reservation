@@ -77,6 +77,28 @@ function getBookings(params) {
   })
 }
 
+function createBooking(data){
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/booking`,
+    headers,
+    data,
+    withCredentials: true
+  });
+}
+
+function createRecurringBooking(data){
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/recurring_booking`,
+    headers,
+    data,
+    withCredentials: true
+  });
+}
+
 function getCampOns(params) {
   return axios({
     method: 'GET',
@@ -120,6 +142,8 @@ const api = {
   updateUser,
   createCampOn,
   getBookings,
+  createBooking,
+  createRecurringBooking,
   getCampOns,
   getRooms,
   getAdminSettings,
