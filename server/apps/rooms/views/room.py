@@ -10,6 +10,7 @@ from apps.booking.models.Booking import Booking
 from apps.rooms.serializers.room_serializer import RoomSerializer
 
 # Added by Steve
+from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 
@@ -74,37 +75,46 @@ class RoomView(APIView):
             error_msg = "Invalid times: please supply a start time and an end time"
             return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
 
-
-class RoomUpdate(APIView):
-
-    permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
-
+    @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
     def post(self, request, *args, **kwargs):
 
-        pk = kwargs.get('pk')
-        capacity = kwargs.get('')
-        number_of_computers = kwargs.get('')
+        room_data = dict(request.data)
+
+        serializer = RoomSerializer(data=room_data)
 
         room = None
+
         try:
-            room = Room.objects.get(pk=pk)
+            room = Room.objects.get(room_id=room_data['room_id'])
         except Room.DoesNotExist:
             return Response("Invalid room. Please provide an existing room",
                             status=status.HTTP_404_NOT_FOUND)
 
+        if not serializer.is_valid():
+            return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
 
+        else:
+            try:
+                room = serializer.save()
+                return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
-class RoomDelete(APIView):
-
+    @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
     def delete(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        capacity = kwargs.get('')
-        number_of_computers = kwargs.get('')
+
+        room_data = dict(request.data)
 
         room = None
+
         try:
-            room = Room.objects.get(pk=pk)
+            room = Room.objects.get(room_id=room_data["room_id"])
         except Room.DoesNotExist:
             return Response("Invalid room. Please provide an existing room",
                             status=status.HTTP_404_NOT_FOUND)
 
+        try:
+            room.delete_room()
+            return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+        except ValidationError as error:
+            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)

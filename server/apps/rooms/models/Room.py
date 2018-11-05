@@ -33,4 +33,3 @@ class Room(models.Model):
 
     def delete_room(self):
         self.delete()
-
