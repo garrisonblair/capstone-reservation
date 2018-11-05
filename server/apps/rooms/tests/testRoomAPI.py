@@ -127,3 +127,159 @@ class RoomAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, error_msg)
+
+    def testRoomDeleteInvalidRoomIdNoRoomId(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '',
+                                       "capacity": '4',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid room. Please provide an existing room"
+
+        self.assertEqual(response.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def testRoomDeleteInvalidRoomIdNegativeId(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '-99',
+                                       "capacity": '4',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid room. Please provide an existing room"
+
+        self.assertEqual(response.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def testRoomDeleteValidRoomId(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '19',
+                                       "capacity": '4',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def testRoomUpdateRoomInvalidRoomIdNoRoomId(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '',
+                                       "capacity": '4',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid room. Please provide an existing room"
+
+        self.assertEqual(response.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def testRoomUpdateRoomInvalidRoomIdNegativeId(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '-99',
+                                       "capacity": '4',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid room. Please provide an existing room"
+
+        self.assertEqual(response.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def testRoomUpdateRoomValidRoomId(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '20',
+                                       "capacity": '4',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def testRoomUpdateValidNumberOfComputers(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '21',
+                                       "capacity": '4',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNegativeNumber(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '22',
+                                       "capacity": '4',
+                                       "number_of_computers": '-1'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid room. Please provide an existing room"
+
+        self.assertEqual(response.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNoNumber(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '22',
+                                       "capacity": '4',
+                                       "number_of_computers": '-1'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid room. Please provide an existing room"
+
+        self.assertEqual(response.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testUpdateCapacityValidCapacity(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '24',
+                                       "capacity": '4',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def testUpdateCapacityInvalidCapacityNegativeNumber(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '25',
+                                       "capacity": '-1',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid room. Please provide an existing room"
+
+        self.assertEqual(response.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testUpdateCapacityInvalidCapacityNoNumber(self):
+        request = self.factory.get("/room",
+                                   {
+                                       "room_id": '25',
+                                       "capacity": '',
+                                       "number_of_computers": '2'
+                                   }, format="json")
+        response = RoomView.as_view()(request)
+
+        error_msg = "Invalid room. Please provide an existing room"
+
+        self.assertEqual(response.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

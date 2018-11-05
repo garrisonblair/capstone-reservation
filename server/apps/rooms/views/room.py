@@ -68,19 +68,19 @@ class RoomView(APIView):
                     return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)  # Invalid time format
             except (ValueError, TypeError):
                 error_msg = "Invalid parameters, please input parameters in the YYYY-MM-DD HH:mm format"
-                return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
+                return Response(error_msg,
+                                status=status.HTTP_400_BAD_REQUEST)
 
         # When only one of start time and end time is provided
         else:
             error_msg = "Invalid times: please supply a start time and an end time"
-            return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
+            return Response(error_msg,
+                            status=status.HTTP_400_BAD_REQUEST)
 
     @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
     def post(self, request, *args, **kwargs):
 
         room_data = dict(request.data)
-
-        serializer = RoomSerializer(data=room_data)
 
         room = None
 
@@ -90,8 +90,29 @@ class RoomView(APIView):
             return Response("Invalid room. Please provide an existing room",
                             status=status.HTTP_404_NOT_FOUND)
 
+        capacity = room_data['capacity']
+        if capacity < 0:
+            return Response("Invalid capacity. Please enter a positive integer value or zero",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if (capacity % 1) != 0:
+            return Response("Invalid capacity. Please enter a positive integer value or zero",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        number_of_computers = room_data['number_of_computers']
+        if number_of_computers < 0:
+            return Response("Invalid number of computers. Please enter a positive integer value or zero",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if (number_of_computers % 1) != 0:
+            return Response("Invalid Number of computers. Please enter a positive integer value or zero",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = RoomSerializer(data=room_data)
+
         if not serializer.is_valid():
-            return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.error_messages,
+                            status=status.HTTP_400_BAD_REQUEST)
 
         else:
             try:
