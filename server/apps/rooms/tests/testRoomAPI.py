@@ -122,8 +122,6 @@ class RoomAPITest(TestCase):
 
         response = RoomView.as_view()(request)
 
-        force_authenticate(request, user=User.objects.get(username="john"))
-
         error_msg = "Invalid times: please supply a start time and an end time"
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -135,8 +133,6 @@ class RoomAPITest(TestCase):
                                        "start_date_time": 'AdhG4gf',
                                        "end_date_time": '1234'
                                    }, format="json")
-
-        force_authenticate(request, user=User.objects.get(username="john"))
 
         response = RoomView.as_view()(request)
 
@@ -158,15 +154,21 @@ class RoomAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
         response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
 
         error_msg = "Invalid room. Please provide an existing room"
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data, error_msg)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
-    def testRoomDeleteInvalidRoomIdNegativeId(self):
-
+    def testRoomDeleteInvalidRoomIdNonExistentId(self):
         request = self.factory.delete("/room",
                                       {
                                           "room_id": '-99',
@@ -176,28 +178,52 @@ class RoomAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
+        instances_of_deleted_room_before = len(Room.objects.filter(room_id='-99'))
+
         response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
 
         error_msg = "Invalid room. Please provide an existing room"
 
         self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
-    def testRoomDeleteValidRoomId(self):
+        instances_of_deleted_room_after = len(Room.objects.filter(room_id=self.room1.room_id))
+
+        self.assertEqual(instances_of_deleted_room_before+1, instances_of_deleted_room_after)
+
+    def testRoomDeleteValidExistingRoomId(self):
         request = self.factory.delete("/room",
                                       {
-                                          "room_id": 'H833-03',
+                                          "room_id": self.room1.room_id,
                                           "capacity": 4,
                                           "number_of_computers": 2
                                       }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
         response = RoomView.as_view()(request)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
 
-    def testRoomUpdateRoomInvalidRoomIdNoRoomId(self):
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after + 1)
+
+        instances_of_deleted_room = len(Room.objects.filter(room_id=self.room1.room_id))
+
+        self.assertEqual(instances_of_deleted_room, 0)
+
+    def testRoomUpdateRoomValidRoomIdNoRoomId(self):
         request = self.factory.post("/room",
                                     {
                                         "room_id": '',
@@ -207,31 +233,131 @@ class RoomAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
         response = RoomView.as_view()(request)
 
-        error_msg = "Invalid room. Please provide an existing room"
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
 
-        self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
-    def testRoomUpdateRoomInvalidRoomIdNegativeId(self):
+    def testRoomUpdateRoomValidNewRoomId(self):
         request = self.factory.post("/room",
                                     {
-                                        "room_id": '-99',
+                                        "room_id": 'H833-99',
                                         "capacity": 4,
                                         "number_of_computers": 2
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
         response = RoomView.as_view()(request)
 
-        error_msg = "Invalid room. Please provide an existing room"
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(number_of_rooms_before + 1, number_of_rooms_after)
+
+        room = Room.objects.get(room_id='H833-99')
+
+        self.assertEqual(room.room_id, 'H833-99')
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, 2)
+
+    def testRoomUpdateValidNumberOfComputers(self):
+        request = self.factory.post("/room",
+                                    {
+                                        "room_id": self.room1.room_id,
+                                        "capacity": 4,
+                                        "number_of_computers": 2
+                                    }, format="json")
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
+        response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
+
+        room = Room.objects.get(room_id=self.room1.room_id)
+
+        self.assertEqual(room.room_id, self.room1.room_id)
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, 2)
+
+    def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNegativeNumber(self):
+        request = self.factory.post("/room",
+                                    {
+                                        "room_id": self.room1.room_id,
+                                        "capacity": 4,
+                                        "number_of_computers": -1
+                                    }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
+        response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
+
+        error_msg = "Invalid number of computers. Please enter a positive integer value or zero"
 
         self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
-    def testRoomUpdateRoomValidRoomId(self):
+        room = Room.objects.get(room_id=self.room1.room_id)
+
+        self.assertEqual(room.room_id, self.room1.room_id)
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, self.room1.number_of_computers)
+
+    def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNoNumber(self):
+        request = self.factory.post("/room",
+                                    {
+                                        "room_id": self.room1.room_id,
+                                        "capacity": 4,
+                                        "number_of_computers": -1
+                                    }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
+        response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
+
+        error_msg = "Invalid number of computers. Please enter a positive integer value or zero"
+
+        self.assertEqual(response.data, error_msg)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
+
+        room = Room.objects.get(room_id=self.room1.room_id)
+
+        self.assertEqual(room.room_id, self.room1.room_id)
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, self.room1.number_of_computers)
+
+    def testUpdateCapacityValidCapacity(self):
         request = self.factory.post("/room",
                                     {
                                         "room_id": self.room1.room_id,
@@ -241,101 +367,135 @@ class RoomAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
         response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
-    def testRoomUpdateValidNumberOfComputers(self):
-        request = self.factory.post("/room",
-                                    {
-                                        "room_id": 'H833-03',
-                                        "capacity": 4,
-                                        "number_of_computers": 2
-                                    }, format="json")
-        force_authenticate(request, user=User.objects.get(username="john"))
+        room = Room.objects.get(room_id=self.room1.room_id)
 
-        response = RoomView.as_view()(request)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNegativeNumber(self):
-        request = self.factory.post("/room",
-                                    {
-                                        "room_id": 'H833-03',
-                                        "capacity": 4,
-                                        "number_of_computers": -1
-                                    }, format="json")
-
-        force_authenticate(request, user=User.objects.get(username="john"))
-
-        response = RoomView.as_view()(request)
-
-        error_msg = "Invalid number of computers. Please enter a positive integer value or zero"
-
-        self.assertEqual(response.data, error_msg)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNoNumber(self):
-        request = self.factory.post("/room",
-                                    {
-                                        "room_id": 'H833-03',
-                                        "capacity": 4,
-                                        "number_of_computers": -1
-                                    }, format="json")
-
-        force_authenticate(request, user=User.objects.get(username="john"))
-
-        response = RoomView.as_view()(request)
-
-        error_msg = "Invalid number of computers. Please enter a positive integer value or zero"
-
-        self.assertEqual(response.data, error_msg)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def testUpdateCapacityValidCapacity(self):
-        request = self.factory.post("/room",
-                                    {
-                                        "room_id": 'H833-03',
-                                        "capacity": 4,
-                                        "number_of_computers": 2
-                                    }, format="json")
-
-        force_authenticate(request, user=User.objects.get(username="john"))
-
-        response = RoomView.as_view()(request)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(room.room_id, self.room1.room_id)
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, 2)
 
     def testUpdateCapacityInvalidCapacityNegativeNumber(self):
         request = self.factory.post("/room",
                                     {
-                                        "room_id": 'H833-03',
+                                        "room_id": self.room1.room_id,
                                         "capacity": -1,
                                         "number_of_computers": 2
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
         response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
 
         error_msg = "Invalid capacity. Please enter a positive integer value or zero"
 
         self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
+
+        room = Room.objects.get(room_id=self.room1.room_id)
+
+        self.assertEqual(room.room_id, self.room1.room_id)
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, 1)
 
     def testUpdateCapacityInvalidCapacityNoNumber(self):
         request = self.factory.post("/room",
                                     {
-                                        "room_id": 'H833-03',
+                                        "room_id": self.room1.room_id,
                                         "capacity": '',
                                         "number_of_computers": 2
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
         response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
 
         error_msg = "Invalid capacity. Please enter a positive integer value or zero"
 
         self.assertEqual(response.data, error_msg)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
+
+        room = Room.objects.get(room_id=self.room1.room_id)
+
+        self.assertEqual(room.room_id, self.room1.room_id)
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, 1)
+
+    def testUpdateRoomAuthorizationFail(self):
+        request = self.factory.post("/room",
+                                    {
+                                        "room_id": self.room1.room_id,
+                                        "capacity": '',
+                                        "number_of_computers": 2
+                                    }, format="json")
+
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
+        response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
+
+        room = Room.objects.get(room_id=self.room1.room_id)
+
+        self.assertEqual(room.room_id, self.room1.room_id)
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, 1)
+
+    def testDeleteRoomAuthorizationFail(self):
+        request = self.factory.delete("/room",
+                                      {
+                                          "room_id": self.room1.room_id,
+                                          "capacity": '',
+                                          "number_of_computers": 2
+                                      }, format="json")
+
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
+        instances_of_deleted_room_before = len(Room.objects.filter(room_id=self.room1.room_id))
+
+        response = RoomView.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(number_of_rooms_before, number_of_rooms_after)
+
+        room = Room.objects.get(room_id=self.room1.room_id)
+
+        self.assertEqual(room.room_id, self.room1.room_id)
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, 1)
+
+        instances_of_deleted_room_after = len(Room.objects.filter(room_id=self.room1.room_id))
+
+        self.assertEqual(instances_of_deleted_room_before, instances_of_deleted_room_after)

@@ -84,11 +84,6 @@ class RoomView(APIView):
 
         room = None
 
-        try:
-            room = Room.objects.get(room_id=room_data['room_id'])
-        except Room.DoesNotExist:
-            return Response("Invalid room. Please provide an existing room",
-                            status=status.HTTP_400_BAD_REQUEST)
 
         capacity = room_data['capacity']
 
@@ -118,24 +113,28 @@ class RoomView(APIView):
             return Response("Invalid Number of computers. Please enter a positive integer value or zero",
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # serializer = RoomSerializer(data=room_data)
+        try:
+            room = Room.objects.get(room_id=room_data['room_id'])
+        except Room.DoesNotExist:
+            if room_data['room_id'] is not '':
+                new_room = Room(room_id=room_data['room_id'],
+                                capacity=capacity,
+                                number_of_computers=number_of_computers)
+                new_room.save()
+                return Response("Room does not exist. Creating room",
+                                status=status.HTTP_201_CREATED)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
         room_id = room_data.get('room_id')
         room = Room.objects.get(room_id=room_id)
         room.capacity = capacity
         room.number_of_computers = number_of_computers
 
-        # if not serializer.is_valid():
-        #     print('D')
-        #     print(serializer.errors)
-        #     return Response(serializer.errors,
-        #                     status=status.HTTP_400_BAD_REQUEST)
-
-        # else:
         try:
             room.save()
             return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
         except ValidationError as error:
-            print('E')
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
     @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
@@ -155,6 +154,4 @@ class RoomView(APIView):
             room.delete()
             return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
         except ValidationError as error:
-            print(error.message)
-            print('hello')
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
