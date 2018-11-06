@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import './RoomManagement.scss';
-import { Button, List, Modal} from 'semantic-ui-react'
+import { Button, List } from 'semantic-ui-react'
 import RoomRowItem from './RoomRowItem'
-import RoomModal from './RoomModal';
-
+import RoomModal from '../RoomModal';
+import './RoomManagement.scss';
 class RoomManagement extends Component {
   state = {
     roomsList: [],
@@ -11,6 +10,7 @@ class RoomManagement extends Component {
   }
 
   componentWillMount(){
+    this.syncRooms();
     this.setState({
       roomsList:[
         { id:1,capacity:2, numComputers:1 },
@@ -20,18 +20,20 @@ class RoomManagement extends Component {
         { id:5,capacity:2, numComputers:1 }
       ]
     })
-
   }
-  showRoomModal = () =>{
-    this.setState({ showModal:true })
+  showRoomModal = () =>{ this.setState({ showModal:true })}
+  closeRoomModal = (success) =>{
+    this.setState({ showModal:false });
+    if(success){
+      this.syncRooms();
+    }
   }
-  closeRoomModal = () =>{
-    this.setState({ showModal:false })
+  syncRooms = () => {
+    console.log('sync rooms');
   }
 
   render() {
     let { roomsList, showModal} = this.state;
-    console.log(this.state.showModal)
     return (
       <div id="room-management">
         <h1>Manage Rooms</h1>
@@ -39,7 +41,7 @@ class RoomManagement extends Component {
           {roomsList.map(room => <RoomRowItem key={room.id} room={room} />)}
         </List>
         <Button onClick={this.showRoomModal}>Add new room</Button>
-        <RoomModal show={showModal} closeModal={this.closeRoomModal}></RoomModal>
+        <RoomModal show={showModal} closeRoomModal={this.closeRoomModal}></RoomModal>
 
       </div>
     )
