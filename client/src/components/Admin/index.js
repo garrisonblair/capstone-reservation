@@ -4,7 +4,6 @@ import api from '../../utils/api';
 import './Admin.scss';
 import {Button, Form, Modal, Input, Header} from 'semantic-ui-react';
 import AdminRequired from '../HOC/AdminRequired';
-import {getTokenHeader} from '../../utils/requestHeaders';
 import RoomManagement from '../RoomManagement';
 
 

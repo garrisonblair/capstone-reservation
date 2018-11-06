@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import './RoomManagement.scss';
-import { Button, List } from 'semantic-ui-react'
+import { Button, List, Modal} from 'semantic-ui-react'
 import RoomRowItem from './RoomRowItem'
+import RoomModal from './RoomModal';
 
 class RoomManagement extends Component {
   state = {
     roomsList: [],
-    addNewToogle: false
+    showModal:false
   }
 
   componentWillMount(){
@@ -22,12 +23,15 @@ class RoomManagement extends Component {
 
   }
   showRoomModal = () =>{
-
+    this.setState({ showModal:true })
+  }
+  closeRoomModal = () =>{
+    this.setState({ showModal:false })
   }
 
   render() {
-    let { roomsList } = this.state;
-
+    let { roomsList, showModal} = this.state;
+    console.log(this.state.showModal)
     return (
       <div id="room-management">
         <h1>Manage Rooms</h1>
@@ -35,6 +39,8 @@ class RoomManagement extends Component {
           {roomsList.map(room => <RoomRowItem key={room.id} room={room} />)}
         </List>
         <Button onClick={this.showRoomModal}>Add new room</Button>
+        <RoomModal show={showModal} closeModal={this.closeRoomModal}></RoomModal>
+
       </div>
     )
   }
