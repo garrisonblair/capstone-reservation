@@ -29,7 +29,16 @@ class RoomManagement extends Component {
     }
   }
   syncRooms = () => {
-    console.log('sync rooms');
+    this.setState({
+      roomsList:[
+        { id:1,capacity:2, numComputers:1 },
+        { id:2,capacity:2, numComputers:1 },
+        { id:3,capacity:2, numComputers:1 },
+        { id:4,capacity:2, numComputers:1 },
+        { id:5,capacity:2, numComputers:1 },
+        { id:6,capacity:2, numComputers:1 }
+      ]
+    })
   }
 
   render() {
