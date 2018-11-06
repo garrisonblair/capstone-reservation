@@ -84,7 +84,6 @@ class RoomView(APIView):
 
         room = None
 
-
         capacity = room_data['capacity']
 
         if not isinstance(capacity, int):
