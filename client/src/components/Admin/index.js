@@ -5,6 +5,7 @@ import './Admin.scss';
 import {Button, Form, Modal, Input, Header} from 'semantic-ui-react';
 import AdminRequired from '../HOC/AdminRequired';
 import {getTokenHeader} from '../../utils/requestHeaders';
+import RoomManagement from '../RoomManagement';
 
 
 class Admin extends Component {
@@ -122,9 +123,12 @@ class Admin extends Component {
   }
 
   renderNav() {
-    const options = ['Settings', 'Stats']
+    const options = ['Settings', 'Stats','Room management']
     const menu = options.map((option) =>
-      <li className={this.state.current == option ? "active" : ""} key={option} value={option} onClick={this.handleClickNav}>{option}</li>
+      <li className={this.state.current == option ? "active" : ""}
+        key={option} value={option}
+        onClick={this.handleClickNav}>{option}
+      </li>
     )
     return <ul className="admin__navigation">{menu}</ul>
   }
@@ -135,11 +139,15 @@ class Admin extends Component {
     switch (current) {
       case "Settings":
         content = this.renderContentSettings()
-        return content
+        break;
       case "Stats":
         content = <div>Stats Content</div>;
-        return content
+        break
+      case "Room management":
+        content = <RoomManagement/>
+        break
     }
+    return content
   }
 
   renderContentSettings() {
