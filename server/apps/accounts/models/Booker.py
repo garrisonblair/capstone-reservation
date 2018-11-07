@@ -9,14 +9,12 @@ class Booker(models.Model, AbstractBooker):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, default=None, null=True)
     booker_id = models.CharField(max_length=8, blank=False, primary_key=True)
-    privilege_categories = models.ManyToManyField(PrivilegeCategory)
+    privilege_categories = models.ManyToManyField(PrivilegeCategory, blank=True, default=None)
+    merged_privileges = None  # type: PrivilegeMerger
 
     def get_privileges(self):
         if self.privilege_categories.count() is 0:
             return None
-
-        if self.merged_privileges is None:
-            self.merged_privileges = PrivilegeMerger(list(self.privilege_categorie))
 
         return self.merged_privileges
 

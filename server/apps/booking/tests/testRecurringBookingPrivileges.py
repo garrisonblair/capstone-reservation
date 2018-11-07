@@ -21,7 +21,9 @@ class TestBookingPrivileges(TestCase):
         self.p_c_booker.booking_end_time = time(22, 0, 0)
         self.p_c_booker.save()
 
-        self.booker = Booker(booker_id="11111111", privilege_category=self.p_c_booker)
+        self.booker = Booker(booker_id="11111111")
+        self.booker.save()
+        self.booker.privilege_categories.add(self.p_c_booker)
         self.booker.save()
 
         self.p_c_group = PrivilegeCategory(name="Group Category")
@@ -120,21 +122,21 @@ class TestBookingPrivileges(TestCase):
         self.p_c_booker.max_recurring_bookings = 1
         date_in_2_weeks = date.today() + timedelta(days=14)
 
-        RecurringBooking.objects.create_recurring_booking(
-            start_date=date.today(),
-            end_date=date_in_2_weeks,
-            start_time=time(12, 0, 0),
-            end_time=time(14, 0, 0),
-            room=self.room,
-            group=None,
-            booker=self.booker,
-            skip_conflicts=False
-        )
-
         with mock_datetime(datetime.datetime(date.today().year,
                                              date.today().month,
                                              date.today().day,
                                              11, 30, 0, 0), datetime):
+            RecurringBooking.objects.create_recurring_booking(
+                start_date=date.today(),
+                end_date=date_in_2_weeks,
+                start_time=time(12, 0, 0),
+                end_time=time(14, 0, 0),
+                room=self.room,
+                group=None,
+                booker=self.booker,
+                skip_conflicts=False
+            )
+
             try:
                 RecurringBooking.objects.create_recurring_booking(
                     start_date=date.today(),

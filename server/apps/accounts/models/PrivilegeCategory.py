@@ -83,7 +83,10 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
         return self.field_metadata.get(param_name).error_message
 
     def __str__(self):
-        return self.name + " parent category: " + self.parent_category.name
+        value = self.name
+        if self.parent_category is not None:
+            value += " parent category: " + self.parent_category.name
+        return value
 
 
 class PrivilegeMerger(AbstractPrivilege):

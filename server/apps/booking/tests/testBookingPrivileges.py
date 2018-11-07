@@ -23,7 +23,9 @@ class TestBookingPrivileges(TestCase):
 
         self.p_c_booker.save()
 
-        self.booker = Booker(booker_id="11111111", privilege_category=self.p_c_booker)
+        self.booker = Booker(booker_id="11111111")
+        self.booker.save()
+        self.booker.privilege_categories.add(self.p_c_booker)
         self.booker.save()
 
         self.p_c_group = PrivilegeCategory(name="Group Category")

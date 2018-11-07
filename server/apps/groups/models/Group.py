@@ -10,7 +10,7 @@ class Group(models.Model, AbstractBooker):
     bookers = models.ManyToManyField(Booker)
     is_verified = models.BooleanField(default=False)
 
-    privilege_category = models.ForeignKey(PrivilegeCategory, null=True, on_delete=models.SET_NULL)
+    privilege_category = models.ForeignKey(PrivilegeCategory, blank=True, null=True, on_delete=models.SET_NULL)
 
     def get_privileges(self):
         return self.privilege_category
