@@ -7,6 +7,7 @@ from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.rooms.models.Room import Room
 from apps.accounts.models.Booker import Booker
 from apps.groups.models.Group import Group
+from apps.util.AbstractBooker import AbstractBooker
 from datetime import timedelta, datetime
 
 
@@ -102,15 +103,15 @@ class RecurringBooking(models.Model):
 
     def evaluate_privilege(self):
         if self.group is not None:
-            booker_entity = self.group
+            booker_entity = self.group  # type: AbstractBooker
         else:
             booker_entity = self.booker
 
         # no checks if no category assigned
-        if booker_entity.privilege_category is None:
+        if booker_entity.get_privileges() is None:
             return
 
-        p_c = booker_entity.privilege_category  # type: PrivilegeCategory
+        p_c = booker_entity.get_privileges()  # type: PrivilegeCategory
 
         can_make_recurring_booking = p_c.get_parameter("can_make_recurring_booking")
         max_recurring_bookings = p_c.get_parameter("max_recurring_bookings")

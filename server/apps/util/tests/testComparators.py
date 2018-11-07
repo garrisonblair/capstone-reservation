@@ -33,11 +33,11 @@ class TestComparators(TestCase):
     def testTimeComparatorEarlierIsBetter(self):
         comparator = TimeComparator(earlier_better=True)
 
-        self.assertGreater(comparator.compare(time(12, 0, 0), time(11, 59, 59)), 0)
-        self.assertLess(comparator.compare(time(11, 59, 59), time(12, 0, 0)), 0)
+        self.assertLess(comparator.compare(time(12, 0, 0), time(11, 59, 59)), 0)
+        self.assertGreater(comparator.compare(time(11, 59, 59), time(12, 0, 0)), 0)
 
     def testTimeComparatorLaterIsBetter(self):
         comparator = TimeComparator(earlier_better=False)
 
-        self.assertLess(comparator.compare(time(12, 0, 0), time(11, 59, 59)), 0)
-        self.assertGreater(comparator.compare(time(11, 59, 59), time(12, 0, 0)), 0)
+        self.assertGreater(comparator.compare(time(12, 0, 0), time(11, 59, 59)), 0)
+        self.assertLess(comparator.compare(time(11, 59, 59), time(12, 0, 0)), 0)

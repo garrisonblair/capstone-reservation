@@ -23,10 +23,10 @@ class TimeComparator(AbstractComparator):
             return 1
 
         if self.earlier_better:
-            difference = value1 - value2  # type: timedelta
+            difference = value2 - value1  # type: timedelta
             return difference.total_seconds()
         else:
-            difference = value2 - value1
+            difference = value1 - value2
             return difference.total_seconds()
 
 

@@ -11,6 +11,8 @@ from apps.util.SubjectModel import SubjectModel
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.exceptions import PrivilegeError
 
+from apps.util.AbstractBooker import AbstractBooker
+
 
 class BookingManager(models.Manager):
     def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking):
@@ -116,15 +118,15 @@ class Booking(models.Model, SubjectModel):
     def evaluate_privilege(self):
 
         if self.group is not None:
-            booker_entity = self.group
+            booker_entity = self.group  # type: AbstractBooker
         else:
             booker_entity = self.booker
 
         # no checks if no category assigned
-        if booker_entity.privilege_category is None:
+        if booker_entity.get_privileges() is None:
             return
 
-        p_c = booker_entity.privilege_category  # type: PrivilegeCategory
+        p_c = booker_entity.get_privileges()  # type: PrivilegeCategory
 
         max_days_until_booking = p_c.get_parameter("max_days_until_booking")
         max_bookings = p_c.get_parameter("max_bookings")
