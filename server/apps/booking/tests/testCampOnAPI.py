@@ -11,7 +11,7 @@ from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 from ..models.CampOn import CampOn
 from ..views.campon import CampOnView
-from utils.mock_datetime import mock_datetime
+from apps.util.mock_datetime import mock_datetime
 
 
 class CampOnAPITest(TestCase):

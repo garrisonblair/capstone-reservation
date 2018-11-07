@@ -1,6 +1,6 @@
 from django.db import models
 
-from utils.AbstractPrivilege import AbstractPrivilege
+from apps.util.AbstractPrivilege import AbstractPrivilege
 
 
 class PrivilegeCategory(models.Model, AbstractPrivilege):
@@ -48,3 +48,12 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
 
     def __str__(self):
         return self.name + " parent category: " + self.parent_category.name
+
+
+class PrivilegeMerger(AbstractPrivilege):
+
+    def get_parameter(self, param_name):
+        pass
+
+    def get_error_text(self, param_name):
+        pass

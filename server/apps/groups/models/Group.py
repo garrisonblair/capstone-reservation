@@ -2,7 +2,7 @@ from django.db import models
 
 from apps.accounts.models.Booker import Booker
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from utils.AbstractBooker import AbstractBooker
+from apps.util.AbstractBooker import AbstractBooker
 
 
 class Group(models.Model, AbstractBooker):

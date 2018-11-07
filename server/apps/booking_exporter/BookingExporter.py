@@ -1,6 +1,6 @@
 import abc
 
-from utils.ModelObserver import ModelObserver
+from apps.util.ModelObserver import ModelObserver
 
 
 # INTERFACE
