@@ -1,5 +1,6 @@
 from django.test import TestCase
 from datetime import date, time, timedelta
+import datetime
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.models.Booker import Booker
@@ -7,6 +8,7 @@ from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 from apps.groups.models.Group import Group
 from apps.accounts.exceptions import PrivilegeError
+from apps.util.mock_datetime import mock_datetime
 
 
 class TestBookingPrivileges(TestCase):
@@ -91,7 +93,7 @@ class TestBookingPrivileges(TestCase):
         except PrivilegeError as error:
             self.assertEqual(error.message, self.p_c_booker.get_error_text("max_days_until_booking"))
 
-        self.assertEqual(len(Booking.objects.all()), 0)
+        self.assertEqual(self.group.booking_set.count(), 0)
 
     def testBookingTooFarInFutureGroup(self):
 
@@ -110,7 +112,7 @@ class TestBookingPrivileges(TestCase):
         except PrivilegeError as error:
             self.assertEqual(error.message, self.p_c_group.get_error_text("max_days_until_booking"))
 
-        self.assertEqual(len(Booking.objects.all()), 0)
+        self.assertEqual(self.group.booking_set.count(), 0)
 
     def testTooManyBookingsBooker(self):
 
@@ -136,13 +138,16 @@ class TestBookingPrivileges(TestCase):
                            start_time=time(14, 0, 0),
                            end_time=time(15, 0, 0)
                            )
+        with mock_datetime(datetime.datetime(date.today().year,
+                                             date.today().month,
+                                             date.today().day,
+                                             11, 30, 0, 0), datetime):
+            try:
+                booking3.save()
+            except PrivilegeError as error:
+                self.assertEqual(error.message, self.p_c_booker.get_error_text("max_bookings"))
 
-        try:
-            booking3.save()
-        except PrivilegeError as error:
-            self.assertEqual(error.message, self.p_c_booker.get_error_text("max_bookings"))
-
-        self.assertEqual(len(Booking.objects.all()), 2)
+        self.assertEqual(self.booker.booking_set.count(), 2)
 
     def testTooManyBookingsGroup(self):
 
@@ -162,10 +167,13 @@ class TestBookingPrivileges(TestCase):
                            start_time=time(13, 0, 0),
                            end_time=time(14, 0, 0)
                            )
+        with mock_datetime(datetime.datetime(date.today().year,
+                                             date.today().month,
+                                             date.today().day,
+                                             11, 30, 0, 0), datetime):
+            try:
+                booking2.save()
+            except PrivilegeError as error:
+                self.assertEqual(error.message, self.p_c_group.get_error_text("max_bookings"))
 
-        try:
-            booking2.save()
-        except PrivilegeError as error:
-            self.assertEqual(error.message, self.p_c_group.get_error_text("max_bookings"))
-
-        self.assertEqual(len(Booking.objects.all()), 1)
+        self.assertEqual(self.group.booking_set.count(), 1)
