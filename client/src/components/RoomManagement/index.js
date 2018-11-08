@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Button, List } from 'semantic-ui-react'
 import RoomRowItem from './RoomRowItem'
 import RoomModal from '../RoomModal';
@@ -22,11 +23,8 @@ class RoomManagement extends Component {
     })
   }
   showRoomModal = () =>{ this.setState({ showModal:true })}
-  closeRoomModal = (success) =>{
+  closeRoomModal = () =>{
     this.setState({ showModal:false });
-    if(success){
-      this.syncRooms();
-    }
   }
   syncRooms = () => {
     this.setState({
@@ -47,14 +45,16 @@ class RoomManagement extends Component {
       <div id="room-management">
         <h1>Manage Rooms</h1>
         <List divided verticalAlign='middle'>
-          {roomsList.map(room => <RoomRowItem key={room.id} room={room} />)}
+          {roomsList.map(room => <RoomRowItem key={room.id} room={room} actionWhenSuccess={this.syncRooms} />)}
         </List>
         <Button onClick={this.showRoomModal}>Add new room</Button>
-        <RoomModal show={showModal} closeRoomModal={this.closeRoomModal}></RoomModal>
+        <RoomModal show={showModal} closeRoomModal={this.closeRoomModal} syncRoomList={this.syncRooms}></RoomModal>
 
       </div>
     )
   }
 }
 
+RoomManagement.propTypes = {
+}
 export default RoomManagement;

@@ -53,17 +53,15 @@ class RoomModal extends Component {
     }
     sweetAlert('Completed', 'Good job Modestos', 'success')
     .then((result)=>{
-      this.closeModalWithSuccess();
+      this.closeModal();
+      this.props.syncRoomList();
     })
   }
   closeModal = () => {
-    this.props.closeRoomModal(false);
+    this.props.closeRoomModal();
     this.resetModal();
   }
-  closeModalWithSuccess = () => {
-    this.props.closeRoomModal(true);
-    this.resetModal();
-  }
+
   render() {
     let { show } = this.props;
     let { roomCapacity, roomID, numOfComputers} = this.state;
@@ -103,6 +101,7 @@ RoomModal.propTypes = {
   roomCapacity: PropTypes.number,
   roomComputerNum: PropTypes.number,
   closeRoomModal: PropTypes.func.isRequired,
+  syncRoomList: PropTypes.func.isRequired,
   mode:PropTypes.string.isRequired
 }
 
