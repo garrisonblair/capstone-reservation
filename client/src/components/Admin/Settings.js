@@ -62,13 +62,13 @@ class Settings extends Component {
     return (
       <div>
         <form onSubmit={this.saveSettings}>
-          <label>
-            Automatically export to Web Calendar
+          <div>
             <Checkbox
+              label='Automatically export to Web Calendar'
               checked={webCalendarBackup}
               onChange={this.handleChangeSetting}
             />
-          </label>
+          </div>
         </form>
         <WebCalendarLogin
           show={showLoginModal}

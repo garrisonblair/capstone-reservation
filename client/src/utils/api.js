@@ -139,6 +139,7 @@ const api = {
   register,
   login,
   verify,
+  getMyUser,
   updateUser,
   createCampOn,
   getBookings,
@@ -148,7 +149,6 @@ const api = {
   getRooms,
   getAdminSettings,
   updateAdminSettings,
-  getMyUser,
 }
 
 export default api;
