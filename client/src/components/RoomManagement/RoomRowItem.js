@@ -7,6 +7,10 @@ import sweetAlert from 'sweetalert2';
 
 class RoomRowItem extends Component {
 
+  openRoomModalInEditMode =() =>{
+    this.props.openModalEditMode(this.props.room);
+  }
+
   handleDeleteRoom = () =>{
     const{room} = this.props;
     sweetAlert({
@@ -26,7 +30,7 @@ class RoomRowItem extends Component {
           if(response.status){
             sweetAlert('Deleted',`Room ${room.id} was deleted.`,'success')
             .then((response)=>{
-              this.props.actionWhenSuccess();
+              this.props.syncRoomList();
             });
           }
         })
@@ -42,7 +46,7 @@ class RoomRowItem extends Component {
           <h2>Room {id}</h2>
         </List.Content>
         <List.Content floated='right' className='row-buttons'>
-          <Button icon='edit'/>
+          <Button icon='edit' onClick={this.openRoomModalInEditMode}/>
           <Button icon='trash' onClick={this.handleDeleteRoom}/>
         </List.Content>
       </List.Item>
@@ -52,7 +56,8 @@ class RoomRowItem extends Component {
 
 RoomRowItem.propTypes = {
   room: PropTypes.object.isRequired,
-  actionWhenSuccess: PropTypes.func.isRequired
+  syncRoomList: PropTypes.func.isRequired,
+  openModalEditMode: PropTypes.func.isRequired
 }
 
 export default RoomRowItem;
