@@ -114,6 +114,16 @@ function getRooms() {
   })
 }
 
+function deleteRoom(){
+  const headers = getTokenHeader();
+  return axios({
+    method:'DELETE',
+    url: `${settings.API_ROOT}/room`,
+    headers,
+    withCredentials:true
+  })
+}
+
 function getAdminSettings() {
   const headers = getTokenHeader();
   return axios({
@@ -146,6 +156,7 @@ const api = {
   createRecurringBooking,
   getCampOns,
   getRooms,
+  deleteRoom,
   getAdminSettings,
   updateAdminSettings,
   getMyUser,

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, List } from 'semantic-ui-react'
+import api from '../../utils/api';
 import sweetAlert from 'sweetalert2';
 
 
@@ -9,22 +10,26 @@ class RoomRowItem extends Component {
   handleDeleteRoom = () =>{
     const{room} = this.props;
     sweetAlert({
-      title:'',
+      title:'Confirmation',
       type:'warning',
       text:`Are you sure you want to delete room ${room.id}`,
       showConfirmButton:true,
       confirmButtonText:'Delete',
       showCancelButton:true,
       cancelButtonText:'Cancel',
-      cancelButtonColor:'red'
+      confirmButtonColor:'red'
     })
     .then((result)=>{
       if(result.value){
-        //axios delete
-        sweetAlert('Deleted',`Room ${room.id} was deleted.`,'success')
-        .then((response)=>{
-          this.props.actionWhenSuccess();
-        });
+        api.deleteRoom(room.id)
+        .then((response) =>{
+          if(response.status){
+            sweetAlert('Deleted',`Room ${room.id} was deleted.`,'success')
+            .then((response)=>{
+              this.props.actionWhenSuccess();
+            });
+          }
+        })
       }
     })
   }

@@ -56,5 +56,6 @@ class RoomManagement extends Component {
 }
 
 RoomManagement.propTypes = {
+
 }
 export default RoomManagement;
