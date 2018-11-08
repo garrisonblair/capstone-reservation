@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import { Modal, Button, FormField, Input } from 'semantic-ui-react';
+import api from '../../utils/api';
 import './RoomModal.scss';
 
 class RoomModal extends Component {
@@ -52,22 +53,36 @@ class RoomModal extends Component {
   }
 
   handleSubmit = () =>{
+    let {roomID, roomCapacity, numOfComputers} = this.state;
     // Leaves the method if verification doesn't succeed
     if(!this.verifyModalForm()){
       return;
     }
-    sweetAlert('Completed', 'Good job', 'success')
-    .then((result)=>{
-      this.closeModal();
-      this.props.syncRoomList();
+    api.saveRoom(roomID, roomCapacity, numOfComputers)
+    .then((response)=>{
+      if(response.status.OK){
+        sweetAlert('Completed', 'Good job', 'success')
+        .then((result)=>{
+          this.closeModal();
+          this.props.syncRoomList();
+        })
+      }
     })
+    .catch((error)=>{
+      sweetAlert(':(', 'We are sorry. Something went wrong. Room was not saved.', 'error')
+        .then((result)=>{
+          this.closeModal();
+          this.props.syncRoomList();
+        })
+    })
+
   }
   closeModal = () => {
     this.props.closeRoomModal();
   }
 
   render() {
-    let { show, editMode, selectedRoom} = this.props;
+    let { show, editMode } = this.props;
     let { roomCapacity, roomID, numOfComputers} = this.state;
     return (
       <div>

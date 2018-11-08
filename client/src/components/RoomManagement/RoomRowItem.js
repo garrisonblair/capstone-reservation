@@ -31,7 +31,10 @@ class RoomRowItem extends Component {
             sweetAlert('Deleted',`Room ${room.id} was deleted.`,'success')
             .then((response)=>{
               this.props.syncRoomList();
-            });
+            })
+            .catch((error)=>{
+              sweetAlert(':(','We are sorry. Something went wrong. Room was not deleted.', 'error')
+            })
           }
         })
       }
