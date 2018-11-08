@@ -2,6 +2,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import permission_classes
 
 from django.core.exceptions import ValidationError
 
@@ -10,12 +11,12 @@ from apps.accounts.serializers.privilege_category_serializer import PrivilegeCat
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 
+@permission_classes((IsAuthenticated, IsOwnerOrAdmin))
 class PrivilegeCategoryView(APIView):
-
     def post(self, request):
         # Must be logged in as admin
-        if not request.user.is_superuser:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # if not request.user.is_superuser:
+        #     return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         category_data = dict(request.data)
         serializer = PrivilegeCategorySerializer(data=category_data)
@@ -31,8 +32,8 @@ class PrivilegeCategoryView(APIView):
 
     def get(self, request):
         # Must be logged in as admin
-        if not request.user.is_superuser:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # if not request.user.is_superuser:
+        #     return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         request_name = request.query_params.get('name', None)
 
