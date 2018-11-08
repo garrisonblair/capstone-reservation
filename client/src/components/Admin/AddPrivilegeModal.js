@@ -70,7 +70,7 @@ class AddPrivilegeModal extends Component {
 
   renderForm() {
     const {privileges} = this.props;
-    const {recurringBookingPermission} = this.state;
+    const {recurringBookingPermission, bookingStartTime, bookingEndTime} = this.state;
 
     let privilegeOptions = privileges.map((privilege) => ({
       key: privilege.id,
@@ -140,6 +140,24 @@ class AddPrivilegeModal extends Component {
             type='number'
             min='0'
             onChange={(e) => this.handleInputChange('maxRecurringBookings', e)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Input
+            size='small'
+            icon='calendar alternate outline'
+            iconPosition='left'
+            type='time'
+            onChange={(e) => this.handleInputChange('bookingStartTime', e)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Input
+            size='small'
+            icon='calendar alternate'
+            iconPosition='left'
+            type='time'
+            onChange={(e) => this.handleInputChange('bookingEndTime', e)}
           />
         </Form.Field>
       </div>
