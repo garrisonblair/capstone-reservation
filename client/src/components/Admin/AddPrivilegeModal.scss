@@ -1,5 +1,8 @@
 .privilege-modal {
   &__container {
     padding: 0 20px 20px 20px;
+    .field {
+      margin: 10px;
+    }
   }
 }

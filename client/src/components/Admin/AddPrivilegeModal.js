@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Form, Header, Icon, Input, Modal} from 'semantic-ui-react';
+import {Button, Checkbox, Dropdown, Form, Header, Icon, Input, Modal, FormField} from 'semantic-ui-react';
 import api from '../../utils/api';
 import './AddPrivilegeModal.scss';
 
@@ -23,11 +23,24 @@ class AddPrivilegeModal extends Component {
     })
   }
 
+  handleParentPrivilegeChange = (e, data) => {
+    this.setState({
+      parent: data.value
+    })
+  }
+
+  handleRecurringBookingPermission = (e, data) => {
+    const {checked} = data;
+    this.setState({
+      recurringBookingPermission: checked
+    })
+  }
+
   handleSubmit = (e) => {
     const {name, parent, maxDaysUntilBooking, maxBookings, maxRecurringBookings, recurringBookingPermission, bookingStartTime, bookingEndTime} = this.state;
     let data = {
       name,
-      parent_category: '',
+      parent_category: parent,
       max_day_until_booking: maxDaysUntilBooking,
       max_bookings: maxBookings,
       max_recurring_bookings: maxRecurringBookings,
@@ -35,6 +48,8 @@ class AddPrivilegeModal extends Component {
       booking_start_time: bookingStartTime,
       booking_end_time: bookingEndTime
     }
+
+    console.log(data);
 
     // TEST DATA
     // data = {
@@ -46,14 +61,23 @@ class AddPrivilegeModal extends Component {
     //   "max_recurring_bookings": 3
     // }
 
-    api.createPrivilege(data)
-    .then((response) => {
-      console.log(response);
-    })
-    this.props.onClose();
+    // api.createPrivilege(data)
+    // .then((response) => {
+    //   console.log(response);
+    // })
+    // this.props.onClose();
   }
 
   renderForm() {
+    const {privileges} = this.props;
+    const {recurringBookingPermission} = this.state;
+
+    let privilegeOptions = privileges.map((privilege) => ({
+      key: privilege.id,
+      value: privilege.id,
+      text: privilege.name
+    }))
+
     return (
       <div>
         <Form.Field>
@@ -64,6 +88,15 @@ class AddPrivilegeModal extends Component {
             iconPosition='left'
             placeholder='Name'
             onChange={(e) => this.handleInputChange('name', e)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Dropdown
+            placeholder='Parent'
+            search
+            selection
+            options={privilegeOptions}
+            onChange={this.handleParentPrivilegeChange}
           />
         </Form.Field>
         <Form.Field>
@@ -90,6 +123,13 @@ class AddPrivilegeModal extends Component {
             onChange={(e) => this.handleInputChange('maxBookings', e)}
           />
         </Form.Field>
+        <FormField>
+          <Checkbox
+            label='Recurring Booking Permission'
+            checked={recurringBookingPermission}
+            onChange={this.handleRecurringBookingPermission}
+          />
+        </FormField>
         <Form.Field>
           <Input
             fluid
