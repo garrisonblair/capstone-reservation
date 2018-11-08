@@ -13,6 +13,7 @@ from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 
 
 class UserList(ListAPIView):
+    permission_classes = (IsAuthenticated, )
     queryset = User.objects.all()
     serializer_class = UserSerializerLogin
 

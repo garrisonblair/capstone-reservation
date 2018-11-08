@@ -243,11 +243,9 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.user.save()
         self.user.refresh_from_db()
 
-        client = APIClient()
-        client.login(username='jerry', password='constanza')
-        response = client.get("privilege_categories",
-                              {
-                              },
-                              format="json")
+        request = self.factory.get("privilege_categories")
+        force_authenticate(request, user=self.user)
+        response = PrivilegeCategoryView.as_view()(request)
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        # A permission class returns either 401/403 if the user is not authorized
+        self.assertTrue(response.status_code in [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED])
