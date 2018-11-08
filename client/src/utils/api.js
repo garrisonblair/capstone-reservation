@@ -129,8 +129,29 @@ function updateAdminSettings(data) {
   return axios({
     method: 'PATCH',
     url: `${settings.API_ROOT}/settings`,
-    data,
     headers,
+    data,
+    withCredentials: true,
+  })
+}
+
+function getPrivileges() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/privilege_categories`,
+    headers,
+    withCredentials: true,
+  })
+}
+
+function createPrivilege(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/privilege_categories`,
+    headers,
+    data,
     withCredentials: true,
   })
 }
@@ -149,6 +170,8 @@ const api = {
   getRooms,
   getAdminSettings,
   updateAdminSettings,
+  getPrivileges,
+  createPrivilege
 }
 
 export default api;
