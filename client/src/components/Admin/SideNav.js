@@ -1,9 +1,17 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import './SideNav.scss';
 
 
 class SideNav extends Component {
+
+  goToSettings = () => {
+    this.props.history.push('/admin/settings')
+  }
+
+  goToStats = () => {
+    this.props.history.push('/admin/stats')
+  }
 
   render() {
     const {selectedMenu} = this.props;
@@ -12,21 +20,15 @@ class SideNav extends Component {
         <ul>
           <li
             className={selectedMenu === 'settings'? 'active': ''}
+            onClick={this.goToSettings}
           >
-            <Link
-              to={'settings'}
-            >
-              Settings
-            </Link>
+            Settings
           </li>
           <li
             className={selectedMenu === 'stats'? 'active': ''}
+            onClick={this.goToStats}
           >
-            <Link
-              to={'stats'}
-            >
-              Stats
-            </Link>
+            Stats
           </li>
         </ul>
       </div>
@@ -34,4 +36,4 @@ class SideNav extends Component {
   }
 }
 
-export default SideNav;
+export default withRouter(SideNav);
