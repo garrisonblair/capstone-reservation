@@ -141,7 +141,7 @@ class Admin extends Component {
   }
 
   renderLoginModal() {
-    const {webCalendarBackup, showLoginModal, showDisableBackupModal} = this.state;
+    const {showLoginModal} = this.state;
 
     let component = (
       <WebCalendarLogin
@@ -150,29 +150,32 @@ class Admin extends Component {
       />
     )
 
-    if (!webCalendarBackup) {
-      component = (
-        <Modal open={showDisableBackupModal}>
-          <Header>
-            <h1 className="login__container__header__title">
-              {'Disable automatic backup?'}
-            </h1>
-          </Header>
-          <div className="login__container__main">
-            <div className="ui divider"/>
-            <div className="login__container__main__form-wrapper">
-              <Form.Field>
-                <Button fluid size='small' icon onClick={this.disableBackup}>
-                  Confirm
-                </Button>
-              </Form.Field>
-              <div className="ui divider"/>
-            </div>
-          </div>
-        </Modal>
-      )
-    }
+    return component;
+  }
 
+  renderDisableBackupModal() {
+    const {showDisableBackupModal} = this.state;
+
+    let component = (
+      <Modal open={showDisableBackupModal}>
+        <Header>
+          <h1 className="login__container__header__title">
+            {'Disable automatic backup?'}
+          </h1>
+        </Header>
+        <div className="login__container__main">
+          <div className="ui divider"/>
+          <div className="login__container__main__form-wrapper">
+            <Form.Field>
+              <Button fluid size='small' icon onClick={this.disableBackup}>
+                Confirm
+              </Button>
+            </Form.Field>
+            <div className="ui divider"/>
+          </div>
+        </div>
+      </Modal>
+    )
     return component;
   }
 
@@ -181,6 +184,7 @@ class Admin extends Component {
       <div id="admin">
         {this.renderSettings()}
         {this.renderLoginModal()}
+        {this.renderDisableBackupModal()}
       </div>
     )
   }
