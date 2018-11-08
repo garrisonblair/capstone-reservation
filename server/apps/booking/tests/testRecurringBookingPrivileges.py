@@ -46,6 +46,7 @@ class TestBookingPrivileges(TestCase):
     def testRecurringBookingAllowedBooker(self):
         self.p_c_booker.can_make_recurring_booking = True
         self.p_c_booker.max_recurring_bookings = 2
+        self.p_c_booker.save()
         date_in_2_weeks = date.today() + timedelta(days=14)
 
         RecurringBooking.objects.create_recurring_booking(
@@ -64,6 +65,7 @@ class TestBookingPrivileges(TestCase):
     def testRecurringBookingNotAllowedBooker(self):
         self.p_c_booker.can_make_recurring_booking = False
         self.p_c_booker.max_recurring_bookings = 0
+        self.p_c_booker.save()
         date_in_2_weeks = date.today() + timedelta(days=14)
 
         with self.assertRaises(PrivilegeError):
@@ -83,6 +85,7 @@ class TestBookingPrivileges(TestCase):
     def testRecurringBookingAllowedGroup(self):
         self.p_c_group.can_make_recurring_booking = True
         self.p_c_group.max_recurring_bookings = 2
+        self.p_c_group.save()
         date_in_2_weeks = date.today() + timedelta(days=14)
 
         RecurringBooking.objects.create_recurring_booking(
@@ -101,6 +104,7 @@ class TestBookingPrivileges(TestCase):
     def testRecurringBookingNotAllowedGroup(self):
         self.p_c_group.can_make_recurring_booking = False
         self.p_c_group.max_recurring_bookings = 0
+        self.p_c_group.save()
         date_in_2_weeks = date.today() + timedelta(days=14)
 
         with self.assertRaises(PrivilegeError):
@@ -120,6 +124,7 @@ class TestBookingPrivileges(TestCase):
     def testTooManyRecurringBookingsBooker(self):
         self.p_c_booker.can_make_recurring_booking = True
         self.p_c_booker.max_recurring_bookings = 1
+        self.p_c_booker.save()
         date_in_2_weeks = date.today() + timedelta(days=14)
 
         with mock_datetime(datetime.datetime(date.today().year,
@@ -156,6 +161,7 @@ class TestBookingPrivileges(TestCase):
     def testTooManyRecurringBookingsGroup(self):
         self.p_c_group.can_make_recurring_booking = True
         self.p_c_group.max_recurring_bookings = 2
+        self.p_c_group.save()
         date_in_2_weeks = date.today() + timedelta(days=14)
 
         RecurringBooking.objects.create_recurring_booking(
