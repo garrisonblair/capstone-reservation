@@ -7,6 +7,7 @@ import NotFound from './components/NotFound';
 import Registration from './components/Registration';
 import Verification from './components/Verification';
 import Admin from './components/Admin';
+import Stats from './components/Admin/Stats';
 
 
 ReactDOM.render(
@@ -18,6 +19,8 @@ ReactDOM.render(
         <Route exact path="/registration" component={Registration}/>
         <Route exact path="/verify/:token" component={Verification}/>
         <Route exact path="/admin" component={Admin}/>
+        <Route exact path="/admin/settings" component={Admin}/>
+        <Route exact path="/admin/stats" component={Stats}/>
         <Route component={NotFound}/>
       </Switch>
     </div>

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Button, Checkbox, Form, Input, Modal, Header} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import AdminRequired from '../HOC/AdminRequired';
+import SideNav from './SideNav';
 import WebCalendarLogin from './WebCalendarLogin';
 import api from '../../utils/api';
 import './Admin.scss';
@@ -56,11 +57,6 @@ class Admin extends Component {
     })
   }
 
-  handleClickNav = (e) => {
-    let option = e.target.getAttribute('value');
-    this.setState({current: option})
-  }
-
   handleChangeSetting = (e, data) => {
     const {checked} = data;
     let showLoginModal = false;
@@ -83,46 +79,6 @@ class Admin extends Component {
     this.setState({showLoginModal: false})
   }
 
-  renderSettings() {
-    return (
-      <div className="admin__wrapper">
-        <div>{this.renderNav()}</div>
-        <div className="admin__content">
-          {this.renderContent()}
-        </div>
-      </div>
-    )
-  }
-
-  renderNav() {
-    const {current} = this.state;
-    const options = ['Settings', 'Stats']
-    const menu = options.map((option) =>
-      <li
-        className={current == option? "active": ""}
-        key={option}
-        value={option}
-        onClick={this.handleClickNav}
-      >
-        {option}
-      </li>
-    )
-    return <ul className="admin__navigation">{menu}</ul>
-  }
-
-  renderContent() {
-    const {current} = this.state
-    let content
-    switch (current) {
-      case "Settings":
-        content = this.renderContentSettings()
-        return content
-      case "Stats":
-        content = <div>Stats Content</div>;
-        return content
-    }
-  }
-
   renderContentSettings() {
     const {webCalendarBackup} = this.state
     return (
@@ -134,8 +90,6 @@ class Admin extends Component {
             onChange={this.handleChangeSetting}
           />
         </label>
-        <br/>
-        {/* <input type="submit" value="Save" /> */}
       </form>
     )
   }
@@ -181,8 +135,13 @@ class Admin extends Component {
 
   render() {
     return (
-      <div id="admin">
-        {this.renderSettings()}
+      <div className="admin">
+        <div className="admin__wrapper">
+          <SideNav selectedMenu={'settings'}/>
+          <div className="admin__content">
+            {this.renderContentSettings()}
+          </div>
+        </div>
         {this.renderLoginModal()}
         {this.renderDisableBackupModal()}
       </div>
