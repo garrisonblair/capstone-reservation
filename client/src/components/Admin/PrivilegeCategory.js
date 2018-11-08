@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {Button, Icon, Table} from 'semantic-ui-react'
+import {Button, Icon, Table} from 'semantic-ui-react';
 import api from '../../utils/api';
 import AdminRequired from '../HOC/AdminRequired';
 import SideNav from './SideNav';
+import AddPrivilegeModal from './AddPrivilegeModal';
 import './Admin.scss';
 
 
@@ -10,7 +11,9 @@ import './Admin.scss';
 class PrivilegeCategory extends Component {
 
   state = {
-    privileges: []
+    privileges: [],
+    showAddPrivilegeModal: false,
+    showAssignPrivilegeModal: false
   }
 
   getPrivileges = () => {
@@ -26,10 +29,23 @@ class PrivilegeCategory extends Component {
     })
   }
 
+  handleAddPrivilege = () => {
+    this.setState({
+      showAddPrivilegeModal: true
+    })
+  }
+
+  handleOnCloseAdPrivilegeModal = () => {
+    this.getPrivileges();
+    this.setState({
+      showAddPrivilegeModal: false
+    })
+  }
+
   renderControls() {
     return (
       <div>
-        <Button icon labelPosition='left' primary size='small'>
+        <Button icon labelPosition='left' primary size='small' onClick={this.handleAddPrivilege}>
           <Icon name='plus'/> Add
         </Button>
         <Button icon labelPosition='left' primary size='small'>
@@ -94,6 +110,7 @@ class PrivilegeCategory extends Component {
   }
 
   render() {
+    const {showAddPrivilegeModal} = this.state;
     return (
       <div className="admin">
         <div className="admin__wrapper">
@@ -102,6 +119,10 @@ class PrivilegeCategory extends Component {
             <h1>Privileges</h1>
             {this.renderControls()}
             {this.renderTable()}
+            <AddPrivilegeModal
+              show={showAddPrivilegeModal}
+              onClose={this.handleOnCloseAdPrivilegeModal}
+            />
           </div>
         </div>
       </div>
