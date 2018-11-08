@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Form, Modal, Header} from 'semantic-ui-react';
+import {Button, Checkbox, Form, Input, Modal, Header} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import AdminRequired from '../HOC/AdminRequired';
 import WebCalendarLogin from './WebCalendarLogin';
@@ -11,7 +11,7 @@ class Admin extends Component {
 
   state = {
     loginModal: false,
-    webcalendarBackup: false
+    webCalendarBackup: false
   }
 
   componentDidMount = () => {
@@ -26,10 +26,10 @@ class Admin extends Component {
     api.getAdminSettings()
     .then((response) => {
       this.setState({
-        webcalendarBackup: response.data.is_webcalendar_backup_active
+        webCalendarBackup: response.data.is_webcalendar_backup_active
       })
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     })
   }
@@ -58,13 +58,13 @@ class Admin extends Component {
     this.setState({current: option})
   }
 
-  handleChangeSetting = (e) => {
-    let setting = e.target.getAttribute('value');
-    this.setState({[setting]: !this.state[setting]}, () => {
-      if(setting == "webcalendarBackup") {
-        this.toggleLoginModal();
-      }
+  handleChangeSetting = (e, data) => {
+    const {checked} = data;
+    this.setState({
+      webCalendarBackup: checked
     })
+
+    this.toggleLoginModal();
   }
 
   toggleLoginModal = () => {
@@ -87,9 +87,17 @@ class Admin extends Component {
   }
 
   renderNav() {
+    const {current} = this.state;
     const options = ['Settings', 'Stats']
     const menu = options.map((option) =>
-      <li className={this.state.current == option? "active" : ""} key={option} value={option} onClick={this.handleClickNav}>{option}</li>
+      <li
+        className={current == option? "active": ""}
+        key={option}
+        value={option}
+        onClick={this.handleClickNav}
+      >
+          {option}
+      </li>
     )
     return <ul className="admin__navigation">{menu}</ul>
   }
@@ -108,11 +116,15 @@ class Admin extends Component {
   }
 
   renderContentSettings() {
+    const {webCalendarBackup} = this.state
     return (
       <form onSubmit={this.saveSettings}>
         <label>
           Automatically export to Web Calendar
-          <input type="checkbox" checked={!!this.state.webcalendarBackup} value="webcalendarBackup" onChange={this.handleChangeSetting} />
+          <Checkbox
+            checked={webCalendarBackup}
+            onChange={this.handleChangeSetting}
+          />
         </label>
         <br/>
         {/* <input type="submit" value="Save" /> */}
@@ -121,7 +133,7 @@ class Admin extends Component {
   }
 
   renderLoginModal() {
-    const {webcalendarBackup} = this.state;
+    const {webCalendarBackup} = this.state;
 
     let component = (
       <WebCalendarLogin
@@ -130,7 +142,7 @@ class Admin extends Component {
       />
     )
 
-    if (!webcalendarBackup) {
+    if (!webCalendarBackup) {
       component = (
         <Modal open={this.state.loginModal} onClose={this.toggleLoginModal}>
           <Header>
