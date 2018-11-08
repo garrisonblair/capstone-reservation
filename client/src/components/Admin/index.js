@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
+import {Button, Form, Modal, Input, Header} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
+import AdminRequired from '../HOC/AdminRequired';
 import api from '../../utils/api';
 import './Admin.scss';
-import {Button, Form, Modal, Input, Header} from 'semantic-ui-react';
-import AdminRequired from '../HOC/AdminRequired';
-import {getTokenHeader} from '../../utils/requestHeaders';
 
 
 class Admin extends Component {
@@ -18,16 +17,11 @@ class Admin extends Component {
 
   componentDidMount = () => {
     document.title = 'Capstone Settings'
-    if(localStorage.getItem('CapstoneReservationUser')) {
-      let user = JSON.parse(localStorage.getItem('CapstoneReservationUser'));
-      if(user.is_superuser) {
-        this.getSettings()
-        this.setState({
-          isAdmin: true,
-          current: 'Settings'
-        })
-      }
-    }
+    this.getSettings();
+    this.setState({
+      isAdmin: true,
+      current: 'Settings'
+    })
   }
 
   /************ REQUESTS *************/
@@ -42,38 +36,35 @@ class Admin extends Component {
     .catch(function (error) {
       console.log(error);
     })
-    .then(function () {
-      // always executed
-    });
   }
 
   saveSettings = () => {
-    const {webcalendarPassword, webcalendarUsername} = this.state
+    const {webcalendarPassword, webcalendarUsername, webcalendarBackup} = this.state
 
     let data = {
-      is_webcalendar_backup_active: this.state.webcalendarBackup ? 'True' : 'False',
+      is_webcalendar_backup_active: webcalendarBackup,
       webcalendar_username: webcalendarUsername,
       webcalendar_password: webcalendarPassword
-
     }
 
     api.updateAdminSettings(data)
     .then((response) => {
-      sweetAlert('Completed',
-          `Settings were successfuly saved.`,
-          'success')
+      sweetAlert(
+        'Completed',
+        'Settings were successfuly saved.',
+        'success'
+      )
       this.toggleLoginModal();
     })
     .catch(function (error) {
       if (error.message.includes('401')) {
-        sweetAlert('Autenthication error',
+        sweetAlert(
+          'Autenthication error',
           'The credentials you entered are invalid.',
-          'error')
+          'error'
+        )
       }
     })
-    .then(function () {
-      // always executed
-    });
   }
 
   /************ CLICK HANDLING METHODS *************/
@@ -110,21 +101,23 @@ class Admin extends Component {
     this.setState({responseModal: !this.state.responseModal})
   }
 
-
   /************ COMPONENT RENDERING *************/
 
   renderSettings() {
-    if(this.state.isAdmin) {
-      return <div className="admin__wrapper"> <div>{this.renderNav()}</div><div className="admin__content">{this.renderContent()}</div></div>
-    } else {
-      return <div> NOT FOUND </div>
-    }
+    return (
+      <div className="admin__wrapper">
+        <div>{this.renderNav()}</div>
+        <div className="admin__content">
+          {this.renderContent()}
+        </div>
+      </div>
+    )
   }
 
   renderNav() {
     const options = ['Settings', 'Stats']
     const menu = options.map((option) =>
-      <li className={this.state.current == option ? "active" : ""} key={option} value={option} onClick={this.handleClickNav}>{option}</li>
+      <li className={this.state.current == option? "active" : ""} key={option} value={option} onClick={this.handleClickNav}>{option}</li>
     )
     return <ul className="admin__navigation">{menu}</ul>
   }
@@ -204,7 +197,6 @@ class Admin extends Component {
         </Modal>
     )
   }
-
 
   render() {
     const {responseModal, responseModalText, responseModalTitle, responseModalType} = this.state
