@@ -1,5 +1,5 @@
 from django.test import TestCase
-from rest_framework.test import APIRequestFactory
+from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework import status
 from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
@@ -128,9 +128,13 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(PrivilegeCategory.objects.count(), 1)
 
-    def testCreatePrivilegeCategoryNotAuthorized(self):
+    def testCreatePrivilegeCategoryUnauthorized(self):
         self.user.is_superuser = False
         self.user.save()
+        self.user.refresh_from_db()
+
+        client = APIClient()
+        client.login(username='jerry', password='constanza')
 
         request = self.factory.post("/privilege_categories",
                                     {
@@ -143,7 +147,7 @@ class TestPrivilegeCategoryAPI(TestCase):
                                     },
                                     format="json")
 
-        force_authenticate(request, user=User.objects.get(username="jerry"))
+        # force_authenticate(request, user=User.objects.get(username="jerry"))
 
         response = PrivilegeCategoryView.as_view()(request)
 
@@ -216,13 +220,16 @@ class TestPrivilegeCategoryAPI(TestCase):
     def testViewFailureUnauthorized(self):
         self.user.is_superuser = False
         self.user.save()
+        self.user.refresh_from_db()
 
+        client = APIClient()
+        client.login(username='jerry', password='constanza')
         request = self.factory.get("privilege_categories",
                                    {
                                    },
                                    format="json")
 
-        force_authenticate(request, user=User.objects.get(username="jerry"))
+        # force_authenticate(request, user=User.objects.get(username="jerry"))
 
         response = PrivilegeCategoryView.as_view()(request)
 

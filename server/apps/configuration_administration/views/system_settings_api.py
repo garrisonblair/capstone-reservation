@@ -22,7 +22,6 @@ class SystemSettingsAPI(APIView):
 
     @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
     def patch(self, request):
-        # TODO: add admin permission here when edwards branch is merged
 
         settings_updates = dict(request.data)
 
