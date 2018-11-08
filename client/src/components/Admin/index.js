@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Button, Form, Modal, Input, Header} from 'semantic-ui-react';
+import {Button, Form, Modal, Header} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import AdminRequired from '../HOC/AdminRequired';
+import WebCalendarLogin from './WebCalendarLogin';
 import api from '../../utils/api';
 import './Admin.scss';
 
@@ -9,22 +10,17 @@ import './Admin.scss';
 class Admin extends Component {
 
   state = {
-    isAdmin: false,
     loginModal: false,
-    webcalendarUsername: '',
-    webcalendarPassword: ''
+    webcalendarBackup: false
   }
 
   componentDidMount = () => {
     document.title = 'Capstone Settings'
     this.getSettings();
     this.setState({
-      isAdmin: true,
       current: 'Settings'
     })
   }
-
-  /************ REQUESTS *************/
 
   getSettings() {
     api.getAdminSettings()
@@ -38,13 +34,9 @@ class Admin extends Component {
     })
   }
 
-  saveSettings = () => {
-    const {webcalendarPassword, webcalendarUsername, webcalendarBackup} = this.state
-
+  disableBackup = (e) => {
     let data = {
-      is_webcalendar_backup_active: webcalendarBackup,
-      webcalendar_username: webcalendarUsername,
-      webcalendar_password: webcalendarPassword
+      is_webcalendar_backup_active: false,
     }
 
     api.updateAdminSettings(data)
@@ -56,18 +48,10 @@ class Admin extends Component {
       )
       this.toggleLoginModal();
     })
-    .catch(function (error) {
-      if (error.message.includes('401')) {
-        sweetAlert(
-          'Autenthication error',
-          'The credentials you entered are invalid.',
-          'error'
-        )
-      }
+    .catch((error) => {
+      console.log(error);
     })
   }
-
-  /************ CLICK HANDLING METHODS *************/
 
   handleClickNav = (e) => {
     let option = e.target.getAttribute('value');
@@ -83,16 +67,6 @@ class Admin extends Component {
     })
   }
 
-  handleWebCalendarPasswordChange = (e) => {
-    this.setState({webcalendarPassword: e.target.value})
-  }
-
-  handleWebCalendarUsernameChange = (e) => {
-    this.setState({webcalendarUsername: e.target.value})
-  }
-
-  /************ HELPER METHOD *************/
-
   toggleLoginModal = () => {
     this.setState({loginModal: !this.state.loginModal})
   }
@@ -100,8 +74,6 @@ class Admin extends Component {
   closeResponseModal = () => {
     this.setState({responseModal: !this.state.responseModal})
   }
-
-  /************ COMPONENT RENDERING *************/
 
   renderSettings() {
     return (
@@ -148,46 +120,29 @@ class Admin extends Component {
     )
   }
 
-  renderCredentialsInputs() {
-    return(
-      <div>
-        <Form.Field>
-          <Input
-            fluid
-            size='small'
-            icon='user'
-            iconPosition='left'
-            placeholder='Username'
-            onChange={this.handleWebCalendarUsernameChange}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Input
-            fluid
-            size='small'
-            icon='lock'
-            iconPosition='left'
-            placeholder='Password'
-            type='password'
-            onChange={this.handleWebCalendarPasswordChange}
-          />
-        </Form.Field>
-      </div>
-    )
-  }
-
   renderLoginModal() {
-    return (
-      <Modal open={this.state.loginModal} onClose={this.toggleLoginModal}>
+    const {webcalendarBackup} = this.state;
+
+    let component = (
+      <WebCalendarLogin
+        show={this.state.loginModal}
+        onClose={this.toggleLoginModal}
+      />
+    )
+
+    if (!webcalendarBackup) {
+      component = (
+        <Modal open={this.state.loginModal} onClose={this.toggleLoginModal}>
           <Header>
-            <h1 className="login__container__header__title"> { this.state.webcalendarBackup ? 'Please enter your Webcalendar credentials' : 'Disable automatic backup?'} </h1>
+            <h1 className="login__container__header__title">
+              {'Disable automatic backup?'}
+            </h1>
           </Header>
           <div className="login__container__main">
             <div className="ui divider"/>
             <div className="login__container__main__form-wrapper">
-              {this.state.webcalendarBackup ? this.renderCredentialsInputs() : null}
               <Form.Field>
-                <Button fluid size='small' icon onClick={this.saveSettings}>
+                <Button fluid size='small' icon onClick={this.disableBackup}>
                   Confirm
                 </Button>
               </Form.Field>
@@ -195,7 +150,10 @@ class Admin extends Component {
             </div>
           </div>
         </Modal>
-    )
+      )
+    }
+
+    return component;
   }
 
   render() {
