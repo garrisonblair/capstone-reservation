@@ -32,10 +32,10 @@ class RoomRowItem extends Component {
             .then((response)=>{
               this.props.syncRoomList();
             })
-            .catch((error)=>{
-              sweetAlert(':(','We are sorry. Something went wrong. Room was not deleted.', 'error')
-            })
           }
+        })
+        .catch((error)=>{
+          sweetAlert(':(','We are sorry. Something went wrong. Room was not deleted.', 'error')
         })
       }
     })
