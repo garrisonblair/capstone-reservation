@@ -1,13 +1,12 @@
-from django.test import TestCase
-from rest_framework.test import APIRequestFactory, APIClient
-from rest_framework import status
-from rest_framework.test import force_authenticate
-from django.contrib.auth.models import User
 import datetime
+from django.contrib.auth.models import User
+from django.test import TestCase
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APIRequestFactory, APIClient, force_authenticate
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.views.privilege_categories import PrivilegeCategoryView
-
 
 class TestPrivilegeCategoryAPI(TestCase):
     def setUp(self):
@@ -148,22 +147,24 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.user.is_superuser = False
         self.user.save()
         self.user.refresh_from_db()
-
         client = APIClient()
         client.login(username='jerry', password='constanza')
-
+        token = Token.objects.get_or_create(user=self.user)
+        authorization = 'Token {}'.format(token)
+        data = {
+            "name": "Second Tier",
+            "parent_category": self.category.id,
+            "max_days_until_booking": 4,
+            "can_make_recurring_booking": "True",
+            "max_bookings": 2,
+            "max_recurring_bookings": 3,
+            "booking_start_time": self.category.booking_start_time,
+            "booking_end_time": self.category.booking_end_time
+        }
         response = client.post("/privilege_categories",
-                               {
-                                   "name": "Second Tier",
-                                   "parent_category": self.category.id,
-                                   "max_days_until_booking": 4,
-                                   "can_make_recurring_booking": "True",
-                                   "max_bookings": 2,
-                                   "max_recurring_bookings": 3,
-                                   "booking_start_time": self.category.booking_start_time,
-                                   "booking_end_time": self.category.booking_end_time
-                               },
-                               format="json")
+                                data,
+                                HTTP_AUTHORIZATION=authorization,
+                                format="json")
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(PrivilegeCategory.objects.count(), 1)
