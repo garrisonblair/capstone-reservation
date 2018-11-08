@@ -110,7 +110,7 @@ class PrivilegeCategory extends Component {
   }
 
   render() {
-    const {showAddPrivilegeModal} = this.state;
+    const {privileges, showAddPrivilegeModal} = this.state;
     return (
       <div className="admin">
         <div className="admin__wrapper">
@@ -120,6 +120,7 @@ class PrivilegeCategory extends Component {
             {this.renderControls()}
             {this.renderTable()}
             <AddPrivilegeModal
+              privileges={privileges}
               show={showAddPrivilegeModal}
               onClose={this.handleOnCloseAdPrivilegeModal}
             />

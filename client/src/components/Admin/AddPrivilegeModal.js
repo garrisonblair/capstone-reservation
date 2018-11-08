@@ -12,28 +12,39 @@ class AddPrivilegeModal extends Component {
     maxDaysUntilBooking: 0,
     maxBookings: 0,
     maxRecurringBookings: 0,
-    bookingPermission: false,
+    recurringBookingPermission: false,
     bookingStartTime: '06:00:00',
     bookingEndTime: '00:00:00'
   }
 
-  handleNameChange = (e) => {
+  handleInputChange = (state, e) => {
     this.setState({
-      name: e.target.value
+      [`${state}`]: e.target.value
     })
   }
 
   handleSubmit = (e) => {
-    const {name, parent, maxDaysUntilBooking, maxBookings, maxRecurringBookings, bookingPermission, bookingStartTime, bookingEndTime} = this.state;
+    const {name, parent, maxDaysUntilBooking, maxBookings, maxRecurringBookings, recurringBookingPermission, bookingStartTime, bookingEndTime} = this.state;
     let data = {
       name,
       parent_category: '',
       max_day_until_booking: maxDaysUntilBooking,
       max_bookings: maxBookings,
       max_recurring_bookings: maxRecurringBookings,
+      can_make_recurring_booking: recurringBookingPermission,
       booking_start_time: bookingStartTime,
       booking_end_time: bookingEndTime
     }
+
+    // TEST DATA
+    // data = {
+    //   "name": "Second Tier",
+    //   "parent_category": 'null',
+    //   "max_days_until_booking": '',
+    //   "can_make_recurring_booking": true,
+    //   "max_bookings": 2,
+    //   "max_recurring_bookings": 3
+    // }
 
     api.createPrivilege(data)
     .then((response) => {
@@ -49,10 +60,46 @@ class AddPrivilegeModal extends Component {
           <Input
             fluid
             size='small'
-            icon='user'
+            icon='text cursor'
             iconPosition='left'
             placeholder='Name'
-            onChange={this.handleNameChange}
+            onChange={(e) => this.handleInputChange('name', e)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Input
+            fluid
+            size='small'
+            icon='sort'
+            iconPosition='left'
+            placeholder='Max Days Until Booking'
+            type='number'
+            min='0'
+            onChange={(e) => this.handleInputChange('maxDaysUntilBooking', e)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Input
+            fluid
+            size='small'
+            icon='sort'
+            iconPosition='left'
+            placeholder='Max Bookings'
+            type='number'
+            min='0'
+            onChange={(e) => this.handleInputChange('maxBookings', e)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Input
+            fluid
+            size='small'
+            icon='sort'
+            iconPosition='left'
+            placeholder='Max Recurring Bookings'
+            type='number'
+            min='0'
+            onChange={(e) => this.handleInputChange('maxRecurringBookings', e)}
           />
         </Form.Field>
       </div>
