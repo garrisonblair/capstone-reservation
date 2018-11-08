@@ -13,8 +13,8 @@ class AddPrivilegeModal extends Component {
     maxBookings: 0,
     maxRecurringBookings: 0,
     recurringBookingPermission: false,
-    bookingStartTime: '06:00:00',
-    bookingEndTime: '00:00:00'
+    bookingStartTime: '',
+    bookingEndTime: ''
   }
 
   handleInputChange = (state, e) => {
@@ -148,6 +148,7 @@ class AddPrivilegeModal extends Component {
             icon='calendar alternate outline'
             iconPosition='left'
             type='time'
+            value={bookingStartTime}
             onChange={(e) => this.handleInputChange('bookingStartTime', e)}
           />
         </Form.Field>
@@ -157,6 +158,7 @@ class AddPrivilegeModal extends Component {
             icon='calendar alternate'
             iconPosition='left'
             type='time'
+            value={bookingEndTime}
             onChange={(e) => this.handleInputChange('bookingEndTime', e)}
           />
         </Form.Field>
@@ -171,7 +173,6 @@ class AddPrivilegeModal extends Component {
           <Icon name='plus'/> Add Privilege
         </Header>
         <div className="privilege-modal__container">
-          <div className="ui divider"/>
           {this.renderForm()}
           <div className="ui divider"/>
           <Form.Field>
