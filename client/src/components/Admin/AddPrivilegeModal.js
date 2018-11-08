@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
+import ReactDOMServer from "react-dom/server";
 import {Button, Checkbox, Dropdown, Form, Header, Icon, Input, Modal, FormField} from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
 import './AddPrivilegeModal.scss';
 
@@ -13,8 +15,8 @@ class AddPrivilegeModal extends Component {
     maxBookings: 0,
     maxRecurringBookings: 0,
     recurringBookingPermission: false,
-    bookingStartTime: '',
-    bookingEndTime: ''
+    bookingStartTime: '08:00:00',
+    bookingEndTime: '23:00:00'
   }
 
   handleInputChange = (state, e) => {
@@ -41,7 +43,7 @@ class AddPrivilegeModal extends Component {
     let data = {
       name,
       parent_category: parent,
-      max_day_until_booking: maxDaysUntilBooking,
+      max_days_until_booking: maxDaysUntilBooking,
       max_bookings: maxBookings,
       max_recurring_bookings: maxRecurringBookings,
       can_make_recurring_booking: recurringBookingPermission,
@@ -51,21 +53,56 @@ class AddPrivilegeModal extends Component {
 
     console.log(data);
 
-    // TEST DATA
-    // data = {
-    //   "name": "Second Tier",
-    //   "parent_category": 'null',
-    //   "max_days_until_booking": '',
-    //   "can_make_recurring_booking": true,
-    //   "max_bookings": 2,
-    //   "max_recurring_bookings": 3
-    // }
+    api.createPrivilege(data)
+    .then((response) => {
+      sweetAlert(
+        'Completed',
+        'New privilege successfully added.',
+        'success'
+      )
 
-    // api.createPrivilege(data)
-    // .then((response) => {
-    //   console.log(response);
-    // })
-    // this.props.onClose();
+      // Reset states
+      this.setState({
+        name: '',
+        parent: '',
+        maxDaysUntilBooking: 0,
+        maxBookings: 0,
+        maxRecurringBookings: 0,
+        recurringBookingPermission: false,
+        bookingStartTime: '08:00:00',
+        bookingEndTime: '23:00:00'
+      })
+    })
+    .catch((error) => {
+      let {status, data} = error.response;
+
+      if (status === 500) {
+        sweetAlert({
+          title: 'Error',
+          text: 'Internal Server Error',
+          type: 'error'
+        })
+        return;
+      }
+
+      // console.log(data);
+      let errors = Object.keys(data).map((field, index) => {
+        return (
+          <div key={index} className="error-message">
+            <p className='field'> {field} </p>
+            <ul>
+              <li>{data[field][0]}</li>
+            </ul>
+          </div>
+        )
+      })
+      sweetAlert({
+        title: 'Error',
+        html: ReactDOMServer.renderToString(errors),
+        type: 'error'
+      })
+    })
+    this.props.onClose();
   }
 
   renderForm() {
@@ -77,6 +114,12 @@ class AddPrivilegeModal extends Component {
       value: privilege.id,
       text: privilege.name
     }))
+
+    privilegeOptions.unshift({
+      key: '',
+      value: '',
+      text: 'No parent'
+    })
 
     return (
       <div>

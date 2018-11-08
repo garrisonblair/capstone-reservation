@@ -15,7 +15,7 @@ class DisableBackupModal extends Component {
     .then((response) => {
       sweetAlert(
         'Completed',
-        'Settings were successfuly saved.',
+        'Settings were successfully saved.',
         'success'
       )
       this.props.onClose();
