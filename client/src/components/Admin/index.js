@@ -10,7 +10,8 @@ import './Admin.scss';
 class Admin extends Component {
 
   state = {
-    loginModal: false,
+    showLoginModal: false,
+    showDisableBackupModal: false,
     webCalendarBackup: false
   }
 
@@ -46,7 +47,9 @@ class Admin extends Component {
         'Settings were successfuly saved.',
         'success'
       )
-      this.toggleLoginModal();
+      this.setState({
+        showDisableBackupModal: false
+      })
     })
     .catch((error) => {
       console.log(error);
@@ -60,19 +63,24 @@ class Admin extends Component {
 
   handleChangeSetting = (e, data) => {
     const {checked} = data;
+    let showLoginModal = false;
+    let showDisableBackupModal = false;
+
+    if (checked) {
+      showLoginModal = true;
+    } else {
+      showDisableBackupModal = true;
+    }
+
     this.setState({
-      webCalendarBackup: checked
+      webCalendarBackup: checked,
+      showLoginModal,
+      showDisableBackupModal
     })
-
-    this.toggleLoginModal();
   }
 
-  toggleLoginModal = () => {
-    this.setState({loginModal: !this.state.loginModal})
-  }
-
-  closeResponseModal = () => {
-    this.setState({responseModal: !this.state.responseModal})
+  handleCloseLoginModal = () => {
+    this.setState({showLoginModal: false})
   }
 
   renderSettings() {
@@ -96,7 +104,7 @@ class Admin extends Component {
         value={option}
         onClick={this.handleClickNav}
       >
-          {option}
+        {option}
       </li>
     )
     return <ul className="admin__navigation">{menu}</ul>
@@ -133,18 +141,18 @@ class Admin extends Component {
   }
 
   renderLoginModal() {
-    const {webCalendarBackup} = this.state;
+    const {webCalendarBackup, showLoginModal, showDisableBackupModal} = this.state;
 
     let component = (
       <WebCalendarLogin
-        show={this.state.loginModal}
-        onClose={this.toggleLoginModal}
+        show={showLoginModal}
+        onClose={this.handleCloseLoginModal}
       />
     )
 
     if (!webCalendarBackup) {
       component = (
-        <Modal open={this.state.loginModal} onClose={this.toggleLoginModal}>
+        <Modal open={showDisableBackupModal}>
           <Header>
             <h1 className="login__container__header__title">
               {'Disable automatic backup?'}
@@ -169,7 +177,6 @@ class Admin extends Component {
   }
 
   render() {
-    const {responseModal, responseModalText, responseModalTitle, responseModalType} = this.state
     return (
       <div id="admin">
         {this.renderSettings()}
