@@ -19,13 +19,13 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
     # rule parameter fields
     # When you add a field, update model test testCreation to check its defaulted to None
     # (Important for delegation to parent category)
-    max_days_until_booking = models.PositiveIntegerField(null=True)
-    can_make_recurring_booking = models.BooleanField(null=True)
-    max_bookings = models.PositiveIntegerField(null=True)
-    max_recurring_bookings = models.PositiveIntegerField(null=True)
+    max_days_until_booking = models.PositiveIntegerField(null=True, blank=True)
+    can_make_recurring_booking = models.BooleanField(null=True, blank=True)
+    max_bookings = models.PositiveIntegerField(null=True, blank=True)
+    max_recurring_bookings = models.PositiveIntegerField(null=True, blank=True)
 
-    booking_start_time = models.TimeField(null=True)
-    booking_end_time = models.TimeField(null=True)
+    booking_start_time = models.TimeField(null=True, blank=True)
+    booking_end_time = models.TimeField(null=True, blank=True)
 
     field_metadata = {
         "max_days_until_booking": FieldMetadata(
