@@ -13,7 +13,6 @@ from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 @permission_classes((IsAuthenticated, IsSuperUser))
 class PrivilegeCategoryView(APIView):
-
     def get(self, request):
         request_name = request.query_params.get('name', None)
         if request_name is not None:
@@ -31,18 +30,33 @@ class PrivilegeCategoryView(APIView):
         return Response(category_list, status=status.HTTP_200_OK)
 
     def post(self, request):
-        # Must be logged in as admin
-        # if not request.user.is_superuser:
-        #     return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         category_data = dict(request.data)
         serializer = PrivilegeCategorySerializer(data=category_data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                category = serializer.save()
-                return Response(PrivilegeCategorySerializer(category).data, status=status.HTTP_201_CREATED)
-            except ValidationError as error:
-                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            category = serializer.save()
+            return Response(PrivilegeCategorySerializer(category).data, status=status.HTTP_201_CREATED)
+        except ValidationError as error:
+            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        category_data = dict(request.data)
+        request_name = category_data.get("name")
+        try:
+            category = PrivilegeCategory.objects.get(name=request_name)
+        except PrivilegeCategory.DoesNotExist:
+            return Response("Category named {} does not exist".format(request_name),
+                            status=status.HTTP_404_NOT_FOUND)
+        serializer = PrivilegeCategorySerializer(instance=category, data=category_data, partial=True)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            category = serializer.save()
+            return Response(PrivilegeCategorySerializer(category).data, status=status.HTTP_200_OK)
+        except ValidationError as error:
+            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
