@@ -385,7 +385,7 @@ class Calendar extends Component {
         <div className="calendar__booking" style={this.setBookingStyle(booking, campOns.length).booking_style} key={booking.id} onClick={() => this.handleClickBooking(booking)}>
           {booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time} - {booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}
           <br/>        
-          <span>{booking.student}</span>
+          <span>{booking.booker}</span>
           {campOns.length > 0 ? this.renderCampOns(campOns) : ''}
         </div>
       )
