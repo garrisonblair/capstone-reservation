@@ -124,8 +124,4 @@ RoomModal.propTypes = {
   selectedRoom: PropTypes.object
 }
 
-RoomModal.defaultProps = {
-  selectedRoom: {id:'',capacity:1,numComputers:2}
-}
-
 export default RoomModal;

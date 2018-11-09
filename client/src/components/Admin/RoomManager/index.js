@@ -34,7 +34,6 @@ class RoomManager extends Component {
   }
 
   syncRooms = () => {
-    console.log('sync rooms')
     api.getRooms()
     .then((response)=>{
       this.setState({});
