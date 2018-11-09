@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import {Button, Icon, Table} from 'semantic-ui-react';
+import {Button, Icon, Table, TableCell} from 'semantic-ui-react';
 import api from '../../../utils/api';
 import AdminRequired from '../../HOC/AdminRequired';
 import SideNav from '../SideNav';
 import AddPrivilegeModal from './AddPrivilegeModal';
+import PrivilegeDetailsModal from './PrivilegeDetailsModal';
 import '../Admin.scss';
 
 
@@ -12,8 +13,10 @@ class PrivilegeCategory extends Component {
 
   state = {
     privileges: [],
+    privilege: {},
     showAddPrivilegeModal: false,
-    showAssignPrivilegeModal: false
+    showAssignPrivilegeModal: false,
+    showDetailsModal: false
   }
 
   getPrivileges = () => {
@@ -35,10 +38,24 @@ class PrivilegeCategory extends Component {
     })
   }
 
-  handleOnCloseAdPrivilegeModal = () => {
+  handleDisplayPrivilege = (privilege) => {
+    this.setState({
+      showDetailsModal: true,
+      privilege
+    })
+  }
+
+  handleOnCloseAddPrivilegeModal = () => {
     this.getPrivileges();
     this.setState({
       showAddPrivilegeModal: false
+    })
+  }
+
+  handleOnCloseDisplayPrivilegeModal = () => {
+    this.setState({
+      showDetailsModal: false,
+      privilege: {}
     })
   }
 
@@ -60,27 +77,27 @@ class PrivilegeCategory extends Component {
     let headers = [
       'Name',
       'Parent Category',
-      'Max Days Until Booking',
-      'Max Bookings',
-      'Recurring Booking Permission',
-      'Max Recurring Bookings',
-      'Booking Valid Time'
+      'Booking Start Time',
+      'Booking End Time',
+      ''
     ]
 
     let body = privileges.map((privilege) =>
       <Table.Row key={privilege.id}>
         <Table.Cell>{privilege.name}</Table.Cell>
         <Table.Cell>{privilege.parent_category || '-'}</Table.Cell>
-        <Table.Cell>{privilege.max_days_until_booking}</Table.Cell>
-        <Table.Cell>{privilege.max_bookings}</Table.Cell>
-        <Table.Cell>
-          <Icon
-            name={privilege.can_make_recurring_booking? 'check circle': 'times circle'}
-            color={privilege.can_make_recurring_booking? 'green': 'red'}
-          />
-        </Table.Cell>
-        <Table.Cell>{privilege.max_recurring_bookings}</Table.Cell>
-        <Table.Cell>{`${privilege.booking_start_time} - ${privilege.booking_end_time}`}</Table.Cell>
+        <Table.Cell>{privilege.booking_start_time}</Table.Cell>
+        <Table.Cell>{privilege.booking_end_time}</Table.Cell>
+        <TableCell>
+          <Button
+            icon
+            primary
+            size='small'
+            onClick={() => this.handleDisplayPrivilege(privilege)}
+          >
+            <Icon name='eye'/>
+          </Button>
+        </TableCell>
       </Table.Row>
     )
 
@@ -110,7 +127,7 @@ class PrivilegeCategory extends Component {
   }
 
   render() {
-    const {privileges, showAddPrivilegeModal} = this.state;
+    const {privilege, privileges, showAddPrivilegeModal, showDetailsModal} = this.state;
     return (
       <div className="admin">
         <div className="admin__wrapper">
@@ -122,7 +139,12 @@ class PrivilegeCategory extends Component {
             <AddPrivilegeModal
               privileges={privileges}
               show={showAddPrivilegeModal}
-              onClose={this.handleOnCloseAdPrivilegeModal}
+              onClose={this.handleOnCloseAddPrivilegeModal}
+            />
+            <PrivilegeDetailsModal
+              privilege={privilege}
+              show={showDetailsModal}
+              onClose={this.handleOnCloseDisplayPrivilegeModal}
             />
           </div>
         </div>
