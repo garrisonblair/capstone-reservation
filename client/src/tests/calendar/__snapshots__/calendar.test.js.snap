@@ -8,7 +8,7 @@ exports[`Shows calendar 1`] = `
     className="calendar__date"
   >
     <button
-      className="ui large basic circular icon button"
+      className="ui tiny basic circular icon button"
       onClick={[Function]}
       role="button"
     >
@@ -17,17 +17,17 @@ exports[`Shows calendar 1`] = `
         className="chevron left icon"
       />
     </button>
-    <h1
+    <h3
       className="calendar__date__header"
     >
       <i
         aria-hidden="true"
         className="calendar alternate outline icon"
       />
-      Tue Oct 09 2018
-    </h1>
+      Mon Nov 05 2018
+    </h3>
     <button
-      className="ui large basic circular icon button"
+      className="ui tiny basic circular icon button"
       onClick={[Function]}
       role="button"
     >
@@ -57,11 +57,6 @@ exports[`Shows calendar 1`] = `
     <div
       className="calendar__hours__wrapper"
     >
-      <div
-        className="calendar__hours__hour"
-      >
-        07:00
-      </div>
       <div
         className="calendar__hours__hour"
       >
@@ -137,6 +132,11 @@ exports[`Shows calendar 1`] = `
       >
         22:00
       </div>
+      <div
+        className="calendar__hours__hour"
+      >
+        23:00
+      </div>
     </div>
     <div
       className="calendar__cells__wrapper"
@@ -146,241 +146,161 @@ exports[`Shows calendar 1`] = `
       >
         <div
           className="calendar__cells__cell"
-          data-hour="07:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 7,
               "gridRowStart": 1,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="08:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 13,
               "gridRowStart": 7,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="09:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 19,
               "gridRowStart": 13,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="10:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 25,
               "gridRowStart": 19,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="11:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 31,
               "gridRowStart": 25,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="12:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 37,
               "gridRowStart": 31,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="13:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 43,
               "gridRowStart": 37,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="14:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 49,
               "gridRowStart": 43,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="15:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 55,
               "gridRowStart": 49,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="16:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 61,
               "gridRowStart": 55,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="17:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 67,
               "gridRowStart": 61,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="18:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 73,
               "gridRowStart": 67,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="19:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 79,
               "gridRowStart": 73,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="20:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 85,
               "gridRowStart": 79,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="21:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 91,
               "gridRowStart": 85,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="22:00"
-          data-room-id={1}
-          data-room-name="room 1"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 97,
               "gridRowStart": 91,
-              "minHeight": "100px",
             }
           }
         />
@@ -389,28 +309,21 @@ exports[`Shows calendar 1`] = `
           onClick={[Function]}
           style={
             Object {
+              "backgroundColor": "#4285f4",
               "gridColumn": 1,
               "gridRowEnd": 12,
               "gridRowStart": 2,
             }
           }
         >
-          <div
-            className="calendar__booking__booker"
-          >
+          08:10
+           - 
+          09:50
+          <br />
+          <span>
             12345567
-             
-          </div>
-          <div
-            className="calendar__booking__time"
-          >
-            <div>
-              08:10
-            </div>
-            <div>
-              09:50
-            </div>
-          </div>
+          </span>
+          
         </div>
       </div>
       <div
@@ -418,247 +331,170 @@ exports[`Shows calendar 1`] = `
       >
         <div
           className="calendar__cells__cell"
-          data-hour="07:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 7,
               "gridRowStart": 1,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="08:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 13,
               "gridRowStart": 7,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="09:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 19,
               "gridRowStart": 13,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="10:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 25,
               "gridRowStart": 19,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="11:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 31,
               "gridRowStart": 25,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="12:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 37,
               "gridRowStart": 31,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="13:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 43,
               "gridRowStart": 37,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="14:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 49,
               "gridRowStart": 43,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="15:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 55,
               "gridRowStart": 49,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="16:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 61,
               "gridRowStart": 55,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="17:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 67,
               "gridRowStart": 61,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="18:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 73,
               "gridRowStart": 67,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="19:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 79,
               "gridRowStart": 73,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="20:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 85,
               "gridRowStart": 79,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="21:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 91,
               "gridRowStart": 85,
-              "minHeight": "100px",
             }
           }
         />
         <div
           className="calendar__cells__cell"
-          data-hour="22:00"
-          data-room-id={2}
-          data-room-name="room 2"
           onClick={[Function]}
           style={
             Object {
-              "gridColumn": 1,
               "gridRowEnd": 97,
               "gridRowStart": 91,
-              "minHeight": "100px",
             }
           }
         />
       </div>
     </div>
   </div>
+  <div
+    id="reservation-details-modal"
+  />
   <div
     id="reservation-details-modal"
   />

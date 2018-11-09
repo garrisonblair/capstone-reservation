@@ -8,7 +8,7 @@ from ..models.bookingExporterModels import ExternalRoomID
 
 from apps.booking.models import Booking
 from apps.rooms.models import Room
-from apps.accounts.models import Student
+from apps.accounts.models import Booker
 from apps.configuration_administration.models import SystemSettings
 
 
@@ -35,13 +35,13 @@ END:VCALENDAR"""
         external_id.room = room
         external_id.save()
 
-        student = Student(student_id="s_loc")
-        student.save()
+        booker = Booker(booker_id="s_loc")
+        booker.save()
 
         self.booking = Booking(start_time=datetime.time(12, 0, 0),
                                end_time=datetime.time(13, 0, 0),
                                date=datetime.date(2018, 10, 12),
-                               student=student,
+                               booker=booker,
                                room=room)
         self.booking.save()
 

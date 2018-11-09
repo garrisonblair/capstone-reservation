@@ -8,7 +8,8 @@ it('Shows ReservationDetailsModal', () => {
             selectedRoomId="1"
             selectedRoomName="testname"
             selectedDate={new Date("2018-10-10")}
-            selectedHour="12:00:00" />
+            selectedHour="12:00:00"
+            selectedRoomCurrentBookings={[]}/>
             )
         .toJSON();
     expect(tree).toMatchSnapshot();

@@ -2,6 +2,7 @@ import datetime
 
 from django.core.exceptions import ValidationError
 
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,17 +16,17 @@ class BookingView(APIView):
 
     def post(self, request):
 
-        # Must be logged in as student
-        if not request.user or not request.user.student:
+        # Must be logged in as booker
+        if not request.user or request.user.booker is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         booking_data = dict(request.data)
-        booking_data["student"] = request.user.student.student_id
+        booking_data["booker"] = request.user.booker.booker_id
 
         serializer = BookingSerializer(data=booking_data)
 
         if not serializer.is_valid():
-            return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             try:

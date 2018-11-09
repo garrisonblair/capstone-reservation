@@ -7,7 +7,7 @@ from django.apps import apps
 from django.test.testcases import TestCase
 
 from apps.booking.models import Booking
-from apps.accounts.models.Student import Student
+from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 
 
@@ -16,8 +16,8 @@ class TestExporterSetup(TestCase):
     def setUp(self):
         self.exporter_app_config = apps.get_app_config("booking_exporter")
 
-        self.student = Student(student_id="f_daigl")
-        self.student.save()
+        self.booker = Booker(booker_id="f_daigl")
+        self.booker.save()
 
         self.room = Room(room_id="Room 1")
         self.room.save()
@@ -30,7 +30,7 @@ class TestExporterSetup(TestCase):
         Booking.observers = [exporter_mock]
 
         booking = Booking(
-            student=self.student,
+            booker=self.booker,
             room=self.room,
             start_time=datetime.time(12, 0, 0),
             end_time=datetime.time(13, 0, 0),

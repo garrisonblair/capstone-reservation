@@ -1,12 +1,12 @@
 from django.db import models
-from apps.accounts.models.Student import Student
+from apps.accounts.models.Booker import Booker
 from apps.booking.models.Booking import Booking
 from datetime import datetime
 from django.core.exceptions import ValidationError
 
 
 class CampOn(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    booker = models.ForeignKey(Booker, on_delete=models.CASCADE)
     camped_on_booking = models.ForeignKey(Booking,
                                           on_delete=models.SET_NULL,
                                           null=True,
@@ -25,7 +25,7 @@ class CampOn(models.Model):
 
     def __str__(self):
         return 'Campon: {}, Student: {}, Booking: {}, Start time: {}, End time: {},'.format(self.id,
-                                                                                            self.student.student_id,
+                                                                                            self.booker.booker_id,
                                                                                             self.camped_on_booking.id,
                                                                                             self.start_time,
                                                                                             self.end_time)
@@ -56,5 +56,5 @@ class CampOn(models.Model):
             if found_bookings is not None:
                 raise ValidationError("Camp-on can not end after another booking has started")
 
-        elif CampOn.objects.filter(student=self.student, camped_on_booking=self.camped_on_booking).exists():
+        elif CampOn.objects.filter(booker=self.booker, camped_on_booking=self.camped_on_booking).exists():
             raise ValidationError("Cannot camp-on the same Booking.")

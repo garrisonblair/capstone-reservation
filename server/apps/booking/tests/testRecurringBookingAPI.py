@@ -5,10 +5,10 @@ from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
 from datetime import timedelta, datetime
 
-from apps.accounts.models.Student import Student
+from apps.accounts.models.Booker import Booker
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.Booking import Booking
-from apps.groups.models import StudentGroup
+from apps.groups.models import Group
 from apps.rooms.models.Room import Room
 
 from ..views.recurring_booking import RecurringBookingView
@@ -23,21 +23,21 @@ class BookingAPITest(TestCase):
                                              password='glass onion')
         self.user.save()
 
-        student1 = Student(student_id="j_lenn")
-        student1.user = self.user
-        student1.save()
+        booker1 = Booker(booker_id="j_lenn")
+        booker1.user = self.user
+        booker1.save()
 
         sid = '00000002'
-        student2 = Student(student_id=sid)
-        student2.user = None
-        student2.save()
+        booker2 = Booker(booker_id=sid)
+        booker2.user = None
+        booker2.save()
 
         # Create student group
         name = "Students group"
-        self.group = StudentGroup(name=name, is_verified=True)
+        self.group = Group(name=name, is_verified=True)
         self.group.save()
-        self.group.students.add(student1)
-        self.group.students.add(student2)
+        self.group.bookers.add(booker1)
+        self.group.bookers.add(booker2)
 
         self.room = Room(room_id="H833-17", capacity=4, number_of_computers=1)
         self.room.save()
@@ -58,7 +58,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "12:00",
                                         "booking_end_time": "15:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -74,24 +74,24 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking1.start_time, self.start_time)
         self.assertEqual(booking1.end_time, self.end_time)
         self.assertEqual(booking1.room, self.room)
-        self.assertEqual(booking1.student_group, self.group)
-        self.assertEqual(booking1.student, self.group.students.get(student_id='j_lenn'))
+        self.assertEqual(booking1.group, self.group)
+        self.assertEqual(booking1.booker, self.group.bookers.get(booker_id='j_lenn'))
 
         booking2 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=7))
 
         self.assertEqual(booking2.start_time, self.start_time)
         self.assertEqual(booking2.end_time, self.end_time)
         self.assertEqual(booking2.room, self.room)
-        self.assertEqual(booking2.student_group, self.group)
-        self.assertEqual(booking2.student, self.group.students.get(student_id='j_lenn'))
+        self.assertEqual(booking2.group, self.group)
+        self.assertEqual(booking2.booker, self.group.bookers.get(booker_id='j_lenn'))
 
         booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
 
         self.assertEqual(booking3.start_time, self.start_time)
         self.assertEqual(booking3.end_time, self.end_time)
         self.assertEqual(booking3.room, self.room)
-        self.assertEqual(booking3.student_group, self.group)
-        self.assertEqual(booking3.student, self.group.students.get(student_id='j_lenn'))
+        self.assertEqual(booking3.group, self.group)
+        self.assertEqual(booking3.booker, self.group.bookers.get(booker_id='j_lenn'))
 
     def testCreateRecurringBookingFailureDateStartAfterEnd(self):
 
@@ -102,7 +102,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "12:00",
                                         "booking_end_time": "15:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -121,7 +121,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "15:00",
                                         "booking_end_time": "12:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -140,7 +140,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "15:00",
                                         "booking_end_time": "12:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -164,7 +164,7 @@ class BookingAPITest(TestCase):
 
     def testRecurringBookingConflictFlagNotSet(self):
         Booking(
-            student=self.group.students.get(student_id='j_lenn'),
+            booker=self.group.bookers.get(booker_id='j_lenn'),
             room=self.room,
             date=self.start_date,
             start_time=self.start_time,
@@ -178,7 +178,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "12:00",
                                         "booking_end_time": "15:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": False
                                     }, format="json")
@@ -190,7 +190,7 @@ class BookingAPITest(TestCase):
 
     def testRecurringBookingConflictFlagSet(self):
         Booking(
-            student=self.group.students.get(student_id='j_lenn'),
+            booker=self.group.bookers.get(booker_id='j_lenn'),
             room=self.room,
             date=self.start_date,
             start_time=self.start_time,
@@ -204,7 +204,7 @@ class BookingAPITest(TestCase):
                                         "booking_start_time": "12:00",
                                         "booking_end_time": "15:00",
                                         "room": 1,
-                                        "student_group": 1,
+                                        "group": 1,
                                         "student": 1,
                                         "skip_conflicts": True
                                     }, format="json")

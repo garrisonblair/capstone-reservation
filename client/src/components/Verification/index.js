@@ -7,15 +7,15 @@ import CustomFormInput from './CustomFormInput';
 import './Verification.scss';
 
 
-// TODO: Check if user already set its student ID
+// TODO: Check if user already set its booker ID
 class Verification extends Component {
   state = {
     password: '',
     confirmPassword: '',
-    studentID: '',
+    bookerID: '',
     errorMessagePassword: '',
     errorMessageConfirmPassword: '',
-    errorMessageStudentID: '',
+    errorMessageBookerID: '',
     isLoading: true,
     preventSubmit: true,
     firstName: '',
@@ -51,26 +51,26 @@ class Verification extends Component {
     })
   }
 
-  verifyStudentID() {
-    let value = this.state.studentID;
+  verifyBookerID() {
+    let value = this.state.bookerID;
     let preventSubmit = false;
-    let errorMessageStudentID = '';
+    let errorMessageBookerID = '';
 
     if (value.length === 0) {
       preventSubmit = true;
-      errorMessageStudentID = 'Please enter your student ID number';
+      errorMessageBookerID = 'Please enter your booker ID number';
     } else if (value.length !== 8) {
       preventSubmit = true;
-      errorMessageStudentID = 'Field should have 8 digits';
+      errorMessageBookerID = 'Field should have 8 digits';
     } else if (!value.match('^[0-9]*$')) {
       preventSubmit = true;
-      errorMessageStudentID = 'Student ID should have only digits';
+      errorMessageBookerID = 'Booker ID should have only digits';
     }
 
     this.setState({
       preventSubmit,
-      studentID: value,
-      errorMessageStudentID
+      bookerID: value,
+      errorMessageBookerID
     });
   }
 
@@ -88,26 +88,26 @@ class Verification extends Component {
     })
   }
 
-  handleChangeStudentId = (event) => {
+  handleChangeBookerId = (event) => {
     this.setState({
-      studentID: event.target.value,
-      errorMessageStudentID: ''
+      bookerID: event.target.value,
+      errorMessageBookerID: ''
     });
   }
 
   handleSubmit = () => {
-    const {studentID, userId, password, preventSubmit} = this.state;
+    const {bookerID, userId, password, preventSubmit} = this.state;
 
     // Verify form before continuing transaction.
     this.verifyPasswords();
-    this.verifyStudentID();
+    this.verifyBookerID();
 
     if (preventSubmit) {
       return;
     }
 
     const data = {
-      "student_id": `${studentID}`,
+      "booker_id": `${bookerID}`,
       "password": `${password}`
     }
 
@@ -166,7 +166,7 @@ class Verification extends Component {
   }
 
   renderMainForm() {
-    let {errorMessagePassword, errorMessageConfirmPassword, errorMessageStudentID} = this.state;
+    let {errorMessagePassword, errorMessageConfirmPassword, errorMessageBookerID} = this.state;
     return (
       <div>
         <h1> Account settings </h1>
@@ -217,9 +217,9 @@ class Verification extends Component {
             icon='id card'
             iconPosition='left'
             placeholder='12345678'
-            onChange={this.handleChangeStudentId}
-            title={`Student ID:`}
-            errormessage={errorMessageStudentID}
+            onChange={this.handleChangeBookerId}
+            title={`booker ID:`}
+            errormessage={errorMessageBookerID}
           />
         </Form>
         <Form.Field>

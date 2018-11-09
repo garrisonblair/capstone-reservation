@@ -227,7 +227,7 @@ class Calendar extends Component {
             date: date,
             start_time: campOn.start_time,
             end_time: campOn.end_time,
-            student: campOn.student,
+            booker: campOn.booker,
             room: room,
             id: `camp${campOn.camped_on_booking}`,
             isCampOn: true

@@ -1,24 +1,26 @@
 from django.core.exceptions import ValidationError
+from apps.accounts.exceptions import PrivilegeError
 from django.db import models
 from django.db.models import Q
 
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.rooms.models.Room import Room
-from apps.accounts.models.Student import Student
-from apps.groups.models.StudentGroup import StudentGroup
-from datetime import timedelta
+from apps.accounts.models.Booker import Booker
+from apps.groups.models.Group import Group
+from datetime import timedelta, datetime
 
 
 class RecurringBookingManager(models.Manager):
-    def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, student_group,
-                                 student, skip_conflicts):
+    def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, group,
+                                 booker, skip_conflicts):
         recurring_booking = self.create(
             start_date=start_date,
             end_date=end_date,
             booking_start_time=start_time,
             booking_end_time=end_time,
             room=room,
-            student_group=student_group,
-            student=student,
+            group=group,
+            booker=booker,
             skip_conflicts=skip_conflicts
         )
 
@@ -28,8 +30,8 @@ class RecurringBookingManager(models.Manager):
         while date <= recurring_booking.end_date:
             try:
                 booking = Booking.objects.create_booking(
-                    student=recurring_booking.student,
-                    student_group=recurring_booking.student_group,
+                    booker=recurring_booking.booker,
+                    group=recurring_booking.group,
                     room=recurring_booking.room,
                     date=date,
                     start_time=recurring_booking.booking_start_time,
@@ -53,20 +55,19 @@ class RecurringBooking(models.Model):
     booking_start_time = models.TimeField()
     booking_end_time = models.TimeField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+    booker = models.ForeignKey(Booker, on_delete=models.CASCADE)
     skip_conflicts = models.BooleanField(default=False)
 
     objects = RecurringBookingManager()
 
     def save(self, *args, **kwargs):
+        self.evaluate_privilege()
         self.validate_model()
         super(RecurringBooking, self).save(*args, **kwargs)
 
     def validate_model(self):
-        if not self.student_group.is_verified:
-            raise ValidationError("You must book as part of a verified group to create a recurring booking")
-        elif self.start_date >= self.end_date:
+        if self.start_date >= self.end_date:
             raise ValidationError("Start date can not be after End date.")
         elif self.end_date < self.start_date + timedelta(days=7):
             raise ValidationError("You must book for at least two consecutive weeks.")
@@ -94,3 +95,31 @@ class RecurringBooking(models.Model):
                 date += timedelta(days=7)
             if self.skip_conflicts and bookings == 0:
                 raise ValidationError("Recurring booking at specified time overlaps with another booking every week.")
+
+    def get_active_recurring_bookings(self, booker_entity):
+        today = datetime.now().date()
+        return booker_entity.recurringbooking_set.filter(end_date__gt=today)
+
+    def evaluate_privilege(self):
+        if self.group is not None:
+            booker_entity = self.group
+        else:
+            booker_entity = self.booker
+
+        # no checks if no category assigned
+        if booker_entity.privilege_category is None:
+            return
+
+        p_c = booker_entity.privilege_category  # type: PrivilegeCategory
+
+        can_make_recurring_booking = p_c.get_parameter("can_make_recurring_booking")
+        max_recurring_bookings = p_c.get_parameter("max_recurring_bookings")
+
+        if not can_make_recurring_booking:
+            raise PrivilegeError(p_c.get_error_text("can_make_recurring_booking"))
+
+        # max_recurring_bookings
+        num_recurring_bookings = self.get_active_recurring_bookings(booker_entity).count()
+
+        if num_recurring_bookings >= max_recurring_bookings:
+            raise PrivilegeError(p_c.get_error_text("max_recurring_bookings"))
