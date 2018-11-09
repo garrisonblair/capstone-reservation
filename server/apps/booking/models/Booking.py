@@ -3,13 +3,15 @@ from apps.accounts.models.Booker import Booker
 from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
 from apps.booking.models.RecurringBooking import RecurringBooking
-from django.db.models import Q, ForeignKey
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 import datetime
 
 from apps.util.SubjectModel import SubjectModel
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.exceptions import PrivilegeError
+
+from apps.util.AbstractBooker import AbstractBooker
 
 
 class BookingManager(models.Manager):
@@ -81,18 +83,6 @@ class Booking(models.Model, SubjectModel):
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
 
-        elif self.end_time < invalid_start_time:
-            raise ValidationError("End time cannot be earlier than 8:00.")
-
-        elif self.end_time > invalid_end_time:
-            raise ValidationError("End time cannot be later than 23:00.")
-
-        elif self.start_time < invalid_start_time:
-            raise ValidationError("Start time cannot be earlier than 8:00.")
-
-        elif self.start_time > invalid_end_time:
-            raise ValidationError("Start time cannot be later than 23:00.")
-
         elif Booking.objects.filter(~Q(start_time=self.end_time),
                                     room=self.room,
                                     date=self.date,
@@ -116,18 +106,20 @@ class Booking(models.Model, SubjectModel):
     def evaluate_privilege(self):
 
         if self.group is not None:
-            booker_entity = self.group
+            booker_entity = self.group  # type: AbstractBooker
         else:
             booker_entity = self.booker
 
         # no checks if no category assigned
-        if booker_entity.privilege_category is None:
+        if booker_entity.get_privileges() is None:
             return
 
-        p_c = booker_entity.privilege_category  # type: PrivilegeCategory
+        p_c = booker_entity.get_privileges()  # type: PrivilegeCategory
 
         max_days_until_booking = p_c.get_parameter("max_days_until_booking")
         max_bookings = p_c.get_parameter("max_bookings")
+        start_time = p_c.get_parameter("booking_start_time")
+        end_time = p_c.get_parameter("booking_end_time")
 
         # max_days_until_booking
         today = datetime.date.today()
@@ -141,6 +133,14 @@ class Booking(models.Model, SubjectModel):
 
         if num_bookings >= max_bookings:
             raise PrivilegeError(p_c.get_error_text("max_bookings"))
+
+        # booking_start_time
+        if self.start_time < start_time:
+            raise PrivilegeError(p_c.get_error_text("booking_start_time"))
+
+        # booking_end_time
+        if self.end_time > end_time:
+            raise PrivilegeError(p_c.get_error_text("booking_end_time"))
 
     def get_observers(self):
         return Booking.observers
