@@ -8,7 +8,7 @@ function AdminRequired(InnerComponent) {
       const {history} = this.props;
 
       if (!localStorage.CapstoneReservationUser) {
-        history.push('/');
+        history.push('/404');
         return;
       }
 
@@ -16,7 +16,7 @@ function AdminRequired(InnerComponent) {
       .then((response) => {
         let {data} = response;
         if (!data.is_superuser) {
-          history.push('/');
+          history.push('/404');
         }
       })
       .catch((error) => {
