@@ -83,18 +83,6 @@ class Booking(models.Model, SubjectModel):
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
 
-        elif self.end_time < invalid_start_time:
-            raise ValidationError("End time cannot be earlier than 8:00.")
-
-        elif self.end_time > invalid_end_time:
-            raise ValidationError("End time cannot be later than 23:00.")
-
-        elif self.start_time < invalid_start_time:
-            raise ValidationError("Start time cannot be earlier than 8:00.")
-
-        elif self.start_time > invalid_end_time:
-            raise ValidationError("Start time cannot be later than 23:00.")
-
         elif Booking.objects.filter(~Q(start_time=self.end_time),
                                     room=self.room,
                                     date=self.date,

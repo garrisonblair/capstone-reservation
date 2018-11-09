@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts.models.Booker import Booker
-from apps.accounts.serializers.UserSerializer import UserSerializer, UserSerializerLogin, StudentSerializer
+from apps.accounts.serializers.UserSerializer import UserSerializer, UserSerializerLogin, BookerSerializer
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 
 
@@ -81,5 +81,5 @@ class UserUpdate(APIView):
         user.save()
         serializer = UserSerializer(user)
         if student:
-            serializer = StudentSerializer(user)
+            serializer = BookerSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
