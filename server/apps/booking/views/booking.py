@@ -68,16 +68,27 @@ class BookingView(APIView):
             bookings_list.append(serializer.data)
         return Response(bookings_list, status=status.HTTP_200_OK)
 
-    def patch(self, request, pk):
-        booking = self.get_object(pk)
+    def patch(self, request, id):
+        # Must be logged in as booker
+        if not request.user or request.user.booker is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        booking_data = dict(request.data)
+        booking_data["booker"] = request.user.booker.booker_id
+        booking = self.get_booking(id)
         serializer = BookingSerializer(booking, data=request.data, partial=True)
 
         if not serializer.is_valid():
+            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             try:
                 update_booking = serializer.save()
-                return Response(BookingSerializer(update_booking).data, status=status.HTTP_201_CREATED)
+                return Response(BookingSerializer(update_booking).data, status=status.HTTP_204_NO_CONTENT)
             except ValidationError as error:
+                print(error)
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_booking(self, id):
+        return Booking.objects.get(id=id)

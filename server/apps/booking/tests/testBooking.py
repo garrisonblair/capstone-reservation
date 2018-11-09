@@ -84,7 +84,13 @@ class TestBooking(TestCase):
                           start_time=self.start_time,
                           end_time=self.end_time)
         booking.save()
-        booking3 = Booking(booker=self.booker,
+
+        sid = '87654321'
+        booker1 = Booker(booker_id=sid)
+        booker1.user = None
+        booker1.save()
+
+        booking3 = Booking(booker=booker1,
                            room=self.room,
                            date=self.date,
                            start_time=start_time3,

@@ -24,9 +24,9 @@ class BookingAPITest(TestCase):
                                              password='glass onion')
         self.user.save()
 
-        booker = Booker(booker_id="j_lenn")
-        booker.user = self.user
-        booker.save()
+        self.booker = Booker(booker_id="j_lenn")
+        self.booker.user = self.user
+        self.booker.save()
 
         room = Room(room_id="H833-17", capacity=4, number_of_computers=1)
         room.save()
@@ -348,73 +348,32 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def editBookingSuccessful(self):
+    def testEditBookingSuccessful(self):
 
         # Setup one Booking
-        booker = Booker(booker_id='12345678')
-        booker.user = None
-        booker.save()
-
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(booker=booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
+        booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
         booking1.save()
 
         # Get the added Booking
-        all_bookings = Booking.objects.all()
         oct7_date = datetime.date(2018, 10, 7)
-        bookings_oct7 = Booking.objects.filter(date=oct7_date)
-        self.assertEqual(len(bookings_oct7), 1)
+        bookings_oct7 = Booking.objects.last()
 
+        print(bookings_oct7.booker.booker_id)
         request = self.factory.patch("/booking", {
+                                        "booker": "j_lenn",
                                         "room": 2,
                                         "date": "2018-10-7",
                                         "start_time": "14:00:00",
                                         "end_time": "16:00:00"
                                     },
                                    format="json")
-        response = BookingView.as_view()(request)
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = BookingView.as_view()(request, 1)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         returned_bookings = response.data
         self.assertEqual(len(returned_bookings), 1)
         self.assertEqual(returned_bookings.end_time, datetime.time(16, 00))
-
-    def editBookingOverlap(self):
-
-        # Setup one Booking
-        booker = Booker(booker_id='12345678')
-        booker.user = None
-        booker.save()
-
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
-        room.save()
-
-        booking1 = Booking(booker=booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
-        booking1.save()
-
-        # Setup second Booking
-        booker2 = Booker(booker_id='87654321')
-        booker2.user = None
-        booker2.save()
-
-        booking2 = Booking(booker=booker, room=room, date="2018-10-7", start_time="15:00", end_time="17:00")
-        booking2.save()
-
-        # Get the added Bookings
-        all_bookings = Booking.objects.all()
-        oct7_date = datetime.date(2018, 10, 7)
-        bookings_oct7 = Booking.objects.filter(date=oct7_date)
-        self.assertEqual(len(bookings_oct7), 2)
-
-        request = self.factory.patch("/booking", {
-                                        "room": 2,
-                                        "date": "2018-10-7",
-                                        "start_time": "14:00:00",
-                                        "end_time": "16:00:00"
-                                    },
-                                   format="json")
-        response = BookingView.as_view()(request)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

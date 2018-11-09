@@ -94,6 +94,7 @@ class Booking(models.Model, SubjectModel):
             raise ValidationError("Start time cannot be later than 23:00.")
 
         elif Booking.objects.filter(~Q(start_time=self.end_time),
+                                    ~Q(booker=self.booker),
                                     room=self.room,
                                     date=self.date,
                                     start_time__range=(self.start_time, self.end_time)).exists():
