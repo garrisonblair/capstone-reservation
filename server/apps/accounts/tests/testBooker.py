@@ -3,7 +3,7 @@ from django.test import TestCase
 from apps.accounts.models.Booker import Booker
 
 
-class TestStudent(TestCase):
+class TestBooker(TestCase):
 
     def setUp(self):
         pass

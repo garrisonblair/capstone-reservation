@@ -1,0 +1,22 @@
+.privilege-modal {
+  width: 300px !important;
+  &__container {
+    padding: 0 20px 20px 20px;
+    .field {
+      margin: 10px;
+      .input,
+      .dropdown,
+      .button {
+        width: 250px;
+      }
+    }
+  }
+}
+
+.swal2-content {
+  .error-message {
+    .field {
+      text-align: left;
+    }
+  }
+}
