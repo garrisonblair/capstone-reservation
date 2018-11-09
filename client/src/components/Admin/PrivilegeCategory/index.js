@@ -20,6 +20,10 @@ class PrivilegeCategory extends Component {
   }
 
   getPrivileges = () => {
+    if(this.props.privilegesMock) {
+      this.setState({privileges: this.props.privilegesMock})
+      return;
+    }
     api.getPrivileges()
     .then((response) => response.data)
     .then((privileges) => {
