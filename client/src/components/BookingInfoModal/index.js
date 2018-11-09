@@ -19,8 +19,8 @@ class BookingInfoModal extends Component {
   }
 
   //Close the modal if any api POST requests succeeded
-  closeModalWithCampOn = () => {
-    this.props.onCloseWithCampOn();
+  closeModalWithAction = () => {
+    this.props.onCloseWithAction();
     this.setState({
       show: false,
     });
@@ -47,7 +47,7 @@ class BookingInfoModal extends Component {
 
   // TODO: Put the test to see if the user match.
   checkEditBooking(booking) {
-    return true
+    return false
     // return booking.booker == localStorage.getItem('CapstoneReservationUser')
   }
 
@@ -101,10 +101,10 @@ class BookingInfoModal extends Component {
 
   renderForm(booking) {
     if(this.checkEditBooking(booking)) {
-      return <EditBookingForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithEditBooking={this.closeModalWithCampOn}/>
+      return <EditBookingForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithEditBooking={this.closeModalWithAction}/>
     } else {
       if(this.checkCamponPossible(booking)) {
-        return <CampOnForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithCampOn={this.closeModalWithCampOn}/>
+        return <CampOnForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithCampOn={this.closeModalWithAction}/>
       } else {
         return null
       }

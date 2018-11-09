@@ -193,7 +193,7 @@ class Calendar extends Component {
     window.location.reload();
   }
 
-  toggleBookingInfoWithCampOn = () => {
+  toggleBookingInfoWithAction = () => {
     window.location.reload();
   }
 
@@ -430,7 +430,7 @@ class Calendar extends Component {
           booking={this.state.selectedBooking}
           selectedRoomName={this.state.selectedRoomName}
           onClose={this.toggleBookingInfoModal}
-          onCloseWithCampOn={this.toggleBookingInfoWithCampOn}
+          onCloseWithAction={this.toggleBookingInfoWithAction}
         />
       </div>
     )

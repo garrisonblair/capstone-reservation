@@ -85,32 +85,33 @@ class EditBookingForm extends Component {
   /************ REQUESTS *************/
 
   //TODO: Make the request
-  sendPostRequestEditBooking = () => {
-    // const {booking} = this.props;
+  sendPatchBooking = () => {
+    const {booking} = this.props;
 
-    // const data = {
-    //   "start_time": `${this.state.startHour}:${this.state.startMinute}`,
-    //   "end_time": `${this.state.endHour}:${this.state.endMinute}`
-    // };
-    // api.createEditBooking(data)
-    // .then((response) => {
-    //   sweetAlert('Completed',
-    //     `Room ${this.props.selectedRoomName} was successfuly booked.`,
-    //     'success'
-    //   )
-    //   .then((result) => {
-    //     if (result.value) {
-    //       this.closeModalWithEditBooking()
-    //     }
-    //   })
-    // })
-    // .catch((error) => {
-    //   sweetAlert(
-    //     'Reservation failed',
-    //     error.response.data[0],
-    //     'error'
-    //   )
-    // })
+    const data = {
+      "id": booking.id,
+      "start_time": `${this.state.startHour}:${this.state.startMinute}`,
+      "end_time": `${this.state.endHour}:${this.state.endMinute}`
+    };
+    api.createEditBooking(data)
+    .then((response) => {
+      sweetAlert('Completed',
+        `Booking was sucessfully updated.`,
+        'success'
+      )
+      .then((result) => {
+        if (result.value) {
+          this.closeModalWithEditBooking()
+        }
+      })
+    })
+    .catch((error) => {
+      sweetAlert(
+        'Reservation failed',
+        error.response.data[0],
+        'error'
+      )
+    })
   }
 
   handleSubmit = () => {
@@ -123,7 +124,7 @@ class EditBookingForm extends Component {
       return;
     }
 
-    this.sendPostRequestEditBooking();
+    this.sendPatchBooking();
   }
 
   /************* COMPONENT LIFE CYCLE *************/

@@ -82,7 +82,7 @@ class CampOnForm extends Component {
     api.createCampOn(data)
     .then((response) => {
       sweetAlert('Completed',
-        `Room ${this.props.selectedRoomName} was successfuly booked.`,
+        `Your camp-on was successful.`,
         'success'
       )
       .then((result) => {
