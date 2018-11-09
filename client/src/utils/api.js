@@ -113,6 +113,17 @@ function updateAdminSettings(data) {
   })
 }
 
+function updateBooking(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/booking`,
+    data,
+    headers,
+    withCredentials: true,
+  })
+}
+
 const api = {
   register,
   login,
@@ -125,6 +136,7 @@ const api = {
   getAdminSettings,
   updateAdminSettings,
   getMyUser,
+  updateBooking,
 }
 
 export default api;
