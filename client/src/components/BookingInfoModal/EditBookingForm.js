@@ -195,6 +195,20 @@ class EditBookingForm extends Component {
             value={endMinute}
           />
           </div>
+          <div className="modal-description">
+            <h3 className="header--inline">
+              <Icon name="user" /> {" "}
+              {`by `}
+            </h3>
+            <Dropdown
+              selection
+              compact
+              className="dropdown--fixed-width"
+              placeholder='hh'
+              options={reservedOptions}
+              defaultValue={this.state.reservedOptions[0].value}
+            />
+          </div>
           <Button content='Confirm edit' primary onClick={this.handleSubmit} />
           <div className="ui divider" />
       </div>
