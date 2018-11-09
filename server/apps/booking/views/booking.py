@@ -67,3 +67,17 @@ class BookingView(APIView):
             serializer = BookingSerializer(booking)
             bookings_list.append(serializer.data)
         return Response(bookings_list, status=status.HTTP_200_OK)
+
+    def patch(self, request, pk):
+        booking = self.get_object(pk)
+        serializer = BookingSerializer(booking, data=request.data, partial=True)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            try:
+                update_booking = serializer.save()
+                return Response(BookingSerializer(update_booking).data, status=status.HTTP_201_CREATED)
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
