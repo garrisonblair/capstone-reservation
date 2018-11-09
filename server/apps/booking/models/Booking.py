@@ -94,13 +94,14 @@ class Booking(models.Model, SubjectModel):
             raise ValidationError("Start time cannot be later than 23:00.")
 
         elif Booking.objects.filter(~Q(start_time=self.end_time),
-                                    ~Q(booker=self.booker),
+                                    ~Q(id=self.id),
                                     room=self.room,
                                     date=self.date,
                                     start_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
         elif Booking.objects.filter(~Q(end_time=self.start_time),
+                                    ~Q(id=self.id),
                                     room=self.room,
                                     date=self.date,
                                     end_time__range=(self.start_time, self.end_time)).exists():
