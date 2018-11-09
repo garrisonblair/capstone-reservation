@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, List, Message } from 'semantic-ui-react'
+import SideNav from '../SideNav';
 import RoomRowItem from './RoomRowItem'
-import RoomModal from '../RoomModal';
-import './RoomManagement.scss';
-class RoomManagement extends Component {
+import RoomModal from './RoomModal';
+import './RoomManager.scss';
+
+
+class RoomManager extends Component {
   state = {
     roomsList: [],
     showModal: false,
@@ -24,6 +27,8 @@ class RoomManagement extends Component {
     //   ]
     // })
   }
+
+
   showRoomModal = () => {
     this.setState({
       showModal: true,
@@ -70,37 +75,44 @@ class RoomManagement extends Component {
   }
 
   renderNoRoomList = () => {
-    return(
+    return (
       <Message>
-          <Message.Header>There is currently no room</Message.Header>
-          <p>Click on the 'Add Room' button to add a new room.</p>
-        </Message>
+        <Message.Header>There is currently no room</Message.Header>
+        <p>Click on the 'Add Room' button to add a new room.</p>
+      </Message>
     )
   }
 
   render() {
     let { roomsList, showModal, modalEditMode, selectedRoom } = this.state;
     return (
-      <div id="room-management">
-        <h1>Manage Rooms</h1>
-        {roomsList.length==0? this.renderNoRoomList(): ''}
-        <List divided verticalAlign='middle'>
-          {roomsList.map(
-            room =>
-              <RoomRowItem key={room.id}
-                room={room}
-                syncRoomList={this.syncRooms}
-                openModalEditMode={this.showRoomModalEditMode} />)
-          }
-        </List>
-        <Button onClick={this.showRoomModal}>Add new room</Button>
-        {showModal ? this.renderRoomModal() : ''}
+      <div className="admin">
+        <div className="admin__wrapper">
+          <SideNav selectedMenu={'stats'} />
+          <div className="admin__content">
+            <div id="room-management">
+              <h1>Manage Rooms</h1>
+              {roomsList.length == 0 ? this.renderNoRoomList() : ''}
+              <List divided verticalAlign='middle'>
+                {roomsList.map(
+                  room =>
+                    <RoomRowItem key={room.id}
+                      room={room}
+                      syncRoomList={this.syncRooms}
+                      openModalEditMode={this.showRoomModalEditMode} />)
+                }
+              </List>
+              <Button onClick={this.showRoomModal}>Add new room</Button>
+              {showModal ? this.renderRoomModal() : ''}
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
 }
 
-RoomManagement.propTypes = {
+RoomManager.propTypes = {
 
 }
-export default RoomManagement;
+export default RoomManager;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, List } from 'semantic-ui-react'
-import api from '../../utils/api';
+import api from '../../../utils/api';
 import sweetAlert from 'sweetalert2';
 
 

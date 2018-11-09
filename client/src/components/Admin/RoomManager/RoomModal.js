@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import { Modal, Button, FormField, Input } from 'semantic-ui-react';
-import api from '../../utils/api';
+import api from '../../../utils/api';
 import './RoomModal.scss';
 
 class RoomModal extends Component {
