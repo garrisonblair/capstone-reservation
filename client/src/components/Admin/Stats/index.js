@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import AdminRequired from '../HOC/AdminRequired';
-import SideNav from './SideNav';
-import './Admin.scss';
+import AdminRequired from '../../HOC/AdminRequired';
+import SideNav from '../SideNav';
+import '../Admin.scss';
 
 
 class Stats extends Component {

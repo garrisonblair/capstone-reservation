@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import ReactDOMServer from "react-dom/server";
 import {Button, Checkbox, Dropdown, Form, Header, Icon, Input, Modal, FormField} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
-import api from '../../utils/api';
+import api from '../../../utils/api';
 import './AddPrivilegeModal.scss';
 
 

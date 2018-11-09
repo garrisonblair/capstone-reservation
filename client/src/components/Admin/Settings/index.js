@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import {Checkbox} from 'semantic-ui-react';
 import WebCalendarLogin from './WebCalendarLogin';
 import DisableBackupModal from './DisableBackupModal';
-import api from '../../utils/api';
-import './Admin.scss';
+import api from '../../../utils/api';
 
 
 class Settings extends Component {

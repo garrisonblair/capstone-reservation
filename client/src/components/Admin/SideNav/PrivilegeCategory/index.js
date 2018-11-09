@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import {Button, Icon, Table} from 'semantic-ui-react';
-import api from '../../utils/api';
-import AdminRequired from '../HOC/AdminRequired';
-import SideNav from './SideNav';
+import api from '../../../utils/api';
+import AdminRequired from '../../HOC/AdminRequired';
+import SideNav from '../SideNav';
 import AddPrivilegeModal from './AddPrivilegeModal';
-import './Admin.scss';
+import '../Admin.scss';
 
 
 // TODO: Pagination
