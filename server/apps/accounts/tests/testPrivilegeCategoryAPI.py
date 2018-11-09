@@ -252,3 +252,66 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         # A permission class returns either 401/403 if the user is not authorized
         self.assertTrue(response.status_code in [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED])
+
+    def testUpdateSuccess(self):
+        self.user.is_superuser = True
+        self.user.save()
+        self.user.refresh_from_db()
+
+        self.category.max_bookings = 10
+        self.category.max_days_until_booking = 4
+        self.category.save()
+
+        request = self.factory.patch("privilege_categories",
+                                     {
+                                         "name": self.category.name,
+                                         "max_bookings": self.category.max_bookings,
+                                         "max_days_until_booking": self.category.max_days_until_booking
+                                     },
+                                     format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_category = PrivilegeCategory.objects.get(name="Base Category")
+        # Updated fields
+        self.assertEqual(updated_category.max_bookings, self.category.max_bookings)
+        self.assertEqual(updated_category.max_days_until_booking, self.category.max_days_until_booking)
+        # Unchanged fields
+        self.assertEqual(updated_category.booking_start_time, self.category.booking_start_time)
+        self.assertEqual(updated_category.booking_end_time, self.category.booking_end_time)
+        self.assertEqual(updated_category.can_make_recurring_booking, self.category.can_make_recurring_booking)
+        self.assertEqual(updated_category.max_recurring_bookings, self.category.max_recurring_bookings)
+
+    def testUpdateFailureInvalidPayload(self):
+        request = self.factory.patch("privilege_categories",
+                                     {
+                                         "name": self.category.name,
+                                         "max_bookings": "John",
+                                         "max_days_until_booking": self.category.max_days_until_booking
+                                     },
+                                     format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testUpdateFailureDoesNotExist(self):
+        request = self.factory.patch("privilege_categories",
+                                     {
+                                         "name": "Wrong Name",
+                                         "max_bookings": self.category.max_bookings,
+                                         "max_days_until_booking": self.category.max_days_until_booking
+                                     },
+                                     format="json")
+
+        force_authenticate(request, user=User.objects.get(username="jerry"))
+
+        response = PrivilegeCategoryView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data, "Category named Wrong Name does not exist")
