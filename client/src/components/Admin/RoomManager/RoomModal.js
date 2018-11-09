@@ -42,8 +42,8 @@ class RoomModal extends Component {
     this.setState({ numOfComputers: event.target.value });
   }
 
-  componentWillMount(){
-    if(this.props.editMode){
+  componentDidMount(){
+    if(this.props.selectedRoom != null){
       this.setState({
         roomID:this.props.selectedRoom.id,
         roomCapacity:this.props.selectedRoom.capacity,
@@ -63,30 +63,25 @@ class RoomModal extends Component {
       if(response.status.OK){
         sweetAlert('Completed', 'Good job', 'success')
         .then((result)=>{
-          this.closeModal();
-          this.props.syncRoomList();
+          this.props.onClose();
         })
       }
     })
     .catch((error)=>{
       sweetAlert(':(', 'We are sorry. Something went wrong. Room was not saved.', 'error')
         .then((result)=>{
-          this.closeModal();
-          this.props.syncRoomList();
+          this.props.onClose();
         })
     })
 
   }
-  closeModal = () => {
-    this.props.closeRoomModal();
-  }
 
   render() {
-    let { show, editMode } = this.props;
+    let { show } = this.props;
     let { roomCapacity, roomID, numOfComputers} = this.state;
     return (
       <div>
-        <Modal centered={false} size={"tiny"} open={show} id='room-modal'>
+        <Modal centered={false} size={"tiny"} open={show} id='room-modal' onClose={this.props.onClose}>
           <Modal.Header>
             Room Details
           </Modal.Header>
@@ -97,7 +92,7 @@ class RoomModal extends Component {
                 <Input size='small'
                     onChange={this.handleRoomIdOnChange}
                     value={ roomID}
-                    disabled={editMode}/>
+                    disabled={this.props.selectedRoom != null}/>
               </FormField>
               <h3>Room capacity:</h3>
               <FormField>
@@ -114,7 +109,7 @@ class RoomModal extends Component {
                   value={ numOfComputers} />
               </FormField>
               <Button onClick={this.handleSubmit}>SAVE</Button>
-              <Button onClick={this.closeModal}>Close</Button>
+              <Button onClick={this.props.onClose}>Close</Button>
             </Modal.Description>
           </Modal.Content>
         </Modal>
@@ -125,15 +120,12 @@ class RoomModal extends Component {
 
 RoomModal.propTypes = {
   show: PropTypes.bool.isRequired,
-  closeRoomModal: PropTypes.func.isRequired,
-  syncRoomList: PropTypes.func.isRequired,
-  editMode:PropTypes.bool,
+  onClose: PropTypes.func.isRequired,
   selectedRoom: PropTypes.object
 }
 
 RoomModal.defaultProps = {
-  selectedRoom: null,
-  editMode: false
+  selectedRoom: {id:'',capacity:1,numComputers:2}
 }
 
 export default RoomModal;

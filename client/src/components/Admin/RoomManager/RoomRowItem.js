@@ -2,15 +2,22 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, List } from 'semantic-ui-react'
 import api from '../../../utils/api';
+import RoomModal from './RoomModal';
 import sweetAlert from 'sweetalert2';
 
 
 class RoomRowItem extends Component {
 
-  openRoomModalInEditMode =() =>{
-    this.props.openModalEditMode(this.props.room);
+  state={
+    openModal:false
   }
-
+  openModal = () =>{
+    this.setState({openModal:true})
+  }
+  closeModal = () =>{
+    this.props.syncRoomList();
+    this.setState({openModal:false})
+  }
   handleDeleteRoom = () =>{
     const{room} = this.props;
     sweetAlert({
@@ -49,9 +56,15 @@ class RoomRowItem extends Component {
           <h2>Room {id}</h2>
         </List.Content>
         <List.Content floated='right' className='row-buttons'>
-          <Button icon='edit' onClick={this.openRoomModalInEditMode}/>
+          <Button icon='edit' onClick={this.openModal}/>
           <Button icon='trash' onClick={this.handleDeleteRoom}/>
         </List.Content>
+        <RoomModal
+        show={this.state.openModal}
+        selectedRoom={this.props.room}
+        onClose={this.closeModal}
+        syncRoomList={()=>{}}
+      />
       </List.Item>
     )
   }
@@ -59,8 +72,7 @@ class RoomRowItem extends Component {
 
 RoomRowItem.propTypes = {
   room: PropTypes.object.isRequired,
-  syncRoomList: PropTypes.func.isRequired,
-  openModalEditMode: PropTypes.func.isRequired
+  syncRoomList: PropTypes.func.isRequired
 }
 
 export default RoomRowItem;

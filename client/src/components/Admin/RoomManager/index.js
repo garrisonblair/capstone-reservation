@@ -5,70 +5,46 @@ import SideNav from '../SideNav';
 import RoomRowItem from './RoomRowItem'
 import RoomModal from './RoomModal';
 import './RoomManager.scss';
+import api from '../../../utils/api';
 
 
 class RoomManager extends Component {
   state = {
-    roomsList: [],
+    roomsList: [{id:"2", capacity:2, numComputers:8}],
     showModal: false,
-    modalEditMode: false,
     selectedRoom: null
   }
 
-  componentWillMount() {
-    // this.syncRooms();
-    // this.setState({
-    //   roomsList: [
-    //     { id: 1, capacity: 1, numComputers: 1 },
-    //     { id: 2, capacity: 2, numComputers: 2 },
-    //     { id: 3, capacity: 3, numComputers: 3 },
-    //     { id: 4, capacity: 4, numComputers: 4 },
-    //     { id: 5, capacity: 5, numComputers: 5 }
-    //   ]
-    // })
+  componentDidMount() {
+     this.syncRooms();
   }
 
 
   showRoomModal = () => {
     this.setState({
       showModal: true,
-      modalEditMode: false
-    })
-  }
-
-  showRoomModalEditMode = (room) => {
-    this.setState({
-      showModal: true,
-      modalEditMode: true,
-      selectedRoom: room
     })
   }
 
   closeRoomModal = () => {
+    this.syncRooms();
     this.setState({
       showModal: false,
-      modalEditMode: false
     });
   }
 
   syncRooms = () => {
-    this.setState({
-      roomsList: [
-        { id: 1, capacity: 1, numComputers: 1 },
-        { id: 2, capacity: 2, numComputers: 2 },
-        { id: 3, capacity: 3, numComputers: 3 },
-        { id: 4, capacity: 4, numComputers: 4 },
-        { id: 5, capacity: 5, numComputers: 5 },
-        { id: 6, capacity: 6, numComputers: 6 }
-      ]
+    console.log('sync rooms')
+    api.getRooms()
+    .then((response)=>{
+      this.setState({});
     })
   }
+
   renderRoomModal() {
     return (
       <RoomModal show={true}
-        closeRoomModal={this.closeRoomModal}
-        syncRoomList={this.syncRooms}
-        editMode={this.state.modalEditMode}
+        onClose={this.closeRoomModal}
         selectedRoom={this.state.selectedRoom}>
       </RoomModal>
     )
@@ -84,11 +60,11 @@ class RoomManager extends Component {
   }
 
   render() {
-    let { roomsList, showModal, modalEditMode, selectedRoom } = this.state;
+    let { roomsList, showModal } = this.state;
     return (
       <div className="admin">
         <div className="admin__wrapper">
-          <SideNav selectedMenu={'stats'} />
+          <SideNav selectedMenu={'rooms'} />
           <div className="admin__content">
             <div id="room-management">
               <h1>Manage Rooms</h1>
@@ -98,8 +74,7 @@ class RoomManager extends Component {
                   room =>
                     <RoomRowItem key={room.id}
                       room={room}
-                      syncRoomList={this.syncRooms}
-                      openModalEditMode={this.showRoomModalEditMode} />)
+                      syncRoomList={this.syncRooms} />)
                 }
               </List>
               <Button onClick={this.showRoomModal}>Add new room</Button>
