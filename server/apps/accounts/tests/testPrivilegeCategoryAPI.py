@@ -8,6 +8,7 @@ from rest_framework.test import APIRequestFactory, APIClient, force_authenticate
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.views.privilege_categories import PrivilegeCategoryView
 
+
 class TestPrivilegeCategoryAPI(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
@@ -161,10 +162,12 @@ class TestPrivilegeCategoryAPI(TestCase):
             "booking_start_time": self.category.booking_start_time,
             "booking_end_time": self.category.booking_end_time
         }
-        response = client.post("/privilege_categories",
-                                data,
-                                HTTP_AUTHORIZATION=authorization,
-                                format="json")
+        response = client.post(
+            "/privilege_categories",
+            data,
+            HTTP_AUTHORIZATION=authorization,
+            format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(PrivilegeCategory.objects.count(), 1)
