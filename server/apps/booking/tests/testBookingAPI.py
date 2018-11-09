@@ -358,7 +358,7 @@ class BookingAPITest(TestCase):
         room = Room(room_id=2, capacity=4, number_of_computers=1)
         room.save()
 
-        booking1 = Booking(booker=booker, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
+        booking1 = Booking(booker=booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
         booking1.save()
 
         # Get the added Booking
@@ -367,10 +367,9 @@ class BookingAPITest(TestCase):
         bookings_oct7 = Booking.objects.filter(date=oct7_date)
         self.assertEqual(len(bookings_oct7), 1)
 
-        request = self.factory.patch("/booking",
-                                    {
-                                        "room": 1,
-                                        "date": "2019-08-10",
+        request = self.factory.patch("/booking", {
+                                        "room": 2,
+                                        "date": "2018-10-7",
                                         "start_time": "14:00:00",
                                         "end_time": "16:00:00"
                                     },
@@ -400,7 +399,7 @@ class BookingAPITest(TestCase):
         booker2.user = None
         booker2.save()
 
-        booking2 = Booking(booker=booker, room=room, date="2018-10-6", start_time="15:00", end_time="17:00")
+        booking2 = Booking(booker=booker, room=room, date="2018-10-7", start_time="15:00", end_time="17:00")
         booking2.save()
 
         # Get the added Bookings
@@ -409,8 +408,7 @@ class BookingAPITest(TestCase):
         bookings_oct7 = Booking.objects.filter(date=oct7_date)
         self.assertEqual(len(bookings_oct7), 2)
 
-        request = self.factory.patch("/booking",
-                                    {
+        request = self.factory.patch("/booking", {
                                         "room": 2,
                                         "date": "2018-10-7",
                                         "start_time": "14:00:00",
