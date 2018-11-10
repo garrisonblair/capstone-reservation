@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class RoomManager(models.Manager):
@@ -45,3 +46,28 @@ class Room(models.Model):
 
     def delete_room(self):
         self.delete()
+
+    def validate_model(self):
+
+        room_id = self.room_id,
+        capacity = self.capacity,
+        number_of_computers = self.number_of_computers
+
+        if not isinstance(capacity, int):
+            raise ValidationError("Invalid capacity. Please enter a positive integer value or zero")
+
+        if not isinstance(number_of_computers, int):
+            raise ValidationError("Invalid number of computers. Please enter a positive integer value or zero")
+
+        if capacity < 0:
+            raise ValidationError("Invalid capacity. Please enter a positive integer value or zero")
+
+        if (capacity % 1) != 0:
+            raise ValidationError("Invalid capacity. Please enter a positive integer value or zero")
+
+        if int(number_of_computers) < 0:
+            raise ValidationError("Invalid number of computers. Please enter a positive integer value or zero")
+
+        if (number_of_computers % 1) != 0:
+            raise ValidationError("Invalid Number of computers. Please enter a positive integer value or zero")
+

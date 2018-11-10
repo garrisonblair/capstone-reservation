@@ -12,7 +12,7 @@ from apps.rooms.serializers.room_serializer import RoomSerializer
 # Added by Steve
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from apps.accounts.permissions.IsOwnerOrAdmin import IsAdmin
+from apps.accounts.permissions.IsSuperUser import IsSuperUser
 
 
 class RoomView(APIView):
@@ -77,80 +77,92 @@ class RoomView(APIView):
             return Response(error_msg,
                             status=status.HTTP_400_BAD_REQUEST)
 
-    @permission_classes((IsAuthenticated, IsAdmin))
+
+class RoomCreateView(APIView):
+
+    @permission_classes((IsAuthenticated, IsSuperUser))
     def post(self, request, *args, **kwargs):
 
+        if not request.user or request.user.is_superuser is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         room_data = dict(request.data)
+
+        serializer = RoomSerializer(data=room_data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            try:
+                room = serializer.save()
+                return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RoomUpdateView(APIView):
+
+    @permission_classes((IsAuthenticated, IsSuperUser))
+    def patch(self, request, *args, **kwargs):
+
+        if not request.user or request.user.is_superuser is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        room_id = kwargs.get('room_id')
+        capacity = request.data.get('capacity')
+        number_of_computers = request.data.get('number_of_computers')
 
         room = None
 
-        capacity = room_data['capacity']
-
-        if not isinstance(capacity, int):
-            return Response("Invalid capacity. Please enter a positive integer value or zero",
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        number_of_computers = room_data['number_of_computers']
-
-        if not isinstance(number_of_computers, int):
-            return Response("Invalid number of computers. Please enter a positive integer value or zero",
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if capacity < 0:
-            return Response("Invalid capacity. Please enter a positive integer value or zero",
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if (capacity % 1) != 0:
-            return Response("Invalid capacity. Please enter a positive integer value or zero",
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if int(number_of_computers) < 0:
-            return Response("Invalid number of computers. Please enter a positive integer value or zero",
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if (number_of_computers % 1) != 0:
-            return Response("Invalid Number of computers. Please enter a positive integer value or zero",
-                            status=status.HTTP_400_BAD_REQUEST)
-
         try:
-            room = Room.objects.get(room_id=room_data['room_id'])
+            room = Room.objects.get(room_id=room_id)
         except Room.DoesNotExist:
-            if room_data['room_id'] is not '':
-                new_room = Room(room_id=room_data['room_id'],
-                                capacity=capacity,
-                                number_of_computers=number_of_computers)
-                new_room.save()
-                return Response("Room does not exist. Creating room",
-                                status=status.HTTP_201_CREATED)
-            else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        room_id = room_data.get('room_id')
-        room = Room.objects.get(room_id=room_id)
-        room.capacity = capacity
-        room.number_of_computers = number_of_computers
+        if room_id:
+            room.room_id = room_id
 
-        try:
-            room.save()
-            return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
-        except ValidationError as error:
-            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+        if capacity:
+            room.capacity = capacity
 
-    @permission_classes((IsAuthenticated, IsAdmin))
+        if number_of_computers:
+            room.number_of_computers = number_of_computers
+
+        serializer = RoomSerializer(room)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            try:
+                room = serializer.save()
+                return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RoomDeleteView(APIView):
+
+    @permission_classes((IsAuthenticated, IsSuperUser))
     def delete(self, request, *args, **kwargs):
 
-        room_data = dict(request.data)
+        if not request.user or request.user.is_superuser is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        room_id = kwargs.get('room_id')
 
         room = None
 
         try:
-            room = Room.objects.get(room_id=room_data["room_id"])
+            room = Room.objects.get(room_id=room_id)
         except Room.DoesNotExist:
-            return Response("Invalid room. Please provide an existing room",
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         try:
             room.delete()
             return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
         except ValidationError as error:
-            return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
