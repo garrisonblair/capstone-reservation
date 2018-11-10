@@ -73,8 +73,6 @@ class BookingView(APIView):
         if not request.user or request.user.booker is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        booking_data = dict(request.data)
-        booking_data["booker"] = request.user.booker.booker_id
         booking = self.get_booking(booking_id)
         serializer = BookingSerializer(booking, data=request.data, partial=True)
 

@@ -371,6 +371,7 @@ class BookingAPITest(TestCase):
         response = BookingView.as_view()(request, 1)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(Booking.objects.all()), 1)
         edit_booking = Booking.objects.last()
         self.assertEqual(edit_booking.end_time, datetime.time(16, 00))
 
@@ -405,6 +406,7 @@ class BookingAPITest(TestCase):
         response = BookingView.as_view()(request, 1)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(Booking.objects.all()), 2)
 
     def testEditBookingOverlapStartTime(self):
 
@@ -437,3 +439,4 @@ class BookingAPITest(TestCase):
         response = BookingView.as_view()(request, 1)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(Booking.objects.all()), 2)
