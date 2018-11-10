@@ -83,26 +83,21 @@ class RoomCreateView(APIView):
     @permission_classes((IsAuthenticated, IsSuperUser))
     def post(self, request, *args, **kwargs):
 
-        # print('AAAAAAAAAAAAAAA')
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        # print('BBBBBBBBBBBBBBBBB')
         room_data = dict(request.data)
 
         serializer = RoomSerializer(data=room_data)
 
         if not serializer.is_valid():
-            # print('CCCCCCCCCCCCCCCC')
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             try:
-                # print('DDDDDDDDDDDDDDDDD')
                 room = serializer.save()
                 return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
             except ValidationError as error:
-                # print('EEEEEEEEEEEEEEEEEEE')
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -114,22 +109,31 @@ class RoomUpdateView(APIView):
         print(request.data)
         print(args)
         print(kwargs)
-        print('AAAAAAAAAAAAAAAAAAAAAAAAAA')
+
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        room_id = kwargs.get('room_id')
+        # room_id = kwargs.get('room_id')
+        # capacity = kwargs.get('capacity')
+        # number_of_computers = kwargs.get('number_of_computers')
+
+        room_id = request.data.get('room_id')
         capacity = request.data.get('capacity')
         number_of_computers = request.data.get('number_of_computers')
+
+        print('room_id: ')
+        print(room_id)
+        print('capacity: ')
+        print(capacity)
+        print('number_of_computers')
+        print(number_of_computers)
 
         room = None
 
         try:
-            print('BBBBBBBBBBBBBBBBBBBBBBB')
             print(room_id)
             room = Room.objects.get(room_id=room_id)
         except Room.DoesNotExist:
-            print('CCCCCCCCCCCCCCCCCCCCC')
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         if room_id:
@@ -141,7 +145,10 @@ class RoomUpdateView(APIView):
         if number_of_computers:
             room.number_of_computers = number_of_computers
 
-        serializer = RoomSerializer(room)
+        # booking_data = dict(request.data)
+        print('room: ')
+        print(room)
+        serializer = RoomSerializer(data=room)
 
         if not serializer.is_valid():
             print('DDDDDDDDDDDDDDDDDDDDDDDDD')
@@ -165,26 +172,18 @@ class RoomDeleteView(APIView):
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        print(request.data)
-        print(args)
-        print('The kwargs for room_id is: ')
-        room_id = kwargs.get('room_id')
-
+#        room_id = kwargs.get('room_id')
+        room_id = request.data.get('room_id')
 
         room = None
 
         try:
-            # print(room_id)
-            print('BBBBBBBBBBBBBBBB')
             room = Room.objects.get(room_id=room_id)
         except Room.DoesNotExist:
-            print('CCCCCCCCCCCCCCCCCCCC')
             return Response("Invalid room. Please provide an existing room", status=status.HTTP_404_NOT_FOUND)
 
         try:
-            print('DDDDDDDDDDDDDDDDDDDD')
             room.delete()
             return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
         except ValidationError as error:
-            print('EEEEEEEEEEEEEEEE')
             return Response(status=status.HTTP_400_BAD_REQUEST)
