@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
+import SelectedDate from './SelectedDate';
 import Rooms from './Rooms';
 import Hours from './Hours';
 import api from '../../utils/api';
-import {Button, Icon} from 'semantic-ui-react';
 
 
 class Calendar extends Component {
@@ -164,18 +164,10 @@ class Calendar extends Component {
     })
   }
 
-  handleClickNextDate = (e) => {
-    let nextDay = this.state.selectedDate;
-    nextDay.setDate(nextDay.getDate() + 1);
-    this.setState({selectedDate: nextDay})
-    this.getBookings();
-  }
-
-  handleClickPreviousDate = (e) => {
-    let previousDay = this.state.selectedDate;
-    previousDay.setDate(previousDay.getDate() - 1);
-    this.setState({selectedDate: previousDay})
-    this.getBookings();
+  changeDate = (date) => {
+    this.setState({selectedDate: date}, () => {
+      this.getBookings();
+    });
   }
 
   /************ HELPER METHOD *************/
@@ -296,33 +288,6 @@ class Calendar extends Component {
 
   /************ COMPONENT RENDERING *************/
 
-  renderDate() {
-    return (
-      <div className="calendar__date">
-        <Button
-          basic
-          circular
-          color="olive"
-          icon="chevron left"
-          size="tiny"
-          onClick={this.handleClickPreviousDate}
-        />
-        <h3 className="calendar__date__header">
-          <Icon name="calendar alternate outline" />
-          {this.state.selectedDate.toDateString()}
-        </h3>
-        <Button
-          basic
-          circular
-          color="olive"
-          icon="chevron right"
-          size="tiny"
-          onClick={this.handleClickNextDate}
-        />
-      </div>
-    );
-  }
-
   renderCells() {
     const {roomsList, hoursList} = this.state;
 
@@ -387,7 +352,7 @@ class Calendar extends Component {
   render() {
     return (
       <div className="calendar__container">
-        {this.renderDate()}
+        <SelectedDate changeDate={this.changeDate} />
         <div className="calendar__wrapper">
           <Rooms roomsList={this.state.roomsList} />
           <Hours hoursList={this.state.hoursList} />
