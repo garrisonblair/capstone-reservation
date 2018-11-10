@@ -1,95 +1,27 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
-import api from '../../utils/api';
-import {Button, Icon} from 'semantic-ui-react';
 
 
-class Calendar extends Component {
+class Cells extends Component {
 
   state = {
-    roomsList: [],
-    hoursList: [],
     selectedHour: "",
     selectedRoomName: "",
     selectedRoomId: "",
     selectedRoomCurrentBookings: [],
-    selectedDate: new Date(),
     selectedBooking: {},
     bookingModal: false,
     bookingInfoModal: false,
   };
 
-  /************ REQUESTS *************/
-  
-  //propsTesting* is used for Jest testing 
-  getBookings() {
-    if(this.props.propsTestingBookings) {
-      this.setState({bookings: this.props.propsTestingBookings})
-    } else {
-      let params = {
-        year: this.state.selectedDate.getFullYear(),
-        month: this.state.selectedDate.getMonth() + 1,
-        day: this.state.selectedDate.getDate()
-      }
-  
-      api.getBookings(params)
-      .then((response) => {
-        this.setState({bookings: response.data})
-        this.getCampOns(params)
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-      .then(function () {
-      });
-    }
-  }
-
-  getCampOns(params) {
-    if(this.props.propsTestingCampOns) {
-      this.setState({campOns: this.props.propsTestingCampOns})
-    } else {
-      api.getCampOns(params)
-      .then((response) => {
-        this.setState({campOns: response.data}, () => {
-          // this.campOnToBooking();
-        })
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
-    }
-  }
-
-  getRooms() {
-    if(this.props.propsTestingRooms) {
-      this.setState({roomsList: this.props.propsTestingRooms})
-    } else {
-      api.getRooms()
-      .then((response) => {
-        this.setState({roomsList: response.data})
-        let colNumber = response.data.length;
-        document.documentElement.style.setProperty("--colNum", colNumber);
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
-    } 
-  }
-
   /************ STYLE METHODS*************/
 
   // Style for .calendar__cells__cell
   setCellStyle(hourRow) {
-    const {hoursSettings} = this.state;
+    const {hoursSettings} = this.props;
     let rowStart = (hourRow * hoursSettings.increment / 10) + 1;
     let rowEnd = rowStart + hoursSettings.increment / 10;
 
@@ -104,7 +36,7 @@ class Calendar extends Component {
 
   //Style for .calendar__booking
   setBookingStyle(booking, campOnsNumber) {
-    const {hoursSettings} = this.state;
+    const {hoursSettings} = this.props;
     let bookingStart = this.timeStringToInt(booking.start_time);
     let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(hoursSettings.start);
@@ -135,7 +67,7 @@ class Calendar extends Component {
     let selectedHour = currentHour;
     let selectedRoomCurrentBookings = []
 
-    this.state.bookings.map((booking) => {
+    this.props.bookings.map((booking) => {
       if (booking.room == selectedRoomId) {
         selectedRoomCurrentBookings.push(booking)
       }
@@ -151,7 +83,7 @@ class Calendar extends Component {
 
   handleClickBooking = (booking) => {
     let roomName = ""
-    this.state.roomsList.map((room) => {
+    this.props.roomsList.map((room) => {
       if (room.id == booking.room) {
         roomName = room.room_id
         return
@@ -160,20 +92,6 @@ class Calendar extends Component {
     this.setState({selectedBooking: booking, selectedRoomName: roomName}, () => {
       this.toggleBookingInfoModal();
     })
-  }
-
-  handleClickNextDate = (e) => {
-    let nextDay = this.state.selectedDate;
-    nextDay.setDate(nextDay.getDate() + 1);
-    this.setState({selectedDate: nextDay})
-    this.getBookings();
-  }
-
-  handleClickPreviousDate = (e) => {
-    let previousDay = this.state.selectedDate;
-    previousDay.setDate(previousDay.getDate() - 1);
-    this.setState({selectedDate: previousDay})
-    this.getBookings();
   }
 
   /************ HELPER METHOD *************/
@@ -205,44 +123,11 @@ class Calendar extends Component {
     return timeInt;
   }
 
-  campOnToBooking = () => {
-    const {bookings, campOns} = this.state;
-    
-      let campOnBookings = []
-      if(!!campOns && !!bookings) {
-        campOns.map((campOn) => {
-          let date = ''
-          let room = ''
-          if(bookings) {
-            for(let i =0; i<bookings.length; i++) {
-              if(bookings[i].id == campOn.camped_on_booking) {
-                date = bookings[i].date
-                room = bookings[i].room
-                break
-              }
-            }
-          }
-          campOnBookings.push({
-            date: date,
-            start_time: campOn.start_time,
-            end_time: campOn.end_time,
-            booker: campOn.booker,
-            room: room,
-            id: `camp${campOn.camped_on_booking}`,
-            isCampOn: true
-          });
-        })
-        campOnBookings.map((campOnBooking) => {
-          bookings.push(campOnBooking)
-        })
-        this.setState({bookings: bookings})
-      }
-  }
 
   getCamponsForBooking(booking) {
     let campOns = []
-    if(!!this.state.campOns) {
-      this.state.campOns.map((campOn) => {
+    if(!!this.props.campOns) {
+      this.props.campOns.map((campOn) => {
         if(campOn.camped_on_booking == booking.id) {
           campOns.push(campOn)
         }
@@ -251,100 +136,10 @@ class Calendar extends Component {
     return campOns
   }
 
-  /************* COMPONENT LIFE CYCLE *************/
-
-  componentDidMount() {
-    /*** Get bookings ***/
-    this.getBookings();
-
-    /*** Get rooms ***/
-    this.getRooms();
-
-    /*** Set up hours ***/
-    let hoursSettings = {
-      start: "08:00",
-      end: "23:00",
-      increment: 60
-    }
-    let hourStart =  this.timeStringToInt(hoursSettings.start);
-    let hourEnd =  this.timeStringToInt(hoursSettings.end);
-
-    let minutesIncrement = hoursSettings.increment;
-    let hours = []
-    let time = new Date();
-    time.setHours(hourStart.hour, hourStart.minutes, 0);
-
-    //Format time for display in table
-    let currentTime = hourStart.hour * 60 + hourStart.minutes;
-    let endTime = hourEnd.hour * 60 + hourEnd.minutes;
-
-    while (currentTime <= endTime) {
-      hours.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-      time.setMinutes(time.getMinutes() + minutesIncrement);
-      currentTime += minutesIncrement;
-    }
-    this.setState({hoursSettings: hoursSettings, hoursList: hours});
-
-    /*** Set up variables in scss ***/
-    let gridRowNum = minutesIncrement * hours.length / 10;
-
-    document.documentElement.style.setProperty("--rowNum", hours.length);
-    document.documentElement.style.setProperty("--cellsDivisionNum", gridRowNum);
-  }
-
   /************ COMPONENT RENDERING *************/
 
-  renderDate() {
-    return (
-      <div className="calendar__date">
-        <Button
-          basic
-          circular
-          color="olive"
-          icon="chevron left"
-          size="tiny"
-          onClick={this.handleClickPreviousDate}
-        />
-        <h3 className="calendar__date__header">
-          <Icon name="calendar alternate outline" />
-          {this.state.selectedDate.toDateString()}
-        </h3>
-        <Button
-          basic
-          circular
-          color="olive"
-          icon="chevron right"
-          size="tiny"
-          onClick={this.handleClickNextDate}
-        />
-      </div>
-    );
-  }
-
-  renderRooms() {
-    const {roomsList} = this.state;
-    const rooms = roomsList.map((room) =>
-      <div className="calendar__rooms__room" key={room.room_id}>
-        {room.room_id}
-      </div>
-    );
-
-    return <div className="calendar__rooms__wrapper">{rooms}</div>
-  }
-
-  renderHours() {
-    const {hoursList} = this.state;
-    const hours = hoursList.map((hour) =>
-      <div className="calendar__hours__hour" key={hour}>
-        {hour}
-      </div>
-    );
-
-    return <div className="calendar__hours__wrapper">{hours}</div>
-  }
-
   renderCells() {
-    const {roomsList, hoursList} = this.state;
+    const {roomsList, hoursList} = this.props;
 
     let cells = [];
     let roomsCells = [];
@@ -361,8 +156,8 @@ class Calendar extends Component {
       }
 
       let bookedCells = [];
-      if (this.state.bookings) {
-        let bookings = this.state.bookings.filter(booking => booking.room == currentRoom.id);
+      if (this.props.bookings) {
+        let bookings = this.props.bookings.filter(booking => booking.room == currentRoom.id);
         if (bookings.length > 0) {
         bookedCells.push(this.renderCurrentBookings(bookings))
         }
@@ -406,20 +201,15 @@ class Calendar extends Component {
 
   render() {
     return (
-      <div className="calendar__container">
-        {this.renderDate()}
-        <div className="calendar__wrapper">
-          {this.renderRooms()}
-          {this.renderHours()}
-          {this.renderCells()}
-        </div>
+      <div>
+        {this.renderCells()}
         
         <ReservationDetailsModal
           show={this.state.bookingModal}
           selectedRoomId={this.state.selectedRoomId}
           selectedRoomName={this.state.selectedRoomName}
           selectedHour={this.state.selectedHour}
-          selectedDate={this.state.selectedDate}
+          selectedDate={this.props.selectedDate}
           selectedRoomCurrentBookings={this.state.selectedRoomCurrentBookings}
           selectedBookingId={this.state.selectedBookingId}
           onClose={this.toggleBookingModal}
@@ -438,4 +228,27 @@ class Calendar extends Component {
   }
 }
 
-export default Calendar;
+Cells.propTypes = {
+  roomsList: PropTypes.array,
+  hoursList: PropTypes.array,
+  hoursSettings: PropTypes.object,
+  bookings: PropTypes.array,
+  campOns: PropTypes.array,
+  selectedDate: PropTypes.object,
+  onCloseWithEditBooking: PropTypes.func,
+}
+
+Cells.defaultProps = {
+  roomsList: [],
+  hoursList: [],
+  hoursSettings: {
+                    start: "08:00",
+                    end: "23:00",
+                    increment: 60
+                  },
+  bookings: [],
+  campOns: [],
+  selectedDate: new Date(),
+}
+
+export default Cells;
