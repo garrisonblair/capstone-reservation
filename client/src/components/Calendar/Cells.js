@@ -15,6 +15,7 @@ class Cells extends Component {
     selectedBooking: {},
     bookingModal: false,
     bookingInfoModal: false,
+    bookings: [],
   };
 
   /************ STYLE METHODS*************/
@@ -105,13 +106,13 @@ class Cells extends Component {
   }
 
   toggleBookingModalWithReservation = () => {
-    this.getBookings();
     this.setState({bookingModal: false, bookingInfoModal: false})
+    this.props.onCloseModalWithAction();
   }
 
   toggleBookingInfoWithAction = () => {
-    this.getBookings();
     this.setState({bookingModal: false, bookingInfoModal: false})
+    this.props.onCloseModalWithAction();
   }
 
   timeStringToInt(time) {
@@ -134,6 +135,17 @@ class Cells extends Component {
       })
     }
     return campOns
+  }
+
+  /************* COMPONENT LIFE CYCLE *************/
+
+  static getDerivedStateFromProps(props, state) {
+    if(props.bookings === state.bookings) {
+      return null;
+    }
+    return {
+      bookings: props.bookings,
+    };
   }
 
   /************ COMPONENT RENDERING *************/
@@ -235,7 +247,7 @@ Cells.propTypes = {
   bookings: PropTypes.array,
   campOns: PropTypes.array,
   selectedDate: PropTypes.object,
-  onCloseWithEditBooking: PropTypes.func,
+  onCloseModalWithAction: PropTypes.func,
 }
 
 Cells.defaultProps = {
