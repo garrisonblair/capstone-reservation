@@ -12,7 +12,7 @@ from apps.rooms.serializers.room_serializer import RoomSerializer
 # Added by Steve
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
+from apps.accounts.permissions.IsOwnerOrAdmin import IsAdmin
 
 
 class RoomView(APIView):
@@ -77,7 +77,7 @@ class RoomView(APIView):
             return Response(error_msg,
                             status=status.HTTP_400_BAD_REQUEST)
 
-    @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
+    @permission_classes((IsAuthenticated, IsAdmin))
     def post(self, request, *args, **kwargs):
 
         room_data = dict(request.data)
@@ -136,7 +136,7 @@ class RoomView(APIView):
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
-    @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
+    @permission_classes((IsAuthenticated, IsAdmin))
     def delete(self, request, *args, **kwargs):
 
         room_data = dict(request.data)
