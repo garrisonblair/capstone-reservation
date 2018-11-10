@@ -4,6 +4,9 @@ from apps.booking.models.Booking import Booking
 from datetime import datetime
 from django.core.exceptions import ValidationError
 
+from apps.accounts.exceptions import PrivilegeError
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+
 
 class CampOn(models.Model):
     booker = models.ForeignKey(Booker, on_delete=models.CASCADE)
@@ -15,11 +18,13 @@ class CampOn(models.Model):
     generated_booking = models.ForeignKey(Booking,
                                           on_delete=models.SET_NULL,
                                           null=True,
+                                          blank=True,
                                           related_name="generator_camp_on")
     start_time = models.TimeField()
     end_time = models.TimeField()
 
     def save(self, *args, **kwargs):
+        self.evaluate_privilege()
         self.validate_model()
         super(CampOn, self).save(*args, **kwargs)
 
@@ -41,12 +46,6 @@ class CampOn(models.Model):
         elif self.start_time < self.camped_on_booking.start_time or self.start_time >= self.camped_on_booking.end_time:
             raise ValidationError("You can only camp on to an ongoing booking.")
 
-        elif self.end_time < invalid_start_time:
-            raise ValidationError("End time cannot be earlier than 8:00.")
-
-        elif self.end_time > invalid_end_time:
-            raise ValidationError("End time cannot be later than 23:00.")
-
         elif self.start_time >= self.end_time:
             raise ValidationError("End time must be later than the start time")
 
@@ -58,3 +57,22 @@ class CampOn(models.Model):
 
         elif CampOn.objects.filter(booker=self.booker, camped_on_booking=self.camped_on_booking).exists():
             raise ValidationError("Cannot camp-on the same Booking.")
+
+    def evaluate_privilege(self):
+
+        # no checks if no category assigned
+        if self.booker.get_privileges() is None:
+            return
+
+        p_c = self.booker.get_privileges()  # type: PrivilegeCategory
+
+        start_time = p_c.get_parameter("booking_start_time")
+        end_time = p_c.get_parameter("booking_end_time")
+
+        # booking_start_time
+        if self.start_time < start_time:
+            raise PrivilegeError(p_c.get_error_text("booking_start_time"))
+
+        # booking_end_time
+        if self.end_time > end_time:
+            raise PrivilegeError(p_c.get_error_text("booking_end_time"))

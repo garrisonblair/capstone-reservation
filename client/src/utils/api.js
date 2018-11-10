@@ -5,36 +5,36 @@ import {getTokenHeader} from './requestHeaders';
 
 function register(username) {
   let data = {
-    'username': `${username}`
+    'username': `${username}`,
   };
 
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/register`,
-    data: data
+    data: data,
   })
 }
 
 function login(username, password) {
   let data = {
     username,
-    password
+    password,
   }
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/login`,
-    data: data
+    data: data,
   })
 }
 
 function verify(token) {
   const data = {
-    'token': `${token}`
+    'token': `${token}`,
   }
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/verify`,
-    data: data
+    data: data,
   })
 }
 
@@ -43,7 +43,7 @@ function getMyUser() {
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/me`,
-    headers
+    headers,
   })
 }
 
@@ -54,7 +54,7 @@ function updateUser(id, data) {
     url: `${settings.API_ROOT}/user/${id}`,
     headers,
     data,
-    withCredentials: true
+    withCredentials: true,
   })
 }
 
@@ -65,7 +65,7 @@ function createCampOn(data) {
     url: `${settings.API_ROOT}/campon`,
     headers,
     data,
-    withCredentials: true
+    withCredentials: true,
   })
 }
 
@@ -73,7 +73,7 @@ function getBookings(params) {
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/booking`,
-    params: params
+    params: params,
   })
 }
 
@@ -84,55 +84,8 @@ function createBooking(data){
     url: `${settings.API_ROOT}/booking`,
     headers,
     data,
-    withCredentials: true
-  });
-}
-
-function createRecurringBooking(data){
-  const headers = getTokenHeader();
-  return axios({
-    method: 'POST',
-    url: `${settings.API_ROOT}/recurring_booking`,
-    headers,
-    data,
-    withCredentials: true
-  });
-}
-
-function getCampOns(params) {
-  return axios({
-    method: 'GET',
-    url: `${settings.API_ROOT}/campon`,
-    params: params
-  })
-}
-
-function getRooms() {
-  return axios({
-    method: 'GET',
-    url: `${settings.API_ROOT}/room`
-  })
-}
-
-function getAdminSettings() {
-  const headers = getTokenHeader();
-  return axios({
-    method: 'GET',
-    url: `${settings.API_ROOT}/settings`,
-    headers,
-    withCredentials: true
-  })
-}
-
-function updateAdminSettings(data) {
-  const headers = getTokenHeader();
-  return axios({
-    method: 'PATCH',
-    url: `${settings.API_ROOT}/settings`,
-    data,
-    headers,
     withCredentials: true,
-  })
+  });
 }
 
 function updateBooking(data) {
@@ -142,6 +95,73 @@ function updateBooking(data) {
     url: `${settings.API_ROOT}/booking`,
     data,
     headers,
+  })
+}
+
+function createRecurringBooking(data){
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/recurring_booking`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function getCampOns(params) {
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/campon`,
+    params: params,
+  })
+}
+
+function getRooms() {
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/room`,
+  })
+}
+
+function getAdminSettings() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/settings`,
+    headers,
+    withCredentials: true,
+  })
+}
+
+function updateAdminSettings(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/settings`,
+    headers,
+    data,
+    withCredentials: true,
+  })
+}
+
+function getPrivileges() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/privilege_categories`,
+    headers,
+    withCredentials: true,
+  })
+}
+
+function createPrivilege(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/privilege_categories`,
+    headers,
+    data,
     withCredentials: true,
   })
 }
@@ -150,17 +170,19 @@ const api = {
   register,
   login,
   verify,
+  getMyUser,
   updateUser,
   createCampOn,
   getBookings,
   createBooking,
+  updateBooking,
   createRecurringBooking,
   getCampOns,
   getRooms,
   getAdminSettings,
   updateAdminSettings,
-  getMyUser,
-  updateBooking,
+  getPrivileges,
+  createPrivilege
 }
 
 export default api;
