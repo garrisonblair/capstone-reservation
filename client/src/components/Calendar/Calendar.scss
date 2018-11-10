@@ -10,12 +10,12 @@
 
 $textColor: black;
 $textColorHeader: white;
-$borderColor: #dcc996;
+$borderColor: #3d3d3e;
 $eventBackgroundColor: aqua;
-$backgroundColorContainer: #dcc996;
-$backgroundColorCells: #f2dda4;
-$backgroundColorRooms: #949392;
-$backgroundColorHours: #949392;
+$backgroundColorContainer: #3d3d3e;
+$backgroundColorCells: #333333;
+$backgroundColorRooms: #292929;
+$backgroundColorHours: #292929;
 $borderWidth: 1px;
 $cellsWidth: 120px;
 
@@ -23,6 +23,7 @@ $cellsWidth: 120px;
 
 body {
   overflow: scroll;
+  background-color: $backgroundColorContainer;
 }
 
 .calendar__container {
@@ -33,6 +34,7 @@ body {
 }
 
 .calendar__date {
+  color: white;
   text-align: center;
   margin-bottom: 10px;
   font-size: 50;

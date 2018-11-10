@@ -108,9 +108,9 @@ class Calendar extends Component {
     let bookingStart = this.timeStringToInt(booking.start_time);
     let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(hoursSettings.start);
-    let color = '#93b5c6'
+    let color = '#5a9ab2'
     if (campOnsNumber > 0) {
-      color = '#f3a738'
+      color = '#91c33b'
     }
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
     let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
@@ -300,6 +300,7 @@ class Calendar extends Component {
         <Button
           basic
           circular
+          color="olive"
           icon="chevron left"
           size="tiny"
           onClick={this.handleClickPreviousDate}
@@ -311,6 +312,7 @@ class Calendar extends Component {
         <Button
           basic
           circular
+          color="olive"
           icon="chevron right"
           size="tiny"
           onClick={this.handleClickNextDate}
