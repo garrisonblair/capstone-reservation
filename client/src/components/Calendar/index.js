@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
+import Rooms from './Rooms';
 import api from '../../utils/api';
 import {Button, Icon} from 'semantic-ui-react';
 
@@ -321,17 +322,6 @@ class Calendar extends Component {
     );
   }
 
-  renderRooms() {
-    const {roomsList} = this.state;
-    const rooms = roomsList.map((room) =>
-      <div className="calendar__rooms__room" key={room.room_id}>
-        {room.room_id}
-      </div>
-    );
-
-    return <div className="calendar__rooms__wrapper">{rooms}</div>
-  }
-
   renderHours() {
     const {hoursList} = this.state;
     const hours = hoursList.map((hour) =>
@@ -409,7 +399,7 @@ class Calendar extends Component {
       <div className="calendar__container">
         {this.renderDate()}
         <div className="calendar__wrapper">
-          {this.renderRooms()}
+          <Rooms roomsList={this.state.roomsList} />
           {this.renderHours()}
           {this.renderCells()}
         </div>
