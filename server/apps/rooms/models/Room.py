@@ -53,6 +53,9 @@ class Room(models.Model):
         capacity = self.capacity,
         number_of_computers = self.number_of_computers
 
+        if room_id is '':
+            raise ValidationError("Room id cannot be empty. Please enter room id")
+
         if not isinstance(capacity, int):
             raise ValidationError("Invalid capacity. Please enter a positive integer value or zero")
 
@@ -70,4 +73,3 @@ class Room(models.Model):
 
         if (number_of_computers % 1) != 0:
             raise ValidationError("Invalid Number of computers. Please enter a positive integer value or zero")
-
