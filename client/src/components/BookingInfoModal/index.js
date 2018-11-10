@@ -30,7 +30,6 @@ class BookingInfoModal extends Component {
 
   checkCamponPossible(booking) {
     if(booking.id) {
-      //TODO: Check if it's the same user as the one who created the booking
       let currentDate = new Date();
       let currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}`;
       let bookingEndTime = booking.end_time.replace(/:/g, '');
@@ -45,10 +44,10 @@ class BookingInfoModal extends Component {
     }
   }
 
-  // TODO: Put the test to see if the user match.
-  checkEditBooking(booking) {
-    return false
-    // return booking.booker == localStorage.getItem('CapstoneReservationUser')
+  checkSameUser(booking) {
+    if (localStorage.getItem("CapstoneReservationUser") && !!booking.booker) {
+      return booking.booker.user.username == JSON.parse(localStorage.getItem("CapstoneReservationUser")).username
+    }
   }
 
   /************* COMPONENT LIFE CYCLE *************/
@@ -86,7 +85,7 @@ class BookingInfoModal extends Component {
           <div className="modal-description">
             <h3 className="header--inline">
               <Icon name="user" /> {" "}
-              {`by ${booking.booker}`}
+              {!!booking.booker ? `by ${booking.booker.user.username}` : ''}
             </h3>
           </div>
           <div className="ui divider" />
@@ -100,7 +99,7 @@ class BookingInfoModal extends Component {
   }
 
   renderForm(booking) {
-    if(this.checkEditBooking(booking)) {
+    if(this.checkSameUser(booking)) {
       return <EditBookingForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithEditBooking={this.closeModalWithAction}/>
     } else {
       if(this.checkCamponPossible(booking)) {

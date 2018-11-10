@@ -93,7 +93,7 @@ class EditBookingForm extends Component {
       "start_time": `${this.state.startHour}:${this.state.startMinute}`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}`
     };
-    api.createEditBooking(data)
+    api.updateBooking(data)
     .then((response) => {
       sweetAlert('Completed',
         `Booking was sucessfully updated.`,
@@ -130,7 +130,6 @@ class EditBookingForm extends Component {
   /************* COMPONENT LIFE CYCLE *************/
   componentDidMount() {
     const {minuteInterval, reservationProfiles, booking} = this.props;
-    console.log(booking)
     let startTime = booking.start_time
     let endTime = booking.end_time
     this.setState({
@@ -210,7 +209,7 @@ class EditBookingForm extends Component {
               defaultValue={this.state.reservedOptions[0].value}
             />
           </div>
-          <Button content='Confirm edit' primary onClick={this.handleSubmit} />
+          <Button content='Edit Booking' primary onClick={this.handleSubmit} />
           <div className="ui divider" />
       </div>
 

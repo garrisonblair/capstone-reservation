@@ -53,7 +53,6 @@ class Calendar extends Component {
     } else {
       api.getCampOns(params)
       .then((response) => {
-        console.log(response.data)
         this.setState({campOns: response.data}, () => {
           // this.campOnToBooking();
         })
