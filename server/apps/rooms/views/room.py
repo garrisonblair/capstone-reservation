@@ -165,22 +165,26 @@ class RoomDeleteView(APIView):
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        print(request.data)
+        print(args)
+        print('The kwargs for room_id is: ')
         room_id = kwargs.get('room_id')
+
 
         room = None
 
         try:
             # print(room_id)
-            # print('BBBBBBBBBBBBBBBB')
+            print('BBBBBBBBBBBBBBBB')
             room = Room.objects.get(room_id=room_id)
         except Room.DoesNotExist:
-            # print('CCCCCCCCCCCCCCCCCCCC')
+            print('CCCCCCCCCCCCCCCCCCCC')
             return Response("Invalid room. Please provide an existing room", status=status.HTTP_404_NOT_FOUND)
 
         try:
-            # print('DDDDDDDDDDDDDDDDDDDD')
+            print('DDDDDDDDDDDDDDDDDDDD')
             room.delete()
             return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
         except ValidationError as error:
-            # print('EEEEEEEEEEEEEEEE')
+            print('EEEEEEEEEEEEEEEE')
             return Response(status=status.HTTP_400_BAD_REQUEST)
