@@ -3,6 +3,7 @@ import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
 import Rooms from './Rooms';
+import Hours from './Hours';
 import api from '../../utils/api';
 import {Button, Icon} from 'semantic-ui-react';
 
@@ -322,17 +323,6 @@ class Calendar extends Component {
     );
   }
 
-  renderHours() {
-    const {hoursList} = this.state;
-    const hours = hoursList.map((hour) =>
-      <div className="calendar__hours__hour" key={hour}>
-        {hour}
-      </div>
-    );
-
-    return <div className="calendar__hours__wrapper">{hours}</div>
-  }
-
   renderCells() {
     const {roomsList, hoursList} = this.state;
 
@@ -400,7 +390,7 @@ class Calendar extends Component {
         {this.renderDate()}
         <div className="calendar__wrapper">
           <Rooms roomsList={this.state.roomsList} />
-          {this.renderHours()}
+          <Hours hoursList={this.state.hoursList} />
           {this.renderCells()}
         </div>
         
