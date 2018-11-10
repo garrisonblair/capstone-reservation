@@ -77,22 +77,25 @@ exports[`Show registration form 1`] = `
           </div>
         </div>
       </div>
-      <h4>
+      <h2>
         Welcome 
         
-      </h4>
+      </h2>
       <form
         className="ui form"
         onSubmit={[Function]}
       >
-        <label>
-          Enter Password:
-        </label>
         <div
           className="field"
         >
+          <label>
+            Enter Password:
+          </label>
+          
           <div
             className="ui medium fluid left icon input"
+            errormessage=""
+            title="Enter Password:"
           >
             <input
               onChange={[Function]}
@@ -104,14 +107,17 @@ exports[`Show registration form 1`] = `
             />
           </div>
         </div>
-        <label>
-          Re-enter password:
-        </label>
         <div
           className="field"
         >
+          <label>
+            Confirm Password:
+          </label>
+          
           <div
             className="ui medium fluid left icon input"
+            errormessage=""
+            title="Confirm Password:"
           >
             <input
               onChange={[Function]}
@@ -123,14 +129,17 @@ exports[`Show registration form 1`] = `
             />
           </div>
         </div>
-        <label>
-          Student ID:
-        </label>
         <div
           className="field"
         >
+          <label>
+            booker ID:
+          </label>
+          
           <div
             className="ui medium fluid left icon input"
+            errormessage=""
+            title="booker ID:"
           >
             <input
               onChange={[Function]}
@@ -153,7 +162,7 @@ exports[`Show registration form 1`] = `
           onClick={[Function]}
           role="button"
         >
-          Set settings
+          Save
         </button>
       </div>
     </div>

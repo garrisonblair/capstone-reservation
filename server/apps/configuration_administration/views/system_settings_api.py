@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
+from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from django.core.exceptions import ValidationError
 
 from ..models.system_settings import SystemSettings
@@ -18,8 +20,8 @@ class SystemSettingsAPI(APIView):
 
         return Response(serializer.data, status.HTTP_200_OK)
 
+    @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
     def patch(self, request):
-        # TODO: add admin permission here when edwards branch is merged
 
         settings_updates = dict(request.data)
 

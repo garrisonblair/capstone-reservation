@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from apps.accounts.exceptions import PrivilegeError
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -25,12 +26,12 @@ class RecurringBookingView(APIView):
             try:
                 recurring_booking, conflicts = serializer.create(validated_data=serializer.validated_data)
                 return Response(conflicts, status=status.HTTP_201_CREATED)
-            except ValidationError as error:
-                if error.message == "You must book as part of a verified group to create a recurring booking":
-                    return Response(error.messages, status=status.HTTP_401_UNAUTHORIZED)
+            except (ValidationError, PrivilegeError) as error:
+                if isinstance(error, PrivilegeError):
+                    return Response(error.message, status=status.HTTP_401_UNAUTHORIZED)
                 elif ((error.message == "Start date can not be after End date.") or
                         (error.message == "You must book for at least two consecutive weeks.") or
                         (error.message == "Start time can not be after End time.")):
-                    return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    return Response(error.messages, status=status.HTTP_409_CONFLICT)
+                    return Response(error.message, status=status.HTTP_409_CONFLICT)

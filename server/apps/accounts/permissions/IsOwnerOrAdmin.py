@@ -6,6 +6,4 @@ class IsOwnerOrAdmin(BasePermission):
         """
             Making sure user can only edit its own data or is admin
         """
-        return user == request.user or request.user.is_staff
-
-
+        return user == request.user or request.user.is_superuser

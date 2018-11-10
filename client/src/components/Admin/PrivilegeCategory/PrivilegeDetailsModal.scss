@@ -1,0 +1,10 @@
+.privilege-details-modal {
+  width: 300px !important;
+  &__container {
+    padding: 20px;
+  }
+  .controls {
+    padding: 0 20px 20px 20px;
+    text-align: right;
+  }
+}
