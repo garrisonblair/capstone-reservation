@@ -20,10 +20,10 @@ class BookingInfoModal extends Component {
 
   //Close the modal if any api POST requests succeeded
   closeModalWithAction = () => {
-    this.props.onCloseWithAction();
     this.setState({
       show: false,
     });
+    this.props.onCloseWithAction();
   }
 
   handleOpen = () => this.setState({show: true});

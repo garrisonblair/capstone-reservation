@@ -187,13 +187,13 @@ class Calendar extends Component {
   }
 
   toggleBookingModalWithReservation = () => {
-    //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on.
-    //With reload, the view will come back to the current day.
-    window.location.reload();
+    this.getBookings();
+    this.setState({bookingModal: false, bookingInfoModal: false})
   }
 
   toggleBookingInfoWithAction = () => {
-    window.location.reload();
+    this.getBookings();
+    this.setState({bookingModal: false, bookingInfoModal: false})
   }
 
   timeStringToInt(time) {
