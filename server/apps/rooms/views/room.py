@@ -80,10 +80,7 @@ class RoomView(APIView):
 
 class RoomCreateView(APIView):
 
-    # @permission_classes((IsAuthenticated, IsSuperUser))
-    # @api_view(['POST'])
     def post(self, request, *args, **kwargs):
-        print('BLAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
 
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -105,8 +102,6 @@ class RoomCreateView(APIView):
 
 class RoomUpdateView(APIView):
 
-    # @permission_classes((IsAuthenticated, IsSuperUser))
-    # @api_view(['PATCH'])
     def patch(self, request, *args, **kwargs):
 
         if not request.user or request.user.is_superuser is None:
@@ -148,8 +143,6 @@ class RoomUpdateView(APIView):
 
 class RoomDeleteView(APIView):
 
-    # @permission_classes((IsAuthenticated, IsSuperUser))
-    # @api_view(['DELETE'])
     def delete(self, request, *args, **kwargs):
 
         if not request.user or request.user.is_superuser is None:
