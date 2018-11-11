@@ -8,6 +8,7 @@ from rest_framework import status
 from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
 from apps.rooms.serializers.room_serializer import RoomSerializer
+# from apps.rooms.serializers.room_serializer import UpdateRoomSerializer
 
 # Added by Steve
 from rest_framework.decorators import permission_classes
@@ -106,32 +107,17 @@ class RoomUpdateView(APIView):
     @permission_classes((IsAuthenticated, IsSuperUser))
     def patch(self, request, *args, **kwargs):
 
-        print(request.data)
-        print(args)
-        print(kwargs)
-
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        # room_id = kwargs.get('room_id')
-        # capacity = kwargs.get('capacity')
-        # number_of_computers = kwargs.get('number_of_computers')
-
-        room_id = request.data.get('room_id')
-        capacity = request.data.get('capacity')
-        number_of_computers = request.data.get('number_of_computers')
-
-        print('room_id: ')
-        print(room_id)
-        print('capacity: ')
-        print(capacity)
-        print('number_of_computers')
-        print(number_of_computers)
+        room_data = dict(request.data)
+        room_id = room_data['room_id']
+        capacity = room_data['capacity']
+        number_of_computers = room_data['number_of_computers']
 
         room = None
 
         try:
-            print(room_id)
             room = Room.objects.get(room_id=room_id)
         except Room.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -145,22 +131,16 @@ class RoomUpdateView(APIView):
         if number_of_computers:
             room.number_of_computers = number_of_computers
 
-        # booking_data = dict(request.data)
-        print('room: ')
-        print(room)
-        serializer = RoomSerializer(data=room)
+        serializer = RoomSerializer(room, data=request.data, partial=True)
 
         if not serializer.is_valid():
-            print('DDDDDDDDDDDDDDDDDDDDDDDDD')
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             try:
                 room = serializer.save()
-                print('EEEEEEEEEEEEEEEEEEEEE')
                 return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
             except ValidationError as error:
-                print('FFFFFFFFFFFFFFFFFFFFFFF')
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -172,7 +152,6 @@ class RoomDeleteView(APIView):
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-#        room_id = kwargs.get('room_id')
         room_id = request.data.get('room_id')
 
         room = None

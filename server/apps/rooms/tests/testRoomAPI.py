@@ -10,7 +10,6 @@ from apps.booking.models.Booking import Booking
 
 from ..views.room import RoomView, RoomDeleteView, RoomCreateView, RoomUpdateView
 
-from django.test import Client
 
 class RoomAPITest(TestCase):
     def setUp(self):
@@ -28,6 +27,7 @@ class RoomAPITest(TestCase):
         self.room1 = Room(room_id="H833-17",
                           capacity=4,
                           number_of_computers=1)
+
         self.room1.save()
 
         self.room2 = Room(room_id="H833-03",
@@ -154,7 +154,6 @@ class RoomAPITest(TestCase):
 
 #        request = self.factory.delete("/room", room_id='')
 
-
         force_authenticate(request, user=User.objects.get(username="john"))
 
         rooms_before = Room.objects.all()
@@ -206,7 +205,7 @@ class RoomAPITest(TestCase):
                                          "room_id": self.room1.room_id
                                       }, format="json")
 
-        #request = self.factory.delete("room/", room_id=self.room1.room_id)
+        # request = self.factory.delete("room/", room_id=self.room1.room_id)
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
@@ -225,7 +224,7 @@ class RoomAPITest(TestCase):
 
         self.assertEqual(instances_of_deleted_room, 0)
 
-    def testRoomUpdateRoomValidRoomIdNoRoomId(self):
+    def testRoomUpdateRoomInValidRoomIdNoRoomId(self):
         request = self.factory.patch("/room",
                                      {
                                         "room_id": '',
@@ -248,11 +247,11 @@ class RoomAPITest(TestCase):
 
     def testRoomCreateRoomValidNewRoomId(self):
         request = self.factory.post("/room",
-                                     {
+                                    {
                                         "room_id": 'H833-99',
                                         "capacity": 4,
                                         "number_of_computers": 2
-                                     }, format="json")
+                                    }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
@@ -280,6 +279,7 @@ class RoomAPITest(TestCase):
                                         "capacity": 4,
                                         "number_of_computers": 2
                                      }, format="json")
+
         force_authenticate(request, user=User.objects.get(username="john"))
 
         rooms_before = Room.objects.all()
@@ -489,5 +489,3 @@ class RoomAPITest(TestCase):
         instances_of_deleted_room_after = len(Room.objects.filter(room_id=self.room1.room_id))
 
         self.assertEqual(instances_of_deleted_room_before, instances_of_deleted_room_after)
-
-    # TODO: Make tests for create
