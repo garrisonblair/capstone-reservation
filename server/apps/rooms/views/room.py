@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from datetime import datetime
 
 from rest_framework.decorators import permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from rest_framework.response import Response
@@ -14,6 +15,7 @@ from apps.rooms.serializers.room_serializer import RoomSerializer
 
 
 class RoomView(APIView):
+#    @api_view(['GET'])
     def get(self, request):
         start_date_time = request.query_params.get('start_date_time', '')
         end_date_time = request.query_params.get('end_date_time', '')
@@ -78,9 +80,13 @@ class RoomView(APIView):
 
 class RoomCreateView(APIView):
 
-    @permission_classes((IsAuthenticated, IsSuperUser))
+    # @permission_classes((IsAuthenticated, IsSuperUser))
+    # @api_view(['POST'])
     def post(self, request, *args, **kwargs):
-
+        print('BLAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
+        if request.method == 'POST':
+            return Response({"message": "Got some data!", "data": request.data})
+        return Response({"message": "Hello, world!"})
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -101,7 +107,8 @@ class RoomCreateView(APIView):
 
 class RoomUpdateView(APIView):
 
-    @permission_classes((IsAuthenticated, IsSuperUser))
+    # @permission_classes((IsAuthenticated, IsSuperUser))
+    # @api_view(['PATCH'])
     def patch(self, request, *args, **kwargs):
 
         if not request.user or request.user.is_superuser is None:
@@ -143,7 +150,8 @@ class RoomUpdateView(APIView):
 
 class RoomDeleteView(APIView):
 
-    @permission_classes((IsAuthenticated, IsSuperUser))
+    # @permission_classes((IsAuthenticated, IsSuperUser))
+    # @api_view(['DELETE'])
     def delete(self, request, *args, **kwargs):
 
         if not request.user or request.user.is_superuser is None:
