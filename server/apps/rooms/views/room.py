@@ -15,7 +15,7 @@ from apps.rooms.serializers.room_serializer import RoomSerializer
 
 
 class RoomView(APIView):
-#    @api_view(['GET'])
+
     def get(self, request):
         start_date_time = request.query_params.get('start_date_time', '')
         end_date_time = request.query_params.get('end_date_time', '')
@@ -84,9 +84,7 @@ class RoomCreateView(APIView):
     # @api_view(['POST'])
     def post(self, request, *args, **kwargs):
         print('BLAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-        if request.method == 'POST':
-            return Response({"message": "Got some data!", "data": request.data})
-        return Response({"message": "Hello, world!"})
+
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
