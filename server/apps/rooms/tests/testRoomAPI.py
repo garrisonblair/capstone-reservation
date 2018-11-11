@@ -149,17 +149,11 @@ class RoomAPITest(TestCase):
                                          "room_id": ''
                                       }, format="json")
 
-#        self.user.is_superuser = True
-#       self.user.save()
-
-#        request = self.factory.delete("/room", room_id='')
-
         force_authenticate(request, user=User.objects.get(username="john"))
 
         rooms_before = Room.objects.all()
         number_of_rooms_before = len(rooms_before)
 
-#        response = RoomDeleteView.as_view()(request, room_id='')
         response = RoomDeleteView.as_view()(request)
 
         rooms_after = Room.objects.all()
@@ -177,8 +171,6 @@ class RoomAPITest(TestCase):
                                       {
                                          "room_id": '-99'
                                       }, format="json")
-
-        # request = self.factory.delete("/room", room_id='-99')
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
@@ -204,8 +196,6 @@ class RoomAPITest(TestCase):
                                       {
                                          "room_id": self.room1.room_id
                                       }, format="json")
-
-        # request = self.factory.delete("room/", room_id=self.room1.room_id)
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
@@ -437,9 +427,7 @@ class RoomAPITest(TestCase):
     def testUpdateRoomAuthorizationFail(self):
         request = self.factory.patch("/room",
                                      {
-                                        "room_id": self.room1.room_id,
-                                        "capacity": '',
-                                        "number_of_computers": 2
+                                        "room_id": self.room1.room_id
                                      }, format="json")
 
         rooms_before = Room.objects.all()
@@ -462,9 +450,7 @@ class RoomAPITest(TestCase):
     def testDeleteRoomAuthorizationFail(self):
         request = self.factory.delete("/room",
                                       {
-                                          "room_id": self.room1.room_id,
-                                          "capacity": '',
-                                          "number_of_computers": 2
+                                          "room_id": self.room1.room_id
                                       }, format="json")
 
         rooms_before = Room.objects.all()

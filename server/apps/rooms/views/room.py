@@ -1,19 +1,16 @@
 from django.core.exceptions import ValidationError
 from datetime import datetime
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-
-from apps.rooms.models.Room import Room
-from apps.booking.models.Booking import Booking
-from apps.rooms.serializers.room_serializer import RoomSerializer
-# from apps.rooms.serializers.room_serializer import UpdateRoomSerializer
-
-# Added by Steve
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+
+from apps.booking.models.Booking import Booking
+from apps.rooms.models.Room import Room
+from apps.rooms.serializers.room_serializer import RoomSerializer
 
 
 class RoomView(APIView):
