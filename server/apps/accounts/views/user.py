@@ -7,9 +7,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.accounts.models.Booker import Booker
-from apps.accounts.serializers.UserSerializer import UserSerializer, UserSerializerLogin, BookerSerializer
-from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
+from ..models.Booker import Booker
+from ..models.PrivilegeCategory import PrivilegeCategory
+from ..serializers.UserSerializer import UserSerializer, UserSerializerLogin, BookerSerializer
+from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 
 
 class UserList(ListAPIView):
@@ -54,16 +55,18 @@ class UserUpdate(APIView):
         if password:
             user.password = make_password(password)  # Hash password
 
-        student = None
+        booker = None
         if booker_id:
             try:
-                student = Booker.objects.get(user=user)
+                booker = Booker.objects.get(user=user)
                 # Restrict student from changing its student ID once it's set
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
             except Booker.DoesNotExist:
-                # Add student ID only if it's a new user
-                student = Booker(user=user, booker_id=booker_id)
-                student.save()
+                # Add booker ID only if it's a new user
+                booker = Booker(user=user, booker_id=booker_id)
+                # Add default privilege
+                booker.privilege_categories.add(PrivilegeCategory.objects.get(is_default=True))
+                booker.save()
 
         # Must be superuser to update those fields
         if username and request.user.is_superuser:
@@ -80,6 +83,6 @@ class UserUpdate(APIView):
 
         user.save()
         serializer = UserSerializer(user)
-        if student:
-            serializer = BookerSerializer(user)
+        if booker:
+            serializer = BookerSerializer(booker)
         return Response(serializer.data, status=status.HTTP_200_OK)

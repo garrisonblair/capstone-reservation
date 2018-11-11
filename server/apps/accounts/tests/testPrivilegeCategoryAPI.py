@@ -33,6 +33,7 @@ class TestPrivilegeCategoryAPI(TestCase):
                                     {
                                         "name": "Second Tier",
                                         "parent_category": self.category.id,
+                                        "is_default": True,
                                         "max_days_until_booking": 4,
                                         "can_make_recurring_booking": True,
                                         "max_bookings": 2,
@@ -52,6 +53,8 @@ class TestPrivilegeCategoryAPI(TestCase):
         created_category = PrivilegeCategory.objects.all()[1]
         self.assertEqual(created_category.get_parameter("name"), "Second Tier")
         self.assertEqual(created_category.get_parameter("parent_category"), self.category)
+        self.assertEqual(created_category.get_parameter("is_default"), True)
+
         self.assertEqual(created_category.get_parameter("max_days_until_booking"), 4)
         self.assertEqual(created_category.get_parameter("can_make_recurring_booking"), True)
         self.assertEqual(created_category.get_parameter("max_bookings"), 2)
@@ -64,6 +67,7 @@ class TestPrivilegeCategoryAPI(TestCase):
                                     {
                                         "name": "Second Tier",
                                         "parent_category": self.category.id,
+                                        "is_default": False,
                                         "max_days_until_booking": None,
                                         "can_make_recurring_booking": True,
                                         "max_bookings": 2,

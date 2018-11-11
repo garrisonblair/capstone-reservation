@@ -37,8 +37,6 @@ class CampOn(models.Model):
 
     def validate_model(self):
         today = datetime.now().today().date()
-        invalid_start_time = datetime.strptime("8:00", "%H:%M").time()
-        invalid_end_time = datetime.strptime("23:00", "%H:%M").time()
 
         if self.camped_on_booking.date != today:
             raise ValidationError("Camp-on can only be done for today.")

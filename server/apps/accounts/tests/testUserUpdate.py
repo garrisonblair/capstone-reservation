@@ -4,6 +4,9 @@ from django.test import TestCase
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
+from ..models.PrivilegeCategory import PrivilegeCategory
+from ..models.Booker import Booker
+
 
 class TestUserUpdate(TestCase):
     def setUp(self):
@@ -16,6 +19,9 @@ class TestUserUpdate(TestCase):
         self.new_password = 'oneringtorulethemall'
         self.new_email = 'bilbo@baggins.com'
 
+        self.privilege_category = PrivilegeCategory(name="C1", is_default=True)
+        self.privilege_category.save()
+
     def tearDown(self):
         pass
 
@@ -23,12 +29,13 @@ class TestUserUpdate(TestCase):
         authorization = 'Token {}'.format(self.token)
         data = dict(
             password=self.new_password,
-            email=self.new_email
+            email=self.new_email,
+            booker_id="11111111"
         )
 
         response = self.client.patch('/user/{}'.format(self.user.id), data, HTTP_AUTHORIZATION=authorization)
 
-        assert response.status_code == 200
+        self.assertEqual(response.status_code, 200)
 
         try:
             user = User.objects.get(username=self.username)
@@ -36,5 +43,11 @@ class TestUserUpdate(TestCase):
             pass
 
         check_password(self.new_password, user.password) is True
-        assert user.email == self.new_email
+        self.assertEqual(user.email, self.new_email)
+
+        booker = Booker.objects.get(user=user)
+        print(booker)
+
+        self.assertEqual(self.privilege_category, booker.privilege_categories.all()[0])
+
         self.assertTrue('User is updated')
