@@ -161,7 +161,7 @@ class RoomAPITest(TestCase):
 
         error_msg = "Invalid room. Please provide an existing room"
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, error_msg)
         self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
@@ -184,7 +184,7 @@ class RoomAPITest(TestCase):
         rooms_after = Room.objects.all()
         number_of_rooms_after = len(rooms_after)
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
         instances_of_deleted_room_after = len(Room.objects.filter(room_id=self.room1.room_id))
@@ -232,7 +232,7 @@ class RoomAPITest(TestCase):
         rooms_after = Room.objects.all()
         number_of_rooms_after = len(rooms_after)
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
     def testRoomCreateRoomValidNewRoomId(self):

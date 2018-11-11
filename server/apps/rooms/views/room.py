@@ -117,7 +117,7 @@ class RoomUpdateView(APIView):
         try:
             room = Room.objects.get(room_id=room_id)
         except Room.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if room_id:
             room.room_id = room_id
@@ -155,7 +155,7 @@ class RoomDeleteView(APIView):
         try:
             room = Room.objects.get(room_id=room_id)
         except Room.DoesNotExist:
-            return Response("Invalid room. Please provide an existing room", status=status.HTTP_404_NOT_FOUND)
+            return Response("Invalid room. Please provide an existing room", status=status.HTTP_400_BAD_REQUEST)
 
         try:
             room.delete()
