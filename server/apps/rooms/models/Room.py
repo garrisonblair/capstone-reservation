@@ -23,7 +23,7 @@ class Room(models.Model):
     observers = list()
 
     def __str__(self):
-        return 'Room id: {}, Capacity: {}, Number of computers: {}'.format(
+        return '{}, Capacity: {}, Number of computers: {}'.format(
             self.room_id, self.capacity, self.number_of_computers
         )
 
