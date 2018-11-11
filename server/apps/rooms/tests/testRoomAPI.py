@@ -24,13 +24,15 @@ class RoomAPITest(TestCase):
         self.booker.user = self.user
         self.booker.save()
 
-        self.room1 = Room(room_id="H833-17",
+        self.room1 = Room(id=1,
+                          room_id="H833-17",
                           capacity=4,
                           number_of_computers=1)
 
         self.room1.save()
 
-        self.room2 = Room(room_id="H833-03",
+        self.room2 = Room(id=2,
+                          room_id="H833-03",
                           capacity=8,
                           number_of_computers=2)
         self.room2.save()
@@ -146,7 +148,7 @@ class RoomAPITest(TestCase):
 
         request = self.factory.delete("/room",
                                       {
-                                         "room_id": ''
+                                         "id": None
                                       }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -169,7 +171,7 @@ class RoomAPITest(TestCase):
 
         request = self.factory.delete("/room",
                                       {
-                                         "room_id": '-99'
+                                         "id": -99
                                       }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -177,9 +179,9 @@ class RoomAPITest(TestCase):
         rooms_before = Room.objects.all()
         number_of_rooms_before = len(rooms_before)
 
-        instances_of_deleted_room_before = len(Room.objects.filter(room_id='-99'))
+        instances_of_deleted_room_before = len(Room.objects.filter(id='-99'))
 
-        response = RoomDeleteView.as_view()(request, room_id='-99')
+        response = RoomDeleteView.as_view()(request, id='-99')
 
         rooms_after = Room.objects.all()
         number_of_rooms_after = len(rooms_after)
@@ -194,7 +196,7 @@ class RoomAPITest(TestCase):
     def testRoomDeleteValidExistingRoomId(self):
         request = self.factory.delete("/room",
                                       {
-                                         "room_id": self.room1.room_id
+                                         "id": self.room1.id
                                       }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -202,8 +204,7 @@ class RoomAPITest(TestCase):
         rooms_before = Room.objects.all()
         number_of_rooms_before = len(rooms_before)
 
-        response = RoomDeleteView.as_view()(request, room_id=self.room1.room_id)
-
+        response = RoomDeleteView.as_view()(request, id=self.room1.id)
         rooms_after = Room.objects.all()
         number_of_rooms_after = len(rooms_after)
 
@@ -217,9 +218,8 @@ class RoomAPITest(TestCase):
     def testRoomUpdateRoomInValidRoomIdNoRoomId(self):
         request = self.factory.patch("/room",
                                      {
-                                        "room_id": '',
-                                        "capacity": 4,
-                                        "number_of_computers": 2
+                                        "id": self.room1.id,
+                                        "room_id": ''
                                      }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -238,7 +238,7 @@ class RoomAPITest(TestCase):
     def testRoomCreateRoomValidNewRoomId(self):
         request = self.factory.post("/room",
                                     {
-                                        "room_id": 'H833-99',
+                                        "room_id": 'H833-100',
                                         "capacity": 4,
                                         "number_of_computers": 2
                                     }, format="json")
@@ -256,17 +256,16 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(number_of_rooms_before + 1, number_of_rooms_after)
 
-        room = Room.objects.get(room_id='H833-99')
+        room = Room.objects.get(room_id='H833-100')
 
-        self.assertEqual(room.room_id, 'H833-99')
+        self.assertEqual(room.room_id, 'H833-100')
         self.assertEqual(room.capacity, 4)
         self.assertEqual(room.number_of_computers, 2)
 
     def testRoomUpdateValidNumberOfComputers(self):
         request = self.factory.patch("/room",
                                      {
-                                        "room_id": self.room1.room_id,
-                                        "capacity": 4,
+                                        "id": self.room1.id,
                                         "number_of_computers": 2
                                      }, format="json")
 
@@ -292,8 +291,7 @@ class RoomAPITest(TestCase):
     def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNegativeNumber(self):
         request = self.factory.patch("/room",
                                      {
-                                        "room_id": self.room1.room_id,
-                                        "capacity": 4,
+                                        "id": self.room1.id,
                                         "number_of_computers": -1
                                      }, format="json")
 
@@ -302,7 +300,7 @@ class RoomAPITest(TestCase):
         rooms_before = Room.objects.all()
         number_of_rooms_before = len(rooms_before)
 
-        response = RoomUpdateView.as_view()(request, room_id=self.room1.room_id, number_of_computers=-1)
+        response = RoomUpdateView.as_view()(request, id=self.room1.id, number_of_computers=-1)
 
         rooms_after = Room.objects.all()
         number_of_rooms_after = len(rooms_after)
@@ -319,8 +317,7 @@ class RoomAPITest(TestCase):
     def testRoomUpdateNumberOfComputersInvalidNumberOfComputersNoNumber(self):
         request = self.factory.patch("/room",
                                      {
-                                        "room_id": self.room1.room_id,
-                                        "capacity": 4,
+                                        "id": self.room1.id,
                                         "number_of_computers": -1
                                      }, format="json")
 
@@ -346,9 +343,8 @@ class RoomAPITest(TestCase):
     def testUpdateCapacityValidCapacity(self):
         request = self.factory.patch("/room",
                                      {
-                                        "room_id": self.room1.room_id,
-                                        "capacity": 4,
-                                        "number_of_computers": 2
+                                        "id": self.room1.id,
+                                        "capacity": 4
                                      }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -364,18 +360,17 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
-        room = Room.objects.get(room_id=self.room1.room_id)
+        room = Room.objects.get(id=self.room1.id)
 
         self.assertEqual(room.room_id, self.room1.room_id)
         self.assertEqual(room.capacity, 4)
-        self.assertEqual(room.number_of_computers, 2)
+        self.assertEqual(room.number_of_computers, self.room1.number_of_computers)
 
     def testUpdateCapacityInvalidCapacityNegativeNumber(self):
         request = self.factory.patch("/room",
                                      {
-                                        "room_id": self.room1.room_id,
-                                        "capacity": -1,
-                                        "number_of_computers": 2
+                                        "id": self.room1.id,
+                                        "capacity": -1
                                      }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -400,9 +395,8 @@ class RoomAPITest(TestCase):
     def testUpdateCapacityInvalidCapacityNoNumber(self):
         request = self.factory.patch("/room",
                                      {
-                                        "room_id": self.room1.room_id,
-                                        "capacity": '',
-                                        "number_of_computers": 2
+                                        "id": self.room1.id,
+                                        "capacity": ''
                                      }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -418,7 +412,7 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
-        room = Room.objects.get(room_id=self.room1.room_id)
+        room = Room.objects.get(id=self.room1.id)
 
         self.assertEqual(room.room_id, self.room1.room_id)
         self.assertEqual(room.capacity, 4)
@@ -427,7 +421,8 @@ class RoomAPITest(TestCase):
     def testUpdateRoomAuthorizationFail(self):
         request = self.factory.patch("/room",
                                      {
-                                        "room_id": self.room1.room_id
+                                        "id": self.room1.id,
+                                        "room_id": self.room1.id
                                      }, format="json")
 
         rooms_before = Room.objects.all()
@@ -441,7 +436,7 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
-        room = Room.objects.get(room_id=self.room1.room_id)
+        room = Room.objects.get(id=self.room1.id)
 
         self.assertEqual(room.room_id, self.room1.room_id)
         self.assertEqual(room.capacity, 4)
@@ -450,13 +445,13 @@ class RoomAPITest(TestCase):
     def testDeleteRoomAuthorizationFail(self):
         request = self.factory.delete("/room",
                                       {
-                                          "room_id": self.room1.room_id
+                                        "id": self.room1.id
                                       }, format="json")
 
         rooms_before = Room.objects.all()
         number_of_rooms_before = len(rooms_before)
 
-        instances_of_deleted_room_before = len(Room.objects.filter(room_id=self.room1.room_id))
+        instances_of_deleted_room_before = len(Room.objects.filter(id=self.room1.id))
 
         response = RoomUpdateView.as_view()(request)
 
@@ -466,12 +461,12 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(number_of_rooms_before, number_of_rooms_after)
 
-        room = Room.objects.get(room_id=self.room1.room_id)
+        room = Room.objects.get(id=self.room1.id)
 
         self.assertEqual(room.room_id, self.room1.room_id)
         self.assertEqual(room.capacity, 4)
         self.assertEqual(room.number_of_computers, 1)
 
-        instances_of_deleted_room_after = len(Room.objects.filter(room_id=self.room1.room_id))
+        instances_of_deleted_room_after = len(Room.objects.filter(id=self.room1.id))
 
         self.assertEqual(instances_of_deleted_room_before, instances_of_deleted_room_after)

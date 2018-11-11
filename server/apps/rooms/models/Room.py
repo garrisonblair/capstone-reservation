@@ -38,6 +38,7 @@ class Room(models.Model):
         room_id = self.room_id
         capacity = self.capacity
         number_of_computers = self.number_of_computers
+        id = self.id
 
         if room_id is '':
             raise ValidationError("Room id cannot be empty. Please enter room id")

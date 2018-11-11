@@ -108,25 +108,30 @@ class RoomUpdateView(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         room_data = dict(request.data)
-        room_id = room_data['room_id']
-        capacity = room_data['capacity']
-        number_of_computers = room_data['number_of_computers']
+
+        id = ''
+
+        if "id" in room_data:
+            id = room_data["id"]
 
         room = None
 
         try:
-            room = Room.objects.get(room_id=room_id)
+            room = Room.objects.get(id=id)
         except Room.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if room_id:
-            room.room_id = room_id
+        if "room_id" in room_data:
+            room.room_id = room_data["room_id"]
 
-        if capacity:
-            room.capacity = capacity
+        if "room_id" in room_data:
+            room.room_id = room_data["room_id"]
 
-        if number_of_computers:
-            room.number_of_computers = number_of_computers
+        if "capacity" in room_data:
+            room.capacity = room_data["capacity"]
+
+        if "number_of_computers" in room_data:
+            room.number_of_computers = room_data["number_of_computers"]
 
         serializer = RoomSerializer(room, data=request.data, partial=True)
 
@@ -148,12 +153,12 @@ class RoomDeleteView(APIView):
         if not request.user or request.user.is_superuser is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        room_id = request.data.get('room_id')
+        id = request.data.get('id')
 
         room = None
 
         try:
-            room = Room.objects.get(room_id=room_id)
+            room = Room.objects.get(id=id)
         except Room.DoesNotExist:
             return Response("Invalid room. Please provide an existing room", status=status.HTTP_400_BAD_REQUEST)
 
