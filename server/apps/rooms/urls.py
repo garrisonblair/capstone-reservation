@@ -10,6 +10,6 @@ from .views.room import RoomCreateView
 urlpatterns = [
     path(r'room', RoomView.as_view()),
     path(r'roomcreate', RoomCreateView.as_view()),
-    path(r'roomdelete)', RoomDeleteView.as_view()),
+    path(r'roomdelete', RoomDeleteView.as_view()),
     path(r'roomupdate', RoomUpdateView.as_view()),
 ]
