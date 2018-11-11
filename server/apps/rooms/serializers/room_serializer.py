@@ -9,6 +9,3 @@ class RoomSerializer(serializers.ModelSerializer):
         model = Room
         fields = ('id', 'room_id', 'capacity', 'number_of_computers')
         read_only_fields = ('id',)
-
-
-
