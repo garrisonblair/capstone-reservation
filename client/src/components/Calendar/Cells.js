@@ -25,11 +25,13 @@ class Cells extends Component {
     const {hoursSettings} = this.props;
     let rowStart = (hourRow * hoursSettings.increment / 10) + 1;
     let rowEnd = rowStart + hoursSettings.increment / 10;
+    let height = '75px';
 
     let style = {
       cell_style: {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
+        height: height,
       }
     }
     return style;
@@ -42,9 +44,15 @@ class Cells extends Component {
     let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(hoursSettings.start);
     let color = '#5a9ab2'
-    if (campOnsNumber > 0) {
-      color = '#77993b'
+    let currentDate = (new Date())
+    if(booking.date.substring(8,10) != (new Date()).getDate() || parseInt(booking.end_time.replace(/:/g, '')) <= parseInt(`${currentDate.getHours()}${currentDate.getMinutes()}00`)) {
+      color = 'rgb(114, 120, 126)'
+    } else {
+      if (campOnsNumber > 0) {
+        color = '#77993b'
+      }
     }
+    
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
     let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
     let rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
@@ -193,7 +201,7 @@ class Cells extends Component {
         <div className="calendar__booking" style={this.setBookingStyle(booking, campOns.length).booking_style} key={booking.id} onClick={() => this.handleClickBooking(booking)}>
           {booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time} - {booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}
           <br/>        
-          <span>{booking.booker.user.username}</span>
+          {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 ? null : <span>{booking.booker.user.username}</span>}
           {campOns.length > 0 ? this.renderCampOns(campOns) : ''}
         </div>
       )
