@@ -1,22 +1,23 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Button, List, Message, Table } from 'semantic-ui-react'
 import SideNav from '../SideNav';
 import RoomRowItem from './RoomRowItem'
 import RoomModal from './RoomModal';
-import './RoomManager.scss';
 import api from '../../../utils/api';
+import sweetAlert from 'sweetalert2';
+import './RoomManager.scss';
 
 
 class RoomManager extends Component {
   state = {
     roomsList: [],
     showModal: false,
-    selectedRoom: null
+    selectedRoom: null,
+    showEmptyMessage:false
   }
 
   componentDidMount() {
-     this.syncRooms();
+    this.syncRooms();
   }
 
 
@@ -35,9 +36,17 @@ class RoomManager extends Component {
 
   syncRooms = () => {
     api.getRooms()
-    .then((response)=>{
-       this.setState({roomsList:response.data});
-    })
+      .then((response) => {
+        if(response.status == 200){
+          this.setState({
+            roomsList: response.data,
+            showEmptyMessage:true
+          });
+        }
+      })
+      .catch((error)=>{
+        sweetAlert(':(','We are sorry. There was a problem getting the rooms', 'error')
+      })
   }
 
   renderRoomModal() {
@@ -50,38 +59,45 @@ class RoomManager extends Component {
   }
 
   renderNoRoomList = () => {
-    return (
+    let {showEmptyMessage, roomsList} = this.state;
+    let result = '';
+    const message =
       <Message>
         <Message.Header>There is currently no room</Message.Header>
         <p>Click on the 'Add Room' button to add a new room.</p>
-      </Message>
+      </Message>;
+    if(showEmptyMessage && roomsList.length == 0){
+      result = message;
+    }
+    return (
+      result
     )
   }
-  // renderTable = () =>{
-  //   return(
-  //   <Table>
-  //     <Table.Header>
-  //     <Table.Row>
-  //       <Table.HeaderCell>Name</Table.HeaderCell>
-  //       <Table.HeaderCell>Capacity</Table.HeaderCell>
-  //       <Table.HeaderCell ># of computers</Table.HeaderCell>
-  //     </Table.Row>
-  //   </Table.Header>
-  //   <Table.Body>
-  //     {this.state.roomsList.map(
-  //       room=>
-  //       <Table.Row >
-  //       <Table.Cell>{room.room_id}</Table.Cell>
-  //       <Table.Cell>{room.capacity}</Table.Cell>
-  //       <Table.Cell >{room.number_of_computers}</Table.Cell>
-  //     </Table.Row>
-  //     )}
-
-  //   </Table.Body>
-  //   </Table>
-  //   )
-
-  // }
+  renderTable = () => {
+    let headers = ['Name', 'Capacity', '# of computers', '']
+    return (
+      <Table>
+        <Table.Header>
+          <Table.Row>
+            {headers.map(
+              (head, index) =>
+                <Table.HeaderCell key={index} textAlign='center'>{head}</Table.HeaderCell>
+            )}
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {this.state.roomsList.map(
+            room =>
+              <RoomRowItem
+                key={room.id}
+                room={room}
+                syncRoomList={this.syncRooms}
+              />
+          )}
+        </Table.Body>
+      </Table>
+    )
+  }
   render() {
     let { roomsList, showModal } = this.state;
     return (
@@ -90,17 +106,9 @@ class RoomManager extends Component {
           <SideNav selectedMenu={'rooms'} />
           <div className="admin__content">
             <div id="room-management">
-            {/* {this.renderTable()} */}
               <h1>Manage Rooms</h1>
-              {roomsList.length == 0 ? this.renderNoRoomList() : ''}
-              <List divided verticalAlign='middle'>
-                {roomsList.map(
-                  room =>
-                    <RoomRowItem key={room.id}
-                      room={room}
-                      syncRoomList={this.syncRooms} />)
-                }
-              </List>
+              {this.renderTable()}
+              {this.renderNoRoomList()}
               <Button onClick={this.showRoomModal}>Add new room</Button>
               {showModal ? this.renderRoomModal() : ''}
             </div>
@@ -111,7 +119,4 @@ class RoomManager extends Component {
   }
 }
 
-RoomManager.propTypes = {
-
-}
 export default RoomManager;

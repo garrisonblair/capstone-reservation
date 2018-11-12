@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, List } from 'semantic-ui-react'
+import { Button, List , Table} from 'semantic-ui-react'
 import api from '../../../utils/api';
 import RoomModal from './RoomModal';
 import sweetAlert from 'sweetalert2';
@@ -12,6 +12,7 @@ class RoomRowItem extends Component {
     openModal:false
   }
   openModal = () =>{
+    console.log('opened');
     this.setState({openModal:true})
   }
   closeModal = () =>{
@@ -49,25 +50,20 @@ class RoomRowItem extends Component {
   }
 
   render() {
-    const {room_id, capacity, number_of_computers} = this.props.room;
+    const {id,room_id, capacity, number_of_computers} = this.props.room;
     return (
-      <List.Item className='row'>
-        <List.Content floated='left'>
-          <h2>{room_id}</h2>
-          Capacity: {capacity}    # of Computers {number_of_computers}
-        </List.Content>
-
-        <List.Content floated='right' className='row-buttons'>
+      <Table.Row key={id}>
+        <Table.Cell  textAlign='center'><h4>{room_id}</h4></Table.Cell>
+        <Table.Cell textAlign='center'>{capacity}</Table.Cell>
+        <Table.Cell textAlign='center'>{number_of_computers}</Table.Cell>
+        <Table.Cell textAlign='center'>
           <Button icon='edit' onClick={this.openModal}/>
-          <Button icon='trash' onClick={this.handleDeleteRoom}/>
-        </List.Content>
-        <RoomModal
-        show={this.state.openModal}
-        selectedRoom={this.props.room}
-        onClose={this.closeModal}
-        syncRoomList={()=>{}}
-      />
-      </List.Item>
+          <Button icon='trash' onClick={this.handleDeleteRoom}/></Table.Cell>
+           <RoomModal
+             show={this.state.openModal}
+             selectedRoom={this.props.room}
+             onClose={this.closeModal}/>
+      </Table.Row>
     )
   }
 }
