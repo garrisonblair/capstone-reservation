@@ -2,8 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Button, Dropdown, Header, Icon, Modal} from 'semantic-ui-react';
 import CampOnForm from './CampOnForm.js';
-import sweetAlert from 'sweetalert2';
-import api from '../../utils/api';
+import EditBookingForm from './EditBookingForm.js';
 import './BookingInfoModal.scss';
 
 
@@ -19,11 +18,12 @@ class BookingInfoModal extends Component {
     });
   }
 
-  closeModalWithCampOn = () => {
-    this.props.onCloseWithCampOn();
+  //Close the modal if any api POST requests succeeded
+  closeModalWithAction = () => {
     this.setState({
       show: false,
     });
+    this.props.onCloseWithAction();
   }
 
   handleOpen = () => this.setState({show: true});
@@ -31,16 +31,22 @@ class BookingInfoModal extends Component {
   checkCamponPossible(booking) {
     if(booking.id) {
       let currentDate = new Date();
-      let currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}`;
+      let currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}00`;
       let bookingEndTime = booking.end_time.replace(/:/g, '');
-      bookingEndTime = bookingEndTime / 100;
-      if(currentTime < bookingEndTime) {
+      let bookingStartTime = booking.start_time.replace(/:/g, '');
+      if(currentTime < bookingEndTime && currentTime > bookingStartTime) {
         return true;
       } else {
         return false;
       }
     } else {
       return false;
+    }
+  }
+
+  checkSameUser(booking) {
+    if (localStorage.getItem("CapstoneReservationUser") && !!booking.booker) {
+      return booking.booker.user.username == JSON.parse(localStorage.getItem("CapstoneReservationUser")).username
     }
   }
 
@@ -57,7 +63,7 @@ class BookingInfoModal extends Component {
   /************* COMPONENT RENDERING *************/
 
   renderDescription() {
-    const {booking, selectedRoomName} = this.props;
+    const {booking} = this.props;
     let camponPossible = this.checkCamponPossible(booking);
 
     return (
@@ -79,11 +85,11 @@ class BookingInfoModal extends Component {
           <div className="modal-description">
             <h3 className="header--inline">
               <Icon name="user" /> {" "}
-              {`by ${booking.booker}`}
+              {!!booking.booker ? `by ${booking.booker.user.username}` : ''}
             </h3>
           </div>
           <div className="ui divider" />
-          {camponPossible ? <CampOnForm booking={booking} selectedRoomName={selectedRoomName} onCloseWithCampOn={this.closeModalWithCampOn}/> : null}
+          {this.renderForm(booking)}
           <div>
             <Button content='Close' secondary onClick={this.closeModal} />
           </div>
@@ -92,52 +98,16 @@ class BookingInfoModal extends Component {
     )
   }
 
-  renderCampOnForm() {
-    const {hourOptions, minuteOptions, reservedOptions, endHour, endMinute} = this.state;
-    return(
-      <div>
-        <div className="modal-description">
-          <h3 className="header--inline">
-            <span>Camp on until  </span>
-          </h3>
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder='hh'
-            options={hourOptions}
-            onChange={this.handleEndHourChange}
-            defaultValue={endHour}
-          />
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder='mm'
-            options={minuteOptions}
-            onChange={this.handleEndMinuteChange}
-            defaultValue={endMinute}
-          />
-        </div>
-        <div className="modal-description">
-            <h3 className="header--inline">
-              <Icon name="user" /> {" "}
-              {`by `}
-            </h3>
-            <Dropdown
-              selection
-              compact
-              className="dropdown--fixed-width"
-              placeholder='hh'
-              options={reservedOptions}
-              defaultValue={reservedOptions[0].value}
-            />
-          </div>
-          <Button content='Camp on' primary onClick={this.handleSubmit} />
-          <div className="ui divider" />
-      </div>
-
-    )
+  renderForm(booking) {
+    if(this.checkSameUser(booking)) {
+      return <EditBookingForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithEditBooking={this.closeModalWithAction}/>
+    } else {
+      if(this.checkCamponPossible(booking)) {
+        return <CampOnForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithCampOn={this.closeModalWithAction}/>
+      } else {
+        return null
+      }
+    }
   }
 
   render() {

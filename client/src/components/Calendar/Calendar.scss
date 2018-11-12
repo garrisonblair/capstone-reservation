@@ -9,24 +9,32 @@
 }
 
 $textColor: black;
-$borderColor: #ececec;
+$textColorHeader: white;
+$borderColor: #3d3d3e;
 $eventBackgroundColor: aqua;
-$borderWidth: 2px;
+$backgroundColorContainer: #3d3d3e;
+$backgroundColorCells: #333333;
+$backgroundColorRooms: #292929;
+$backgroundColorHours: #292929;
+$borderWidth: 1px;
 $cellsWidth: 120px;
 
 /* Calendar */
 
 body {
   overflow: scroll;
+  background-color: $backgroundColorContainer;
 }
 
 .calendar__container {
   // display: inline-grid;
   padding: 20px;
   overflow-x: visible;
+  background-color: $backgroundColorContainer;
 }
 
 .calendar__date {
+  color: white;
   text-align: center;
   margin-bottom: 10px;
   font-size: 50;
@@ -46,13 +54,15 @@ body {
   display: inline-grid;
   grid-column-start: 2;
   grid-template-columns: repeat(var(--colNum), 1fr);
-  background-color: lightgray;
+  background-color: $backgroundColorRooms;
+  color: $textColorHeader;
 }
 
 .calendar__hours__wrapper {
   display: inline-grid;
   grid-template-rows: repeat(var(--rowNum), 1fr);
-  background-color: lightgray;
+  background-color:$backgroundColorHours;
+  color: $textColorHeader;
 }
 
 .calendar__cells__wrapper {
@@ -74,10 +84,11 @@ body {
   width: $cellsWidth;
   grid-column: 1;
   height: 50px;
+  background-color: $backgroundColorCells;
 }
 
 .calendar__cells__cell:hover {
-  box-shadow: 0 0 20px rgba(33,33,33,.2); 
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); 
   cursor: pointer;
 }
 

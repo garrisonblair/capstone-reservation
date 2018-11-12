@@ -63,8 +63,10 @@ class UserUpdate(APIView):
             except Booker.DoesNotExist:
                 # Add booker ID only if it's a new user
                 booker = Booker(user=user, booker_id=booker_id)
+                booker.save()
                 # Add default privilege
-                booker.privilege_categories.add(PrivilegeCategory.objects.get(is_default=True))
+                default_privilege = PrivilegeCategory.objects.get(is_default=True)
+                booker.privilege_categories.add(default_privilege)
                 booker.save()
 
         # Must be superuser to update those fields

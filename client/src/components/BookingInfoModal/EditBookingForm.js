@@ -6,19 +6,20 @@ import api from '../../utils/api';
 import './BookingInfoModal.scss';
 
 
-class CampOnForm extends Component {
+class EditBookingForm extends Component {
   state = {
-    endHour: "12",
+    startHour: "00",
+    startMinute: "00",
+    endHour: "00",
     endMinute: "00",
     hourOptions: [],
     minuteOptions: [],
     reservedOptions: [{text: 'me', value:'me'}]
   }
 
-  generateHourOptions(maxHour) {
-    let result = [];
-    let minHour = new Date().getHours();
-    this.setState({endHour: `${minHour < 10 ? `0${minHour}` : minHour}`})
+  generateHourOptions() {
+    let result = []
+    let {minHour, maxHour} = this.props
     for (let i = minHour; i < maxHour; i++) {
       result.push({
         text: `${i < 10 ? `0${i}` : i}`,
@@ -44,8 +45,20 @@ class CampOnForm extends Component {
     return result;
   }
 
-  closeModalWithCampOn = () => {
-    this.props.onCloseWithCampOn();
+  closeModalWithEditBooking = () => {
+    this.props.onCloseWithEditBooking();
+  }
+
+  handleStartHourChange = (e, {value}) => {
+    this.setState({
+      startHour: value
+    });
+  }
+
+  handleStartMinuteChange = (e, {value}) => {
+    this.setState({
+      startMinute: value
+    });
   }
 
   handleEndHourChange = (e, {value}) => {
@@ -61,9 +74,8 @@ class CampOnForm extends Component {
   }
 
   verifyReservationTimes() {
-    const {endHour, endMinute} = this.state;
-    let currentTime = new Date();
-    const startTime = `${currentTime.getHours()}${currentTime.getMinutes() < 10 ? `0${currentTime.getMinutes()}` : `${currentTime.getMinutes()}`}`;
+    const {startHour, startMinute, endHour, endMinute} = this.state;
+    const startTime = `${startHour}${startMinute}`;
     const endTime = `${endHour}${endMinute}`;
     if (startTime > endTime) {
       throw new Error("The end time you entered is before the current time.");
@@ -72,22 +84,22 @@ class CampOnForm extends Component {
 
   /************ REQUESTS *************/
 
-  sendPostRequestCampOn = () => {
+  sendPatchBooking = () => {
     const {booking} = this.props;
 
     const data = {
-      "camped_on_booking": booking.id,
+      "start_time": `${this.state.startHour}:${this.state.startMinute}`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}`
     };
-    api.createCampOn(data)
+    api.updateBooking(data, booking.id)
     .then((response) => {
       sweetAlert('Completed',
-        `Your camp-on was successful.`,
+        `Booking was sucessfully updated.`,
         'success'
       )
       .then((result) => {
         if (result.value) {
-          this.closeModalWithCampOn()
+          this.closeModalWithEditBooking()
         }
       })
     })
@@ -106,18 +118,24 @@ class CampOnForm extends Component {
       this.verifyReservationTimes();
     }
     catch(err) {
-      sweetAlert('Camp on blocked', err.message, 'warning');
+      sweetAlert('Edit blocked', err.message, 'warning');
       return;
     }
 
-    this.sendPostRequestCampOn();
+    this.sendPatchBooking();
   }
 
   /************* COMPONENT LIFE CYCLE *************/
   componentDidMount() {
-    const {maxHour, minuteInterval, reservationProfiles} = this.props;
+    const {minuteInterval, reservationProfiles, booking} = this.props;
+    let startTime = booking.start_time
+    let endTime = booking.end_time
     this.setState({
-      hourOptions: this.generateHourOptions(maxHour),
+      startHour: startTime.substring(0,2),
+      startMinute: startTime.substring(3,5),
+      endHour: endTime.substring(0,2),
+      endMinute: endTime.substring(3,5),
+      hourOptions: this.generateHourOptions(),
       minuteOptions: this.generateMinuteOptions(minuteInterval),
       reservedOptions: this.generateReservationProfilesOptions(reservationProfiles)
     });
@@ -125,15 +143,39 @@ class CampOnForm extends Component {
 
   /************* COMPONENT RENDERING *************/
 
-  renderCampOnForm () {
-    const {hourOptions, minuteOptions, reservedOptions, endHour, endMinute} = this.state;
+  renderEditBookingForm () {
+    const {hourOptions, minuteOptions, reservedOptions, startHour, startMinute, endHour, endMinute} = this.state;
+    console.log(startHour)
     return(
       <div>
         <div className="modal-description">
           <h3 className="header--inline">
-            <span>Camp on until  </span>
+            <span>From  </span>
           </h3>
           <Dropdown
+            selection
+            compact
+            className="dropdown--fixed-width"
+            placeholder='hh'
+            options={hourOptions}
+            onChange={this.handleStartHourChange}
+            value={startHour}
+          />
+          <Dropdown
+            selection
+            compact
+            className="dropdown--fixed-width"
+            placeholder='mm'
+            options={minuteOptions}
+            onChange={this.handleStartMinuteChange}
+            value={startMinute}
+          />
+        </div>
+        <div className="modal-description">
+            <h3 className="header--inline">
+              <span>To </span>
+            </h3>
+            <Dropdown
             selection
             compact
             className="dropdown--fixed-width"
@@ -151,8 +193,8 @@ class CampOnForm extends Component {
             onChange={this.handleEndMinuteChange}
             value={endMinute}
           />
-        </div>
-        <div className="modal-description">
+          </div>
+          <div className="modal-description">
             <h3 className="header--inline">
               <Icon name="user" /> {" "}
               {`by `}
@@ -163,10 +205,10 @@ class CampOnForm extends Component {
               className="dropdown--fixed-width"
               placeholder='hh'
               options={reservedOptions}
-              defaultValue={reservedOptions[0].value}
+              defaultValue={this.state.reservedOptions[0].value}
             />
           </div>
-          <Button content='Camp on' primary onClick={this.handleSubmit} />
+          <Button content='Edit Booking' primary onClick={this.handleSubmit} />
           <div className="ui divider" />
       </div>
 
@@ -176,22 +218,23 @@ class CampOnForm extends Component {
   render() {
     return (
       <div id="reservation-details-modal">
-        {this.renderCampOnForm()}
+        {this.renderEditBookingForm()}
       </div>
     )
   }
 }
 
-CampOnForm.propTypes = {
+EditBookingForm.propTypes = {
   booking: PropTypes.object.isRequired,
   selectedRoomName: PropTypes.string.isRequired,
-  onCloseWithCampOn: PropTypes.func,
+  onCloseWithEditBooking: PropTypes.func,
 }
 
-CampOnForm.defaultProps = {
+EditBookingForm.defaultProps = {
+  minHour: 8,
   maxHour: 24,
   minuteInterval: 10,
   reservationProfiles: ['me']
 }
 
-export default CampOnForm;
+export default EditBookingForm;
