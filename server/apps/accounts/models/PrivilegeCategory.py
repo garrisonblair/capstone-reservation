@@ -15,6 +15,7 @@ class FieldMetadata:
 class PrivilegeCategory(models.Model, AbstractPrivilege):
     name = models.CharField(max_length=100, blank=False, unique=True)
     parent_category = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE)
+    is_default = models.BooleanField(default=False)
 
     # rule parameter fields
     # When you add a field, update model test testCreation to check its defaulted to None
@@ -53,6 +54,18 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
             comparator=TimeComparator(earlier_better=False)
         )
     }
+
+    def save(self, *args, **kwargs):
+
+        if self.is_default:
+            try:
+                current_default = PrivilegeCategory.objects.get(is_default=True)
+                current_default.is_default = False
+                current_default.save()
+            except PrivilegeCategory.DoesNotExist:
+                pass
+
+        return super(PrivilegeCategory, self).save(*args, **kwargs)
 
     def get_parameter(self, param_name):
         value = getattr(self, param_name)

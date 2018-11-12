@@ -67,3 +67,15 @@ class TestPrivilegeCategoryModel(TestCase):
         self.assertEqual(merger.get_parameter("max_recurring_bookings"), 4)
         self.assertEqual(merger.get_parameter("booking_start_time"), time(9, 0, 0))
         self.assertEqual(merger.get_parameter("booking_end_time"), time(23, 0, 0))
+
+    def testSetDefaultPrivilegeCategory(self):
+        category1 = PrivilegeCategory(name="C1", is_default=True)
+        category1.save()
+
+        category2 = PrivilegeCategory(name="C2", is_default=True)
+        category2.save()
+
+        category1.refresh_from_db()
+
+        self.assertFalse(category1.is_default)
+        self.assertTrue(category2.is_default)

@@ -72,8 +72,6 @@ class Booking(models.Model, SubjectModel):
         )
 
     def validate_model(self):
-        invalid_start_time = datetime.time(8, 0)
-        invalid_end_time = datetime.time(23, 0)
 
         if not isinstance(self.start_time, datetime.time):
             self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
