@@ -8,6 +8,7 @@ import Registration from './components/Registration';
 import Verification from './components/Verification';
 import Admin from './components/Admin';
 import PrivilegeCategory from './components/Admin/PrivilegeCategory';
+import RoomManager from './components/Admin/RoomManager';
 import Stats from './components/Admin/Stats';
 
 
@@ -22,6 +23,7 @@ ReactDOM.render(
           <Route exact path="/admin" component={Admin}/>
           <Route exact path="/admin/settings" component={Admin}/>
           <Route exact path="/admin/privileges" component={PrivilegeCategory}/>
+          <Route exact path="/admin/rooms" component={RoomManager}/>
           <Route exact path="/admin/stats" component={Stats}/>
           <Route component={NotFound}/>
         </Switch>
