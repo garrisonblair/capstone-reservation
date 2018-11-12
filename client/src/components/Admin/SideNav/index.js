@@ -13,6 +13,10 @@ class SideNav extends Component {
     this.props.history.push('/admin/privileges')
   }
 
+  goToRooms = () => {
+    this.props.history.push('/admin/rooms')
+  }
+
   goToStats = () => {
     this.props.history.push('/admin/stats')
   }
@@ -33,6 +37,12 @@ class SideNav extends Component {
             onClick={this.goToPrivileges}
           >
             Privileges
+          </li>
+          <li
+            className={selectedMenu === 'rooms'? 'active': ''}
+            onClick={this.goToRooms}
+          >
+            Rooms
           </li>
           <li
             className={selectedMenu === 'stats'? 'active': ''}
