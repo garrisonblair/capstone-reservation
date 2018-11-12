@@ -142,8 +142,13 @@ class Calendar extends Component {
   }
 
   /************* COMPONENT LIFE CYCLE *************/
+  componentWillUnmount() {
+    document.body.style.backgroundColor = "white";
+  }
 
   componentDidMount() {
+    document.body.style.backgroundColor = "#3d3d3e";
+
     /*** Get bookings ***/
     this.getBookings();
 
