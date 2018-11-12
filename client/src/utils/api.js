@@ -88,11 +88,11 @@ function createBooking(data){
   });
 }
 
-function updateBooking(data) {
+function updateBooking(data, id) {
   const headers = getTokenHeader();
   return axios({
     method: 'PATCH',
-    url: `${settings.API_ROOT}/booking`,
+    url: `${settings.API_ROOT}/booking/${id}`,
     data,
     headers,
   })

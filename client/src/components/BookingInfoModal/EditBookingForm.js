@@ -89,11 +89,10 @@ class EditBookingForm extends Component {
     const {booking} = this.props;
 
     const data = {
-      "id": booking.id,
       "start_time": `${this.state.startHour}:${this.state.startMinute}`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}`
     };
-    api.updateBooking(data)
+    api.updateBooking(data, booking.id)
     .then((response) => {
       sweetAlert('Completed',
         `Booking was sucessfully updated.`,
@@ -147,6 +146,7 @@ class EditBookingForm extends Component {
 
   renderEditBookingForm () {
     const {hourOptions, minuteOptions, reservedOptions, startHour, startMinute, endHour, endMinute} = this.state;
+    console.log(startHour)
     return(
       <div>
         <div className="modal-description">
@@ -159,7 +159,7 @@ class EditBookingForm extends Component {
             className="dropdown--fixed-width"
             placeholder='hh'
             options={hourOptions}
-            onChange={this.handlestartHourChange}
+            onChange={this.handleStartHourChange}
             value={startHour}
           />
           <Dropdown
@@ -168,7 +168,7 @@ class EditBookingForm extends Component {
             className="dropdown--fixed-width"
             placeholder='mm'
             options={minuteOptions}
-            onChange={this.handlestartMinuteChange}
+            onChange={this.handleStartMinuteChange}
             value={startMinute}
           />
         </div>

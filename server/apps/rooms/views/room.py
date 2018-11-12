@@ -1,16 +1,21 @@
 from django.core.exceptions import ValidationError
 from datetime import datetime
 
-from rest_framework.views import APIView
+from rest_framework.decorators import permission_classes
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 
-from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
+from apps.rooms.models.Room import Room
 from apps.rooms.serializers.room_serializer import RoomSerializer
 
 
 class RoomView(APIView):
+
     def get(self, request):
         start_date_time = request.query_params.get('start_date_time', '')
         end_date_time = request.query_params.get('end_date_time', '')
@@ -63,9 +68,102 @@ class RoomView(APIView):
                     return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)  # Invalid time format
             except (ValueError, TypeError):
                 error_msg = "Invalid parameters, please input parameters in the YYYY-MM-DD HH:mm format"
-                return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
+                return Response(error_msg,
+                                status=status.HTTP_400_BAD_REQUEST)
 
         # When only one of start time and end time is provided
         else:
             error_msg = "Invalid times: please supply a start time and an end time"
-            return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
+            return Response(error_msg,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class RoomCreateView(APIView):
+
+    def post(self, request, *args, **kwargs):
+
+        if not request.user or request.user.is_superuser is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        room_data = dict(request.data)
+
+        serializer = RoomSerializer(data=room_data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            try:
+                room = serializer.save()
+                return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RoomUpdateView(APIView):
+
+    def patch(self, request, *args, **kwargs):
+
+        if not request.user or request.user.is_superuser is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        room_data = dict(request.data)
+
+        id = ''
+
+        if "id" in room_data:
+            id = room_data["id"]
+
+        room = None
+
+        try:
+            room = Room.objects.get(id=id)
+        except Room.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if "room_id" in room_data:
+            room.room_id = room_data["room_id"]
+
+        if "room_id" in room_data:
+            room.room_id = room_data["room_id"]
+
+        if "capacity" in room_data:
+            room.capacity = room_data["capacity"]
+
+        if "number_of_computers" in room_data:
+            room.number_of_computers = room_data["number_of_computers"]
+
+        serializer = RoomSerializer(room, data=request.data, partial=True)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            try:
+                room = serializer.save()
+                return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RoomDeleteView(APIView):
+
+    def delete(self, request, *args, **kwargs):
+
+        if not request.user or request.user.is_superuser is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        id = request.data.get('id')
+
+        room = None
+
+        try:
+            room = Room.objects.get(id=id)
+        except Room.DoesNotExist:
+            return Response("Invalid room. Please provide an existing room", status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            room.delete()
+            return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+        except ValidationError as error:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
