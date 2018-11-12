@@ -84,7 +84,6 @@ class EditBookingForm extends Component {
 
   /************ REQUESTS *************/
 
-  //TODO: Make the request
   sendPatchBooking = () => {
     const {booking} = this.props;
 

@@ -45,7 +45,8 @@ class Cells extends Component {
     let calendarStart = this.timeStringToInt(hoursSettings.start);
     let color = '#5a9ab2'
     let currentDate = (new Date())
-    if(booking.date.substring(8,10) != (new Date()).getDate() || parseInt(booking.end_time.replace(/:/g, '')) <= parseInt(`${currentDate.getHours()}${currentDate.getMinutes()}00`)) {
+    let currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`
+    if(booking.date.substring(8,10) != (new Date()).getDate() || parseInt(booking.end_time.replace(/:/g, '')) <= parseInt(`${currentDate.getHours()}${currentMinute}00`)) {
       color = 'rgb(114, 120, 126)'
     } else {
       if (campOnsNumber > 0) {
