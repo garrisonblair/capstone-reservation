@@ -5,7 +5,9 @@ from apps.accounts.views.login import LoginView
 from apps.accounts.views.logout import LogoutView
 from apps.accounts.views.user import UserList, UserUpdate
 from apps.accounts.views.me import MyUser
-from apps.accounts.views.privilege_categories import PrivilegeCategoryList, PrivilegeCategoryCreate, PrivilegeCategoryRetrieveUpdateDestroy
+from apps.accounts.views.privilege_categories import PrivilegeCategoryList
+from apps.accounts.views.privilege_categories import PrivilegeCategoryCreate
+from apps.accounts.views.privilege_categories import PrivilegeCategoryRetrieveUpdateDestroy
 
 urlpatterns = [
     path(r'register', RegisterView.as_view()),

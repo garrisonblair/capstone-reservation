@@ -8,7 +8,7 @@ from rest_framework.decorators import permission_classes
 from django.core.exceptions import ValidationError
 
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
-from apps.accounts.serializers.privilege_category_serializer import PrivilegeCategorySerializer
+from apps.accounts.serializers.privilege_category import PrivilegeCategorySerializer
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 

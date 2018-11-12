@@ -6,7 +6,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIRequestFactory, APIClient, force_authenticate
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.views.privilege_categories import PrivilegeCategoryList, PrivilegeCategoryCreate, PrivilegeCategoryRetrieveUpdateDestroy
+from apps.accounts.views.privilege_categories import PrivilegeCategoryList
+from apps.accounts.views.privilege_categories import PrivilegeCategoryCreate
+from apps.accounts.views.privilege_categories import PrivilegeCategoryRetrieveUpdateDestroy
 
 
 class TestPrivilegeCategoryAPI(TestCase):
@@ -267,4 +269,3 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.assertEqual(updated_category.booking_end_time, self.category.booking_end_time)
         self.assertEqual(updated_category.can_make_recurring_booking, self.category.can_make_recurring_booking)
         self.assertEqual(updated_category.max_recurring_bookings, self.category.max_recurring_bookings)
-
