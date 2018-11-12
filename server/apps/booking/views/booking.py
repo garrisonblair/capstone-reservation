@@ -10,6 +10,7 @@ from rest_framework import status
 from apps.booking.models.Booking import Booking
 
 from apps.booking.serializers.booking_serializer import BookingSerializer, ReadBookingSerializer
+from apps.accounts.exceptions import PrivilegeError
 
 
 class BookingView(APIView):
@@ -31,8 +32,8 @@ class BookingView(APIView):
             try:
                 booking = serializer.save()
                 return Response(BookingSerializer(booking).data, status=status.HTTP_201_CREATED)
-            except ValidationError as error:
-                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+            except (ValidationError, PrivilegeError) as error:
+                return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
 

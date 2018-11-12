@@ -53,7 +53,6 @@ class Calendar extends Component {
     } else {
       api.getCampOns(params)
       .then((response) => {
-        console.log(response.data)
         this.setState({campOns: response.data}, () => {
           // this.campOnToBooking();
         })
@@ -109,9 +108,9 @@ class Calendar extends Component {
     let bookingStart = this.timeStringToInt(booking.start_time);
     let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(hoursSettings.start);
-    let color = '#4285f4'
+    let color = '#93b5c6'
     if (campOnsNumber > 0) {
-      color = 'orange'
+      color = '#f3a738'
     }
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
     let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
@@ -188,13 +187,13 @@ class Calendar extends Component {
   }
 
   toggleBookingModalWithReservation = () => {
-    //Use reload for now. Might need to change this if we want to view the calendar of the date we made the reservation on.
-    //With reload, the view will come back to the current day.
-    window.location.reload();
+    this.getBookings();
+    this.setState({bookingModal: false, bookingInfoModal: false})
   }
 
-  toggleBookingInfoWithCampOn = () => {
-    window.location.reload();
+  toggleBookingInfoWithAction = () => {
+    this.getBookings();
+    this.setState({bookingModal: false, bookingInfoModal: false})
   }
 
   timeStringToInt(time) {
@@ -385,7 +384,7 @@ class Calendar extends Component {
         <div className="calendar__booking" style={this.setBookingStyle(booking, campOns.length).booking_style} key={booking.id} onClick={() => this.handleClickBooking(booking)}>
           {booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time} - {booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}
           <br/>        
-          <span>{booking.student}</span>
+          <span>{booking.booker.user.username}</span>
           {campOns.length > 0 ? this.renderCampOns(campOns) : ''}
         </div>
       )
@@ -430,7 +429,7 @@ class Calendar extends Component {
           booking={this.state.selectedBooking}
           selectedRoomName={this.state.selectedRoomName}
           onClose={this.toggleBookingInfoModal}
-          onCloseWithCampOn={this.toggleBookingInfoWithCampOn}
+          onCloseWithAction={this.toggleBookingInfoWithAction}
         />
       </div>
     )

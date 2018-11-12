@@ -5,45 +5,45 @@ import {getTokenHeader} from './requestHeaders';
 
 function register(username) {
   let data = {
-    'username': `${username}`
+    'username': `${username}`,
   };
 
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/register`,
-    data: data
+    data: data,
   })
 }
 
 function login(username, password) {
   let data = {
     username,
-    password
+    password,
   }
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/login`,
-    data: data
+    data: data,
   })
 }
 
 function verify(token) {
   const data = {
-    'token': `${token}`
+    'token': `${token}`,
   }
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/verify`,
-    data: data
+    data: data,
   })
 }
 
-function getMyUser(token) {
+function getMyUser() {
   const headers = getTokenHeader();
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/me`,
-    headers
+    headers,
   })
 }
 
@@ -54,7 +54,7 @@ function updateUser(id, data) {
     url: `${settings.API_ROOT}/user/${id}`,
     headers,
     data,
-    withCredentials: true
+    withCredentials: true,
   })
 }
 
@@ -65,7 +65,7 @@ function createCampOn(data) {
     url: `${settings.API_ROOT}/campon`,
     headers,
     data,
-    withCredentials: true
+    withCredentials: true,
   })
 }
 
@@ -73,7 +73,7 @@ function getBookings(params) {
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/booking`,
-    params: params
+    params: params,
   })
 }
 
@@ -84,8 +84,18 @@ function createBooking(data){
     url: `${settings.API_ROOT}/booking`,
     headers,
     data,
-    withCredentials: true
+    withCredentials: true,
   });
+}
+
+function updateBooking(data, id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/booking/${id}`,
+    data,
+    headers,
+  })
 }
 
 function createRecurringBooking(data){
@@ -95,7 +105,7 @@ function createRecurringBooking(data){
     url: `${settings.API_ROOT}/recurring_booking`,
     headers,
     data,
-    withCredentials: true
+    withCredentials: true,
   });
 }
 
@@ -103,14 +113,14 @@ function getCampOns(params) {
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/campon`,
-    params: params
+    params: params,
   })
 }
 
 function getRooms() {
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/room`
+    url: `${settings.API_ROOT}/room`,
   })
 }
 
@@ -167,7 +177,7 @@ function getAdminSettings() {
     method: 'GET',
     url: `${settings.API_ROOT}/settings`,
     headers,
-    withCredentials: true
+    withCredentials: true,
   })
 }
 
@@ -212,6 +222,7 @@ const api = {
   createCampOn,
   getBookings,
   createBooking,
+  updateBooking,
   createRecurringBooking,
   getCampOns,
   getRooms,
