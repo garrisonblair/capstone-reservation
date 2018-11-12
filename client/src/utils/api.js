@@ -116,25 +116,45 @@ function getRooms() {
 
 function deleteRoom(id){
   const headers = getTokenHeader();
+  const data={
+    "id":id
+  }
   return axios({
     method:'DELETE',
-    url: `${settings.API_ROOT}/room`,
+    url: `${settings.API_ROOT}/roomdelete`,
+    data,
     headers,
     withCredentials:true
   })
 }
 
-function saveRoom(id, capacity, numOfComputers){
+function createRoom(id, capacity, numOfComputers){
   const data = {
     "room_id":id,
     "capacity": capacity,
     "number_of_computers":numOfComputers
   }
-  console.log(data);
   const headers = getTokenHeader();
   return axios({
     method:'POST',
-    url: `${settings.API_ROOT}/room`,
+    url: `${settings.API_ROOT}/roomcreate`,
+    data,
+    headers,
+    withCredentials: true
+  })
+}
+
+function updateRoom(id,room_id, capacity, numOfComputers){
+  const data = {
+    "id":id,
+    "room_id":room_id,
+    "capacity": capacity,
+    "number_of_computers":numOfComputers
+  }
+  const headers = getTokenHeader();
+  return axios({
+    method:'PATCH',
+    url: `${settings.API_ROOT}/roomupdate`,
     data,
     headers,
     withCredentials: true
@@ -196,7 +216,8 @@ const api = {
   getCampOns,
   getRooms,
   deleteRoom,
-  saveRoom,
+  createRoom,
+  updateRoom,
   getAdminSettings,
   updateAdminSettings,
   getPrivileges,

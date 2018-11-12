@@ -13,18 +13,18 @@ class RoomModal extends Component {
   }
 
   verifyModalForm = () => {
-    let {roomID, roomCapacity, numOfComputers} = this.state;
+    let { roomID, roomCapacity, numOfComputers } = this.state;
     let result = true;
 
-    if(roomID.length === 0){
+    if (roomID.length === 0) {
       sweetAlert('Blocked', '"Room ID" field should not be empty.', 'warning');
       result = false;
     }
-    else if(isNaN(roomCapacity)){
+    else if (isNaN(roomCapacity)) {
       sweetAlert('Blocked', '"Room capacity" field should be a number.', 'warning');
       result = false;
     }
-    else if(isNaN(numOfComputers)){
+    else if (isNaN(numOfComputers)) {
       sweetAlert('Blocked', '"Number of Computer" field should be a number.', 'warning');
       result = false;
     }
@@ -42,43 +42,61 @@ class RoomModal extends Component {
     this.setState({ numOfComputers: event.target.value });
   }
 
-  componentDidMount(){
-    if(this.props.selectedRoom != null){
+  componentDidMount() {
+    if (this.props.selectedRoom != null) {
       this.setState({
-        roomID:this.props.selectedRoom.room_id,
-        roomCapacity:this.props.selectedRoom.capacity,
-        numOfComputers:this.props.selectedRoom.number_of_computers
+        roomID: this.props.selectedRoom.room_id,
+        roomCapacity: this.props.selectedRoom.capacity,
+        numOfComputers: this.props.selectedRoom.number_of_computers
       })
     }
   }
 
-  handleSubmit = () =>{
-    let {roomID, roomCapacity, numOfComputers} = this.state;
+  handleSubmit = () => {
+    let { roomID, roomCapacity, numOfComputers } = this.state;
     // Leaves the method if verification doesn't succeed
-    if(!this.verifyModalForm()){
+    if (!this.verifyModalForm()) {
       return;
     }
-    api.saveRoom(roomID, roomCapacity, numOfComputers)
-    .then((response)=>{
-      if(response.status.OK){
-        sweetAlert('Completed', 'Good job', 'success')
-        .then((result)=>{
-          this.props.onClose();
+    if (this.props.selectedRoom == null) {
+      api.createRoom(roomID, roomCapacity, numOfComputers)
+        .then((response) => {
+          if (response.status == 201) {
+            sweetAlert('Completed', `Room '${roomID}' was successfully created.`, 'success')
+              .then((result) => {
+                this.props.onClose();
+              })
+          }
         })
-      }
-    })
-    .catch((error)=>{
-      sweetAlert(':(', 'We are sorry. Something went wrong. Room was not saved.', 'error')
-        .then((result)=>{
-          this.props.onClose();
+        .catch((error) => {
+          sweetAlert(':(', 'We are sorry. Something went wrong. Room was not saved.', 'error')
+            .then((result) => {
+              this.props.onClose();
+            })
         })
-    })
-
+    }
+    else {
+      api.updateRoom(this.props.selectedRoom.id, roomID, roomCapacity, numOfComputers)
+        .then((response)=>{
+          if(response.status == 200) {
+            sweetAlert('Completed', `Room '${roomID}' was successfully updated.`, 'success')
+              .then((result)=>{
+                this.props.onClose();
+              })
+          }
+        })
+        .catch((error)=>{
+          sweetAlert(':(', 'We are sorry. Something went wrong. Room was not saved.', 'error')
+            .then((result) => {
+              this.props.onClose();
+            })
+        })
+    }
   }
 
   render() {
     let { show } = this.props;
-    let { roomCapacity, roomID, numOfComputers} = this.state;
+    let { roomCapacity, roomID, numOfComputers } = this.state;
     return (
       <div>
         <Modal centered={false} size={"tiny"} open={show} id='room-modal' onClose={this.props.onClose}>
@@ -90,9 +108,9 @@ class RoomModal extends Component {
               <h3>Room:</h3>
               <FormField>
                 <Input size='small'
-                    onChange={this.handleRoomIdOnChange}
-                    value={ roomID}
-                    disabled={this.props.selectedRoom != null}/>
+                  onChange={this.handleRoomIdOnChange}
+                  value={roomID}
+                  disabled={this.props.selectedRoom != null} />
               </FormField>
               <h3>Room capacity:</h3>
               <FormField>
@@ -106,7 +124,7 @@ class RoomModal extends Component {
                 <Input
                   size='small'
                   onChange={this.handleNumberOfComputersOnChange}
-                  value={ numOfComputers} />
+                  value={numOfComputers} />
               </FormField>
               <Button onClick={this.handleSubmit}>SAVE</Button>
               <Button onClick={this.props.onClose}>Close</Button>

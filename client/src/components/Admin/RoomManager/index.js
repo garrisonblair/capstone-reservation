@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, List, Message } from 'semantic-ui-react'
+import { Button, List, Message, Table } from 'semantic-ui-react'
 import SideNav from '../SideNav';
 import RoomRowItem from './RoomRowItem'
 import RoomModal from './RoomModal';
@@ -57,7 +57,31 @@ class RoomManager extends Component {
       </Message>
     )
   }
+  // renderTable = () =>{
+  //   return(
+  //   <Table>
+  //     <Table.Header>
+  //     <Table.Row>
+  //       <Table.HeaderCell>Name</Table.HeaderCell>
+  //       <Table.HeaderCell>Capacity</Table.HeaderCell>
+  //       <Table.HeaderCell ># of computers</Table.HeaderCell>
+  //     </Table.Row>
+  //   </Table.Header>
+  //   <Table.Body>
+  //     {this.state.roomsList.map(
+  //       room=>
+  //       <Table.Row >
+  //       <Table.Cell>{room.room_id}</Table.Cell>
+  //       <Table.Cell>{room.capacity}</Table.Cell>
+  //       <Table.Cell >{room.number_of_computers}</Table.Cell>
+  //     </Table.Row>
+  //     )}
 
+  //   </Table.Body>
+  //   </Table>
+  //   )
+
+  // }
   render() {
     let { roomsList, showModal } = this.state;
     return (
@@ -66,6 +90,7 @@ class RoomManager extends Component {
           <SideNav selectedMenu={'rooms'} />
           <div className="admin__content">
             <div id="room-management">
+            {/* {this.renderTable()} */}
               <h1>Manage Rooms</h1>
               {roomsList.length == 0 ? this.renderNoRoomList() : ''}
               <List divided verticalAlign='middle'>

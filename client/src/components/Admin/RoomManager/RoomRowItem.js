@@ -32,7 +32,7 @@ class RoomRowItem extends Component {
     })
     .then((result)=>{
       if(result.value){
-        api.deleteRoom(room.room_id)
+        api.deleteRoom(room.id)
         .then((response) =>{
           if(response.status){
             sweetAlert('Deleted',`Room ${room.room_id} was deleted.`,'success')
@@ -49,12 +49,14 @@ class RoomRowItem extends Component {
   }
 
   render() {
-    const {room_id} = this.props.room;
+    const {room_id, capacity, number_of_computers} = this.props.room;
     return (
       <List.Item className='row'>
         <List.Content floated='left'>
           <h2>{room_id}</h2>
+          Capacity: {capacity}    # of Computers {number_of_computers}
         </List.Content>
+
         <List.Content floated='right' className='row-buttons'>
           <Button icon='edit' onClick={this.openModal}/>
           <Button icon='trash' onClick={this.handleDeleteRoom}/>
