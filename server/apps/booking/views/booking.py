@@ -76,7 +76,7 @@ class BookingView(APIView):
         booking = self.get_booking(booking_id)
 
         if str(request.user.booker.booker_id) != str(booking.booker):
-            return Response("The booker who updates the booking must be the same as who created the booking.", 
+            return Response("The booker who updates the booking must be the same as who created the booking.",
                             status=status.HTTP_403_FORBIDDEN)
 
         else:
