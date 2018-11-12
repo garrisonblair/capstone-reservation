@@ -106,7 +106,7 @@ class EditBookingForm extends Component {
     .catch((error) => {
       sweetAlert(
         'Reservation failed',
-        error.response.data[0],
+        error.response.data,
         'error'
       )
     })
