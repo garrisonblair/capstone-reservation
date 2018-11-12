@@ -1,6 +1,4 @@
 import datetime
-import unittest
-from unittest import mock
 
 from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory

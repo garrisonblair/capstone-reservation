@@ -9,13 +9,12 @@ from rest_framework import status
 
 from apps.booking.models.Booking import Booking
 
-from apps.booking.serializers.booking_serializer import BookingSerializer
+from apps.booking.serializers.booking_serializer import BookingSerializer, ReadBookingSerializer
 
 
 class BookingView(APIView):
 
     def post(self, request):
-
         # Must be logged in as booker
         if not request.user or request.user.booker is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -64,7 +63,7 @@ class BookingView(APIView):
 
         bookings_list = list()
         for booking in bookings:
-            serializer = BookingSerializer(booking)
+            serializer = ReadBookingSerializer(booking)
             bookings_list.append(serializer.data)
         return Response(bookings_list, status=status.HTTP_200_OK)
 

@@ -44,17 +44,10 @@ class UserSerializerLogin(UserSerializer):
         return token.key
 
 
-class StudentSerializer(serializers.ModelSerializer):
-    booker_id = serializers.SerializerMethodField()
+class BookerSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer()
 
     class Meta:
-        model = User
-        fields = ('id', 'username', 'booker_id', 'first_name', 'last_name', 'email')
-
-    def get_booker_id(self, user):
-        """
-            Get student ID
-        """
-
-        student = Booker.objects.get(user=user)
-        return student.booker_id
+        model = Booker
+        fields = ('booker_id', 'user')

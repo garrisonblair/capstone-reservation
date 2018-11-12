@@ -24,7 +24,7 @@ exports[`Shows calendar 1`] = `
         aria-hidden="true"
         className="calendar alternate outline icon"
       />
-      Mon Nov 05 2018
+      Fri Nov 09 2018
     </h3>
     <button
       className="ui tiny basic circular icon button"
