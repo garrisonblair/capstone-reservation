@@ -25,7 +25,7 @@ class RoomModal extends Component {
       result = false;
     }
     else if (isNaN(numOfComputers)) {
-      sweetAlert('Blocked', '"Number of Computer" field should be a number.', 'warning');
+      sweetAlert('Blocked', '"Number of Computers" field should be a number.', 'warning');
       result = false;
     }
 
@@ -125,7 +125,8 @@ class RoomModal extends Component {
                 onChange={this.handleNumberOfComputersOnChange}
                 value={numOfComputers} />
             </FormField>
-            <Button onClick={this.handleSubmit}>SAVE</Button>
+            <br/> <br/>
+            <Button onClick={this.handleSubmit} color="blue">SAVE</Button>
             <Button onClick={this.props.onClose}>Close</Button>
           </Modal.Description>
         </Modal.Content>

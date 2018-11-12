@@ -36,7 +36,7 @@ class RoomRowItem extends Component {
         api.deleteRoom(room.id)
         .then((response) =>{
           if(response.status){
-            sweetAlert('Deleted',`Room ${room.room_id} was deleted.`,'success')
+            sweetAlert('Deleted',`Room '${room.room_id}' was deleted.`,'success')
             .then((response)=>{
               this.props.syncRoomList();
             })
