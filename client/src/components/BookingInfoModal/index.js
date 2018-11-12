@@ -31,10 +31,10 @@ class BookingInfoModal extends Component {
   checkCamponPossible(booking) {
     if(booking.id) {
       let currentDate = new Date();
-      let currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}`;
+      let currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}00`;
       let bookingEndTime = booking.end_time.replace(/:/g, '');
-      bookingEndTime = bookingEndTime / 100;
-      if(currentTime < bookingEndTime) {
+      let bookingStartTime = booking.start_time.replace(/:/g, '');
+      if(currentTime < bookingEndTime && currentTime > bookingStartTime) {
         return true;
       } else {
         return false;
