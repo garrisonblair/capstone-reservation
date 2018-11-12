@@ -79,7 +79,9 @@ class BookingView(APIView):
                             status=status.HTTP_403_FORBIDDEN)
 
         else:
-            serializer = BookingSerializer(booking, data=request.data, partial=True)
+            booking_data = dict(request.data)
+            booking_data["booker"] = request.user.booker.booker_id
+            serializer = BookingSerializer(booking, data=booking_data, partial=True)
 
             if not serializer.is_valid():
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -375,6 +375,34 @@ class BookingAPITest(TestCase):
         edit_booking = Booking.objects.last()
         self.assertEqual(edit_booking.end_time, datetime.time(16, 00))
 
+    def testEditBookingWithBookerId(self):
+
+        # Setup one Booking
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
+        booking1.save()
+
+        # Get the added Booking
+        oct7_date = datetime.date(2018, 10, 7)
+        bookings_oct7 = Booking.objects.last()
+        request = self.factory.patch("/booking", {
+                                        "booker": "44444444",
+                                        "room": 2,
+                                        "date": "2018-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "16:00:00"
+                                    },
+                                   format="json")
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = BookingView.as_view()(request, 1)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(Booking.objects.all()), 1)
+        edit_booking = Booking.objects.last()
+        self.assertEqual(edit_booking.booker.booker_id, "j_lenn")
+
     def testEditBookingForbidden(self):
 
         # Setup one Booking

@@ -144,9 +144,3 @@ class Booking(models.Model, SubjectModel):
 
     def get_observers(self):
         return Booking.observers
-
-    def get_readonly_fields(self, request, id=None):
-        if id:
-            return ["booking", "room"]
-        else:
-            return []
