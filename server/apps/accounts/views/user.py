@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from ..models.Booker import Booker
 from ..models.PrivilegeCategory import PrivilegeCategory
-from ..serializers.UserSerializer import UserSerializer, UserSerializerLogin, BookerSerializer
+from ..serializers.user import UserSerializer, UserSerializerLogin, BookerSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 
 
@@ -22,8 +22,7 @@ class UserList(ListAPIView):
 class UserUpdate(APIView):
     permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
 
-    def patch(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
+    def patch(self, request, pk):
         username = request.data.get('username')
         password = request.data.get('password')
         first_name = request.data.get('first_name')
