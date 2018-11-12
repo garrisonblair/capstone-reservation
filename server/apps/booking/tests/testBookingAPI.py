@@ -24,9 +24,9 @@ class BookingAPITest(TestCase):
                                              password='glass onion')
         self.user.save()
 
-        booker = Booker(booker_id="j_lenn")
-        booker.user = self.user
-        booker.save()
+        self.booker = Booker(booker_id="j_lenn")
+        self.booker.user = self.user
+        self.booker.save()
 
         room = Room(room_id="H833-17", capacity=4, number_of_computers=1)
         room.save()
@@ -347,3 +347,158 @@ class BookingAPITest(TestCase):
         response = BookingView.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testEditBookingSuccessful(self):
+
+        # Setup one Booking
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
+        booking1.save()
+
+        # Get the added Booking
+        oct7_date = datetime.date(2018, 10, 7)
+        bookings_oct7 = Booking.objects.last()
+        request = self.factory.patch("/booking", {
+                                        "room": 2,
+                                        "date": "2018-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "16:00:00"
+                                    },
+                                   format="json")
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = BookingView.as_view()(request, 1)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(Booking.objects.all()), 1)
+        edit_booking = Booking.objects.last()
+        self.assertEqual(edit_booking.end_time, datetime.time(16, 00))
+
+    def testEditBookingWithBookerId(self):
+
+        # Setup one Booking
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
+        booking1.save()
+
+        # Get the added Booking
+        oct7_date = datetime.date(2018, 10, 7)
+        bookings_oct7 = Booking.objects.last()
+        request = self.factory.patch("/booking", {
+                                        "booker": "44444444",
+                                        "room": 2,
+                                        "date": "2018-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "16:00:00"
+                                    },
+                                   format="json")
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = BookingView.as_view()(request, 1)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(Booking.objects.all()), 1)
+        edit_booking = Booking.objects.last()
+        self.assertEqual(edit_booking.booker.booker_id, "j_lenn")
+
+    def testEditBookingForbidden(self):
+
+        # Setup one Booking
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
+        booking1.save()
+
+        # Setup another booker
+        user1 = User.objects.create_user(username='solji',
+                                         email='solji@exid.com',
+                                         password='maskOfKing')
+        user1.save()
+
+        booker1 = Booker(booker_id="sol_exid")
+        booker1.user = user1
+        booker1.save()
+
+        # Get the added Booking
+        oct7_date = datetime.date(2018, 10, 7)
+        bookings_oct7 = Booking.objects.last()
+        request = self.factory.patch("/booking", {
+                                        "room": 2,
+                                        "date": "2018-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "16:00:00"
+                                    },
+                                   format="json")
+        force_authenticate(request, user=User.objects.get(username="solji"))
+        response = BookingView.as_view()(request, 1)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def testEditBookingOverlapEndTime(self):
+
+        # Setup one Booking
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
+        booking1.save()
+
+        # Setup second Booking
+        booker2 = Booker(booker_id='87654321')
+        booker2.user = None
+        booker2.save()
+
+        booking2 = Booking(booker=booker2, room=room, date="2018-10-7", start_time="15:00", end_time="17:00")
+        booking2.save()
+
+        # Get the added Booking
+        oct7_date = datetime.date(2018, 10, 7)
+        bookings_oct7 = Booking.objects.last()
+        request = self.factory.patch("/booking", {
+                                        "room": 2,
+                                        "date": "2018-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "16:00:00"
+                                    },
+                                   format="json")
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = BookingView.as_view()(request, 1)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(Booking.objects.all()), 2)
+
+    def testEditBookingOverlapStartTime(self):
+
+        # Setup one Booking
+        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
+        booking1.save()
+
+        # Setup second Booking
+        booker2 = Booker(booker_id='87654321')
+        booker2.user = None
+        booker2.save()
+
+        booking2 = Booking(booker=booker2, room=room, date="2018-10-7", start_time="13:00", end_time="14:00")
+        booking2.save()
+
+        # Get the added Booking
+        oct7_date = datetime.date(2018, 10, 7)
+        bookings_oct7 = Booking.objects.last()
+        request = self.factory.patch("/booking", {
+                                        "room": 2,
+                                        "date": "2018-10-7",
+                                        "start_time": "13:30:00",
+                                        "end_time": "15:00:00"
+                                    },
+                                   format="json")
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = BookingView.as_view()(request, 1)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(Booking.objects.all()), 2)
