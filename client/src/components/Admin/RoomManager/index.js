@@ -10,7 +10,7 @@ import api from '../../../utils/api';
 
 class RoomManager extends Component {
   state = {
-    roomsList: [{id:"2", capacity:2, numComputers:8}],
+    roomsList: [],
     showModal: false,
     selectedRoom: null
   }
@@ -36,7 +36,7 @@ class RoomManager extends Component {
   syncRooms = () => {
     api.getRooms()
     .then((response)=>{
-      this.setState({});
+       this.setState({roomsList:response.data});
     })
   }
 

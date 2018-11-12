@@ -23,7 +23,7 @@ class RoomRowItem extends Component {
     sweetAlert({
       title:'Confirmation',
       type:'warning',
-      text:`Are you sure you want to delete room ${room.id}`,
+      text:`Are you sure you want to delete room ${room.room_id}`,
       showConfirmButton:true,
       confirmButtonText:'Delete',
       showCancelButton:true,
@@ -32,10 +32,10 @@ class RoomRowItem extends Component {
     })
     .then((result)=>{
       if(result.value){
-        api.deleteRoom(room.id)
+        api.deleteRoom(room.room_id)
         .then((response) =>{
           if(response.status){
-            sweetAlert('Deleted',`Room ${room.id} was deleted.`,'success')
+            sweetAlert('Deleted',`Room ${room.room_id} was deleted.`,'success')
             .then((response)=>{
               this.props.syncRoomList();
             })
@@ -49,11 +49,11 @@ class RoomRowItem extends Component {
   }
 
   render() {
-    const {id} = this.props.room;
+    const {room_id} = this.props.room;
     return (
       <List.Item className='row'>
         <List.Content floated='left'>
-          <h2>Room {id}</h2>
+          <h2>{room_id}</h2>
         </List.Content>
         <List.Content floated='right' className='row-buttons'>
           <Button icon='edit' onClick={this.openModal}/>
