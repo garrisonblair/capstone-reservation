@@ -9,7 +9,7 @@ from rest_framework import status
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
-from apps.booking.serializers.booking_serializer import BookingSerializer, ReadBookingSerializer
+from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer
 from apps.accounts.exceptions import PrivilegeError
 
 

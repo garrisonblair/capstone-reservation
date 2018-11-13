@@ -6,7 +6,7 @@ from rest_framework import status
 
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.exceptions import PrivilegeError
-from apps.booking.serializers.recurring_booking_serializer import RecurringBookingSerializer
+from apps.booking.serializers.recurring_booking import RecurringBookingSerializer
 
 
 class RecurringBookingCreate(APIView):

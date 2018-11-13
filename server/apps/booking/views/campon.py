@@ -9,8 +9,8 @@ from rest_framework import status
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.CampOn import CampOn
 from apps.booking.models.Booking import Booking
-from apps.booking.serializers.campon_serializer import CampOnSerializer
-from apps.booking.serializers.booking_serializer import BookingSerializer
+from apps.booking.serializers.campon import CampOnSerializer
+from apps.booking.serializers.booking import BookingSerializer
 
 
 class CampOnList(ListAPIView):
