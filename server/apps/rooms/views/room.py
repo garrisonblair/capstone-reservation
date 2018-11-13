@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from apps.booking.models.Booking import Booking
 from apps.rooms.models.Room import Room
-from apps.rooms.serializers.room_serializer import RoomSerializer
+from apps.rooms.serializers.room import RoomSerializer
 
 
 class RoomView(APIView):
