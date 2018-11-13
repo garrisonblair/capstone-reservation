@@ -10,18 +10,26 @@ class AddPrivilegeModal extends Component {
 
   state = {
     name: '',
-    parent: '',
-    maxDaysUntilBooking: 0,
-    maxBookings: 0,
-    maxRecurringBookings: 0,
-    recurringBookingPermission: false,
-    bookingStartTime: '08:00:00',
-    bookingEndTime: '23:00:00'
+    // parent: '',
+    // maxDaysUntilBooking: 0,
+    // maxBookings: 0,
+    // maxRecurringBookings: 0,
+    // recurringBookingPermission: false,
+    // isDefault: false,
+    // bookingStartTime: '08:00:00',
+    // bookingEndTime: '23:00:00'
   }
 
   handleInputChange = (state, e) => {
     this.setState({
       [`${state}`]: e.target.value
+    })
+  }
+
+  handleCheckbox = (state, e, data) => {
+    const {checked} = data;
+    this.setState({
+      [`${state}`]: checked
     })
   }
 
@@ -31,24 +39,42 @@ class AddPrivilegeModal extends Component {
     })
   }
 
-  handleRecurringBookingPermission = (e, data) => {
-    const {checked} = data;
-    this.setState({
-      recurringBookingPermission: checked
-    })
-  }
-
   handleSubmit = (e) => {
-    const {name, parent, maxDaysUntilBooking, maxBookings, maxRecurringBookings, recurringBookingPermission, bookingStartTime, bookingEndTime} = this.state;
+    const {name, parent, maxDaysUntilBooking, maxBookings, maxRecurringBookings, recurringBookingPermission, isDefault, bookingStartTime, bookingEndTime} = this.state;
     let data = {
-      name,
-      parent_category: parent,
-      max_days_until_booking: maxDaysUntilBooking,
-      max_bookings: maxBookings,
-      max_recurring_bookings: maxRecurringBookings,
-      can_make_recurring_booking: recurringBookingPermission,
-      booking_start_time: bookingStartTime,
-      booking_end_time: bookingEndTime
+      name
+    }
+
+    if (parent) {
+      data['parent_category'] = parent;
+    }
+
+    if (maxDaysUntilBooking) {
+      data['max_days_until_booking'] = maxDaysUntilBooking;
+    }
+
+    if (maxBookings) {
+      data['max_bookings'] = maxBookings;
+    }
+
+    if (maxRecurringBookings) {
+      data['max_recurring_bookings'] = maxRecurringBookings;
+    }
+
+    if (recurringBookingPermission) {
+      data['can_make_recurring_booking'] = recurringBookingPermission;
+    }
+
+    if (isDefault) {
+      data['is_default'] = isDefault;
+    }
+
+    if (bookingStartTime) {
+      data['booking_start_time'] = bookingStartTime;
+    }
+
+    if (bookingEndTime) {
+      data['booking_end_time'] = bookingEndTime;
     }
 
     console.log(data);
@@ -60,17 +86,21 @@ class AddPrivilegeModal extends Component {
         'New privilege successfully added.',
         'success'
       )
+      .then(() => {
+        this.props.onClose();
 
-      // Reset states
-      this.setState({
-        name: '',
-        parent: '',
-        maxDaysUntilBooking: 0,
-        maxBookings: 0,
-        maxRecurringBookings: 0,
-        recurringBookingPermission: false,
-        bookingStartTime: '08:00:00',
-        bookingEndTime: '23:00:00'
+        // Reset states
+        this.setState({
+          name: '',
+          parent: '',
+          maxDaysUntilBooking: 0,
+          maxBookings: 0,
+          maxRecurringBookings: 0,
+          recurringBookingPermission: false,
+          isDefault: false,
+          bookingStartTime: '08:00:00',
+          bookingEndTime: '23:00:00'
+        })
       })
     })
     .catch((error) => {
@@ -102,12 +132,11 @@ class AddPrivilegeModal extends Component {
         type: 'error'
       })
     })
-    this.props.onClose();
   }
 
   renderForm() {
     const {privileges} = this.props;
-    const {recurringBookingPermission, bookingStartTime, bookingEndTime} = this.state;
+    const {recurringBookingPermission, isDefault, bookingStartTime, bookingEndTime} = this.state;
 
     let privilegeOptions = privileges.map((privilege) => ({
       key: privilege.id,
@@ -133,6 +162,13 @@ class AddPrivilegeModal extends Component {
             onChange={(e) => this.handleInputChange('name', e)}
           />
         </Form.Field>
+        <FormField>
+          <Checkbox
+            label='Default'
+            checked={isDefault}
+            onChange={(e, data) => this.handleCheckbox('isDefault', e, data)}
+          />
+        </FormField>
         <Form.Field>
           <Dropdown
             placeholder='Parent'
@@ -170,7 +206,7 @@ class AddPrivilegeModal extends Component {
           <Checkbox
             label='Recurring Booking Permission'
             checked={recurringBookingPermission}
-            onChange={this.handleRecurringBookingPermission}
+            onChange={(e, data) => this.handleCheckbox('recurringBookingPermission', e, data)}
           />
         </FormField>
         <Form.Field>
