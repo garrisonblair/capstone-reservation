@@ -11,10 +11,11 @@ from ..models.Booker import Booker
 from ..models.PrivilegeCategory import PrivilegeCategory
 from ..serializers.user import UserSerializer, UserSerializerLogin, BookerSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
+from ..permissions.IsSuperUser import IsSuperUser
 
 
 class UserList(ListAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsSuperUser)
     queryset = User.objects.all()
     serializer_class = UserSerializerLogin
 
