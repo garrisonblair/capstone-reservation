@@ -15,7 +15,7 @@ from apps.accounts.exceptions import PrivilegeError
 
 class BookingList(ListAPIView):
     permission_classes = ()
-    serializer_class = BookingSerializer
+    serializer_class = ReadBookingSerializer
     queryset = Booking.objects.all()
 
     def get_queryset(self):
