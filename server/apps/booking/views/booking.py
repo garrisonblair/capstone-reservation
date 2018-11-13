@@ -62,24 +62,23 @@ class BookingRetrieveUpdateDestroy(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
     serializer_class = BookingSerializer
 
-    def patch(self, request, booking_id):
+    def patch(self, request, pk):
 
-        booking = Booking.objects.get(id=booking_id)
+        booking = Booking.objects.get(pk=pk)
 
         if str(request.user.booker.booker_id) != str(booking.booker):
-            return Response("The booker who updates the booking must be the same as who created the booking.",
-                            status=status.HTTP_403_FORBIDDEN)
+            error_msg = "The booker who updates the booking must be the same as who created the booking."
+            return Response(error_msg, status=status.HTTP_403_FORBIDDEN)
 
-        else:
-            booking_data = dict(request.data)
-            booking_data["booker"] = request.user.booker.booker_id
-            serializer = BookingSerializer(booking, data=booking_data, partial=True)
+        data = request.data
+        data["booker"] = request.user.booker.booker_id
+        serializer = BookingSerializer(booking, data=data, partial=True)
 
-            if not serializer.is_valid():
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            try:
-                update_booking = serializer.save()
-                return Response(BookingSerializer(update_booking).data, status=status.HTTP_204_NO_CONTENT)
-            except ValidationError as error:
-                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except ValidationError as error:
+            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)

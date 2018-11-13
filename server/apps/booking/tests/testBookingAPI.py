@@ -263,7 +263,7 @@ class BookingAPITest(TestCase):
         force_authenticate(request, user=User.objects.get(username="john"))
         response = BookingRetrieveUpdateDestroy.as_view()(request, 1)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(Booking.objects.all()), 1)
         edit_booking = Booking.objects.last()
         self.assertEqual(edit_booking.end_time, datetime.time(16, 00))
@@ -291,7 +291,7 @@ class BookingAPITest(TestCase):
         force_authenticate(request, user=User.objects.get(username="john"))
         response = BookingRetrieveUpdateDestroy.as_view()(request, 1)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(Booking.objects.all()), 1)
         edit_booking = Booking.objects.last()
         self.assertEqual(edit_booking.booker.booker_id, "j_lenn")
