@@ -4,6 +4,15 @@ import './PrivilegeDetailsModal.scss';
 
 
 class PrivilegeDetailsModal extends Component {
+  renderBoolean(boolean) {
+    return (
+      <Icon
+        name={boolean? "check circle": "times circle"}
+        color={boolean? "green": "red"}
+      />
+    )
+  }
+
   render() {
     return (
       <Modal className="privilege-details-modal" open={this.props.show} onClose={this.props.onClose}>
@@ -14,6 +23,10 @@ class PrivilegeDetailsModal extends Component {
           <p>
             <strong> Name: </strong>
             {this.props.privilege.name}
+          </p>
+          <p>
+            <strong> Default: </strong>
+            {this.renderBoolean(this.props.privilege.is_default)}
           </p>
           <p>
           <strong> Parent Category: </strong>
@@ -33,7 +46,7 @@ class PrivilegeDetailsModal extends Component {
           </p>
           <p>
             <strong> Recurring Booking Permission: </strong>
-            {this.props.privilege.can_make_recurring_booking}
+            {this.renderBoolean(this.props.privilege.can_make_recurring_booking)}
           </p>
           <p>
             <strong> Booking Start Time: </strong>

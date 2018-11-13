@@ -98,7 +98,9 @@ class Booking(models.Model, SubjectModel):
     def get_active_bookings(self, booker_entity):
         today = datetime.datetime.now().date()
         now = datetime.datetime.now().time()
-        return booker_entity.booking_set.filter(date__gte=today, end_time__gte=now)
+
+        return booker_entity.booking_set.filter(Q(Q(date=today) & Q(end_time__gte=now))
+                                                | Q(date__gt=today))
 
     def get_active_non_recurring_bookings(self, booker_entity):
         return self.get_active_bookings(booker_entity).filter(recurring_booking=None)

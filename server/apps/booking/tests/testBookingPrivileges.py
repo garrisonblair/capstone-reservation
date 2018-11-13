@@ -195,7 +195,7 @@ class TestBookingPrivileges(TestCase):
 
         booking2 = Booking(booker=self.booker,
                            room=self.room,
-                           date=date.today(),
+                           date=date.today() + datetime.timedelta(1),
                            start_time=time(13, 0, 0),
                            end_time=time(14, 0, 0)
                            )

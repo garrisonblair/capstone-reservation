@@ -38,7 +38,7 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
             comparator=BooleanComparator()
         ),
         "max_bookings": FieldMetadata(
-            error_message="Booker has too many bookings. Maximum: ",
+            error_message="Booker has too many bookings.",
             comparator=IntegerComparator()
         ),
         "max_recurring_bookings": FieldMetadata(
