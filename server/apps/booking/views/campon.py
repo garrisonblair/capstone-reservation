@@ -1,56 +1,106 @@
+import datetime
 from django.core.exceptions import ValidationError
+from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.CampOn import CampOn
 from apps.booking.models.Booking import Booking
 from apps.booking.serializers.campon_serializer import CampOnSerializer
 from apps.booking.serializers.booking_serializer import BookingSerializer
-import datetime
 
 
-class CampOnView(APIView):
+# class CampOnCreate
+
+class CampOnList(ListAPIView):
+    permission_classes = ()
+    serializer_class = CampOnSerializer
+    queryset = CampOn.objects.all()
+
+    def get_queryset(self):
+        qs = super(ListAPIView, self).get_queryset()
+
+        # Filter by id
+        id = self.request.GET.get('id')
+        if id:
+            qs = CampOn.objects.filter(id=id)
+
+        # Filter by booking_id
+        booking_id = self.request.GET.get('booking_id')
+        if booking_id:
+            qs = CampOn.objects.filter(camped_on_booking__id=booking_id)
+
+        # Filter by start_time
+        start_time = self.request.GET.get('start_time')
+        if start_time:
+            qs = CampOn.objects.filter(start_time=start_time)
+
+        # Filter by end_time
+        end_time = self.request.GET.get('end_time')
+        if end_time:
+            qs = CampOn.objects.filter(end_time=end_time)
+
+        return qs
+
+    def get(self, request):
+        try:
+            qs = self.get_queryset()
+            serializer = CampOnSerializer(qs, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            # print(str(e))
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+# TODO: Refactor
+class CampOnCreate(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+    serializer_class = CampOnSerializer
 
     def post(self, request):
-        # Must be logged in as student
-        if not request.user or not request.user.booker:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        camp_on_data = dict(request.data)
-        camp_on_data["booker"] = request.user.booker.booker_id
+        data = request.data
+        data["booker"] = request.user.booker.booker_id
 
+        # Round to nearest 10th minute
         time = datetime.datetime.now().replace(microsecond=0)
-        discard = datetime.timedelta(minutes=time.minute % 10,
-                                     seconds=time.second,
-                                     microseconds=time.microsecond)
+        discard = datetime.timedelta(
+            minutes=time.minute % 10,
+            seconds=time.second,
+            microseconds=time.microsecond
+        )
         time -= discard
         if discard >= datetime.timedelta(minutes=5):
             time += datetime.timedelta(minutes=10)
 
-        camp_on_data["start_time"] = time.time()
-        serializer = CampOnSerializer(data=camp_on_data)
+        data["start_time"] = time.time()
+        serializer = CampOnSerializer(data=data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
+            # Find current booking to be camped on
+            current_booking = Booking.objects.get(id=data["camped_on_booking"])
+            request_end_time = datetime.datetime.strptime(data["end_time"], "%H:%M").time()
 
-            current_booking = Booking.objects.get(id=camp_on_data["camped_on_booking"])
-            request_end_time = datetime.datetime.strptime(camp_on_data["end_time"], "%H:%M").time()
-
+            # Check if requested end time ends after the current_current end time
             if request_end_time > current_booking.end_time:
+                bookings = Booking.objects.filter(
+                    start_time__gte=current_booking.end_time,
+                    start_time__lt=request_end_time,
+                    room=current_booking.room
+                )
 
-                found_bookings = Booking.objects.filter(
-                                    start_time__gte=current_booking.end_time,
-                                    start_time__lt=request_end_time,
-                                    room=current_booking.room)
-
-                if found_bookings:
+                if bookings:
                     return Response("End time overlaps with future booking", status=status.HTTP_409_CONFLICT)
-                # No Booking found, create new Booking and create CampOn
 
-                camp_on_data["end_time"] = current_booking.end_time
-                new_camp_on_serializer = CampOnSerializer(data=camp_on_data)
+                # No Booking found, create new Booking and create CampOn
+                data["end_time"] = current_booking.end_time
+                new_camp_on_serializer = CampOnSerializer(data=data)
 
                 if not new_camp_on_serializer.is_valid():
                     return Response(new_camp_on_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -76,31 +126,3 @@ class CampOnView(APIView):
 
         except (ValueError, ValidationError) as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, request):
-        request_id = request.GET.get('id')
-        request_booking = request.GET.get('camped_on_booking')
-        request_start_time = request.GET.get('start_time')
-        request_end_time = request.GET.get('end_time')
-
-        try:
-            if request_id is not None:
-                camp_ons = CampOn.objects.filter(id=request_id)
-            elif not(not request_booking or not request_start_time or not request_end_time):
-                camp_ons = CampOn.objects.filter(camped_on_booking=request_booking,
-                                                 start_time=request_start_time,
-                                                 end_time=request_end_time)
-            elif not(not request_start_time or not request_end_time):
-                camp_ons = CampOn.objects.filter(start_time=request_start_time, end_time=request_end_time)
-            elif request_booking is not None:
-                camp_ons = CampOn.objects.filter(camped_on_booking=request_booking)
-            else:
-                camp_ons = CampOn.objects.all()
-        except (ValueError, ValidationError) as error:
-            return Response(error, status=status.HTTP_400_BAD_REQUEST)
-
-        camp_on_list = list()
-        for camp_on in camp_ons:
-            serializer = CampOnSerializer(camp_on)
-            camp_on_list.append(serializer.data)
-        return Response(camp_on_list, status=status.HTTP_200_OK)
