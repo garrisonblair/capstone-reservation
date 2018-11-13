@@ -10,14 +10,14 @@ class AddPrivilegeModal extends Component {
 
   state = {
     name: '',
-    parent: '',
-    maxDaysUntilBooking: 0,
-    maxBookings: 0,
-    maxRecurringBookings: 0,
-    recurringBookingPermission: false,
-    isDefault: false,
-    bookingStartTime: '08:00:00',
-    bookingEndTime: '23:00:00'
+    // parent: '',
+    // maxDaysUntilBooking: 0,
+    // maxBookings: 0,
+    // maxRecurringBookings: 0,
+    // recurringBookingPermission: false,
+    // isDefault: false,
+    // bookingStartTime: '08:00:00',
+    // bookingEndTime: '23:00:00'
   }
 
   handleInputChange = (state, e) => {
@@ -42,15 +42,39 @@ class AddPrivilegeModal extends Component {
   handleSubmit = (e) => {
     const {name, parent, maxDaysUntilBooking, maxBookings, maxRecurringBookings, recurringBookingPermission, isDefault, bookingStartTime, bookingEndTime} = this.state;
     let data = {
-      name,
-      parent_category: parent,
-      max_days_until_booking: maxDaysUntilBooking,
-      max_bookings: maxBookings,
-      max_recurring_bookings: maxRecurringBookings,
-      can_make_recurring_booking: recurringBookingPermission,
-      is_default: isDefault,
-      booking_start_time: bookingStartTime,
-      booking_end_time: bookingEndTime
+      name
+    }
+
+    if (parent) {
+      data['parent_category'] = parent;
+    }
+
+    if (maxDaysUntilBooking) {
+      data['max_days_until_booking'] = maxDaysUntilBooking;
+    }
+
+    if (maxBookings) {
+      data['max_bookings'] = maxBookings;
+    }
+
+    if (maxRecurringBookings) {
+      data['max_recurring_bookings'] = maxRecurringBookings;
+    }
+
+    if (recurringBookingPermission) {
+      data['can_make_recurring_booking'] = recurringBookingPermission;
+    }
+
+    if (isDefault) {
+      data['is_default'] = isDefault;
+    }
+
+    if (bookingStartTime) {
+      data['booking_start_time'] = bookingStartTime;
+    }
+
+    if (bookingEndTime) {
+      data['booking_end_time'] = bookingEndTime;
     }
 
     console.log(data);
@@ -62,18 +86,21 @@ class AddPrivilegeModal extends Component {
         'New privilege successfully added.',
         'success'
       )
+      .then(() => {
+        this.props.onClose();
 
-      // Reset states
-      this.setState({
-        name: '',
-        parent: '',
-        maxDaysUntilBooking: 0,
-        maxBookings: 0,
-        maxRecurringBookings: 0,
-        recurringBookingPermission: false,
-        isDefault: false,
-        bookingStartTime: '08:00:00',
-        bookingEndTime: '23:00:00'
+        // Reset states
+        this.setState({
+          name: '',
+          parent: '',
+          maxDaysUntilBooking: 0,
+          maxBookings: 0,
+          maxRecurringBookings: 0,
+          recurringBookingPermission: false,
+          isDefault: false,
+          bookingStartTime: '08:00:00',
+          bookingEndTime: '23:00:00'
+        })
       })
     })
     .catch((error) => {
@@ -105,7 +132,6 @@ class AddPrivilegeModal extends Component {
         type: 'error'
       })
     })
-    this.props.onClose();
   }
 
   renderForm() {
