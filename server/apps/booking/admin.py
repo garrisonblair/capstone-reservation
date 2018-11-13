@@ -13,7 +13,17 @@ class CampOnAdmin(admin.ModelAdmin):
 
 
 class RecurringBookingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'start_date', 'end_date', 'booking_start_time', 'booking_end_time', 'room', 'booker', 'group', 'skip_conflicts')
+    list_display = (
+        'id',
+        'start_date',
+        'end_date',
+        'booking_start_time',
+        'booking_end_time',
+        'room',
+        'booker',
+        'group',
+        'skip_conflicts'
+    )
 
 
 admin.site.register(Booking, BookingAdmin)
