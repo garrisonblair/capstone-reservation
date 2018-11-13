@@ -28,7 +28,7 @@ END:VEVENT
 END:VCALENDAR"""
 
     def setUp(self):
-        room = Room(room_id="Room 1")
+        room = Room(name="Room 1")
         room.save()
 
         external_id = ExternalRoomID(external_id="_ROOM1_")

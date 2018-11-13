@@ -123,10 +123,10 @@ function getRooms() {
   })
 }
 
-function createRoom(room_id, capacity, number_of_computers) {
+function createRoom(name, capacity, number_of_computers) {
   const headers = getTokenHeader();
   const data = {
-    room_id,
+    name,
     capacity,
     number_of_computers,
   }
@@ -139,10 +139,10 @@ function createRoom(room_id, capacity, number_of_computers) {
   })
 }
 
-function updateRoom(id, room_id, capacity, number_of_computers) {
+function updateRoom(id, name, capacity, number_of_computers) {
   const headers = getTokenHeader();
   const data = {
-    room_id,
+    name,
     capacity,
     number_of_computers,
   }

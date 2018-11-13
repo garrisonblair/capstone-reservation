@@ -39,7 +39,7 @@ class BookingAPITest(TestCase):
         self.group.bookers.add(booker1)
         self.group.bookers.add(booker2)
 
-        self.room = Room(room_id="H833-17", capacity=4, number_of_computers=1)
+        self.room = Room(name="H833-17", capacity=4, number_of_computers=1)
         self.room.save()
 
         start = datetime.strptime("2019-10-01 12:00", "%Y-%m-%d %H:%M")

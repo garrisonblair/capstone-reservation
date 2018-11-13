@@ -30,7 +30,7 @@ class BookingAPITest(TestCase):
         self.booker.user = self.user
         self.booker.save()
 
-        room = Room(room_id="H833-17", capacity=4, number_of_computers=1)
+        room = Room(name="H833-17", capacity=4, number_of_computers=1)
         room.save()
 
     def testCreateBookingSuccess(self):
@@ -56,7 +56,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(created_booking.start_time, datetime.time(14, 0))
         self.assertEqual(created_booking.end_time, datetime.time(15, 0))
         self.assertEqual(created_booking.date, datetime.date(2019, 8, 10))
-        self.assertEqual(created_booking.room, Room.objects.get(room_id="H833-17"))
+        self.assertEqual(created_booking.room, Room.objects.get(name="H833-17"))
         self.assertEqual(created_booking.booker, Booker.objects.get(booker_id='j_lenn'))
 
     def testCreateBookingNotAuthenticated(self):
@@ -92,7 +92,7 @@ class BookingAPITest(TestCase):
         booker.user = None
         booker.save()
 
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=booker, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
@@ -126,7 +126,7 @@ class BookingAPITest(TestCase):
         booker.user = None
         booker.save()
 
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
@@ -160,7 +160,7 @@ class BookingAPITest(TestCase):
         booker.user = None
         booker.save()
 
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=booker, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
@@ -193,7 +193,7 @@ class BookingAPITest(TestCase):
         booker.user = None
         booker.save()
 
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=booker, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
@@ -218,7 +218,7 @@ class BookingAPITest(TestCase):
         booker.user = None
         booker.save()
 
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=booker, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
@@ -244,7 +244,7 @@ class BookingAPITest(TestCase):
     def testEditBookingSuccessful(self):
 
         # Setup one Booking
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
@@ -271,7 +271,7 @@ class BookingAPITest(TestCase):
     def testEditBookingWithBookerId(self):
 
         # Setup one Booking
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
@@ -299,7 +299,7 @@ class BookingAPITest(TestCase):
     def testEditBookingForbidden(self):
 
         # Setup one Booking
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
@@ -333,7 +333,7 @@ class BookingAPITest(TestCase):
     def testEditBookingOverlapEndTime(self):
 
         # Setup one Booking
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
@@ -366,7 +366,7 @@ class BookingAPITest(TestCase):
     def testEditBookingOverlapStartTime(self):
 
         # Setup one Booking
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
+        room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()
 
         booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")

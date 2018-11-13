@@ -8,7 +8,7 @@ class TestModels(TestCase):
 
     def testExternalRoomIDCreation(self):
 
-        room = Room(room_id="Room 1")
+        room = Room(name="Room 1")
         room.save()
 
         external_room_id = ExternalRoomID(external_id="_ROOM1_", room=room)

@@ -31,10 +31,10 @@ class TestRecurringBooking(TestCase):
         self.group.bookers.add(booker2)
 
         # Create room
-        rid = "1"
+        name = "1"
         capacity = 7
         number_of_computers = 2
-        self.room = Room(room_id=rid, capacity=capacity, number_of_computers=number_of_computers)
+        self.room = Room(name=name, capacity=capacity, number_of_computers=number_of_computers)
         self.room.save()
 
         # Create date and times

@@ -23,10 +23,10 @@ class CampOnAPITest(TestCase):
         self.booker.user = None
         self.booker.save()
 
-        rid = "H800-1"
+        name = "H800-1"
         capacity = 7
         number_of_computers = 2
-        self.room = Room(room_id=rid,
+        self.room = Room(name=name,
                          capacity=capacity,
                          number_of_computers=number_of_computers)
         self.room.save()
@@ -117,7 +117,7 @@ class CampOnAPITest(TestCase):
         # Verify the content of the created Booking
         created_booking = Booking.objects.last()
         self.assertEqual(created_booking.booker, Booker.objects.get(booker_id='sol_ji'))
-        self.assertEqual(created_booking.room, Room.objects.get(room_id="H800-1"))
+        self.assertEqual(created_booking.room, Room.objects.get(name="H800-1"))
         self.assertEqual(created_booking.date, datetime.datetime.now().date())
         self.assertEqual(created_booking.start_time, datetime.time(14, 00))
         self.assertEqual(created_booking.end_time, datetime.time(15, 00))
