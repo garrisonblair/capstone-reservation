@@ -41,7 +41,9 @@ class CampOnView(APIView):
             if request_end_time > current_booking.end_time:
 
                 found_bookings = Booking.objects.filter(
-                                    start_time__range=(current_booking.end_time, request_end_time))
+                                    start_time__gte=current_booking.end_time,
+                                    start_time__lt=request_end_time,
+                                    room=current_booking.room)
 
                 if found_bookings:
                     return Response("End time overlaps with future booking", status=status.HTTP_409_CONFLICT)

@@ -151,7 +151,7 @@ class ReservationDetailsModal extends Component {
       .catch((error) => {
         sweetAlert(
           'Reservation failed',
-          error.response.data[0],
+          error.response.data,
           'error'
         )
       })
@@ -167,7 +167,7 @@ class ReservationDetailsModal extends Component {
       "booking_start_time": `${this.state.startHour}:${this.state.startMinute}`,
       "booking_end_time": `${this.state.endHour}:${this.state.endMinute}`,
       "room": this.props.selectedRoomId,
-      "group": 1,
+      "group": '',
       "booker": user.id,
       "skip_conflicts": skipConflicts
     };

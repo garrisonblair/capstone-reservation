@@ -46,7 +46,6 @@ class TestUserUpdate(TestCase):
         self.assertEqual(user.email, self.new_email)
 
         booker = Booker.objects.get(user=user)
-        print(booker)
 
         self.assertEqual(self.privilege_category, booker.privilege_categories.all()[0])
 
