@@ -11,7 +11,9 @@ from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 
-from ..views.booking import BookingView
+from ..views.booking import BookingList
+from ..views.booking import BookingCreate
+from ..views.booking import BookingRetrieveUpdateDestroy
 
 
 class BookingAPITest(TestCase):
@@ -44,7 +46,7 @@ class BookingAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        response = BookingView.as_view()(request)
+        response = BookingCreate.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -65,7 +67,7 @@ class BookingAPITest(TestCase):
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     }, format="json")
-        response = BookingView.as_view()(request)
+        response = BookingRetrieveUpdateDestroy.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -80,7 +82,7 @@ class BookingAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        response = BookingView.as_view()(request)
+        response = BookingCreate.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -104,14 +106,14 @@ class BookingAPITest(TestCase):
         bookings_oct7 = Booking.objects.filter(date=oct7_date)
         self.assertEqual(len(bookings_oct7), 1)
 
-        request = self.factory.get("/booking",
+        request = self.factory.get("/bookings",
                                    {
                                         "year": 2018,
                                         "month": 10,
                                         "day": 7
                                     },
                                    format="json")
-        response = BookingView.as_view()(request)
+        response = BookingList.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_bookings = response.data
@@ -138,13 +140,14 @@ class BookingAPITest(TestCase):
         bookings_oct7 = Booking.objects.filter(date=oct7_date)
         self.assertEqual(len(bookings_oct7), 2)
 
-        request = self.factory.get("/booking",
-                                   {
-                                       "year": 2018,
-                                       "month": 10,
-                                       "day": 7,
-                                   }, format="json")
-        response = BookingView.as_view()(request)
+        params = {
+            "year": 2018,
+            "month": 10,
+            "day": 7,
+        }
+
+        request = self.factory.get("/bookings", params, format="json")
+        response = BookingList.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_bookings = response.data
@@ -171,20 +174,20 @@ class BookingAPITest(TestCase):
         bookings_oct7 = Booking.objects.filter(date=oct7_date)
         self.assertEqual(len(bookings_oct7), 0)
 
-        request = self.factory.get("/booking",
+        request = self.factory.get("/bookings",
                                    {
                                        "year": 2018,
                                        "month": 10,
                                        "day": 7,
                                    }, format="json")
-        response = BookingView.as_view()(request)
+        response = BookingList.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_bookings = response.data
         self.assertEqual(len(returned_bookings), 0)
         self.assertEqual(len(returned_bookings), len(bookings_oct7))
 
-    def testViewBookingsNoArguements(self):
+    def testViewBookingsNoArguments(self):
 
         booker = Booker(booker_id='12345678')
         booker.user = None
@@ -201,17 +204,15 @@ class BookingAPITest(TestCase):
         all_bookings = Booking.objects.all()
         self.assertEqual(len(all_bookings), 2)
 
-        request = self.factory.get("/booking",
-                                   {
-                                   }, format="json")
-        response = BookingView.as_view()(request)
+        request = self.factory.get("/bookings", format="json")
+        response = BookingList.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_bookings = response.data
         self.assertEqual(len(returned_bookings), 2)
         self.assertEqual(len(returned_bookings), len(all_bookings))
 
-    def testViewBookingsSomeArguements(self):
+    def testViewBookingsSomeArguments(self):
 
         booker = Booker(booker_id='12345678')
         booker.user = None
@@ -228,125 +229,17 @@ class BookingAPITest(TestCase):
         all_bookings = Booking.objects.all()
         self.assertEqual(len(all_bookings), 2)
 
-        request = self.factory.get("/booking",
+        request = self.factory.get("/bookings",
                                    {
                                        "year": 2018,
                                        "month": 10,
                                    }, format="json")
-        response = BookingView.as_view()(request)
+        response = BookingList.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_bookings = response.data
         self.assertEqual(len(returned_bookings), 2)
         self.assertEqual(len(returned_bookings), len(all_bookings))
-
-    def testViewBookingsInvalidYear(self):
-
-        booker = Booker(booker_id='12345678')
-        booker.user = None
-        booker.save()
-
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
-        room.save()
-
-        booking1 = Booking(booker=booker, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
-        booking1.save()
-        booking2 = Booking(booker=booker, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
-        booking2.save()
-
-        all_bookings = Booking.objects.all()
-        self.assertEqual(len(all_bookings), 2)
-
-        request = self.factory.get("/booking",
-                                   {
-                                       "year": -1,
-                                       "month": 20,
-                                       "day": 7
-                                   }, format="json")
-        response = BookingView.as_view()(request)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def testViewBookingsInvalidMonth(self):
-
-        booker = Booker(booker_id='12345678')
-        booker.user = None
-        booker.save()
-
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
-        room.save()
-
-        booking1 = Booking(booker=booker, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
-        booking1.save()
-        booking2 = Booking(booker=booker, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
-        booking2.save()
-
-        all_bookings = Booking.objects.all()
-        self.assertEqual(len(all_bookings), 2)
-
-        request = self.factory.get("/booking",
-                                   {
-                                       "year": 2018,
-                                       "month": 20,
-                                       "day": 7
-                                   }, format="json")
-        response = BookingView.as_view()(request)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def testViewBookingsInvalidDay(self):
-
-        booker = Booker(booker_id='12345678')
-        booker.user = None
-        booker.save()
-
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
-        room.save()
-
-        booking1 = Booking(booker=booker, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
-        booking1.save()
-        booking2 = Booking(booker=booker, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
-        booking2.save()
-
-        all_bookings = Booking.objects.all()
-        self.assertEqual(len(all_bookings), 2)
-
-        request = self.factory.get("/booking",
-                                   {
-                                       "year": 2018,
-                                       "month": 10,
-                                       "day": 99
-                                   }, format="json")
-        response = BookingView.as_view()(request)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def testViewBookingsNonIntegerArgument(self):
-
-        booker = Booker(booker_id='12345678')
-        booker.user = None
-        booker.save()
-
-        room = Room(room_id=2, capacity=4, number_of_computers=1)
-        room.save()
-
-        booking1 = Booking(booker=booker, room=room, date="2018-10-6", start_time="14:00", end_time="15:00")
-        booking1.save()
-        booking2 = Booking(booker=booker, room=room, date="2018-10-8", start_time="16:00", end_time="17:00")
-        booking2.save()
-
-        all_bookings = Booking.objects.all()
-        self.assertEqual(len(all_bookings), 2)
-
-        request = self.factory.get("/booking",
-                                   {
-                                       "year": "abc",
-                                       "month": 10,
-                                       "day": 7
-                                   }, format="json")
-        response = BookingView.as_view()(request)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def testEditBookingSuccessful(self):
 
@@ -368,7 +261,7 @@ class BookingAPITest(TestCase):
                                     },
                                    format="json")
         force_authenticate(request, user=User.objects.get(username="john"))
-        response = BookingView.as_view()(request, 1)
+        response = BookingRetrieveUpdateDestroy.as_view()(request, 1)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(Booking.objects.all()), 1)
@@ -396,7 +289,7 @@ class BookingAPITest(TestCase):
                                     },
                                    format="json")
         force_authenticate(request, user=User.objects.get(username="john"))
-        response = BookingView.as_view()(request, 1)
+        response = BookingRetrieveUpdateDestroy.as_view()(request, 1)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(Booking.objects.all()), 1)
@@ -433,7 +326,7 @@ class BookingAPITest(TestCase):
                                     },
                                    format="json")
         force_authenticate(request, user=User.objects.get(username="solji"))
-        response = BookingView.as_view()(request, 1)
+        response = BookingRetrieveUpdateDestroy.as_view()(request, 1)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -465,7 +358,7 @@ class BookingAPITest(TestCase):
                                     },
                                    format="json")
         force_authenticate(request, user=User.objects.get(username="john"))
-        response = BookingView.as_view()(request, 1)
+        response = BookingRetrieveUpdateDestroy.as_view()(request, 1)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(len(Booking.objects.all()), 2)
@@ -498,7 +391,7 @@ class BookingAPITest(TestCase):
                                     },
                                    format="json")
         force_authenticate(request, user=User.objects.get(username="john"))
-        response = BookingView.as_view()(request, 1)
+        response = BookingRetrieveUpdateDestroy.as_view()(request, 1)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(len(Booking.objects.all()), 2)
