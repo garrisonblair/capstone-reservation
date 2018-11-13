@@ -7,7 +7,7 @@ from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from django.core.exceptions import ValidationError
 
 from ..models.system_settings import SystemSettings
-from ..serializers.system_settings_serializer import SystemSettingSerializer
+from ..serializers.system_settings import SystemSettingSerializer
 
 
 class SystemSettingsAPI(APIView):

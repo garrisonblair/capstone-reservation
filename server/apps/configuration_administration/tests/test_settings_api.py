@@ -5,7 +5,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
-from ..views.system_settings_api import SystemSettingsAPI
+from ..views.system_settings import SystemSettingsAPI
 from ..models.system_settings import SystemSettings
 
 
