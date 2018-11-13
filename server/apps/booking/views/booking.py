@@ -65,13 +65,16 @@ class BookingRetrieveUpdateDestroy(APIView):
 
     def patch(self, request, pk):
 
-        booking = Booking.objects.get(pk=pk)
+        try:
+            booking = Booking.objects.get(pk=pk)
+        except Booking.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        # Check permissions
+        # Check user permissions
         self.check_object_permissions(request, booking.booker.user)
 
         data = request.data
-        data["booker"] = request.user.booker.booker_id
+        data["booker"] = booking.booker.booker_id
         serializer = BookingSerializer(booking, data=data, partial=True)
 
         if not serializer.is_valid():

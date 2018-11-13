@@ -4,6 +4,9 @@ from apps.accounts.models.Booker import Booker
 
 class IsBooker(BasePermission):
     def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
         try:
             booker = Booker.objects.get(user=request.user)
         except Booker.DoesNotExist:
@@ -11,6 +14,9 @@ class IsBooker(BasePermission):
         return True
 
     def has_object_permission(self, request, view, user):
+        if request.user.is_superuser:
+            return True
+
         try:
             booker = Booker.objects.get(user=request.user)
         except Booker.DoesNotExist:
