@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
+from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
 from apps.booking.serializers.booking_serializer import BookingSerializer, ReadBookingSerializer
@@ -59,16 +60,15 @@ class BookingCreate(APIView):
 
 
 class BookingRetrieveUpdateDestroy(APIView):
-    permission_classes = (IsAuthenticated, IsBooker)
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
     serializer_class = BookingSerializer
 
     def patch(self, request, pk):
 
         booking = Booking.objects.get(pk=pk)
 
-        if str(request.user.booker.booker_id) != str(booking.booker):
-            error_msg = "The booker who updates the booking must be the same as who created the booking."
-            return Response(error_msg, status=status.HTTP_403_FORBIDDEN)
+        # Check permissions
+        self.check_object_permissions(request, booking.booker.user)
 
         data = request.data
         data["booker"] = request.user.booker.booker_id
