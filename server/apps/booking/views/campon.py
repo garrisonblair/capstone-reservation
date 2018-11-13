@@ -13,8 +13,6 @@ from apps.booking.serializers.campon_serializer import CampOnSerializer
 from apps.booking.serializers.booking_serializer import BookingSerializer
 
 
-# class CampOnCreate
-
 class CampOnList(ListAPIView):
     permission_classes = ()
     serializer_class = CampOnSerializer

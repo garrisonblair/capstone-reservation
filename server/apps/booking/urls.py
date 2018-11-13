@@ -5,7 +5,7 @@ from .views.booking import BookingCreate
 from .views.campon import CampOnList
 from .views.campon import CampOnCreate
 from .views.booking import BookingRetrieveUpdateDestroy
-from .views.recurring_booking import RecurringBookingView
+from .views.recurring_booking import RecurringBookingCreate
 
 urlpatterns = [
     path(r'bookings', BookingList.as_view()),
@@ -15,5 +15,5 @@ urlpatterns = [
     path(r'campons', CampOnList.as_view()),
     path(r'campon', CampOnCreate.as_view()),
 
-    path(r'recurring_booking', RecurringBookingView.as_view())
+    path(r'recurring_booking', RecurringBookingCreate.as_view())
 ]

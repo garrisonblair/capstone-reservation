@@ -1,18 +1,18 @@
 from django.core.exceptions import ValidationError
-from apps.accounts.exceptions import PrivilegeError
-
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from apps.accounts.permissions.IsBooker import IsBooker
+from apps.accounts.exceptions import PrivilegeError
 from apps.booking.serializers.recurring_booking_serializer import RecurringBookingSerializer
 
 
-class RecurringBookingView(APIView):
+class RecurringBookingCreate(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
     def post(self, request):
-        # Must be logged in as booker
-        if not request.user or not request.user.booker:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         recurring_booking_data = dict(request.data)
         recurring_booking_data["booker"] = request.user.booker.booker_id
