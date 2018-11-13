@@ -91,7 +91,7 @@ class EditBookingForm extends Component {
       "start_time": `${this.state.startHour}:${this.state.startMinute}`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}`
     };
-    api.updateBooking(data, booking.id)
+    api.updateBooking(booking.id, data)
     .then((response) => {
       sweetAlert('Completed',
         `Booking was sucessfully updated.`,

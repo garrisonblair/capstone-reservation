@@ -7,11 +7,10 @@ function register(username) {
   let data = {
     'username': `${username}`,
   };
-
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/register`,
-    data: data,
+    data,
   })
 }
 
@@ -23,18 +22,18 @@ function login(username, password) {
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/login`,
-    data: data,
+    data,
   })
 }
 
 function verify(token) {
   const data = {
-    'token': `${token}`,
+    token,
   }
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/verify`,
-    data: data,
+    data,
   })
 }
 
@@ -58,26 +57,15 @@ function updateUser(id, data) {
   })
 }
 
-function createCampOn(data) {
-  const headers = getTokenHeader();
-  return axios({
-    method: 'POST',
-    url: `${settings.API_ROOT}/campon`,
-    headers,
-    data,
-    withCredentials: true,
-  })
-}
-
 function getBookings(params) {
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/booking`,
-    params: params,
+    url: `${settings.API_ROOT}/bookings`,
+    params,
   })
 }
 
-function createBooking(data){
+function createBooking(data) {
   const headers = getTokenHeader();
   return axios({
     method: 'POST',
@@ -88,17 +76,17 @@ function createBooking(data){
   });
 }
 
-function updateBooking(data, id) {
+function updateBooking(id, data) {
   const headers = getTokenHeader();
   return axios({
     method: 'PATCH',
     url: `${settings.API_ROOT}/booking/${id}`,
-    data,
     headers,
+    data,
   })
 }
 
-function createRecurringBooking(data){
+function createRecurringBooking(data) {
   const headers = getTokenHeader();
   return axios({
     method: 'POST',
@@ -112,62 +100,72 @@ function createRecurringBooking(data){
 function getCampOns(params) {
   return axios({
     method: 'GET',
+    url: `${settings.API_ROOT}/campons`,
+    params,
+  })
+}
+
+function createCampOn(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
     url: `${settings.API_ROOT}/campon`,
-    params: params,
+    headers,
+    data,
+    withCredentials: true,
   })
 }
 
 function getRooms() {
   return axios({
     method: 'GET',
+    url: `${settings.API_ROOT}/rooms`,
+  })
+}
+
+function createRoom(room_id, capacity, number_of_computers) {
+  const headers = getTokenHeader();
+  const data = {
+    room_id,
+    capacity,
+    number_of_computers,
+  }
+  return axios({
+    method:'POST',
     url: `${settings.API_ROOT}/room`,
+    headers,
+    data,
+    withCredentials: true
+  })
+}
+
+function updateRoom(id, room_id, capacity, number_of_computers) {
+  const headers = getTokenHeader();
+  const data = {
+    room_id,
+    capacity,
+    number_of_computers,
+  }
+  return axios({
+    method:'PATCH',
+    url: `${settings.API_ROOT}/room/${id}`,
+    headers,
+    data,
+    withCredentials: true
   })
 }
 
 function deleteRoom(id){
   const headers = getTokenHeader();
-  const data={
-    "id":id
+  const data = {
+    id,
   }
   return axios({
     method:'DELETE',
-    url: `${settings.API_ROOT}/roomdelete`,
-    data,
+    url: `${settings.API_ROOT}/room/${id}`,
     headers,
+    data,
     withCredentials:true
-  })
-}
-
-function createRoom(id, capacity, numOfComputers){
-  const data = {
-    "room_id":id,
-    "capacity": capacity,
-    "number_of_computers":numOfComputers
-  }
-  const headers = getTokenHeader();
-  return axios({
-    method:'POST',
-    url: `${settings.API_ROOT}/roomcreate`,
-    data,
-    headers,
-    withCredentials: true
-  })
-}
-
-function updateRoom(id,room_id, capacity, numOfComputers){
-  const data = {
-    "id":id,
-    "room_id":room_id,
-    "capacity": capacity,
-    "number_of_computers":numOfComputers
-  }
-  const headers = getTokenHeader();
-  return axios({
-    method:'PATCH',
-    url: `${settings.API_ROOT}/roomupdate`,
-    data,
-    headers,
-    withCredentials: true
   })
 }
 
@@ -206,7 +204,7 @@ function createPrivilege(data) {
   const headers = getTokenHeader();
   return axios({
     method: 'POST',
-    url: `${settings.API_ROOT}/privilege_categories`,
+    url: `${settings.API_ROOT}/privilege_category`,
     headers,
     data,
     withCredentials: true,
@@ -219,16 +217,16 @@ const api = {
   verify,
   getMyUser,
   updateUser,
-  createCampOn,
   getBookings,
   createBooking,
   updateBooking,
   createRecurringBooking,
   getCampOns,
+  createCampOn,
   getRooms,
-  deleteRoom,
   createRoom,
   updateRoom,
+  deleteRoom,
   getAdminSettings,
   updateAdminSettings,
   getPrivileges,
