@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from apps.accounts.exceptions import PrivilegeError
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.CampOn import CampOn
 from apps.booking.models.Booking import Booking
@@ -53,7 +54,6 @@ class CampOnList(ListAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-# TODO: Refactor
 class CampOnCreate(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
     serializer_class = CampOnSerializer
@@ -63,7 +63,7 @@ class CampOnCreate(APIView):
         data = request.data
         data["booker"] = request.user.booker.booker_id
 
-        # Round to nearest 10th minute
+        # Rounding to nearest 10th minute, as bookings and camp-ons can only be made every ten minute interval
         time = datetime.datetime.now().replace(microsecond=0)
         discard = datetime.timedelta(
             minutes=time.minute % 10,
@@ -80,47 +80,61 @@ class CampOnCreate(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        # Looking for booking to camp onto in the database, returning if not found
         try:
-            # Find current booking to be camped on
             current_booking = Booking.objects.get(id=data["camped_on_booking"])
             request_end_time = datetime.datetime.strptime(data["end_time"], "%H:%M").time()
+        except Booking.DoesNotExist:
+            return Response("No Booking to camp on to", status=status.HTTP_400_BAD_REQUEST)
 
-            # Check if requested end time ends after the current_current end time
-            if request_end_time > current_booking.end_time:
-                bookings = Booking.objects.filter(
-                    start_time__gte=current_booking.end_time,
-                    start_time__lt=request_end_time,
-                    room=current_booking.room
-                )
+        # If the camp on doesn't end later than the booking, then we create the camp on
+        # Otherwise we will attempt to create a booking following the camp on
+        if request_end_time <= current_booking.end_time:
+            try:
+                camp_on = serializer.save()
+                return Response({"CampOn": CampOnSerializer(camp_on).data}, status=status.HTTP_201_CREATED)
+            except ValidationError as error:
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
-                if bookings:
-                    return Response("End time overlaps with future booking", status=status.HTTP_409_CONFLICT)
+        # Checking if there are bookings in the time period between the end of the booking and the end of the camp on
+        # This is done on top of the model validation, as we will need to save a camp on and a booking at the same time
+        bookings = Booking.objects.filter(
+            start_time__gte=current_booking.end_time,
+            start_time__lt=request_end_time,
+            room=current_booking.room
+        )
 
-                # No Booking found, create new Booking and create CampOn
-                data["end_time"] = current_booking.end_time
-                new_camp_on_serializer = CampOnSerializer(data=data)
+        if bookings:
+            return Response("End time overlaps with future booking", status=status.HTTP_409_CONFLICT)
 
-                if not new_camp_on_serializer.is_valid():
-                    return Response(new_camp_on_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # No Booking found, create new Booking and create CampOn
+        data["end_time"] = current_booking.end_time
+        new_camp_on_serializer = CampOnSerializer(data=data)
 
-                camp_on = new_camp_on_serializer.save()
+        if not new_camp_on_serializer.is_valid():
+            return Response(new_camp_on_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-                new_booking = Booking(booker=camp_on.booker,
-                                      group=camp_on.camped_on_booking.group,
-                                      room=camp_on.camped_on_booking.room,
-                                      date=camp_on.camped_on_booking.date,
-                                      start_time=camp_on.end_time,
-                                      end_time=request_end_time)
+        # Creation of the camp on and the generated booking
+        # If there is a privilege error for the booking (user already has a maximum amount of bookings)
+        # only the camp on will be created
+        # May have to be tweaked if we want to cancel the camp on if there is a privilege error
+        try:
+            camp_on = new_camp_on_serializer.save()
+            new_booking = Booking(booker=camp_on.booker,
+                                  group=camp_on.camped_on_booking.group,
+                                  room=camp_on.camped_on_booking.room,
+                                  date=camp_on.camped_on_booking.date,
+                                  start_time=camp_on.end_time,
+                                  end_time=request_end_time)
 
-                new_booking.save()
-                camp_on.generated_booking = new_booking
+            new_booking.save()
+            camp_on.generated_booking = new_booking
+        except (PrivilegeError, ValidationError) as error:
+            if isinstance(error, PrivilegeError):
+                return Response(error.message, status=status.HTTP_403_FORBIDDEN)
+            if isinstance(error, ValidationError):
+                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
-                response_data = {"CampOn": CampOnSerializer(camp_on).data,
-                                 "Booking": BookingSerializer(new_booking).data}
-                return Response(response_data, status=status.HTTP_201_CREATED)
-
-            camp_on = serializer.save()
-            return Response({"CampOn": CampOnSerializer(camp_on).data}, status=status.HTTP_201_CREATED)
-
-        except (ValueError, ValidationError) as error:
-            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+        response_data = {"CampOn": CampOnSerializer(camp_on).data,
+                         "Booking": BookingSerializer(new_booking).data}
+        return Response(response_data, status=status.HTTP_201_CREATED)

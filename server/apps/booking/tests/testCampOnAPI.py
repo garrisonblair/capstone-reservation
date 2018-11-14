@@ -54,9 +54,6 @@ class CampOnAPITest(TestCase):
         self.booker.user = self.user
         self.booker.save()
 
-    # CampOn start time should be the current time. However,
-    # the current time cannot be used in the test, otherwise, the test will fail if it runs at invalid period
-    # So the start time in this test will be assigned values
     def testCreateCampOnSuccess(self):
         request = self.factory.post("/campon", {
                 "camped_on_booking": 1,
