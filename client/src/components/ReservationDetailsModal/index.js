@@ -191,7 +191,9 @@ class ReservationDetailsModal extends Component {
           });
       })
       .catch((error) => {
-        if (error.message.includes('409')) {
+        let {status, data} = error.response;
+
+        if (status === 409) {
           sweetAlert({
             title: 'Reservation blocked',
             text: 'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
@@ -205,6 +207,12 @@ class ReservationDetailsModal extends Component {
                 this.sendPostRequestRecurringBooking(true);
               }
             })
+        } else {
+          sweetAlert({
+            title: 'Error',
+            text: data,
+            type: 'error',
+          })
         }
       })
   }
