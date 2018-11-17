@@ -6,6 +6,7 @@ from apps.booking.models.CampOn import CampOn
 from apps.booking.models.Booking import Booking
 from apps.booking.serializers.campon_serializer import CampOnSerializer
 from apps.booking.serializers.booking_serializer import BookingSerializer
+from apps.util import utils
 import datetime
 
 
@@ -72,6 +73,7 @@ class CampOnView(APIView):
                 return Response(response_data, status=status.HTTP_201_CREATED)
 
             camp_on = serializer.save()
+            utils.log_model_change(camp_on, utils.ADDITION, request.user)
             return Response({"CampOn": CampOnSerializer(camp_on).data}, status=status.HTTP_201_CREATED)
 
         except (ValueError, ValidationError) as error:
