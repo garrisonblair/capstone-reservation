@@ -9,7 +9,7 @@ from ..models.bookingExporterModels import ExternalRoomID
 from apps.booking.models import Booking
 from apps.rooms.models import Room
 from apps.accounts.models import Booker
-from apps.configuration_administration.models import SystemSettings
+from apps.system_administration.models import SystemSettings
 
 
 class testWebCalendarExporter(TestCase):
