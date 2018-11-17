@@ -45,7 +45,7 @@ class RoomModal extends Component {
   componentDidMount() {
     if (this.props.selectedRoom != null) {
       this.setState({
-        roomID: this.props.selectedRoom.room_id,
+        roomID: this.props.selectedRoom.name,
         roomCapacity: this.props.selectedRoom.capacity,
         numOfComputers: this.props.selectedRoom.number_of_computers
       })

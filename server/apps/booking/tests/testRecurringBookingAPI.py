@@ -11,7 +11,7 @@ from apps.booking.models.Booking import Booking
 from apps.groups.models import Group
 from apps.rooms.models.Room import Room
 
-from ..views.recurring_booking import RecurringBookingView
+from ..views.recurring_booking import RecurringBookingCreate
 
 
 class BookingAPITest(TestCase):
@@ -39,7 +39,7 @@ class BookingAPITest(TestCase):
         self.group.bookers.add(booker1)
         self.group.bookers.add(booker2)
 
-        self.room = Room(room_id="H833-17", capacity=4, number_of_computers=1)
+        self.room = Room(name="H833-17", capacity=4, number_of_computers=1)
         self.room.save()
 
         start = datetime.strptime("2019-10-01 12:00", "%Y-%m-%d %H:%M")
@@ -65,7 +65,7 @@ class BookingAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        response = RecurringBookingView.as_view()(request)
+        response = RecurringBookingCreate.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         recurring_booking = RecurringBooking.objects.get(start_date=self.start_date)
@@ -109,7 +109,7 @@ class BookingAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        response = RecurringBookingView.as_view()(request)
+        response = RecurringBookingCreate.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def testCreateRecurringBookingFailureTimeStartAfterEnd(self):
@@ -128,7 +128,7 @@ class BookingAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        response = RecurringBookingView.as_view()(request)
+        response = RecurringBookingCreate.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def testCreateRecurringBookingFailureInvalidPayload(self):
@@ -147,7 +147,7 @@ class BookingAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        response = RecurringBookingView.as_view()(request)
+        response = RecurringBookingCreate.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def testCreateRecurringBookingNotAuthenticated(self):
@@ -158,7 +158,7 @@ class BookingAPITest(TestCase):
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     }, format="json")
-        response = RecurringBookingView.as_view()(request)
+        response = RecurringBookingCreate.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -185,7 +185,7 @@ class BookingAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        response = RecurringBookingView.as_view()(request)
+        response = RecurringBookingCreate.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
     def testRecurringBookingConflictFlagSet(self):
@@ -211,6 +211,6 @@ class BookingAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        response = RecurringBookingView.as_view()(request)
+        response = RecurringBookingCreate.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, [self.start_date])

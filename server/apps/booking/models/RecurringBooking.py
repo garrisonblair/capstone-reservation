@@ -99,7 +99,13 @@ class RecurringBooking(models.Model):
 
     def get_active_recurring_bookings(self, booker_entity):
         today = datetime.now().date()
-        return booker_entity.recurringbooking_set.filter(end_date__gt=today)
+        active_recurring_bookings = booker_entity.recurringbooking_set.filter(end_date__gt=today)
+        # This will exclude any recurring bookings that don't contain any bookings as they shouldn't count towards
+        # the active recurring bookings count, because they are essentially deleted
+        for r_booking in active_recurring_bookings:
+            if r_booking.booking_set.count() == 0:
+                active_recurring_bookings = active_recurring_bookings.exclude(id=r_booking.id)
+        return active_recurring_bookings
 
     def evaluate_privilege(self):
         if self.group is not None:

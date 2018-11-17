@@ -15,7 +15,7 @@ class testWebCalendarExporter(TestCase):
 
     def setUp(self):
 
-        room = Room(room_id="Room 19")
+        room = Room(name="Room 19")
         room.save()
 
         booker = Booker(booker_id="s_loc")

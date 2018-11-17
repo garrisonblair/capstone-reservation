@@ -9,7 +9,7 @@ from ..models.bookingExporterModels import ExternalRoomID
 from apps.booking.models import Booking
 from apps.rooms.models import Room
 from apps.accounts.models import Booker
-from apps.configuration_administration.models import SystemSettings
+from apps.system_settings.models import SystemSettings
 
 
 class testWebCalendarExporter(TestCase):
@@ -28,7 +28,7 @@ END:VEVENT
 END:VCALENDAR"""
 
     def setUp(self):
-        room = Room(room_id="Room 1")
+        room = Room(name="Room 1")
         room.save()
 
         external_id = ExternalRoomID(external_id="_ROOM1_")

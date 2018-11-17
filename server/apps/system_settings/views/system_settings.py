@@ -1,16 +1,19 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from django.core.exceptions import ValidationError
 
+from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from ..models.system_settings import SystemSettings
-from ..serializers.system_settings_serializer import SystemSettingSerializer
+from ..serializers.system_settings import SystemSettingSerializer
 
 
 class SystemSettingsAPI(APIView):
+
+    permission_classes = (IsAuthenticated, IsSuperUser)
+    serializer_class = SystemSettingSerializer
 
     def get(self, request):
 
@@ -20,7 +23,6 @@ class SystemSettingsAPI(APIView):
 
         return Response(serializer.data, status.HTTP_200_OK)
 
-    @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
     def patch(self, request):
 
         settings_updates = dict(request.data)

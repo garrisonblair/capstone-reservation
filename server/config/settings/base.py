@@ -29,7 +29,7 @@ PROJECT_APPS = [
     'apps.rooms.apps.RoomsConfig',
     'apps.booking.apps.BookingConfig',
     'apps.booking_exporter.apps.BookingExporterConfig',
-    'apps.configuration_administration.apps.CalendarAdminConfig',
+    'apps.system_settings.apps.SystemSettingConfig',
     'apps.groups.apps.GroupsConfig'
 ]
 
@@ -103,8 +103,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
