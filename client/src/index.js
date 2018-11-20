@@ -10,6 +10,7 @@ import Admin from './components/Admin';
 import PrivilegeCategory from './components/Admin/PrivilegeCategory';
 import RoomManager from './components/Admin/RoomManager';
 import Stats from './components/Admin/Stats';
+import Settings from './components/Admin/Settings'
 
 
 ReactDOM.render(
@@ -20,7 +21,6 @@ ReactDOM.render(
           <Route exact path="/login" component={Login}/>
           <Route exact path="/registration" component={Registration}/>
           <Route exact path="/verify/:token" component={Verification}/>
-          <Route exact path="/settings/groups" component={Groups}/>
           <Route exact path="/admin" render={()=><Admin menuType='settings' content={<Settings/>} />}/>
           <Route exact path="/admin/settings" render={()=><Admin menuType='settings' content={<Settings/>} />}/>
           <Route exact path="/admin/privileges" render={()=><Admin menuType='privileges' content={<PrivilegeCategory/>} />}/>
