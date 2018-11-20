@@ -1,6 +1,6 @@
 import axios from 'axios';
 import settings from '../config/settings';
-import {getTokenHeader} from './requestHeaders';
+import { getTokenHeader } from './requestHeaders';
 
 
 function register(username) {
@@ -18,23 +18,23 @@ function login(username, password) {
   let data = {
     username,
     password,
-  }
+  };
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/login`,
     data,
-  })
+  });
 }
 
 function verify(token) {
   const data = {
     token,
-  }
+  };
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/verify`,
     data,
-  })
+  });
 }
 
 function getMyUser() {
@@ -43,7 +43,7 @@ function getMyUser() {
     method: 'GET',
     url: `${settings.API_ROOT}/me`,
     headers,
-  })
+  });
 }
 
 function updateUser(id, data) {
@@ -54,7 +54,7 @@ function updateUser(id, data) {
     headers,
     data,
     withCredentials: true,
-  })
+  });
 }
 
 function getBookings(params) {
@@ -62,7 +62,7 @@ function getBookings(params) {
     method: 'GET',
     url: `${settings.API_ROOT}/bookings`,
     params,
-  })
+  });
 }
 
 function createBooking(data) {
@@ -83,7 +83,7 @@ function updateBooking(id, data) {
     url: `${settings.API_ROOT}/booking/${id}`,
     headers,
     data,
-  })
+  });
 }
 
 function createRecurringBooking(data) {
@@ -113,14 +113,14 @@ function createCampOn(data) {
     headers,
     data,
     withCredentials: true,
-  })
+  });
 }
 
 function getRooms() {
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/rooms`,
-  })
+  });
 }
 
 function createRoom(name, capacity, number_of_computers) {
@@ -129,9 +129,9 @@ function createRoom(name, capacity, number_of_computers) {
     name,
     capacity,
     number_of_computers,
-  }
+  };
   return axios({
-    method:'POST',
+    method: 'POST',
     url: `${settings.API_ROOT}/room`,
     headers,
     data,
@@ -145,28 +145,28 @@ function updateRoom(id, name, capacity, number_of_computers) {
     name,
     capacity,
     number_of_computers,
-  }
+  };
   return axios({
-    method:'PATCH',
+    method: 'PATCH',
     url: `${settings.API_ROOT}/room/${id}`,
     headers,
     data,
-    withCredentials: true
-  })
+    withCredentials: true,
+  });
 }
 
-function deleteRoom(id){
+function deleteRoom(id) {
   const headers = getTokenHeader();
   const data = {
     id,
-  }
+  };
   return axios({
-    method:'DELETE',
+    method: 'DELETE',
     url: `${settings.API_ROOT}/room/${id}`,
     headers,
     data,
-    withCredentials:true
-  })
+    withCredentials: true,
+  });
 }
 
 function getAdminSettings() {
@@ -176,7 +176,7 @@ function getAdminSettings() {
     url: `${settings.API_ROOT}/settings`,
     headers,
     withCredentials: true,
-  })
+  });
 }
 
 function updateAdminSettings(data) {
@@ -187,7 +187,7 @@ function updateAdminSettings(data) {
     headers,
     data,
     withCredentials: true,
-  })
+  });
 }
 
 function getPrivileges() {
@@ -197,7 +197,7 @@ function getPrivileges() {
     url: `${settings.API_ROOT}/privilege_categories`,
     headers,
     withCredentials: true,
-  })
+  });
 }
 
 function createPrivilege(data) {
@@ -208,7 +208,7 @@ function createPrivilege(data) {
     headers,
     data,
     withCredentials: true,
-  })
+  });
 }
 
 const api = {
@@ -230,7 +230,7 @@ const api = {
   getAdminSettings,
   updateAdminSettings,
   getPrivileges,
-  createPrivilege
-}
+  createPrivilege,
+};
 
 export default api;

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {HashRouter as Router, Route, Switch} from 'react-router-dom';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import Home from './components/Home';
 import Login from './components/Login';
 import NotFound from './components/NotFound';
@@ -14,21 +14,21 @@ import Settings from './components/Admin/Settings'
 
 
 ReactDOM.render(
-    <Router>
-      <div>
-        <Switch>
-          <Route exact path="/" component={Home}/>
-          <Route exact path="/login" component={Login}/>
-          <Route exact path="/registration" component={Registration}/>
-          <Route exact path="/verify/:token" component={Verification}/>
-          <Route exact path="/admin" render={()=><Admin menuType='settings' content={<Settings/>} />}/>
-          <Route exact path="/admin/settings" render={()=><Admin menuType='settings' content={<Settings/>} />}/>
-          <Route exact path="/admin/privileges" render={()=><Admin menuType='privileges' content={<PrivilegeCategory/>} />}/>
-          <Route exact path="/admin/rooms" render={()=><Admin menuType='rooms' content={<RoomManager/>} />} />
-          <Route exact path="/admin/stats" render={()=><Admin menuType='stats' content={<Stats/>} />}/>
-          <Route component={NotFound}/>
-        </Switch>
-      </div>
-    </Router>,
-    document.getElementById('root')
+  <Router>
+    <div>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/registration" component={Registration} />
+        <Route exact path="/verify/:token" component={Verification} />
+        <Route exact path="/admin" render={() => <Admin menuType='settings' content={<Settings />} />} />
+        <Route exact path="/admin/settings" render={() => <Admin menuType='settings' content={<Settings />} />} />
+        <Route exact path="/admin/privileges" render={() => <Admin menuType='privileges' content={<PrivilegeCategory />} />} />
+        <Route exact path="/admin/rooms" render={() => <Admin menuType='rooms' content={<RoomManager />} />} />
+        <Route exact path="/admin/stats" render={() => <Admin menuType='stats' content={<Stats />} />} />
+        <Route component={NotFound} />
+      </Switch>
+    </div>
+  </Router>,
+  document.getElementById('root')
 )
