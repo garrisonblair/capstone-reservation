@@ -25,9 +25,9 @@ class SideNav extends Component {
   }
 }
 
-Admin.propTypes = {
+SideNav.propTypes = {
   selectedMenu: PropTypes.string.isRequired,
-  navConfig: PropTypes.object.isRequired
+  navConfig: PropTypes.array.isRequired
 }
 
 export default withRouter(SideNav);

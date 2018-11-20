@@ -17,7 +17,7 @@ class Admin extends Component {
       {text:'Settings', menu:'settings', path:'/admin/settings'},
       {text:'Privileges', menu:'privileges', path:'/admin/privileges'},
       {text:'Rooms', menu:'rooms', path:'/admin/rooms'},
-      {text:'Stats', menu:'stats', path:'/admin/stats'},
+      {text:'Stats', menu:'stats', path:'/admin/stats'}
     ];
     return (
       <div className="admin">
