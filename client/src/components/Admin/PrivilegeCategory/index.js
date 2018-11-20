@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Button, Icon, Table, TableCell} from 'semantic-ui-react';
 import api from '../../../utils/api';
 import AdminRequired from '../../HOC/AdminRequired';
-import SideNav from '../SideNav';
 import AddPrivilegeModal from './AddPrivilegeModal';
 import PrivilegeDetailsModal from './PrivilegeDetailsModal';
 import '../Admin.scss';
@@ -133,25 +132,20 @@ class PrivilegeCategory extends Component {
   render() {
     const {privilege, privileges, showAddPrivilegeModal, showDetailsModal} = this.state;
     return (
-      <div className="admin">
-        <div className="admin__wrapper">
-          <SideNav selectedMenu={'privileges'}/>
-          <div className="admin__content">
-            <h1>Privileges</h1>
-            {this.renderControls()}
-            {this.renderTable()}
-            <AddPrivilegeModal
-              privileges={privileges}
-              show={showAddPrivilegeModal}
-              onClose={this.handleOnCloseAddPrivilegeModal}
-            />
-            <PrivilegeDetailsModal
-              privilege={privilege}
-              show={showDetailsModal}
-              onClose={this.handleOnCloseDisplayPrivilegeModal}
-            />
-          </div>
-        </div>
+      <div className="privileges">
+        <h1>Privileges</h1>
+        {this.renderControls()}
+        {this.renderTable()}
+        <AddPrivilegeModal
+          privileges={privileges}
+          show={showAddPrivilegeModal}
+          onClose={this.handleOnCloseAddPrivilegeModal}
+        />
+        <PrivilegeDetailsModal
+          privilege={privilege}
+          show={showDetailsModal}
+          onClose={this.handleOnCloseDisplayPrivilegeModal}
+        />
       </div>
     )
   }

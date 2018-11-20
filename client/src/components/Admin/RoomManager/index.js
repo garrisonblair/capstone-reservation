@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Button, List, Message, Table } from 'semantic-ui-react'
-import SideNav from '../SideNav';
+import { Button, Message, Table } from 'semantic-ui-react'
 import RoomRowItem from './RoomRowItem'
 import RoomModal from './RoomModal';
 import api from '../../../utils/api';
@@ -98,22 +97,16 @@ class RoomManager extends Component {
       </Table>
     )
   }
+
   render() {
-    let { roomsList, showModal } = this.state;
+    let { showModal } = this.state;
     return (
-      <div className="admin">
-        <div className="admin__wrapper">
-          <SideNav selectedMenu={'rooms'} />
-          <div className="admin__content">
-            <div id="room-management">
-              <h1>Manage Rooms</h1>
-              {this.renderTable()}
-              {this.renderNoRoomList()}
-              <Button onClick={this.showRoomModal}>Add new room</Button>
-              {showModal ? this.renderRoomModal() : ''}
-            </div>
-          </div>
-        </div>
+      <div id="room-management">
+        <h1>Manage Rooms</h1>
+        {this.renderTable()}
+        {this.renderNoRoomList()}
+        <Button onClick={this.showRoomModal}>Add new room</Button>
+        {showModal ? this.renderRoomModal() : ''}
       </div>
     )
   }

@@ -12,12 +12,13 @@ class Admin extends Component {
   }
 
   render() {
+    let {content, menuType} = this.props;
     return (
       <div className="admin">
         <div className="admin__wrapper">
-          <SideNav selectedMenu={'settings'}/>
+          <SideNav selectedMenu={menuType}/>
           <div className="admin__content">
-            <Settings/>
+          {content}
           </div>
         </div>
       </div>

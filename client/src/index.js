@@ -20,11 +20,12 @@ ReactDOM.render(
           <Route exact path="/login" component={Login}/>
           <Route exact path="/registration" component={Registration}/>
           <Route exact path="/verify/:token" component={Verification}/>
-          <Route exact path="/admin" component={Admin}/>
-          <Route exact path="/admin/settings" component={Admin}/>
-          <Route exact path="/admin/privileges" component={PrivilegeCategory}/>
-          <Route exact path="/admin/rooms" component={RoomManager}/>
-          <Route exact path="/admin/stats" component={Stats}/>
+          <Route exact path="/settings/groups" component={Groups}/>
+          <Route exact path="/admin" render={()=><Admin menuType='settings' content={<Settings/>} />}/>
+          <Route exact path="/admin/settings" render={()=><Admin menuType='settings' content={<Settings/>} />}/>
+          <Route exact path="/admin/privileges" render={()=><Admin menuType='privileges' content={<PrivilegeCategory/>} />}/>
+          <Route exact path="/admin/rooms" render={()=><Admin menuType='rooms' content={<RoomManager/>} />} />
+          <Route exact path="/admin/stats" render={()=><Admin menuType='stats' content={<Stats/>} />}/>
           <Route component={NotFound}/>
         </Switch>
       </div>
