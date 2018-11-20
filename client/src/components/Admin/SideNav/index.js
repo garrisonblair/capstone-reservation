@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
 import './SideNav.scss';
 
 
@@ -22,6 +23,11 @@ class SideNav extends Component {
       </div>
     )
   }
+}
+
+Admin.propTypes = {
+  selectedMenu: PropTypes.string.isRequired,
+  navConfig: PropTypes.object.isRequired
 }
 
 export default withRouter(SideNav);
