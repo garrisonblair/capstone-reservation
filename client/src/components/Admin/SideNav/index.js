@@ -5,14 +5,14 @@ import './SideNav.scss';
 
 class SideNav extends Component {
   render() {
-    const {selectedMenu, navConfig} = this.props;
+    const {selectedMenu, navConfig, history} = this.props;
     return (
       <div className="admin-nav">
         <ul>
           {navConfig.map(row =>
             <li
             className={selectedMenu === row.menu? 'active': ''}
-            onClick={row.function}
+            onClick={function(){history.push(row.path)}}
             key={row.menu}
             >
             {row.text}
