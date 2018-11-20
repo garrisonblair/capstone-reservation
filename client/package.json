@@ -25,7 +25,6 @@
     "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
-    "axios": "^0.18.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.2",
@@ -34,6 +33,12 @@
     "css-loader": "^1.0.0",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.6.0",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-loader": "^2.1.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
     "express": "^4.16.3",
     "file-loader": "^2.0.0",
     "html-loader": "^0.5.5",
@@ -57,5 +62,8 @@
     "webpack-cli": "^3.1.1",
     "webpack-dev-server": "^3.1.8",
     "webpack-merge": "^4.1.4"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
   }
 }
