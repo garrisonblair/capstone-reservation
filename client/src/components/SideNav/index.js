@@ -10,15 +10,14 @@ class SideNav extends Component {
     return (
       <div className="sidenav">
         <ul>
-          {navConfig.map(row =>
+          {navConfig.map(row => (
             <li
               className={selectedMenu === row.menu ? 'active' : ''}
               onClick={function () { history.push(row.path); }}
               key={row.menu}
             >
               {row.text}
-            </li>
-          )}
+            </li>))}
         </ul>
       </div>
     );

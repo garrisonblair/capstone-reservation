@@ -4,18 +4,18 @@ import getTokenHeader from './requestHeaders';
 
 
 function register(username) {
-  let data = {
-    'username': `${username}`,
+  const data = {
+    username,
   };
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/register`,
     data,
-  })
+  });
 }
 
 function login(username, password) {
-  let data = {
+  const data = {
     username,
     password,
   };
@@ -102,7 +102,7 @@ function getCampOns(params) {
     method: 'GET',
     url: `${settings.API_ROOT}/campons`,
     params,
-  })
+  });
 }
 
 function createCampOn(data) {
@@ -123,28 +123,28 @@ function getRooms() {
   });
 }
 
-function createRoom(name, capacity, number_of_computers) {
+function createRoom(name, capacity, numberOfComputers) {
   const headers = getTokenHeader();
   const data = {
     name,
     capacity,
-    number_of_computers,
+    'number_of_computers': numberOfComputers,
   };
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/room`,
     headers,
     data,
-    withCredentials: true
-  })
+    withCredentials: true,
+  });
 }
 
-function updateRoom(id, name, capacity, number_of_computers) {
+function updateRoom(id, name, capacity, numberOfComputers) {
   const headers = getTokenHeader();
   const data = {
     name,
     capacity,
-    number_of_computers,
+    'number_of_computers': numberOfComputers,
   };
   return axios({
     method: 'PATCH',
