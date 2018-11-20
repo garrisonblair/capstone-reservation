@@ -8,7 +8,7 @@ class SideNav extends Component {
   render() {
     const {selectedMenu, navConfig, history} = this.props;
     return (
-      <div className="admin-nav">
+      <div className="nav">
         <ul>
           {navConfig.map(row =>
             <li
