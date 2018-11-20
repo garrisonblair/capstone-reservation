@@ -3,7 +3,7 @@ function getApiToken() {
   return user ? user.token : null;
 }
 
-export function getTokenHeader() {
+export default function getTokenHeader() {
   const token = getApiToken();
   return token
     ? { Authorization: `Token ${token}` }

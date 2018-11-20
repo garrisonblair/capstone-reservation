@@ -13,7 +13,7 @@ class SideNav extends Component {
           {navConfig.map(row =>
             <li
               className={selectedMenu === row.menu ? 'active' : ''}
-              onClick={function () { history.push(row.path) }}
+              onClick={function () { history.push(row.path); }}
               key={row.menu}
             >
               {row.text}
@@ -21,13 +21,13 @@ class SideNav extends Component {
           )}
         </ul>
       </div>
-    )
+    );
   }
 }
 
 SideNav.propTypes = {
   selectedMenu: PropTypes.string.isRequired,
-  navConfig: PropTypes.array.isRequired
-}
+  navConfig: PropTypes.array.isRequired,
+};
 
 export default withRouter(SideNav);

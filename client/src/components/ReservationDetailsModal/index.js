@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import {Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import './ReservationDetailsModal.scss';
-import {toDateInputValue} from '../../utils/dateFormatter';
+import toDateInputValue from '../../utils/dateFormatter';
 import api from '../../utils/api';
 
 class ReservationDetailsModal extends Component {
