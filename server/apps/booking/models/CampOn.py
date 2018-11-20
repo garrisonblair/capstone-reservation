@@ -41,19 +41,20 @@ class CampOn(models.Model):
         if self.camped_on_booking.date != today:
             raise ValidationError("Camp-on can only be done for today.")
 
-        elif self.start_time < self.camped_on_booking.start_time or self.start_time >= self.camped_on_booking.end_time:
+        if self.start_time < self.camped_on_booking.start_time or self.start_time >= self.camped_on_booking.end_time:
             raise ValidationError("You can only camp on to an ongoing booking.")
 
-        elif self.start_time >= self.end_time:
+        if self.start_time >= self.end_time:
             raise ValidationError("End time must be later than the start time")
 
-        elif self.end_time > self.camped_on_booking.end_time:
+        if self.end_time > self.camped_on_booking.end_time:
             found_bookings = Booking.objects.filter(
-                start_time__range=(self.camped_on_booking.end_time, self.end_time))
+                start_time__range=(self.camped_on_booking.end_time, self.end_time)
+            )
             if found_bookings is not None:
                 raise ValidationError("Camp-on can not end after another booking has started")
 
-        elif CampOn.objects.filter(booker=self.booker, camped_on_booking=self.camped_on_booking).exists():
+        if CampOn.objects.filter(booker=self.booker, camped_on_booking=self.camped_on_booking).exists():
             raise ValidationError("Cannot camp-on the same Booking.")
 
     def evaluate_privilege(self):

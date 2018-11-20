@@ -6,10 +6,12 @@ from rest_framework.documentation import include_docs_urls
 
 
 urlpatterns = [
-    path(r'', include('apps.rooms.urls')),
+    path(r'', include('apps.system_settings.urls')),
     path(r'', include('apps.accounts.urls')),
     path(r'', include('apps.booking.urls')),
-    path(r'', include('apps.configuration_administration.urls')),
+    path(r'', include('apps.rooms.urls')),
+    path(r'', include('apps.groups.urls')),
+
     path('admin/', admin.site.urls),
     path(r'api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path(r'', include_docs_urls(title='Capstone'))

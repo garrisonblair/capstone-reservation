@@ -22,10 +22,10 @@ class TestCampOn(TestCase):
         self.campbooker.save()
 
         # Setup one Room
-        rid = "1"
+        name = "1"
         capacity = 7
         number_of_computers = 2
-        self.room = Room(room_id=rid,
+        self.room = Room(name=name,
                          capacity=capacity,
                          number_of_computers=number_of_computers)
         self.room.save()

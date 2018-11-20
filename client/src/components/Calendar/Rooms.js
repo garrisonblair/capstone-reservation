@@ -21,8 +21,8 @@ class Rooms extends Component {
   render() {
     const {roomsList} = this.state;
     const rooms = roomsList.map((room) =>
-      <div className="calendar__rooms__room" key={room.room_id}>
-        {room.room_id}
+      <div className="calendar__rooms__room" key={room.name}>
+        {room.name}
       </div>
     );
 

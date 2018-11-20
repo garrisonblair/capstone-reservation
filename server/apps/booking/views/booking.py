@@ -1,98 +1,87 @@
 import datetime
-
 from django.core.exceptions import ValidationError
-
-
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
+from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
+from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
-
-from apps.booking.serializers.booking_serializer import BookingSerializer, ReadBookingSerializer
+from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer
 from apps.accounts.exceptions import PrivilegeError
 
 
-class BookingView(APIView):
+class BookingList(ListAPIView):
+    permission_classes = ()
+    serializer_class = ReadBookingSerializer
+    queryset = Booking.objects.all()
+
+    def get_queryset(self):
+        qs = super(BookingList, self).get_queryset()
+
+        # Filter by year
+        year = self.request.GET.get('year')
+        if year:
+            qs = Booking.objects.filter(date__year=year)
+
+        # Filter by month
+        month = self.request.GET.get('month')
+        if month:
+            qs = Booking.objects.filter(date__month=month)
+
+        # Filter by day
+        day = self.request.GET.get('day')
+        if day:
+            qs = Booking.objects.filter(date__day=day)
+
+        return qs
+
+
+class BookingCreate(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+    serializer_class = BookingSerializer
 
     def post(self, request):
-        # Must be logged in as booker
-        if not request.user or request.user.booker is None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        data = request.data
+        data["booker"] = request.user.booker.booker_id
 
-        booking_data = dict(request.data)
-        booking_data["booker"] = request.user.booker.booker_id
-
-        serializer = BookingSerializer(data=booking_data)
+        serializer = BookingSerializer(data=data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        else:
-            try:
-                booking = serializer.save()
-                return Response(BookingSerializer(booking).data, status=status.HTTP_201_CREATED)
-            except (ValidationError, PrivilegeError) as error:
-                return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except (ValidationError, PrivilegeError) as error:
+            return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request):
 
-        request_year = request.GET.get('year')
-        request_day = request.GET.get('day')
-        request_month = request.GET.get('month')
+class BookingRetrieveUpdateDestroy(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+    serializer_class = BookingSerializer
 
-        if request_year is not None and request_month is not None and request_day is not None:
+    def patch(self, request, pk):
 
-            try:
+        try:
+            booking = Booking.objects.get(pk=pk)
+        except Booking.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-                integer_request_year = int(request_year)
-                integer_request_month = int(request_month)
-                integer_request_day = int(request_day)
+        # Check user permissions
+        self.check_object_permissions(request, booking.booker.user)
 
-                date = datetime.date(integer_request_year, integer_request_month, integer_request_day)
-                bookings = Booking.objects.filter(date=date)
+        data = request.data
+        data["booker"] = booking.booker.booker_id
+        serializer = BookingSerializer(booking, data=data, partial=True)
 
-            except ValueError:
-                return Response("Invalid date. Please supply valid integer values for year, month and day",
-                                status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        else:
-            try:
-                bookings = Booking.objects.all()
-            except ValidationError as error:
-                return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
-
-        bookings_list = list()
-        for booking in bookings:
-            serializer = ReadBookingSerializer(booking)
-            bookings_list.append(serializer.data)
-        return Response(bookings_list, status=status.HTTP_200_OK)
-
-    def patch(self, request, booking_id):
-        # Must be logged in as booker
-        if not request.user or request.user.booker is None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        booking = self.get_booking(booking_id)
-
-        if str(request.user.booker.booker_id) != str(booking.booker):
-            return Response("The booker who updates the booking must be the same as who created the booking.",
-                            status=status.HTTP_403_FORBIDDEN)
-
-        else:
-            booking_data = dict(request.data)
-            booking_data["booker"] = request.user.booker.booker_id
-            serializer = BookingSerializer(booking, data=booking_data, partial=True)
-
-            if not serializer.is_valid():
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-            else:
-                try:
-                    update_booking = serializer.save()
-                    return Response(BookingSerializer(update_booking).data, status=status.HTTP_204_NO_CONTENT)
-                except ValidationError as error:
-                    return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_booking(self, booking_id):
-        return Booking.objects.get(id=booking_id)
+        try:
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except ValidationError as error:
+            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
