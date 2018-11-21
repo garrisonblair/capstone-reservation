@@ -1,5 +1,10 @@
-import React, {Component} from 'react';
-import {Button, Icon, Table, TableCell} from 'semantic-ui-react';
+import React, { Component } from 'react';
+import {
+  Button,
+  Icon,
+  Table,
+  TableCell,
+} from 'semantic-ui-react';
 import api from '../../../utils/api';
 import AdminRequired from '../../HOC/AdminRequired';
 import AddPrivilegeModal from './AddPrivilegeModal';
@@ -9,83 +14,86 @@ import '../Admin.scss';
 
 // TODO: Pagination
 class PrivilegeCategory extends Component {
-
   state = {
     privileges: [],
     privilege: {},
     showAddPrivilegeModal: false,
-    showAssignPrivilegeModal: false,
-    showDetailsModal: false
+    showDetailsModal: false,
+  }
+
+  componentDidMount() {
+    this.getPrivileges();
   }
 
   getPrivileges = () => {
-    if(this.props.privilegesMock) {
-      this.setState({privileges: this.props.privilegesMock})
+    // eslint-disable-next-line react/prop-types
+    const { privilegesMock } = this.props;
+    if (privilegesMock) {
+      this.setState({ privileges: privilegesMock });
       return;
     }
     api.getPrivileges()
-    .then((response) => response.data)
-    .then((privileges) => {
-      this.setState({
-        privileges
-      })
-    })
-    .catch((error) => {
-      console.log(error);
-    })
+      .then(response => response.data)
+      .then((privileges) => {
+        this.setState({
+          privileges,
+        });
+      });
   }
 
   handleAddPrivilege = () => {
     this.setState({
-      showAddPrivilegeModal: true
-    })
+      showAddPrivilegeModal: true,
+    });
   }
 
   handleDisplayPrivilege = (privilege) => {
     this.setState({
       showDetailsModal: true,
-      privilege
-    })
+      privilege,
+    });
   }
 
   handleOnCloseAddPrivilegeModal = () => {
     this.getPrivileges();
     this.setState({
-      showAddPrivilegeModal: false
-    })
+      showAddPrivilegeModal: false,
+    });
   }
 
   handleOnCloseDisplayPrivilegeModal = () => {
     this.setState({
       showDetailsModal: false,
-      privilege: {}
-    })
+      privilege: {},
+    });
   }
 
   renderControls() {
     return (
       <div>
-        <Button icon labelPosition='left' primary size='small' onClick={this.handleAddPrivilege}>
-          <Icon name='plus'/> Add
+        <Button icon labelPosition="left" primary size="small" onClick={this.handleAddPrivilege}>
+          <Icon name="plus" />
+            Add
         </Button>
-        <Button icon labelPosition='left' primary size='small'>
-          <Icon name='plus'/> Assign
+        <Button icon labelPosition="left" primary size="small">
+          <Icon name="plus" />
+            Assign
         </Button>
       </div>
-    )
+    );
   }
 
   renderTable() {
-    const {privileges} = this.state;
-    let headers = [
+    const { privileges } = this.state;
+    const headers = [
       'Name',
       'Parent Category',
       'Booking Start Time',
       'Booking End Time',
-      ''
-    ]
+      '',
+    ];
 
-    let body = privileges.map((privilege) =>
+    const body = privileges.map(privilege => (
       <Table.Row key={privilege.id}>
         <Table.Cell>{privilege.name}</Table.Cell>
         <Table.Cell>{privilege.parent_category || '-'}</Table.Cell>
@@ -95,25 +103,26 @@ class PrivilegeCategory extends Component {
           <Button
             icon
             primary
-            size='small'
+            size="small"
             onClick={() => this.handleDisplayPrivilege(privilege)}
           >
-            <Icon name='eye'/>
+            <Icon name="eye" />
           </Button>
         </TableCell>
       </Table.Row>
-    )
+    ));
 
-    let table = (
+    const table = (
       <Table celled>
         <Table.Header>
           <Table.Row>
             {
-              headers.map((header, index) =>
+              headers.map((header, index) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <Table.HeaderCell key={index}>
                   {header}
                 </Table.HeaderCell>
-              )
+              ))
             }
           </Table.Row>
         </Table.Header>
@@ -121,16 +130,18 @@ class PrivilegeCategory extends Component {
           {body}
         </Table.Body>
       </Table>
-    )
+    );
     return table;
   }
 
-  componentDidMount() {
-    this.getPrivileges();
-  }
-
   render() {
-    const {privilege, privileges, showAddPrivilegeModal, showDetailsModal} = this.state;
+    const
+      {
+        privilege,
+        privileges,
+        showAddPrivilegeModal,
+        showDetailsModal,
+      } = this.state;
     return (
       <div className="privileges">
         <h1>Privileges</h1>
@@ -147,7 +158,7 @@ class PrivilegeCategory extends Component {
           onClose={this.handleOnCloseDisplayPrivilegeModal}
         />
       </div>
-    )
+    );
   }
 }
 
