@@ -6,7 +6,6 @@ import './Admin.scss';
 
 
 class Admin extends Component {
-
   componentDidMount = () => {
     document.title = 'Capstone Settings';
   }
@@ -17,7 +16,7 @@ class Admin extends Component {
     return (
       <div className="admin">
         <div className="admin__wrapper">
-          <SideNav selectedMenu={menuType}/>
+          <SideNav selectedMenu={menuType} />
           <div className="admin__content">
             {content}
           </div>

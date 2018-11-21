@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Button, Icon, Step, Loader } from 'semantic-ui-react';
+import {
+  Form, Input, Button, Icon, Step, Loader,
+} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
 import './Registration.scss';
 
 
 class Registration extends Component {
-
   state = {
     encsUsername: '',
     modalType: 'info',
@@ -28,6 +29,7 @@ class Registration extends Component {
 
   closeModal = () => {
     const { modalType } = this.state;
+    // eslint-disable-next-line react/prop-types
     const { history } = this.props;
     if (modalType === 'success') {
       history.push('/');
@@ -68,14 +70,6 @@ class Registration extends Component {
           );
         }
       });
-  }
-
-  renderLoader() {
-    return (
-      <div>
-        <Loader active inline="centered" size="large" />
-      </div>
-    );
   }
 
   renderMainForm() {
@@ -124,7 +118,7 @@ class Registration extends Component {
     return (
       <div id="registration">
         <div className="container">
-          {showLoader ? this.renderLoader() : this.renderMainForm()}
+          {showLoader ? <Loader active inline="centered" size="large" /> : this.renderMainForm()}
         </div>
       </div>
     );
