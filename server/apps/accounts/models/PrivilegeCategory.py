@@ -16,6 +16,7 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
     name = models.CharField(max_length=100, blank=False, unique=True)
     parent_category = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE)
     is_default = models.BooleanField(default=False)
+    related_course = models.CharField(max_length=10, blank=True, null=True)
 
     # rule parameter fields
     # When you add a field, update model test testCreation to check its defaulted to None
