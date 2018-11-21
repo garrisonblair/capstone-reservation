@@ -54,7 +54,7 @@ def search_user(**kwargs):
 
 
 def get_user_groups(**kwargs):
-    response = search_user(kwargs)
+    response = search_user(**kwargs)
     if response:
         return response.get('attributes').get('memberOf')
     return None
