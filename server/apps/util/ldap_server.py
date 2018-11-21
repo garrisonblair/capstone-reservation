@@ -37,3 +37,24 @@ def get_ldap_connection():
         print("LDAP connect failed: {ex}".format(ex=ex))
 
     return None
+
+
+def search_user(**kwargs):
+    connection = get_ldap_connection()
+    if connection._connection.search(
+        search_base=settings.LDAP_AUTH_SEARCH_BASE,
+        search_filter=ldap.format_search_filter(kwargs),
+        search_scope=ldap3.SUBTREE,
+        attributes=ldap3.ALL_ATTRIBUTES,
+        get_operational_attributes=True,
+        size_limit=1
+    ):
+        return connection._connection.response[0]
+    return None
+
+
+def get_user_groups(**kwargs):
+    response = search_user(kwargs)
+    if response:
+        return response.get('attributes').get('memberOf')
+    return None
