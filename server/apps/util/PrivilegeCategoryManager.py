@@ -27,6 +27,8 @@ class PrivilegeCategoryManager:
             booker.privilege_categories.add(default_category)
 
         for category in privilege_categories:
+            if category.related_course is None or category.related_course == "":
+                continue
             for course in courses:
                 course.lower()
                 if category.related_course in course:
