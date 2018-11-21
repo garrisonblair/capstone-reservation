@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Button, Message, Table } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import RoomRowItem from './RoomRowItem';
 import RoomModal from './RoomModal';
 import api from '../../../utils/api';
-import sweetAlert from 'sweetalert2';
 import './RoomManager.scss';
 
 
@@ -65,7 +65,9 @@ class RoomManager extends Component {
     const message = (
       <Message>
         <Message.Header>There is currently no room</Message.Header>
-        <p>Click on the 'Add Room' button to add a new room.</p>
+        <p>
+          Click on the &apos;Add Room&apos; button to add a new room.
+        </p>
       </Message>);
     if (showEmptyMessage && roomsList.length === 0) {
       result = message;
@@ -83,7 +85,8 @@ class RoomManager extends Component {
         <Table.Header>
           <Table.Row>
             {headers.map(
-              (head, index) => <Table.HeaderCell key={index} textAlign="center">{head}</Table.HeaderCell>
+              // eslint-disable-next-line react/no-array-index-key
+              (head, index) => <Table.HeaderCell key={index} textAlign="center">{head}</Table.HeaderCell>,
             )}
           </Table.Row>
         </Table.Header>
