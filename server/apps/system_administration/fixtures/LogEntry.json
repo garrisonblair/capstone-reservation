@@ -3,11 +3,11 @@
     "model": "admin.logentry",
     "pk": 1,
     "fields": {
-      "action_time": "2018-11-21T19:00:00.000Z",
+      "action_time": "2018-11-21T15:00:00.000Z",
       "user": 2,
       "content_type": 1,
-      "object_id": "4",
-      "object_repr": "Booking: 4, Booker: 11111111, Room: H961-4, Date: 2018-11-21, Start time: 09:00:00, End Time: 11:00:00",
+      "object_id": "3",
+      "object_repr": "",
       "action_flag": 2,
       "change_message": ""}
   },
@@ -16,11 +16,59 @@
     "pk": 2,
     "fields": {
       "action_time": "2018-11-21T19:00:00.000Z",
-      "user": 2,
-      "content_type": 12,
+      "user": 3,
+      "content_type": 1,
       "object_id": "4",
-      "object_repr": "Booking: 4, Booker: 11111111, Room: H961-4, Date: 2018-11-21, Start time: 09:00:00, End Time: 11:00:00",
+      "object_repr": "",
       "action_flag": 2,
       "change_message": ""}
-
-  }]
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 3,
+    "fields": {
+      "action_time": "2018-11-22T19:00:00.000Z",
+      "user": 2,
+      "content_type": 2,
+      "object_id": "3",
+      "object_repr": "",
+      "action_flag": 2,
+      "change_message": ""}
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 4,
+    "fields": {
+      "action_time": "2018-11-23T19:00:00.000Z",
+      "user": 3,
+      "content_type": 2,
+      "object_id": "4",
+      "object_repr": "",
+      "action_flag": 2,
+      "change_message": ""}
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 5,
+    "fields": {
+      "action_time": "2018-11-24T1:00:00.000Z",
+      "user": 2,
+      "content_type": 3,
+      "object_id": "4",
+      "object_repr": "",
+      "action_flag": 2,
+      "change_message": ""}
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 6,
+    "fields": {
+      "action_time": "2018-11-25T19:00:00.000Z",
+      "user": 3,
+      "content_type": 3,
+      "object_id": "3",
+      "object_repr": "",
+      "action_flag": 2,
+      "change_message": ""}
+  }
+]
