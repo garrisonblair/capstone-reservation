@@ -9,9 +9,9 @@ class SelectedDate extends Component {
     selectedDate: new Date(),
   }
 
-  handleClickNextDate = (change) => {
+  handleClickNextDate = () => {
     const { selectedDate } = this.state;
-    selectedDate.setDate(selectedDate.getDate() + change);
+    selectedDate.setDate(selectedDate.getDate() + 1);
     this.setState({ selectedDate });
     this.changeDate(selectedDate);
   }
@@ -38,7 +38,7 @@ class SelectedDate extends Component {
           color="olive"
           icon="chevron left"
           size="tiny"
-          onClick={this.handleClickNextDate(-1)}
+          onClick={this.handleClickPreviousDate}
         />
         <h3 className="calendar__date__header">
           <Icon name="calendar alternate outline" />
@@ -50,7 +50,7 @@ class SelectedDate extends Component {
           color="olive"
           icon="chevron right"
           size="tiny"
-          onClick={this.handleClickNextDate(1)}
+          onClick={this.handleClickNextDate}
         />
       </div>
     );
