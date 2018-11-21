@@ -5,23 +5,21 @@ from apps.accounts.models import Booker
 
 class PrivilegeCategoryManager:
 
-    def clear_booker_privileges(self, username):
-        booker = Booker.objects.get(user__username=username)
+    def clear_booker_privileges(self, booker):
         booker.privilege_categories.clear()
         booker.save()
 
     def clear_all_booker_privileges(self):
         bookers = Booker.objects.all()
         for booker in bookers:
-            self.clear_booker_privileges(booker.user.username)
+            self.clear_booker_privileges(booker)
 
-    def assign_booker_privileges(self, username):
-        booker = Booker.objects.get(user__username=username)
+    def assign_booker_privileges(self, booker):
         privilege_categories = PrivilegeCategory.objects.all()
-        courses = ldap_server.get_user_groups(username=username)
+        courses = ldap_server.get_user_groups(booker.user.username)
 
         # clear booker privileges before re-assigning them
-        self.clear_booker_privileges(username)
+        self.clear_booker_privileges(booker)
 
         # adding default privilege category that all users should be part of
         default_category = privilege_categories.get(is_default=True)
@@ -44,5 +42,5 @@ class PrivilegeCategoryManager:
     def assign_all_booker_privileges(self):
         bookers = Booker.objects.all()
         for booker in bookers:
-            self.assign_booker_privileges(booker.booker_id)
+            self.assign_booker_privileges(booker)
 
