@@ -19,11 +19,10 @@ class SideNav extends Component {
             {row.text}
           </li>))}
       </ul>
-    )
+    );
   }
 
   render() {
-
     return (
       <div className="sidenav">
         {this.renderNavItem()}
