@@ -34,6 +34,8 @@ class PrivilegeCategoryManager:
                 if category.related_course in course:
                     booker.privilege_categories.add(category)
 
+        booker.save()
+
     def assign_all_booker_privileges(self):
         bookers = Booker.objects.all()
         for booker in bookers:
