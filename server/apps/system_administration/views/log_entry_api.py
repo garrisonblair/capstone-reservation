@@ -5,10 +5,14 @@ from rest_framework.response import Response
 from django.contrib.admin.models import LogEntry
 from django.db.models.query import QuerySet
 
+from apps.util.AbstractPaginatedView import AbstractPaginatedView
+from rest_framework.pagination import LimitOffsetPagination
 from ..serializers.log_entry_serializer import LogEntrySerializer
 
 
-class LogEntryView(APIView):
+class LogEntryView(APIView, AbstractPaginatedView):
+
+    pagination_class = LimitOffsetPagination
 
     def get(self, request):
 
@@ -39,6 +43,7 @@ class LogEntryView(APIView):
         if user_id is not None:
             log_entries = log_entries.filter(user=user_id)
 
-        serializer = LogEntrySerializer(log_entries, many=True)
-
-        return Response(serializer.data)
+        page = self.paginate_queryset(log_entries)
+        if page is not None:
+            serializer = LogEntrySerializer(page, many=True)
+            return Response(serializer.data)
