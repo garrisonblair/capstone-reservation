@@ -5,20 +5,28 @@ import './SideNav.scss';
 
 
 class SideNav extends Component {
-  render() {
+  renderNavItem = () => {
+    // eslint-disable-next-line react/prop-types
     const { selectedMenu, navConfig, history } = this.props;
     return (
+      <ul>
+        {navConfig.map(row => (
+          <li
+            className={selectedMenu === row.menu ? 'active' : ''}
+            onClick={() => { history.push(row.path); }}
+            key={row.menu}
+          >
+            {row.text}
+          </li>))}
+      </ul>
+    )
+  }
+
+  render() {
+
+    return (
       <div className="sidenav">
-        <ul>
-          {navConfig.map(row => (
-            <li
-              className={selectedMenu === row.menu ? 'active' : ''}
-              onClick={function () { history.push(row.path); }}
-              key={row.menu}
-            >
-              {row.text}
-            </li>))}
-        </ul>
+        {this.renderNavItem()}
       </div>
     );
   }
@@ -26,7 +34,17 @@ class SideNav extends Component {
 
 SideNav.propTypes = {
   selectedMenu: PropTypes.string.isRequired,
-  navConfig: PropTypes.array.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  navConfig: PropTypes.array,
+};
+
+SideNav.defaultProps = {
+  navConfig: [
+    { text: 'Settings', menu: 'settings', path: '/admin/settings' },
+    { text: 'Privileges', menu: 'privileges', path: '/admin/privileges' },
+    { text: 'Rooms', menu: 'rooms', path: '/admin/rooms' },
+    { text: 'Stats', menu: 'stats', path: '/admin/stats' },
+  ],
 };
 
 export default withRouter(SideNav);

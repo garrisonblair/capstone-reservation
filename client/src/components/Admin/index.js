@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import AdminRequired from '../HOC/AdminRequired';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import AdminRequired from '../HOC/AdminRequired';
 import SideNav from '../SideNav';
 import './Admin.scss';
 
@@ -8,33 +8,28 @@ import './Admin.scss';
 class Admin extends Component {
 
   componentDidMount = () => {
-    document.title = 'Capstone Settings'
+    document.title = 'Capstone Settings';
   }
 
   render() {
-    let {content, menuType} = this.props;
-    const navConfig=[
-      {text:'Settings', menu:'settings', path:'/admin/settings'},
-      {text:'Privileges', menu:'privileges', path:'/admin/privileges'},
-      {text:'Rooms', menu:'rooms', path:'/admin/rooms'},
-      {text:'Stats', menu:'stats', path:'/admin/stats'}
-    ];
+    const { content, menuType } = this.props;
+
     return (
       <div className="admin">
         <div className="admin__wrapper">
-          <SideNav selectedMenu={menuType} navConfig={navConfig}/>
+          <SideNav selectedMenu={menuType}/>
           <div className="admin__content">
-          {content}
+            {content}
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
 Admin.propTypes = {
   menuType: PropTypes.string.isRequired,
-  content: PropTypes.object.isRequired
-}
+  content: PropTypes.element.isRequired,
+};
 
 export default AdminRequired(Admin);

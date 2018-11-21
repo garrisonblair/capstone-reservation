@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './Calendar.scss';
 
 
@@ -10,7 +10,7 @@ class Hours extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    if(props.hoursList === state.hoursList) {
+    if (props.hoursList === state.hoursList) {
       return null;
     }
     return {
@@ -19,7 +19,7 @@ class Hours extends Component {
   }
 
   render() {
-    const {hoursList} = this.state;
+    const { hoursList } = this.state;
     const hours = hoursList.map((hour) =>
       <div className="calendar__hours__hour" key={hour}>
         {hour}

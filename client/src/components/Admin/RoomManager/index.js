@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Button, Message, Table } from 'semantic-ui-react'
-import RoomRowItem from './RoomRowItem'
+import { Button, Message, Table } from 'semantic-ui-react';
+import RoomRowItem from './RoomRowItem';
 import RoomModal from './RoomModal';
 import api from '../../../utils/api';
 import sweetAlert from 'sweetalert2';
@@ -12,7 +12,7 @@ class RoomManager extends Component {
     roomsList: [],
     showModal: false,
     selectedRoom: null,
-    showEmptyMessage:false
+    showEmptyMessage: false,
   }
 
   componentDidMount() {
@@ -23,7 +23,7 @@ class RoomManager extends Component {
   showRoomModal = () => {
     this.setState({
       showModal: true,
-    })
+    });
   }
 
   closeRoomModal = () => {
@@ -36,70 +36,73 @@ class RoomManager extends Component {
   syncRooms = () => {
     api.getRooms()
       .then((response) => {
-        if(response.status == 200){
+        if (response.status === 200) {
           this.setState({
             roomsList: response.data,
-            showEmptyMessage:true
+            showEmptyMessage: true,
           });
         }
       })
-      .catch((error)=>{
-        sweetAlert(':(','We are sorry. There was a problem getting the rooms', 'error')
-      })
+      .catch(() => {
+        sweetAlert(':(', 'We are sorry. There was a problem getting the rooms', 'error');
+      });
   }
 
   renderRoomModal() {
+    const { selectedRoom } = this.state;
     return (
-      <RoomModal show={true}
+      <RoomModal
+        show
         onClose={this.closeRoomModal}
-        selectedRoom={this.state.selectedRoom}>
-      </RoomModal>
-    )
+        selectedRoom={selectedRoom}
+      />
+    );
   }
 
   renderNoRoomList = () => {
-    let {showEmptyMessage, roomsList} = this.state;
+    const { showEmptyMessage, roomsList } = this.state;
     let result = '';
-    const message =
+    const message = (
       <Message>
         <Message.Header>There is currently no room</Message.Header>
         <p>Click on the 'Add Room' button to add a new room.</p>
-      </Message>;
-    if(showEmptyMessage && roomsList.length == 0){
+      </Message>);
+    if (showEmptyMessage && roomsList.length === 0) {
       result = message;
     }
     return (
       result
-    )
+    );
   }
+
   renderTable = () => {
-    let headers = ['Name', 'Capacity', '# of computers', '']
+    const headers = ['Name', 'Capacity', '# of computers', ''];
+    const { roomsList } = this.state;
     return (
       <Table>
         <Table.Header>
           <Table.Row>
             {headers.map(
-              (head, index) =>
-                <Table.HeaderCell key={index} textAlign='center'>{head}</Table.HeaderCell>
+              (head, index) => <Table.HeaderCell key={index} textAlign="center">{head}</Table.HeaderCell>
             )}
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {this.state.roomsList.map(
-            room =>
+          {roomsList.map(
+            room => (
               <RoomRowItem
                 key={room.id}
                 room={room}
                 syncRoomList={this.syncRooms}
-              />
+              />),
           )}
         </Table.Body>
       </Table>
-    )
+    );
   }
 
   render() {
-    let { showModal } = this.state;
+    const { showModal } = this.state;
     return (
       <div id="room-management">
         <h1>Manage Rooms</h1>
@@ -108,7 +111,7 @@ class RoomManager extends Component {
         <Button onClick={this.showRoomModal}>Add new room</Button>
         {showModal ? this.renderRoomModal() : ''}
       </div>
-    )
+    );
   }
 }
 
