@@ -6,7 +6,6 @@ import BookingInfoModal from '../BookingInfoModal';
 
 
 class Cells extends Component {
-
   state = {
     selectedHour: "",
     selectedRoomName: "",

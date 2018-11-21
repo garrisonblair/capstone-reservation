@@ -8,7 +8,6 @@ import api from '../../utils/api';
 
 
 class Calendar extends Component {
-
   state = {
     roomsList: [],
     hoursList: [],

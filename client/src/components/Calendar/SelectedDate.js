@@ -1,34 +1,35 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './Calendar.scss';
-import {Button, Icon} from 'semantic-ui-react';
+import { Button, Icon } from 'semantic-ui-react';
 
 
 class SelectedDate extends Component {
-
   state = {
     selectedDate: new Date(),
   }
 
-  handleClickNextDate = (e) => {
-    let nextDay = this.state.selectedDate;
-    nextDay.setDate(nextDay.getDate() + 1);
-    this.setState({selectedDate: nextDay})
-    this.changeDate(nextDay)
+  handleClickNextDate = (change) => {
+    const { selectedDate } = this.state;
+    selectedDate.setDate(selectedDate.getDate() + change);
+    this.setState({ selectedDate });
+    this.changeDate(selectedDate);
   }
 
-  handleClickPreviousDate = (e) => {
-    let previousDay = this.state.selectedDate;
-    previousDay.setDate(previousDay.getDate() - 1);
-    this.setState({selectedDate: previousDay})
-    this.changeDate(previousDay)
+  handleClickPreviousDate = () => {
+    const { selectedDate } = this.state;
+    selectedDate.setDate(selectedDate.getDate() - 1);
+    this.setState({ selectedDate });
+    this.changeDate(selectedDate);
   }
 
   changeDate = (day) => {
-    this.props.changeDate(day);
+    const { changeDate } = this.props;
+    changeDate(day);
   }
 
   render() {
+    const { selectedDate } = this.state;
     return (
       <div className="calendar__date">
         <Button
@@ -37,11 +38,11 @@ class SelectedDate extends Component {
           color="olive"
           icon="chevron left"
           size="tiny"
-          onClick={this.handleClickPreviousDate}
+          onClick={this.handleClickNextDate(-1)}
         />
         <h3 className="calendar__date__header">
           <Icon name="calendar alternate outline" />
-          {this.state.selectedDate.toDateString()}
+          {selectedDate.toDateString()}
         </h3>
         <Button
           basic
@@ -49,7 +50,7 @@ class SelectedDate extends Component {
           color="olive"
           icon="chevron right"
           size="tiny"
-          onClick={this.handleClickNextDate}
+          onClick={this.handleClickNextDate(1)}
         />
       </div>
     );
@@ -58,7 +59,10 @@ class SelectedDate extends Component {
 
 SelectedDate.propTypes = {
   changeDate: PropTypes.func,
-}
+};
 
+SelectedDate.defaultProps = {
+  changeDate: () => {},
+};
 
 export default SelectedDate;
