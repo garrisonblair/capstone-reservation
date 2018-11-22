@@ -23,7 +23,7 @@ class CustomFormInput extends Component {
     const { title } = this.props;
     return (
       <Form.Field>
-        <label>{title}</label>
+        <Label>{title}</Label>
         {this.renderErrorMessage()}
         <Input
           {...this.props}
@@ -34,7 +34,7 @@ class CustomFormInput extends Component {
 }
 
 CustomFormInput.propTypes = {
-  errormessage: PropTypes.string,
+  errormessage: PropTypes.string.isRequired,
 };
 
 export default CustomFormInput;
