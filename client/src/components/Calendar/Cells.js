@@ -43,10 +43,34 @@ class Cells extends Component {
     let bookingStart = this.timeStringToInt(booking.start_time);
     let bookingEnd = this.timeStringToInt(booking.end_time);
     let calendarStart = this.timeStringToInt(hoursSettings.start);
-    let color = '#5a9ab2'
-    let currentDate = (new Date())
-    let currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`
-    if(booking.date.substring(8,10) != (new Date()).getDate() || parseInt(booking.end_time.replace(/:/g, '')) <= parseInt(`${currentDate.getHours()}${currentMinute}00`)) {
+    let color = '#5a9ab2';
+    let currentDate = (new Date());
+    let currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`;
+
+    //Change booking color if it's passed
+    let bookingDate = booking.date.split("-");
+    let datePassed = false;
+    let sameDate = false
+    if (parseInt(bookingDate[0]) < currentDate.getFullYear()) {
+      datePassed = true;
+    } else {
+      if (parseInt(bookingDate[0]) == currentDate.getFullYear()) {
+        if (parseInt(bookingDate[1]) < currentDate.getMonth() + 1) {
+          datePassed = true;
+        } else {
+          if (parseInt(bookingDate[1]) == currentDate.getMonth() + 1) {
+            if (parseInt(bookingDate[2]) < currentDate.getDate()) {
+              datePassed = true;
+            } else {
+              if (parseInt(bookingDate[2]) == currentDate.getDate()) {
+                sameDate = true
+              }
+            }
+          }
+        }
+      }
+    }
+    if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, '')) <= parseInt(`${currentDate.getHours()}${currentMinute}00`))) {
       color = 'rgb(114, 120, 126)'
     } else {
       if (campOnsNumber > 0) {
