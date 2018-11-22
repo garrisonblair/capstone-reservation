@@ -16,6 +16,8 @@ class PrivilegeCategoryManager:
 
     def assign_booker_privileges(self, booker, server=ldap_server):
         privilege_categories = PrivilegeCategory.objects.all()
+        if server is None:
+            server = ldap_server
         courses = server.get_user_groups(booker.user.username)
 
         # clear booker privileges before re-assigning them
