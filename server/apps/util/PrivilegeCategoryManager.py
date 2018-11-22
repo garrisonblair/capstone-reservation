@@ -14,9 +14,9 @@ class PrivilegeCategoryManager:
         for booker in bookers:
             self.clear_booker_privileges(booker)
 
-    def assign_booker_privileges(self, booker):
+    def assign_booker_privileges(self, booker, server=ldap_server):
         privilege_categories = PrivilegeCategory.objects.all()
-        courses = ldap_server.get_user_groups(booker.user.username)
+        courses = server.get_user_groups(booker.user.username)
 
         # clear booker privileges before re-assigning them
         self.clear_booker_privileges(booker)
@@ -25,6 +25,10 @@ class PrivilegeCategoryManager:
         default_category = privilege_categories.get(is_default=True)
         if default_category:
             booker.privilege_categories.add(default_category)
+
+        # if user is not found in the LDAP he will only have default privileges
+        if courses is None:
+            return
 
         # for each existing privilege category
         # if there is no related course assigned to it, skip it
@@ -43,4 +47,3 @@ class PrivilegeCategoryManager:
         bookers = Booker.objects.all()
         for booker in bookers:
             self.assign_booker_privileges(booker)
-
