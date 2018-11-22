@@ -6,6 +6,6 @@ function getApiToken() {
 export default function getTokenHeader() {
   const token = getApiToken();
   return token
-    ? { Authorization: `Token ${token}` }
+    ? {Authorization: `Token ${token}`}
     : {};
 }
