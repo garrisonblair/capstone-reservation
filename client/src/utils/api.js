@@ -128,7 +128,7 @@ function createRoom(name, capacity, numberOfComputers) {
   const data = {
     name,
     capacity,
-    'number_of_computers': numberOfComputers,
+    number_of_computers: numberOfComputers,
   };
   return axios({
     method: 'POST',
@@ -144,7 +144,7 @@ function updateRoom(id, name, capacity, numberOfComputers) {
   const data = {
     name,
     capacity,
-    'number_of_computers': numberOfComputers,
+    number_of_computers: numberOfComputers,
   };
   return axios({
     method: 'PATCH',

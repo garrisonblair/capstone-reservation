@@ -20,19 +20,25 @@ class ReservationDetailsModal extends Component {
     isRecurring: false,
     tabIndex: 0,
     inputOption0: {
-      startDate: toDateInputValue(this.props.selectedDate),
-      endDate: toDateInputValue(this.props.selectedDate)
+      startDate: '',
+      endDate: '',
     },
+    reservationProfiles: ['me'],
   }
 
   componentWillMount() {
     const {
-      minHour, maxHour, minuteInterval, reservationProfiles,
+      minHour, maxHour, minuteInterval, selectedDate,
     } = this.props;
+    const { reservationProfiles } = this.state;
     this.setState({
       hourOptions: this.generateHourOptions(minHour, maxHour),
       minuteOptions: this.generateMinuteOptions(minuteInterval),
       reservedOptions: this.generateReservationProfilesOptions(reservationProfiles),
+      inputOption0: {
+        startDate: toDateInputValue(selectedDate),
+        endDate: toDateInputValue(selectedDate),
+      },
     });
   }
 
@@ -56,7 +62,7 @@ class ReservationDetailsModal extends Component {
 
       // Handle 24-hour military time
       if (nextProps.selectedHour.includes('PM') && hour !== '12') {
-        hour = `${(parseInt(hour) + 12)}`;
+        hour = `${(parseInt(hour, 10) + 12)}`;
       }
     }
     this.setState({
@@ -87,6 +93,7 @@ class ReservationDetailsModal extends Component {
     return result;
   }
 
+  // TODO: This method needs to be changed when accessing groups
   generateReservationProfilesOptions = r => r.map(profile => ({ text: profile, value: profile }))
 
   closeModal = () => {
@@ -493,7 +500,6 @@ ReservationDetailsModal.defaultProps = {
   minHour: 8,
   maxHour: 24,
   minuteInterval: 10,
-  reservationProfiles: ['me'],
 };
 
 export default ReservationDetailsModal;
