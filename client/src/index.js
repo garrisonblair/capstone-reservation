@@ -11,6 +11,7 @@ import PrivilegeCategory from './components/Admin/PrivilegeCategory';
 import RoomManager from './components/Admin/RoomManager';
 import Stats from './components/Admin/Stats';
 import Settings from './components/Admin/Settings';
+import Groups from './components/Groups';
 
 
 ReactDOM.render(
@@ -26,6 +27,7 @@ ReactDOM.render(
         <Route exact path="/admin/privileges" render={() => <Admin menuType="privileges" content={<PrivilegeCategory />} />} />
         <Route exact path="/admin/rooms" render={() => <Admin menuType="rooms" content={<RoomManager />} />} />
         <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<Stats />} />} />
+        <Route exact path="/test" component={Groups} />
         <Route component={NotFound} />
       </Switch>
     </div>

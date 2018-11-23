@@ -211,6 +211,15 @@ function createPrivilege(data) {
   });
 }
 
+function getMyGroups() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/groups`,
+    headers,
+  });
+}
+
 const api = {
   register,
   login,
@@ -231,6 +240,7 @@ const api = {
   updateAdminSettings,
   getPrivileges,
   createPrivilege,
+  getMyGroups,
 };
 
 export default api;
