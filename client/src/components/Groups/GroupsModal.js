@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, List,
+  Modal, Button, FormField, Input, List, Message
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import MemberRowItem from './MemberRowItem';
@@ -13,51 +13,86 @@ class GroupsModal extends Component {
     groupID: '',
     groupName: '',
     groupMembers: [],
-    newMember: ''
+    newMember: '',
   }
 
   componentDidMount() {
-    // const { selectedRoom } = this.props;
-    // if (selectedRoom != null) {
-    //   this.setState({
-    //     roomID: selectedRoom.name,
-    //     roomCapacity: selectedRoom.capacity,
-    //     numOfComputers: selectedRoom.number_of_computers,
-    //   });
-    // }
+    console.log('me')
+    const { selectedGroup } = this.props;
+    if (selectedGroup != null) {
+      this.setState({
+        groupID: selectedGroup.id,
+        groupName: selectedGroup.name,
+        groupMembers: selectedGroup.members,
+      });
+    }
   }
 
   verifyModalForm = () => {
-
+    const { groupName } = this.state;
+    let result = true;
+    if (groupName.length === 0) {
+      sweetAlert('Empty field', 'Please enter a name.', 'warning');
+      result = false;
+    }
+    return result;
   }
 
-  handleGroupIdOnChange = (event) => {
-    // this.setState({ groupID: event.target.value });
+  handleNameOnChange = (event) => {
+    this.setState({ groupName: event.target.value });
   }
 
 
   handleSubmit = () => {
+    if (!this.verifyModalForm()) {
+      return;
+    }
 
   }
 
   addMemberToList = () => {
     let { groupMembers, newMember } = this.state;
-    groupMembers.push(newMember);
+    if (newMember.length < 1) {
+      return;
+    }
+    groupMembers.push({name:newMember});
     this.setState({
       groupMembers,
-      newMember:'',
+      newMember: '',
     });
   }
+
   handleAddMemberOnChange = (e) => {
     this.setState({ newMember: e.target.value })
   }
 
+  renderMembersList = () => {
+    const { groupMembers } = this.state;
+    let content = '';
+    if (groupMembers.length !== 0) {
+      content = (
+      <List divided>
+        {groupMembers.map(
+          (m, index) =>
+            (
+              <MemberRowItem
+                key={index}
+                selectedMember={m.name}
+              />
+            ))}
+      </List>
+      )
+    } else{
+      content = (<Message visible>There is currently no members.</Message>)
+    }
+    return content;
+  }
+
   render() {
-    const { onClose } = this.props;
-    const { groupID, selectedGroup, newMember, groupMembers } = this.state;
-    console.log(groupMembers);
+    const { onClose, show, selectedGroup } = this.props;
+    const { groupName, newMember} = this.state;
     return (
-      <Modal centered={false} size="tiny" open={true} id="group-modal" onClose={onClose}>
+      <Modal centered={false} size="tiny" open={show} id="group-modal" onClose={onClose}>
         <Modal.Header>
           Group Details
         </Modal.Header>
@@ -67,9 +102,9 @@ class GroupsModal extends Component {
             <FormField>
               <Input
                 size="small"
-                onChange={this.handleGroupIdOnChange}
-                value={groupID}
-                disabled={selectedGroup != null}
+                onChange={this.handleNameOnChange}
+                value={groupName}
+                readOnly={selectedGroup}
               />
             </FormField>
             <h3>Members:</h3>
@@ -82,19 +117,11 @@ class GroupsModal extends Component {
                 value={newMember}
               />
             </FormField>
-            <List divided>
-              {groupMembers.map(
-                m =>
-                  (
-                    <MemberRowItem
-                      selectedMember={m}
-                    />
-                  ))}
-            </List>
+            {this.renderMembersList()}
             <br />
             <br />
             <Button onClick={this.handleSubmit} color="blue">SAVE</Button>
-            <Button onClick={onClose}>Close</Button>
+
           </Modal.Description>
         </Modal.Content>
       </Modal>

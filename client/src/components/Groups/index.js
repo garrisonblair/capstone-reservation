@@ -10,15 +10,22 @@ class Groups extends Component {
   state = {
     showModal: false,
     groups: [
-      { id: 1, name: 'grpu1', members: [{ name: 'm1' }] }
+      { id: 1, name: 'grpu1', members: [{ name: 'm1' }], admin:true },
+      { id: 2, name: 'grpu2', members: [{ name: 'm1' }], admin: false }
     ],
   }
 
   syncGroups = () => {
-    api.getMyGroups()
-      .then((r) => {
-        this.setState({ groups: r.data });
-      });
+    // api.getMyGroups()
+    //   .then((r) => {
+    //     this.setState({ groups: r.data });
+    //   });
+    this.setState({
+      groups: [
+      { id: 1, name: 'grpu1', members: [{ name: 'm1' }], admin:true },
+      { id: 2, name: 'grpu2', members: [{ name: 'm1' }], admin: false }
+    ],});
+    console.log('sync')
   }
 
   showGroupsModal = () =>{this.setState({showModal: true})}
@@ -40,7 +47,8 @@ class Groups extends Component {
         <Table>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell textAlign="center">Name</Table.HeaderCell>
+              <Table.HeaderCell>Name</Table.HeaderCell>
+              <Table.HeaderCell>Privilege</Table.HeaderCell>
               <Table.HeaderCell> </Table.HeaderCell>
             </Table.Row>
           </Table.Header>
@@ -50,11 +58,12 @@ class Groups extends Component {
                 (<GroupsRowItem
                   key={g.id}
                   group={g}
+                  syncGroupsList = {this.syncGroups}
                 />)
             )}
           </TableBody>
         </Table>
-        {showModal ? <GroupsModal onClose = {this.closeGroupsModal} /> : ''}
+        {showModal ? <GroupsModal show onClose = {this.closeGroupsModal} /> : ''}
       </div>
     );
   }

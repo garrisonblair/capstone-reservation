@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 class MemberRowItem extends Component {
   state = {
-    member:''
+    member: ''
   }
 
   componentDidMount(){
@@ -18,11 +18,11 @@ class MemberRowItem extends Component {
     const { member } = this.state;
     return(
       <List.Item>
+        <List.Content floated='left'>
+          <h2>{member}</h2>
+        </List.Content>
         <List.Content floated='right'>
           <Button>Remove</Button>
-        </List.Content>
-        <List.Content floated='left'>
-          {member}
         </List.Content>
       </List.Item>
     );
