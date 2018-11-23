@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {Button, Dropdown, Header, Icon, Modal} from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { Button, Dropdown, Header, Icon, Modal } from 'semantic-ui-react';
 import CampOnForm from './CampOnForm.js';
 import EditBookingForm from './EditBookingForm.js';
 import './BookingInfoModal.scss';
@@ -26,15 +26,15 @@ class BookingInfoModal extends Component {
     this.props.onCloseWithAction();
   }
 
-  handleOpen = () => this.setState({show: true});
+  handleOpen = () => this.setState({ show: true });
 
   checkCamponPossible(booking) {
-    if(booking.id) {
+    if (booking.id) {
       let currentDate = new Date();
       let currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}00`;
       let bookingEndTime = booking.end_time.replace(/:/g, '');
       let bookingStartTime = booking.start_time.replace(/:/g, '');
-      if(currentTime < bookingEndTime && currentTime > bookingStartTime) {
+      if (currentTime < bookingEndTime && currentTime > bookingStartTime) {
         return true;
       } else {
         return false;
@@ -53,7 +53,7 @@ class BookingInfoModal extends Component {
   /************* COMPONENT LIFE CYCLE *************/
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.show) {
+    if (nextProps.show) {
       this.setState({
         show: nextProps.show
       });
@@ -63,7 +63,7 @@ class BookingInfoModal extends Component {
   /************* COMPONENT RENDERING *************/
 
   renderDescription() {
-    const {booking} = this.props;
+    const { booking } = this.props;
     let camponPossible = this.checkCamponPossible(booking);
 
     return (
@@ -74,12 +74,12 @@ class BookingInfoModal extends Component {
           </Header>
           <div className="modal-description">
             <h3 className="header--inline">
-              {`from ${booking.start_time ? booking.start_time.slice(0,-3) : ''}`}
+              {`from ${booking.start_time ? booking.start_time.slice(0, -3) : ''}`}
             </h3>
           </div>
           <div className="modal-description">
             <h3 className="header--inline">
-              {`to ${booking.end_time? booking.end_time.slice(0,-3) : ''}`}
+              {`to ${booking.end_time ? booking.end_time.slice(0, -3) : ''}`}
             </h3>
           </div>
           <div className="modal-description">
@@ -99,11 +99,11 @@ class BookingInfoModal extends Component {
   }
 
   renderForm(booking) {
-    if(this.checkSameUser(booking)) {
-      return <EditBookingForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithEditBooking={this.closeModalWithAction}/>
+    if (this.checkSameUser(booking)) {
+      return <EditBookingForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithEditBooking={this.closeModalWithAction} />
     } else {
-      if(this.checkCamponPossible(booking)) {
-        return <CampOnForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithCampOn={this.closeModalWithAction}/>
+      if (this.checkCamponPossible(booking)) {
+        return <CampOnForm booking={booking} selectedRoomName={this.props.selectedRoomName} onCloseWithCampOn={this.closeModalWithAction} />
       } else {
         return null
       }
@@ -111,8 +111,8 @@ class BookingInfoModal extends Component {
   }
 
   render() {
-    const {show} = this.state;
-    const {selectedRoomName} = this.props;
+    const { show } = this.state;
+    const { selectedRoomName } = this.props;
     return (
       <div id="reservation-details-modal">
         <Modal centered={false} size={"tiny"} open={show}>

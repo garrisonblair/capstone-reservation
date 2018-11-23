@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {Button, Dropdown, Icon} from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { Button, Dropdown, Icon } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
 import './BookingInfoModal.scss';
@@ -14,12 +14,12 @@ class EditBookingForm extends Component {
     endMinute: "00",
     hourOptions: [],
     minuteOptions: [],
-    reservedOptions: [{text: 'me', value:'me'}]
+    reservedOptions: [{ text: 'me', value: 'me' }]
   }
 
   generateHourOptions() {
     let result = []
-    let {minHour, maxHour} = this.props
+    let { minHour, maxHour } = this.props
     for (let i = minHour; i < maxHour; i++) {
       result.push({
         text: `${i < 10 ? `0${i}` : i}`,
@@ -41,7 +41,7 @@ class EditBookingForm extends Component {
   }
 
   generateReservationProfilesOptions(reservationProfiles) {
-    let result = reservationProfiles.map((profile) => ({text: profile, value: profile}))
+    let result = reservationProfiles.map((profile) => ({ text: profile, value: profile }))
     return result;
   }
 
@@ -49,32 +49,32 @@ class EditBookingForm extends Component {
     this.props.onCloseWithEditBooking();
   }
 
-  handleStartHourChange = (e, {value}) => {
+  handleStartHourChange = (e, { value }) => {
     this.setState({
       startHour: value
     });
   }
 
-  handleStartMinuteChange = (e, {value}) => {
+  handleStartMinuteChange = (e, { value }) => {
     this.setState({
       startMinute: value
     });
   }
 
-  handleEndHourChange = (e, {value}) => {
+  handleEndHourChange = (e, { value }) => {
     this.setState({
       endHour: value
     });
   }
 
-  handleEndMinuteChange = (e, {value}) => {
+  handleEndMinuteChange = (e, { value }) => {
     this.setState({
       endMinute: value
     });
   }
 
   verifyReservationTimes() {
-    const {startHour, startMinute, endHour, endMinute} = this.state;
+    const { startHour, startMinute, endHour, endMinute } = this.state;
     const startTime = `${startHour}${startMinute}`;
     const endTime = `${endHour}${endMinute}`;
     if (startTime > endTime) {
@@ -85,31 +85,31 @@ class EditBookingForm extends Component {
   /************ REQUESTS *************/
 
   sendPatchBooking = () => {
-    const {booking} = this.props;
+    const { booking } = this.props;
 
     const data = {
       "start_time": `${this.state.startHour}:${this.state.startMinute}`,
       "end_time": `${this.state.endHour}:${this.state.endMinute}`
     };
     api.updateBooking(booking.id, data)
-    .then((response) => {
-      sweetAlert('Completed',
-        `Booking was sucessfully updated.`,
-        'success'
-      )
-      .then((result) => {
-        if (result.value) {
-          this.closeModalWithEditBooking()
-        }
+      .then((response) => {
+        sweetAlert('Completed',
+          `Booking was sucessfully updated.`,
+          'success'
+        )
+          .then((result) => {
+            if (result.value) {
+              this.closeModalWithEditBooking()
+            }
+          })
       })
-    })
-    .catch((error) => {
-      sweetAlert(
-        'Reservation failed',
-        error.response.data,
-        'error'
-      )
-    })
+      .catch((error) => {
+        sweetAlert(
+          'Reservation failed',
+          error.response.data,
+          'error'
+        )
+      })
   }
 
   handleSubmit = () => {
@@ -117,7 +117,7 @@ class EditBookingForm extends Component {
     try {
       this.verifyReservationTimes();
     }
-    catch(err) {
+    catch (err) {
       sweetAlert('Edit blocked', err.message, 'warning');
       return;
     }
@@ -127,14 +127,14 @@ class EditBookingForm extends Component {
 
   /************* COMPONENT LIFE CYCLE *************/
   componentDidMount() {
-    const {minuteInterval, reservationProfiles, booking} = this.props;
+    const { minuteInterval, reservationProfiles, booking } = this.props;
     let startTime = booking.start_time
     let endTime = booking.end_time
     this.setState({
-      startHour: startTime.substring(0,2),
-      startMinute: startTime.substring(3,5),
-      endHour: endTime.substring(0,2),
-      endMinute: endTime.substring(3,5),
+      startHour: startTime.substring(0, 2),
+      startMinute: startTime.substring(3, 5),
+      endHour: endTime.substring(0, 2),
+      endMinute: endTime.substring(3, 5),
       hourOptions: this.generateHourOptions(),
       minuteOptions: this.generateMinuteOptions(minuteInterval),
       reservedOptions: this.generateReservationProfilesOptions(reservationProfiles)
@@ -143,10 +143,10 @@ class EditBookingForm extends Component {
 
   /************* COMPONENT RENDERING *************/
 
-  renderEditBookingForm () {
-    const {hourOptions, minuteOptions, reservedOptions, startHour, startMinute, endHour, endMinute} = this.state;
+  renderEditBookingForm() {
+    const { hourOptions, minuteOptions, reservedOptions, startHour, startMinute, endHour, endMinute } = this.state;
     console.log(startHour)
-    return(
+    return (
       <div>
         <div className="modal-description">
           <h3 className="header--inline">
@@ -172,10 +172,10 @@ class EditBookingForm extends Component {
           />
         </div>
         <div className="modal-description">
-            <h3 className="header--inline">
-              <span>To </span>
-            </h3>
-            <Dropdown
+          <h3 className="header--inline">
+            <span>To </span>
+          </h3>
+          <Dropdown
             selection
             compact
             className="dropdown--fixed-width"
@@ -193,23 +193,23 @@ class EditBookingForm extends Component {
             onChange={this.handleEndMinuteChange}
             value={endMinute}
           />
-          </div>
-          <div className="modal-description">
-            <h3 className="header--inline">
-              <Icon name="user" /> {" "}
-              {`by `}
-            </h3>
-            <Dropdown
-              selection
-              compact
-              className="dropdown--fixed-width"
-              placeholder='hh'
-              options={reservedOptions}
-              defaultValue={this.state.reservedOptions[0].value}
-            />
-          </div>
-          <Button content='Edit Booking' primary onClick={this.handleSubmit} />
-          <div className="ui divider" />
+        </div>
+        <div className="modal-description">
+          <h3 className="header--inline">
+            <Icon name="user" /> {" "}
+            {`by `}
+          </h3>
+          <Dropdown
+            selection
+            compact
+            className="dropdown--fixed-width"
+            placeholder='hh'
+            options={reservedOptions}
+            defaultValue={this.state.reservedOptions[0].value}
+          />
+        </div>
+        <Button content='Edit Booking' primary onClick={this.handleSubmit} />
+        <div className="ui divider" />
       </div>
 
     )
