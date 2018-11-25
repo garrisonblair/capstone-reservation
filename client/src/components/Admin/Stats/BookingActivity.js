@@ -1,6 +1,7 @@
-import _ from 'lodash'
-import React, { Component } from 'react'
-import { Table } from 'semantic-ui-react'
+import _ from 'lodash';
+import React, { Component } from 'react';
+import SideNav from '../SideNav';
+import { Table } from 'semantic-ui-react';
 
 const tableData = [
   { id: 1, time: '10:00', type: 'booking create', user: '1' },
@@ -35,9 +36,8 @@ class BookingActivity extends Component {
     })
   }
 
-  render() {
-    const { column, data, direction } = this.state
-
+  renderBookingActivity = () => {
+    const { column, data, direction } = this.state;
     return (
       <Table sortable celled fixed>
         <Table.Header>
@@ -72,6 +72,23 @@ class BookingActivity extends Component {
           ))}
         </Table.Body>
       </Table>
+    )
+  }
+
+  render() {
+    return (
+      <div className="admin">
+        <div className="admin__wrapper">
+          <SideNav selectedMenu={'stats'} />
+          <div className="admin__content">
+            <div id="booking-activity">
+              <h1>Booking activity</h1>
+              { this.renderBookingActivity() }
+            </div>
+          </div>
+        </div>
+      </div>
+      
     )
   }
 }
