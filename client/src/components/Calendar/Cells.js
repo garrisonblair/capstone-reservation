@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
@@ -7,120 +7,133 @@ import BookingInfoModal from '../BookingInfoModal';
 
 class Cells extends Component {
   state = {
-    selectedHour: "",
-    selectedRoomName: "",
-    selectedRoomId: "",
+    selectedHour: '',
+    selectedRoomName: '',
+    selectedRoomId: '',
     selectedRoomCurrentBookings: [],
     selectedBooking: {},
     bookingModal: false,
     bookingInfoModal: false,
-    bookings: [],
   };
 
-  /************ STYLE METHODS*************/
+  /*
+   * STYLE METHODS
+   */
 
   // Style for .calendar__cells__cell
   setCellStyle(hourRow) {
-    const {hoursSettings} = this.props;
-    let rowStart = (hourRow * hoursSettings.increment / 10) + 1;
-    let rowEnd = rowStart + hoursSettings.increment / 10;
-    let height = '75px';
+    const { hoursSettings } = this.props;
+    const rowStart = (hourRow * hoursSettings.increment / 10) + 1;
+    const rowEnd = rowStart + hoursSettings.increment / 10;
+    const height = '75px';
 
-    let style = {
+    const style = {
       cell_style: {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
-        height: height,
-      }
-    }
+        height,
+      },
+    };
     return style;
   }
 
-  //Style for .calendar__booking
+  // Style for .calendar__booking
   setBookingStyle(booking, campOnsNumber) {
-    const {hoursSettings} = this.props;
-    let bookingStart = this.timeStringToInt(booking.start_time);
-    let bookingEnd = this.timeStringToInt(booking.end_time);
-    let calendarStart = this.timeStringToInt(hoursSettings.start);
-    let color = '#5a9ab2'
-    let currentDate = (new Date())
-    let currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`
-    if(booking.date.substring(8,10) != (new Date()).getDate() || parseInt(booking.end_time.replace(/:/g, '')) <= parseInt(`${currentDate.getHours()}${currentMinute}00`)) {
-      color = 'rgb(114, 120, 126)'
-    } else {
-      if (campOnsNumber > 0) {
-        color = '#77993b'
-      }
+    const { hoursSettings } = this.props;
+    const bookingStart = this.timeStringToInt(booking.start_time);
+    const bookingEnd = this.timeStringToInt(booking.end_time);
+    const calendarStart = this.timeStringToInt(hoursSettings.start);
+    let color = '#5a9ab2';
+    const currentDate = (new Date());
+    const currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`;
+    if (campOnsNumber > 0) {
+      color = '#77993b';
+    }
+    if (booking.date.substring(8, 10) !== (new Date()).getDate() || parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10)) {
+      color = 'rgb(114, 120, 126)';
     }
 
-    //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
-    let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
-    let rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
+    // Find the rows in the grid the booking corresponds to.
+    // Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
+    const rowStart = ((bookingStart.hour * 60 + bookingStart.minutes)
+                      - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
+    const rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes)
+                    - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
 
-    let style = {
+    const style = {
       booking_style: {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
         gridColumn: 1,
-        backgroundColor: color
-      }
-    }
+        backgroundColor: color,
+      },
+    };
     return style;
   }
 
-   /************ CLICK HANDLING METHODS *************/
+  /*
+   * CLICK HANDLING METHODS
+   */
 
   handleClickCell = (currentHour, currentRoom) => {
-    let selectedRoomId = `${currentRoom.id}`;
-    let selectedRoomName = currentRoom.name;
-    let selectedHour = currentHour;
-    let selectedRoomCurrentBookings = []
+    const selectedRoomId = `${currentRoom.id}`;
+    const selectedRoomName = currentRoom.name;
+    const selectedHour = currentHour;
+    const selectedRoomCurrentBookings = [];
+    const { bookings } = this.props;
 
-    this.props.bookings.map((booking) => {
-      if (booking.room == selectedRoomId) {
-        selectedRoomCurrentBookings.push(booking)
+    bookings.forEach((booking) => {
+      if (booking.room === selectedRoomId) {
+        selectedRoomCurrentBookings.push(booking);
       }
-    })
+    });
     this.setState({
-      selectedHour: selectedHour,
-      selectedRoomId: selectedRoomId,
-      selectedRoomName: selectedRoomName,
-      selectedRoomCurrentBookings: selectedRoomCurrentBookings
+      selectedHour,
+      selectedRoomId,
+      selectedRoomName,
+      selectedRoomCurrentBookings,
     });
     this.toggleBookingModal();
   }
 
   handleClickBooking = (booking) => {
-    let roomName = ""
-    this.props.roomsList.map((room) => {
-      if (room.id == booking.room) {
-        roomName = room.name
-        return
+    const { roomsList } = this.props;
+    let roomName = '';
+    roomsList.forEach((room) => {
+      if (room.id === booking.room) {
+        roomName = room.name;
+        // return;
       }
-    })
-    this.setState({selectedBooking: booking, selectedRoomName: roomName}, () => {
+    });
+    this.setState({ selectedBooking: booking, selectedRoomName: roomName }, () => {
       this.toggleBookingInfoModal();
-    })
+    });
   }
 
-  /************ HELPER METHOD *************/
+  /*
+  * HELPER METHOD
+  */
 
   toggleBookingModal = () => {
-    this.setState({bookingModal: !this.state.bookingModal})
+    const { bookingModal } = this.state;
+    this.setState({ bookingModal: !bookingModal });
   }
 
   toggleBookingInfoModal = () => {
-    this.setState({bookingInfoModal: !this.state.bookingInfoModal})
+    const { bookingInfoModal } = this.state;
+    this.setState({ bookingInfoModal: !bookingInfoModal });
   }
 
   toggleBookingModalWithReservation = () => {
-    this.setState({bookingModal: false, bookingInfoModal: false})
-    this.props.onCloseModalWithAction();
+    const { onCloseModalWithAction } = this.props;
+    this.setState({ bookingModal: false, bookingInfoModal: false });
+    onCloseModalWithAction();
   }
 
   toggleBookingInfoWithAction = () => {
-    this.setState({bookingModal: false, bookingInfoModal: false})
-    this.props.onCloseModalWithAction();
+    const { onCloseModalWithAction } = this.props;
+    this.setState({ bookingModal: false, bookingInfoModal: false });
+    onCloseModalWithAction();
   }
 
   timeStringToInt(time) {
