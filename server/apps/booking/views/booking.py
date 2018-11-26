@@ -83,7 +83,7 @@ class BookingRetrieveUpdateDestroy(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            booking = serializer.save()
+            update_booking = serializer.save()
             utils.log_model_change(update_booking, utils.CHANGE, request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except ValidationError as error:

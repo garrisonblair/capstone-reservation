@@ -23,6 +23,7 @@ class TestSettingsAPI(TestCase):
         settings = SystemSettings.get_settings()
 
         request = self.factory.get("/settings")
+        force_authenticate(request, self.user)
         response = SystemSettingsAPI().as_view()(request)
 
         response_data = response.data
