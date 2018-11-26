@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 import RoomModal from './RoomModal';
-import sweetAlert from 'sweetalert2';
 
 
 class RoomRowItem extends Component {
