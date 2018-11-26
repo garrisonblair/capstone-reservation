@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from apps.accounts.models.Booker import Booker
 from apps.groups.models.Group import Group
 
-from ..views.groups import GroupView
+from ..views.groups import GroupList
 
 
 class RoomAPITest(TestCase):
@@ -37,7 +37,7 @@ class RoomAPITest(TestCase):
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
-        response = GroupView.as_view()(request)
+        response = GroupList.as_view()(request)
         response_data = [
             {
                 'bookers': ['j_lenn'],
@@ -60,5 +60,5 @@ class RoomAPITest(TestCase):
 
     def testGetGroupsFailureUnauthorized(self):
         request = self.factory.get("/groups")
-        response = GroupView.as_view()(request)
+        response = GroupList.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

@@ -1,22 +1,26 @@
+from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from apps.groups.serializers.group_serializer import GroupSerializer
+from apps.accounts.permissions.IsBooker import IsBooker
+from apps.accounts.models.Booker import Booker
+from apps.groups.serializers.group import GroupSerializer
+from apps.groups.models.Group import Group
 
 
-class GroupView(APIView):
+class GroupList(ListAPIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+    serializer_class = GroupSerializer
+    queryset = Group.objects.all()
 
-    def get(self, request):
+    def get_queryset(self):
+        qs = super(GroupList, self).get_queryset()
         try:
-            booker = request.user.booker
-        except AttributeError:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            booker = self.request.user.booker
+            qs = booker.group_set.all()
+        except Booker.DoesNotExist:
+            pass
 
-        groups = booker.group_set.all()
-
-        group_list = list()
-        for group in groups:
-            serializer = GroupSerializer(group)
-            group_list.append(serializer.data)
-        return Response(group_list, status=status.HTTP_200_OK)
+        return qs

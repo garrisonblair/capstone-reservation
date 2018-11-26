@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
-from apps.accounts.serializers.UserSerializer import UserSerializerLogin
+from apps.accounts.serializers.user import UserSerializerLogin
 
 
 class TestRegister(TestCase):

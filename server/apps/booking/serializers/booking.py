@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from ..models.Booking import Booking
-from apps.accounts.serializers.UserSerializer import BookerSerializer
+from apps.accounts.serializers.user import BookerSerializer
 
 
 class BookingSerializer(serializers.ModelSerializer):

@@ -24,7 +24,7 @@ class RoomRowItem extends Component {
     sweetAlert({
       title:'Confirmation',
       type:'warning',
-      text:`Are you sure you want to delete room ${room.room_id}`,
+      text:`Are you sure you want to delete room ${room.name}`,
       showConfirmButton:true,
       confirmButtonText:'Delete',
       showCancelButton:true,
@@ -36,7 +36,7 @@ class RoomRowItem extends Component {
         api.deleteRoom(room.id)
         .then((response) =>{
           if(response.status){
-            sweetAlert('Deleted',`Room '${room.room_id}' was deleted.`,'success')
+            sweetAlert('Deleted',`Room '${room.name}' was deleted.`,'success')
             .then((response)=>{
               this.props.syncRoomList();
             })
@@ -50,10 +50,10 @@ class RoomRowItem extends Component {
   }
 
   render() {
-    const {id,room_id, capacity, number_of_computers} = this.props.room;
+    const {id,name, capacity, number_of_computers} = this.props.room;
     return (
       <Table.Row key={id}>
-        <Table.Cell  textAlign='center'><h4>{room_id}</h4></Table.Cell>
+        <Table.Cell  textAlign='center'><h4>{name}</h4></Table.Cell>
         <Table.Cell textAlign='center'>{capacity}</Table.Cell>
         <Table.Cell textAlign='center'>{number_of_computers}</Table.Cell>
         <Table.Cell textAlign='center'>

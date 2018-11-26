@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts.models.VerificationToken import VerificationToken
-from apps.accounts.serializers.UserSerializer import UserSerializerLogin
+from apps.accounts.serializers.user import UserSerializerLogin
 
 
 # TODO: Verify expiration time

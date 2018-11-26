@@ -53,7 +53,7 @@ class Cells extends Component {
         color = '#77993b'
       }
     }
-    
+
     //Find the rows in the grid the booking corresponds to. Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
     let rowStart = ((bookingStart.hour * 60 + bookingStart.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
     let rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes) - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
@@ -73,7 +73,7 @@ class Cells extends Component {
 
   handleClickCell = (currentHour, currentRoom) => {
     let selectedRoomId = `${currentRoom.id}`;
-    let selectedRoomName = currentRoom.room_id;
+    let selectedRoomName = currentRoom.name;
     let selectedHour = currentHour;
     let selectedRoomCurrentBookings = []
 
@@ -95,7 +95,7 @@ class Cells extends Component {
     let roomName = ""
     this.props.roomsList.map((room) => {
       if (room.id == booking.room) {
-        roomName = room.room_id
+        roomName = room.name
         return
       }
     })
@@ -105,7 +105,7 @@ class Cells extends Component {
   }
 
   /************ HELPER METHOD *************/
-  
+
   toggleBookingModal = () => {
     this.setState({bookingModal: !this.state.bookingModal})
   }
@@ -201,7 +201,7 @@ class Cells extends Component {
       bookingsDiv.push(
         <div className="calendar__booking" style={this.setBookingStyle(booking, campOns.length).booking_style} key={booking.id} onClick={() => this.handleClickBooking(booking)}>
           {booking.start_time.length > 5 ? booking.start_time.substring(0, booking.start_time.length-3): booking.start_time} - {booking.end_time.length > 5 ? booking.end_time.substring(0, booking.end_time.length-3): booking.end_time}
-          <br/>        
+          <br/>
           {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 ? null : <span>{booking.booker.user.username}</span>}
           {campOns.length > 0 ? this.renderCampOns(campOns) : ''}
         </div>
@@ -224,7 +224,7 @@ class Cells extends Component {
     return (
       <div>
         {this.renderCells()}
-        
+
         <ReservationDetailsModal
           show={this.state.bookingModal}
           selectedRoomId={this.state.selectedRoomId}

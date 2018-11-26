@@ -1,15 +1,12 @@
 from django.urls import path
-# from django.urls import re_path
 
-from .views.room import RoomView
-from .views.room import RoomDeleteView
-from .views.room import RoomUpdateView
-from .views.room import RoomCreateView
+from .views.room import RoomList
+from .views.room import RoomCreate
+from .views.room import RoomRetrieveUpdateDestroy
 
 
 urlpatterns = [
-    path(r'room', RoomView.as_view()),
-    path(r'roomcreate', RoomCreateView.as_view()),
-    path(r'roomdelete', RoomDeleteView.as_view()),
-    path(r'roomupdate', RoomUpdateView.as_view()),
+    path(r'rooms', RoomList.as_view()),
+    path(r'room', RoomCreate.as_view()),
+    path(r'room/<int:pk>', RoomRetrieveUpdateDestroy.as_view())
 ]

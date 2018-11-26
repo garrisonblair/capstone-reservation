@@ -42,7 +42,7 @@ class TestBookingPrivileges(TestCase):
         self.group.bookers.add(self.booker)
         self.group.save()
 
-        self.room = Room(room_id="H916-01")
+        self.room = Room(name="H916-01")
         self.room.save()
 
     def testBookingAllowedBooker(self):

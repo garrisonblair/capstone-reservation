@@ -19,7 +19,7 @@ class TestExporterSetup(TestCase):
         self.booker = Booker(booker_id="f_daigl")
         self.booker.save()
 
-        self.room = Room(room_id="Room 1")
+        self.room = Room(name="Room 1")
         self.room.save()
 
     def testExporterNotifiedCreate(self):

@@ -54,7 +54,7 @@ class PrivilegeDetailsModal extends Component {
           </p>
           <p>
             <strong> Booking End Time: </strong>
-            {this.props.privilege.booking_start_time}
+            {this.props.privilege.booking_end_time}
           </p>
         </div>
         <div className="ui divider"/>
