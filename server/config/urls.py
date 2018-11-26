@@ -6,7 +6,6 @@ from rest_framework.documentation import include_docs_urls
 
 
 urlpatterns = [
-    path(r'', include('apps.system_settings.urls')),
     path(r'', include('apps.accounts.urls')),
     path(r'', include('apps.booking.urls')),
     path(r'', include('apps.system_administration.urls')),
