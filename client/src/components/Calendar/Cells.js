@@ -222,7 +222,7 @@ class Cells extends Component {
         <div className="calendar__booking" style={this.setBookingStyle(booking, campOns.length).booking_style} role="button" tabIndex="0" key={booking.id} onClick={() => this.handleClickBooking(booking)} onKeyDown={() => {}}>
           {booking.start_time.length > 5
             ? booking.start_time.substring(0, booking.start_time.length - 3) : booking.start_time}
-          -
+          {' - '}
           {booking.end_time.length > 5
             ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time}
           <br />
