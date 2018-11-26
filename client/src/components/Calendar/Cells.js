@@ -62,16 +62,16 @@ class Cells extends Component {
   // Style for .calendar__booking
   setBookingStyle(booking, campOnsNumber) {
     const { hoursSettings } = this.props;
-    const bookingStart = this.timeStringToInt(booking.start_time);
-    const bookingEnd = this.timeStringToInt(booking.end_time);
-    const calendarStart = this.timeStringToInt(hoursSettings.start);
+    const bookingStart = Cells.timeStringToInt(booking.start_time);
+    const bookingEnd = Cells.timeStringToInt(booking.end_time);
+    const calendarStart = Cells.timeStringToInt(hoursSettings.start);
     let color = '#5a9ab2';
     const currentDate = (new Date());
     const currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`;
     if (campOnsNumber > 0) {
       color = '#77993b';
     }
-    if (booking.date.substring(8, 10) !== (new Date()).getDate() || parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10)) {
+    if (parseInt(booking.date.substring(8, 10), 10) !== (new Date()).getDate() || parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10)) {
       color = 'rgb(114, 120, 126)';
     }
 
@@ -96,6 +96,20 @@ class Cells extends Component {
   /*
   * HELPER METHOD
   */
+
+  getCamponsForBooking(booking) {
+    const { campOns } = this.props;
+    const campOnsList = [];
+    const c = !!campOns;
+    if (c) {
+      campOns.forEach((campOn) => {
+        if (campOn.camped_on_booking === booking.id) {
+          campOnsList.push(campOn);
+        }
+      });
+    }
+    return campOnsList;
+  }
 
   toggleBookingModal = () => {
     const { bookingModal } = this.state;
@@ -213,7 +227,7 @@ class Cells extends Component {
             ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time}
           <br />
           {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 ? null : <span>{booking.booker.user.username}</span>}
-          {campOns.length > 0 ? this.renderCampOns(campOns) : ''}
+          {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''}
         </div>,
       );
     });
@@ -291,6 +305,7 @@ Cells.propTypes = {
   bookings: PropTypes.instanceOf(Array),
   selectedDate: PropTypes.instanceOf(Object),
   onCloseModalWithAction: PropTypes.func,
+  campOns: PropTypes.instanceOf(Array),
 };
 
 Cells.defaultProps = {
@@ -302,6 +317,7 @@ Cells.defaultProps = {
     increment: 60,
   },
   bookings: [],
+  campOns: null,
   selectedDate: new Date(),
   onCloseModalWithAction: () => {},
 };
