@@ -1,6 +1,7 @@
 import _ from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import React, { Component } from 'react';
-import { Table } from 'semantic-ui-react';
+import { Table, Pagination, Icon } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 
@@ -28,19 +29,33 @@ class BookingActivity extends Component {
     column: null,
     direction: null,
     logs: [],
+    logsToDisplay: [],
     tableHeaders: ['date', 'type', 'action', 'user'],
+    activePage: 1,
+    logsPerPage: 10,
   }
 
   componentDidMount() {
     api.getLogEntries()
       .then((response) => {
         if (response.status === 200) {
-          this.setState({ logs: response.data });
+          const logsToDisplay = this.setLogsToDisplay(response.data);
+          this.setState({ logs: response.data, logsToDisplay });
         }
       })
       .catch(() => {
         sweetAlert(':(', 'We are sorry. There was a problem getting the logs', 'error');
       });
+  }
+
+  setLogsToDisplay(data) {
+    const { logsPerPage } = this.state;
+    const logs = cloneDeep(data);
+    const logsToDisplay = [];
+    while (logs.length) {
+      logsToDisplay.push(logs.splice(0, logsPerPage));
+    }
+    return logsToDisplay;
   }
 
   handleSort = clickedColumn => () => {
@@ -61,10 +76,11 @@ class BookingActivity extends Component {
     });
   }
 
+  handlePaginationChange = (e, { activePage }) => this.setState({ activePage });
+
   showDetails = (log) => {
     let logObject = log.object_repr;
     logObject = logObject.replace(/,/g, '<br>');
-    console.log(log)
     sweetAlert(
       'Details',
       `${BookingActivity.formatDate(log.action_time)}
@@ -79,48 +95,63 @@ class BookingActivity extends Component {
       column,
       direction,
       tableHeaders,
-      logs,
+      logsToDisplay,
+      activePage,
     } = this.state;
+    const totalPages = logsToDisplay.length;
 
     return (
-      <Table sortable celled fixed selectable inverted>
-        <Table.Header>
-          <Table.Row>
-            { tableHeaders.map(header => (
-              <Table.HeaderCell
-                sorted={column === header ? direction : null}
-                onClick={this.handleSort(header)}
-                key={header}
-              >
-                {header}
-              </Table.HeaderCell>
-            ))
-            }
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {logs.map(log => (
-            <Table.Row key={log.id} onClick={() => this.showDetails(log)}>
-              <Table.Cell>
-                {BookingActivity.formatDate(log.action_time)}
-              </Table.Cell>
-              <Table.Cell>{log.content_type.app_label}</Table.Cell>
-              <Table.Cell>
-                {BookingActivity.formatAction(log.action_flag)}
-              </Table.Cell>
-              <Table.Cell>{log.user}</Table.Cell>
+      <div>
+        <Pagination
+          activePage={activePage}
+          ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
+          firstItem={{ content: <Icon name="angle double left" />, icon: true }}
+          lastItem={{ content: <Icon name="angle double right" />, icon: true }}
+          prevItem={{ content: <Icon name="angle left" />, icon: true }}
+          nextItem={{ content: <Icon name="angle right" />, icon: true }}
+          totalPages={totalPages}
+          onPageChange={this.handlePaginationChange}
+        />
+        <Table sortable celled fixed selectable inverted>
+          <Table.Header>
+            <Table.Row>
+              { tableHeaders.map(header => (
+                <Table.HeaderCell
+                  sorted={column === header ? direction : null}
+                  onClick={this.handleSort(header)}
+                  key={header}
+                >
+                  {header}
+                </Table.HeaderCell>
+              ))
+              }
             </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
+          </Table.Header>
+          <Table.Body>
+            {logsToDisplay[activePage - 1].map(log => (
+              <Table.Row key={log.id} onClick={() => this.showDetails(log)}>
+                <Table.Cell>
+                  {BookingActivity.formatDate(log.action_time)}
+                </Table.Cell>
+                <Table.Cell>{log.content_type.app_label}</Table.Cell>
+                <Table.Cell>
+                  {BookingActivity.formatAction(log.action_flag)}
+                </Table.Cell>
+                <Table.Cell>{log.user}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </div>
     );
   }
 
   render() {
+    const { logsToDisplay } = this.state;
     return (
       <div className="admin">
         <h1>Booking activity</h1>
-        { this.renderBookingActivity() }
+        { logsToDisplay.length > 0 ? this.renderBookingActivity() : null }
       </div>
     );
   }
