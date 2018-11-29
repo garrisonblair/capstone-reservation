@@ -8,10 +8,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..models.Booker import Booker
-from ..models.PrivilegeCategory import PrivilegeCategory
 from ..serializers.user import UserSerializer, UserSerializerLogin, BookerSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from ..permissions.IsSuperUser import IsSuperUser
+from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
 class UserList(ListAPIView):
@@ -65,10 +65,9 @@ class UserUpdate(APIView):
                 # Add booker ID only if it's a new user
                 booker = Booker(user=user, booker_id=booker_id)
                 booker.save()
-                # Add default privilege
-                default_privilege = PrivilegeCategory.objects.get(is_default=True)
-                booker.privilege_categories.add(default_privilege)
-                booker.save()
+                # Add Booker Privileges
+                manager = PrivilegeCategoryManager()
+                manager.assign_booker_privileges(user.booker)
 
         # Must be superuser to update those fields
         if username and request.user.is_superuser:

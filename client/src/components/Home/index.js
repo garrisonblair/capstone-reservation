@@ -1,22 +1,21 @@
-import React, {Component} from 'react';
-import settings from '../../config/settings';
+import React, { Component } from 'react';
 import './Home.scss';
 import Calendar from '../Calendar';
 
 
 class Home extends Component {
   componentDidMount = () => {
-    document.title = 'Home'
+    document.title = 'Home';
   }
 
   render() {
     return (
       <div>
         <main>
-          <Calendar/>
+          <Calendar />
         </main>
       </div>
-    )
+    );
   }
 }
 

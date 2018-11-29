@@ -1,71 +1,82 @@
-import React, {Component} from 'react';
-import {Button, Header, Icon, Modal} from 'semantic-ui-react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Button, Header, Icon, Modal,
+} from 'semantic-ui-react';
 import './PrivilegeDetailsModal.scss';
 
 
 class PrivilegeDetailsModal extends Component {
-  renderBoolean(boolean) {
-    return (
-      <Icon
-        name={boolean? "check circle": "times circle"}
-        color={boolean? "green": "red"}
-      />
-    )
-  }
+  renderBoolean = boolean => (
+    <Icon
+      name={boolean ? 'check circle' : 'times circle'}
+      color={boolean ? 'green' : 'red'}
+    />
+  )
 
   render() {
+    const { show, onClose, privilege } = this.props;
     return (
-      <Modal className="privilege-details-modal" open={this.props.show} onClose={this.props.onClose}>
+      <Modal className="privilege-details-modal" open={show} onClose={onClose}>
         <Header>
-          {this.props.privilege.name}
+          {privilege.name}
         </Header>
         <div className="privilege-details-modal__container">
           <p>
             <strong> Name: </strong>
-            {this.props.privilege.name}
+            {privilege.name}
           </p>
           <p>
             <strong> Default: </strong>
-            {this.renderBoolean(this.props.privilege.is_default)}
+            {this.renderBoolean(privilege.is_default)}
           </p>
           <p>
-          <strong> Parent Category: </strong>
-            {this.props.privilege.parent_category || '-'}
+            <strong> Parent Category: </strong>
+            {privilege.parent_category || '-'}
           </p>
           <p>
             <strong> Max Days Until Booking: </strong>
-            {this.props.privilege.max_days_until_booking}
+            {privilege.max_days_until_booking}
           </p>
           <p>
             <strong> Max Bookings: </strong>
-            {this.props.privilege.max_bookings}
+            {privilege.max_bookings}
           </p>
           <p>
             <strong> Max Recurring Bookings: </strong>
-            {this.props.privilege.max_recurring_bookings}
+            {privilege.max_recurring_bookings}
           </p>
           <p>
             <strong> Recurring Booking Permission: </strong>
-            {this.renderBoolean(this.props.privilege.can_make_recurring_booking)}
+            {this.renderBoolean(privilege.can_make_recurring_booking)}
           </p>
           <p>
             <strong> Booking Start Time: </strong>
-            {this.props.privilege.booking_start_time}
+            {privilege.booking_start_time}
           </p>
           <p>
             <strong> Booking End Time: </strong>
-            {this.props.privilege.booking_end_time}
+            {privilege.booking_end_time}
           </p>
         </div>
-        <div className="ui divider"/>
+        <div className="ui divider" />
         <div className="controls">
-          <Button icon labelPosition='left' negative size='small' onClick={this.props.onClose}>
-            <Icon name='x' /> Close
+          <Button icon labelPosition="left" negative size="small" onClick={onClose}>
+            <Icon name="x" />
+            Close
           </Button>
         </div>
       </Modal>
-    )
+    );
   }
 }
+
+PrivilegeDetailsModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  privilege: PropTypes.object.isRequired,
+};
+
 
 export default PrivilegeDetailsModal;
