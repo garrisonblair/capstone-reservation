@@ -61,43 +61,35 @@ class Cells extends Component {
 
   // Style for .calendar__booking
   setBookingStyle(booking, campOnsNumber) {
-    const {hoursSettings} = this.props;
-    let bookingStart = this.timeStringToInt(booking.start_time);
-    let bookingEnd = this.timeStringToInt(booking.end_time);
-    let calendarStart = this.timeStringToInt(hoursSettings.start);
+    const { hoursSettings } = this.props;
+    const bookingStart = Cells.timeStringToInt(booking.start_time);
+    const bookingEnd = Cells.timeStringToInt(booking.end_time);
+    const calendarStart = Cells.timeStringToInt(hoursSettings.start);
     let color = '#5a9ab2';
-    let currentDate = (new Date());
-    let currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`;
+    const currentDate = new Date();
+    const currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`;
 
-    //Change booking color if it's passed
-    let bookingDate = booking.date.split("-");
+    // Change booking color if it's passed
+    const bookingDate = booking.date.split('-');
     let datePassed = false;
-    let sameDate = false
-    if (parseInt(bookingDate[0]) < currentDate.getFullYear()) {
+    let sameDate = false;
+    if (parseInt(bookingDate[0], 10) < currentDate.getFullYear()) {
       datePassed = true;
-    } else {
-      if (parseInt(bookingDate[0]) == currentDate.getFullYear()) {
-        if (parseInt(bookingDate[1]) < currentDate.getMonth() + 1) {
+    } else if (parseInt(bookingDate[0], 10) === currentDate.getFullYear()) {
+      if (parseInt(bookingDate[1], 10) < currentDate.getMonth() + 1) {
+        datePassed = true;
+      } else if (parseInt(bookingDate[1], 10) === currentDate.getMonth() + 1) {
+        if (parseInt(bookingDate[2], 10) < currentDate.getDate()) {
           datePassed = true;
-        } else {
-          if (parseInt(bookingDate[1]) == currentDate.getMonth() + 1) {
-            if (parseInt(bookingDate[2]) < currentDate.getDate()) {
-              datePassed = true;
-            } else {
-              if (parseInt(bookingDate[2]) == currentDate.getDate()) {
-                sameDate = true
-              }
-            }
-          }
+        } else if (parseInt(bookingDate[2], 10) === currentDate.getDate()) {
+          sameDate = true;
         }
       }
     }
-    if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, '')) <= parseInt(`${currentDate.getHours()}${currentMinute}00`))) {
-      color = 'rgb(114, 120, 126)'
-    } else {
-      if (campOnsNumber > 0) {
-        color = '#77993b'
-      }
+    if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10))) {
+      color = 'rgb(114, 120, 126)';
+    } else if (campOnsNumber > 0) {
+      color = '#77993b';
     }
 
     // Find the rows in the grid the booking corresponds to.
