@@ -211,6 +211,16 @@ function createPrivilege(data) {
   });
 }
 
+function getLogEntries() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/logentries`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -231,6 +241,7 @@ const api = {
   updateAdminSettings,
   getPrivileges,
   createPrivilege,
+  getLogEntries,
 };
 
 export default api;
