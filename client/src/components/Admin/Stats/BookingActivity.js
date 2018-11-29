@@ -1,7 +1,12 @@
 import _ from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
 import React, { Component } from 'react';
-import { Table, Pagination, Icon } from 'semantic-ui-react';
+import {
+  Table,
+  Pagination,
+  Icon,
+  Dropdown,
+} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 
@@ -33,6 +38,14 @@ class BookingActivity extends Component {
     tableHeaders: ['date', 'type', 'action', 'user'],
     activePage: 1,
     logsPerPage: 10,
+    elementsPerPage: [
+      { text: '5', value: 5 },
+      { text: '10', value: 10 },
+      { text: '20', value: 20 },
+      { text: '30', value: 30 },
+      { text: '40', value: 40 },
+      { text: '50', value: 50 },
+    ],
   }
 
   componentDidMount() {
@@ -78,6 +91,13 @@ class BookingActivity extends Component {
 
   handlePaginationChange = (e, { activePage }) => this.setState({ activePage });
 
+  handlePaginationSettingsChange = (e, change) => {
+    const { logs } = this.state;
+    this.setState({ activePage: 1, logsPerPage: change.value }, () => {
+      this.setState({ logsToDisplay: this.setLogsToDisplay(logs) });
+    });
+  }
+
   showDetails = (log) => {
     let logObject = log.object_repr;
     logObject = logObject.replace(/,/g, '<br>');
@@ -97,6 +117,7 @@ class BookingActivity extends Component {
       tableHeaders,
       logsToDisplay,
       activePage,
+      elementsPerPage,
     } = this.state;
     const totalPages = logsToDisplay.length;
 
@@ -112,6 +133,9 @@ class BookingActivity extends Component {
           totalPages={totalPages}
           onPageChange={this.handlePaginationChange}
         />
+
+        <Dropdown placeholder="# logs" search selection options={elementsPerPage} onChange={this.handlePaginationSettingsChange} />
+
         <Table sortable celled fixed selectable inverted>
           <Table.Header>
             <Table.Row>
