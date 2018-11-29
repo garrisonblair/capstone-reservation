@@ -7,6 +7,7 @@ from rest_framework import status
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.exceptions import PrivilegeError
 from apps.booking.serializers.recurring_booking import RecurringBookingSerializer
+from apps.util import utils
 
 
 class RecurringBookingCreate(APIView):
@@ -23,6 +24,7 @@ class RecurringBookingCreate(APIView):
 
         try:
             recurring_booking, conflicts = serializer.create(validated_data=serializer.validated_data)
+            utils.log_model_change(recurring_booking, utils.ADDITION, request.user)
             return Response(conflicts, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
             if isinstance(error, PrivilegeError):
