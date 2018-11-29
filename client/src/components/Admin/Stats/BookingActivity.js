@@ -86,6 +86,8 @@ class BookingActivity extends Component {
     this.setState({
       logs: logs.reverse(),
       direction: direction === 'ascending' ? 'descending' : 'ascending',
+    }, () => {
+      this.setState({ logsToDisplay: this.setLogsToDisplay(logs) });
     });
   }
 
