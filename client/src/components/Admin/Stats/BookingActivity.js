@@ -1,95 +1,111 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import SideNav from '../SideNav';
 import { Table } from 'semantic-ui-react';
-
-const tableData = [
-  { id: 1, time: '10:00', type: 'booking create', user: '1' },
-  { id: 2, time: '12:00', type: 'booking create', user: '2' },
-  { id: 3, time: '15:00', type: 'booking delete', user: '3' },
-  { id: 4, time: '20:00', type: 'booking edit', user: '2' },
-]
+import sweetAlert from 'sweetalert2';
+import api from '../../../utils/api';
 
 class BookingActivity extends Component {
+  static formatAction(flag) {
+    if (flag === 1) {
+      return 'Create';
+    }
+    if (flag === 2) {
+      return 'Edit';
+    }
+    if (flag === 3) {
+      return 'Delete';
+    }
+    return '';
+  }
+
+  static formatDate(d) {
+    const date = d.split('T');
+    const time = date[1].split('.');
+    return `${date[0]}\n${time[0]}`;
+  }
+
   state = {
     column: null,
-    data: tableData,
     direction: null,
+    logs: [],
+    tableHeaders: ['date', 'type', 'action', 'user'],
+  }
+
+  componentDidMount() {
+    api.getLogEntries()
+      .then((response) => {
+        if (response.status === 200) {
+          this.setState({ logs: response.data });
+        }
+      })
+      .catch(() => {
+        sweetAlert(':(', 'We are sorry. There was a problem getting the logs', 'error');
+      });
   }
 
   handleSort = clickedColumn => () => {
-    const { column, data, direction } = this.state
+    const { column, logs, direction } = this.state;
 
     if (column !== clickedColumn) {
       this.setState({
         column: clickedColumn,
-        data: _.sortBy(data, [clickedColumn]),
+        logs: _.sortBy(logs, [clickedColumn]),
         direction: 'ascending',
-      })
+      });
 
-      return
+      return;
     }
 
     this.setState({
-      data: data.reverse(),
+      logs: logs.reverse(),
       direction: direction === 'ascending' ? 'descending' : 'ascending',
-    })
+    });
   }
 
   renderBookingActivity = () => {
-    const { column, data, direction } = this.state;
+    const { column, direction, tableHeaders, logs } = this.state;
+
     return (
       <Table sortable celled fixed>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell
-              sorted={column === 'time' ? direction : null}
-              onClick={this.handleSort('time')}
-            >
-              Time
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === 'type' ? direction : null}
-              onClick={this.handleSort('type')}
-            >
-              Type
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === 'user' ? direction : null}
-              onClick={this.handleSort('user')}
-            >
-              User
-            </Table.HeaderCell>
+            { tableHeaders.map(header => (
+              <Table.HeaderCell
+                sorted={column === 'time' ? direction : null}
+                onClick={this.handleSort('time')}
+                key={header}
+              >
+                {header}
+              </Table.HeaderCell>
+            ))
+            }
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {_.map(data, ({ id, time, type, user }) => (
-            <Table.Row key={id}>
-              <Table.Cell>{time}</Table.Cell>
-              <Table.Cell>{type}</Table.Cell>
-              <Table.Cell>{user}</Table.Cell>
+          {logs.map(log => (
+            <Table.Row key={log.id}>
+              <Table.Cell>
+                {BookingActivity.formatDate(log.action_time)}
+              </Table.Cell>
+              <Table.Cell>{log.content_type.app_label}</Table.Cell>
+              <Table.Cell>
+                {BookingActivity.formatAction(log.action_flag)}
+              </Table.Cell>
+              <Table.Cell>{log.user}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table>
-    )
+    );
   }
 
   render() {
     return (
       <div className="admin">
-        <div className="admin__wrapper">
-          <SideNav selectedMenu={'stats'} />
-          <div className="admin__content">
-            <div id="booking-activity">
-              <h1>Booking activity</h1>
-              { this.renderBookingActivity() }
-            </div>
-          </div>
-        </div>
+        <h1>Booking activity</h1>
+        { this.renderBookingActivity() }
       </div>
-      
-    )
+    );
   }
 }
 
