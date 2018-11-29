@@ -9,7 +9,8 @@ import Verification from './components/Verification';
 import Admin from './components/Admin';
 import PrivilegeCategory from './components/Admin/PrivilegeCategory';
 import RoomManager from './components/Admin/RoomManager';
-import Stats from './components/Admin/Stats';
+// import Stats from './components/Admin/Stats';
+import BookingActivity from './components/Admin/Stats/BookingActivity';
 import Settings from './components/Admin/Settings';
 
 
@@ -25,7 +26,7 @@ ReactDOM.render(
         <Route exact path="/admin/settings" render={() => <Admin menuType="settings" content={<Settings />} />} />
         <Route exact path="/admin/privileges" render={() => <Admin menuType="privileges" content={<PrivilegeCategory />} />} />
         <Route exact path="/admin/rooms" render={() => <Admin menuType="rooms" content={<RoomManager />} />} />
-        <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<Stats />} />} />
+        <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<BookingActivity />} />} />
         <Route component={NotFound} />
       </Switch>
     </div>
