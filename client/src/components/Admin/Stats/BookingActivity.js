@@ -45,7 +45,6 @@ class BookingActivity extends Component {
 
   handleSort = clickedColumn => () => {
     const { column, logs, direction } = this.state;
-
     if (column !== clickedColumn) {
       this.setState({
         column: clickedColumn,
@@ -62,17 +61,35 @@ class BookingActivity extends Component {
     });
   }
 
+  showDetails = (log) => {
+    let logObject = log.object_repr;
+    logObject = logObject.replace(/,/g, '<br>');
+    console.log(log)
+    sweetAlert(
+      'Details',
+      `${BookingActivity.formatDate(log.action_time)}
+      <br>${BookingActivity.formatAction(log.action_flag)} ${log.content_type.app_label}
+      <br>by ${log.user}
+      <br>${logObject}`,
+    );
+  }
+
   renderBookingActivity = () => {
-    const { column, direction, tableHeaders, logs } = this.state;
+    const {
+      column,
+      direction,
+      tableHeaders,
+      logs,
+    } = this.state;
 
     return (
-      <Table sortable celled fixed>
+      <Table sortable celled fixed selectable inverted>
         <Table.Header>
           <Table.Row>
             { tableHeaders.map(header => (
               <Table.HeaderCell
-                sorted={column === 'time' ? direction : null}
-                onClick={this.handleSort('time')}
+                sorted={column === header ? direction : null}
+                onClick={this.handleSort(header)}
                 key={header}
               >
                 {header}
@@ -83,7 +100,7 @@ class BookingActivity extends Component {
         </Table.Header>
         <Table.Body>
           {logs.map(log => (
-            <Table.Row key={log.id}>
+            <Table.Row key={log.id} onClick={() => this.showDetails(log)}>
               <Table.Cell>
                 {BookingActivity.formatDate(log.action_time)}
               </Table.Cell>
