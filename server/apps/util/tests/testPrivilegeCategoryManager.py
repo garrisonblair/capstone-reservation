@@ -27,17 +27,17 @@ class FakeLDAP:
 
 class TestPrivilegeCategoryManager(TestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user(username='username1', email="", password="")
+        self.user1 = User.objects.create_user(username='username1', email="user1@gmail", password="abc")
         self.user1.save()
-        self.booker1 = Booker()
+        self.booker1 = Booker(booker_id="1")
         self.booker1.user = self.user1
         self.booker1.save()
 
-        self.user2 = User.objects.create_user(username='username2', email="", password="")
+        self.user2 = User.objects.create_user(username='username2', email="user2@gmail", password="123")
         self.user2.save()
-        self.booker2 = Booker()
+        self.booker2 = Booker(booker_id="2")
         self.booker2.user = self.user2
-        self.user2.save()
+        self.booker2.save()
 
         self.category1 = PrivilegeCategory()
         self.category1.name = "Cat 1"
@@ -60,6 +60,7 @@ class TestPrivilegeCategoryManager(TestCase):
         manager = PrivilegeCategoryManager()
         manager.assign_booker_privileges(self.booker1, self.ldap)
 
+        # Assigning privileges individually
         privileges1 = self.booker1.privilege_categories.all()
         self.assertEqual(privileges1.count(), 3)
         self.assertEqual(privileges1[0], self.category1)
