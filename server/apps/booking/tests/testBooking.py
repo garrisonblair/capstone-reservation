@@ -174,7 +174,7 @@ class TestBooking(TestCase):
             self.assertTrue(True)
 
     def testOverlappedStartTimeCampOn(self):
-        # Case with existing Booking from 12:00 to 13:00, then a CampOn is made on the Booking. 
+        # Case with existing Booking from 12:00 to 13:00, then a CampOn is made on the Booking.
         # Afterward, the Booking is moved from 14 to 15:00 but 12:00 to 13:00 is still CampOned.
         booking = Booking(booker=self.booker,
                           room=self.room,
