@@ -1,3 +1,6 @@
+import json
+import datetime
+
 from django.db import models
 from apps.accounts.models.Booker import Booker
 from apps.groups.models.Group import Group
@@ -5,7 +8,7 @@ from apps.rooms.models.Room import Room
 from apps.booking.models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
-import datetime
+from rest_framework import serializers
 
 from apps.util.SubjectModel import SubjectModel
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
@@ -67,9 +70,8 @@ class Booking(models.Model, SubjectModel):
         return this
 
     def __str__(self):
-        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}'.format(
-            self.id, self.booker.booker_id, self.room.name, self.date, self.start_time, self.end_time
-        )
+        booking_dict = BookingSerializer(self).data
+        return json.dumps(booking_dict)
 
     def validate_model(self):
 
@@ -146,3 +148,11 @@ class Booking(models.Model, SubjectModel):
 
     def get_observers(self):
         return Booking.observers
+
+
+class BookingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Booking
+        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time')
+        read_only_fields = ('id',)
