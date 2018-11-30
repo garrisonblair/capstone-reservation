@@ -1,7 +1,10 @@
+import json
+
 from django.core.exceptions import ValidationError
 from apps.accounts.exceptions import PrivilegeError
 from django.db import models
 from django.db.models import Q
+from rest_framework import serializers
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.rooms.models.Room import Room
@@ -140,3 +143,34 @@ class RecurringBooking(models.Model):
         # booking_end_time
         if self.booking_end_time > end_time:
             raise PrivilegeError(p_c.get_error_text("booking_end_time"))
+
+    def __str__(self):
+        recurring_booking_dict = RecurringBookingSerializer(self)
+        return json.dumps(recurring_booking_dict)
+
+
+class RecurringBookingSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+    booking_start_time = serializers.TimeField()
+    booking_end_time = serializers.TimeField()
+    room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+    group = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), allow_null=True)
+    booker = serializers.PrimaryKeyRelatedField(queryset=Booker.objects.all())
+    skip_conflicts = serializers.BooleanField()
+
+    def create(self, validated_data):
+        return RecurringBooking.objects.create_recurring_booking(
+            start_date=validated_data["start_date"],
+            end_date=validated_data["end_date"],
+            start_time=validated_data["booking_start_time"],
+            end_time=validated_data["booking_end_time"],
+            room=validated_data["room"],
+            group=validated_data["group"],
+            booker=validated_data["booker"],
+            skip_conflicts=validated_data["skip_conflicts"]
+        )
+
+    class Meta:
+        model = RecurringBooking
+        fields = '__all__'
