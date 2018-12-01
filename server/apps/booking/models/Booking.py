@@ -69,10 +69,6 @@ class Booking(models.Model, SubjectModel):
 
         return this
 
-    def __str__(self):
-        booking_dict = BookingSerializer(self).data
-        return json.dumps(booking_dict)
-
     def validate_model(self):
 
         if not isinstance(self.start_time, datetime.time):

@@ -5,7 +5,7 @@ from apps.accounts.models.Booker import Booker
 from apps.booking.models.Booking import Booking
 from datetime import datetime
 from django.core.exceptions import ValidationError
-from rest_framework import serializers
+
 
 from apps.accounts.exceptions import PrivilegeError
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
@@ -32,8 +32,10 @@ class CampOn(models.Model):
         super(CampOn, self).save(*args, **kwargs)
 
     def __str__(self):
-        campon_dict = CampOnSerializer(self)
-        return json.dumps(campon_dict)
+        # from ..serializers.campon import CampOnSerializer
+        # campon_dict = CampOnSerializer(self)
+        # print(campon_dict)
+        return ""
 
     def validate_model(self):
         today = datetime.now().today().date()
@@ -75,13 +77,3 @@ class CampOn(models.Model):
         # booking_end_time
         if self.end_time > end_time:
             raise PrivilegeError(p_c.get_error_text("booking_end_time"))
-
-
-class CampOnSerializer(serializers.ModelSerializer):
-    booker = serializers.PrimaryKeyRelatedField(queryset=Booker.objects.all())
-    camped_on_booking = serializers.PrimaryKeyRelatedField(queryset=Booking.objects.all())
-
-    class Meta:
-        model = CampOn
-        fields = ('id', 'booker', 'camped_on_booking', 'generated_booking', 'start_time', 'end_time')
-        read_only_fields = ('id',)

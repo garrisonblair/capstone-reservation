@@ -24,7 +24,11 @@ class RecurringBookingCreate(APIView):
 
         try:
             recurring_booking, conflicts = serializer.create(validated_data=serializer.validated_data)
-            utils.log_model_change(recurring_booking, utils.ADDITION, request.user)
+            utils.log_model_change(recurring_booking,
+                                   utils.ADDITION,
+                                   request.user,
+                                   RecurringBookingSerializer(recurring_booking))
+
             return Response(conflicts, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
             if isinstance(error, PrivilegeError):

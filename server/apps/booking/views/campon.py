@@ -93,7 +93,7 @@ class CampOnCreate(APIView):
         if request_end_time <= current_booking.end_time:
             try:
                 camp_on = serializer.save()
-                utils.log_model_change(camp_on, utils.ADDITION, request.user)
+                utils.log_model_change(camp_on, utils.ADDITION, request.user, CampOnSerializer(camp_on))
                 return Response({"CampOn": CampOnSerializer(camp_on).data}, status=status.HTTP_201_CREATED)
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
