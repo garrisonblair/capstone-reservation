@@ -8,7 +8,6 @@ from apps.rooms.models.Room import Room
 from apps.booking.models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
-from rest_framework import serializers
 
 from apps.util.SubjectModel import SubjectModel
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
@@ -68,6 +67,11 @@ class Booking(models.Model, SubjectModel):
             self.object_updated()
 
         return this
+
+    def __str__(self):
+        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}'.format(
+            self.id, self.booker.booker_id, self.room.name, self.date, self.start_time, self.end_time
+        )
 
     def validate_model(self):
 
@@ -144,11 +148,3 @@ class Booking(models.Model, SubjectModel):
 
     def get_observers(self):
         return Booking.observers
-
-
-class BookingSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Booking
-        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time')
-        read_only_fields = ('id',)

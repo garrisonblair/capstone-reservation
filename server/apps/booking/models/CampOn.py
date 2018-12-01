@@ -32,10 +32,11 @@ class CampOn(models.Model):
         super(CampOn, self).save(*args, **kwargs)
 
     def __str__(self):
-        # from ..serializers.campon import CampOnSerializer
-        # campon_dict = CampOnSerializer(self)
-        # print(campon_dict)
-        return ""
+        return 'Campon: {}, Student: {}, Booking: {}, Start time: {}, End time: {},'.format(self.id,
+                                                                                            self.booker.booker_id,
+                                                                                            self.camped_on_booking.id,
+                                                                                            self.start_time,
+                                                                                            self.end_time)
 
     def validate_model(self):
         today = datetime.now().today().date()
