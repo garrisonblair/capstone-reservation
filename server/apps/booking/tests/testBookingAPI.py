@@ -63,7 +63,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(created_booking.booker, Booker.objects.get(booker_id='j_lenn'))
 
         # LogEntry test
-        latest_booking_log = LogEntry.objects.all()  # type: LogEntry
+        latest_booking_log = LogEntry.objects.last()  # type: LogEntry
         self.assertEqual(latest_booking_log.action_flag, ADDITION)
         self.assertEqual(latest_booking_log.object_id, str(created_booking.id))
         self.assertEqual(latest_booking_log.user, self.user)

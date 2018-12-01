@@ -1,8 +1,11 @@
+import json
+
 from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
+from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 from datetime import timedelta, datetime
 
 from apps.accounts.models.Booker import Booker
@@ -12,6 +15,8 @@ from apps.groups.models import Group
 from apps.rooms.models.Room import Room
 
 from ..views.recurring_booking import RecurringBookingCreate
+
+from ..serializers.recurring_booking import RecurringBookingSerializer
 
 
 class BookingAPITest(TestCase):
@@ -92,6 +97,13 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking3.room, self.room)
         self.assertEqual(booking3.group, self.group)
         self.assertEqual(booking3.booker, self.group.bookers.get(booker_id='j_lenn'))
+
+        # LogEntry test
+        latest_campon_log = LogEntry.objects.last()
+        self.assertEqual(latest_campon_log.action_flag, ADDITION)
+        self.assertEqual(latest_campon_log.object_id, str(recurring_booking.id))
+        self.assertEqual(latest_campon_log.user, self.user)
+        self.assertEqual(latest_campon_log.object_repr, json.dumps(RecurringBookingSerializer(recurring_booking).data))
 
     def testCreateRecurringBookingFailureDateStartAfterEnd(self):
 

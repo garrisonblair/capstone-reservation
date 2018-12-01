@@ -1,10 +1,12 @@
 import datetime
+import json
 
 from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
+from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 
 from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
@@ -12,6 +14,7 @@ from ..models.Booking import Booking
 from ..models.CampOn import CampOn
 from ..views.campon import CampOnList
 from ..views.campon import CampOnCreate
+from ..serializers.campon import CampOnSerializer
 from apps.util.mock_datetime import mock_datetime
 
 
@@ -80,6 +83,13 @@ class CampOnAPITest(TestCase):
         self.assertEqual(created_camp_on.start_time, datetime.time(12, 30))
 
         self.assertEqual(created_camp_on.end_time, datetime.time(14, 00))
+
+        # LogEntry test
+        latest_campon_log = LogEntry.objects.last()
+        self.assertEqual(latest_campon_log.action_flag, ADDITION)
+        self.assertEqual(latest_campon_log.object_id, str(created_camp_on.id))
+        self.assertEqual(latest_campon_log.user, self.user)
+        self.assertEqual(latest_campon_log.object_repr, json.dumps(CampOnSerializer(created_camp_on).data))
 
     def testCreateCampOnWithBooking(self):
         request = self.factory.post("/campon", {
