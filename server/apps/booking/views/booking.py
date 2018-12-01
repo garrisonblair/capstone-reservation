@@ -25,17 +25,17 @@ class BookingList(ListAPIView):
         # Filter by year
         year = self.request.GET.get('year')
         if year:
-            qs = Booking.objects.filter(date__year=year)
+            qs = qs.filter(date__year=year)
 
         # Filter by month
         month = self.request.GET.get('month')
         if month:
-            qs = Booking.objects.filter(date__month=month)
+            qs = qs.filter(date__month=month)
 
         # Filter by day
         day = self.request.GET.get('day')
         if day:
-            qs = Booking.objects.filter(date__day=day)
+            qs = qs.filter(date__day=day)
 
         return qs
 

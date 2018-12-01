@@ -1,16 +1,14 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './Calendar.scss';
 
 
 class Rooms extends Component {
-
   state = {
     roomsList: [],
   }
 
   static getDerivedStateFromProps(props, state) {
-    if(props.roomsList === state.roomsList) {
+    if (props.roomsList === state.roomsList) {
       return null;
     }
     return {
@@ -19,20 +17,15 @@ class Rooms extends Component {
   }
 
   render() {
-    const {roomsList} = this.state;
-    const rooms = roomsList.map((room) =>
+    const { roomsList } = this.state;
+    const rooms = roomsList.map(room => (
       <div className="calendar__rooms__room" key={room.name}>
         {room.name}
       </div>
-    );
+    ));
 
-    return <div className="calendar__rooms__wrapper">{rooms}</div>
+    return <div className="calendar__rooms__wrapper">{rooms}</div>;
   }
 }
-
-Rooms.propTypes = {
-  roomsList: PropTypes.array,
-}
-
 
 export default Rooms;
