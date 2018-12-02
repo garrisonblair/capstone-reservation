@@ -8,7 +8,8 @@ from apps.accounts.views.me import MyUser
 from apps.accounts.views.privilege_categories import PrivilegeCategoryList
 from apps.accounts.views.privilege_categories import PrivilegeCategoryCreate
 from apps.accounts.views.privilege_categories import PrivilegeCategoryRetrieveUpdateDestroy
-from apps.accounts.views.privilege_categories_manager import *
+from apps.accounts.views.privilege_categories_manager import PrivilegeCategoriesAssignSingle
+from apps.accounts.views.privilege_categories_manager import PrivilegeCategoriesAssignAll
 
 urlpatterns = [
     path(r'register', RegisterView.as_view()),

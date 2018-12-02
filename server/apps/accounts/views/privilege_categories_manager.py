@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import permission_classes
 
+from ..models.Booker import Booker
+
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
@@ -16,6 +18,7 @@ class PrivilegeCategoriesAssignSingle(APIView):
         try:
             booker = Booker.objects.get(pk=pk)
         except Booker.DoesNotExist:
+            print("No Booker is here")
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         # Add Booker Privileges

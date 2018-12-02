@@ -98,19 +98,3 @@ class TestPrivilegeCategoryManager(TestCase):
         privileges1 = self.booker1.privilege_categories.all()
         self.assertEqual(privileges1.count(), 1)
         self.assertEqual(privileges1[0], self.category1)
-
-    def testAssignPrivilegesForAllUsersSuccess(self):
-        manager = PrivilegeCategoryManager()
-        manager.assign_all_booker_privileges(self.ldap)
-
-        privileges1 = self.booker1.privilege_categories.all()
-        print(self.booker1.privilege_categories.all())
-        self.assertEqual(privileges1.count(), 3)
-        self.assertEqual(privileges1[0], self.category1)
-        self.assertEqual(privileges1[1], self.category2)
-        self.assertEqual(privileges1[2], self.category3)
-
-        privileges2 = self.booker2.privilege_categories.all()
-        self.assertEqual(privileges2.count(), 2)
-        self.assertEqual(privileges2[0], self.category1)
-        self.assertEqual(privileges2[1], self.category2)
