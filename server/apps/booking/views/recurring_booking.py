@@ -9,6 +9,8 @@ from apps.accounts.exceptions import PrivilegeError
 from apps.booking.serializers.recurring_booking import RecurringBookingSerializer
 from apps.util import utils
 
+from ..serializers.booking import BookingSerializer
+
 
 class RecurringBookingCreate(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
@@ -28,6 +30,11 @@ class RecurringBookingCreate(APIView):
                                    utils.ADDITION,
                                    request.user,
                                    RecurringBookingSerializer(recurring_booking))
+            for booking in recurring_booking.booking_set.all():
+                utils.log_model_change(booking,
+                                       utils.ADDITION,
+                                       request.user,
+                                       BookingSerializer(booking))
 
             return Response(conflicts, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
