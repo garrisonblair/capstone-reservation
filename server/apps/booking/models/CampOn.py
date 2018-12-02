@@ -57,8 +57,10 @@ class CampOn(models.Model):
             if found_bookings is not None:
                 raise ValidationError("Camp-on can not end after another booking has started")
 
-        if CampOn.objects.filter(booker=self.booker, camped_on_booking=self.camped_on_booking).exists():
-            raise ValidationError("Cannot camp-on the same Booking.")
+        other_campons = CampOn.objects.filter(booker=self.booker, camped_on_booking=self.camped_on_booking)
+
+        if other_campons.count() > 1 or (other_campons.count() is 1 and other_campons[0].id is not self.id):
+            raise ValidationError("Cannot camp-on the same Booking more than once.")
 
     def evaluate_privilege(self):
 
