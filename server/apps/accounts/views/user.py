@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..models.Booker import Booker
-from ..serializers.user import UserSerializer, UserSerializerLogin, BookerSerializer
+from ..serializers.user import UserSerializer, BookerSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from ..permissions.IsSuperUser import IsSuperUser
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
@@ -18,7 +18,7 @@ from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 class UserList(ListAPIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
     queryset = User.objects.all()
-    serializer_class = UserSerializerLogin
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         search_term = self.request.GET.get("search_text")
