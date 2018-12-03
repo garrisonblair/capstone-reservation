@@ -10,6 +10,8 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
+import BookingActivityModal from './BookingActivityModal';
+import '../Admin.scss';
 
 class BookingActivity extends Component {
   static formatAction(flag) {
@@ -52,6 +54,8 @@ class BookingActivity extends Component {
     contentTypeId: null,
     objectId: null,
     userId: null,
+    showBookingActivityModal: false,
+    selectedLog: null,
   }
 
   componentDidMount() {
@@ -62,7 +66,6 @@ class BookingActivity extends Component {
     api.getLogEntries(data)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
           const logsToDisplay = this.setLogsToDisplay(response.data);
           this.setState({ logs: response.data, logsToDisplay });
         }
@@ -112,19 +115,17 @@ class BookingActivity extends Component {
   }
 
   showDetails = (log) => {
-    let logObject = log.object_repr;
-    logObject = logObject.replace(/,/g, '<br>');
-    sweetAlert(
-      'Details',
-      `${BookingActivity.formatDate(log.action_time)}
-      <br>${BookingActivity.formatAction(log.action_flag)} ${log.content_type.app_label}
-      <br>by ${log.user}
-      <br>${logObject}`,
-    );
+    this.setState({ selectedLog: log }, () => {
+      this.setState({ showBookingActivityModal: true });
+    });
   }
 
   handleSearchInput = (e, change) => {
-    this.setState({ [change.name]: change.value });
+    this.setState({ [change.name]: change.value !== '' ? change.value : null });
+  }
+
+  handleOnCloseBookingActivityModal = () => {
+    this.setState({ showBookingActivityModal: false, selectedLog: null });
   }
 
   handleSearch = () => {
@@ -155,7 +156,7 @@ class BookingActivity extends Component {
             <Table.Cell>
               {BookingActivity.formatDate(log.action_time)}
             </Table.Cell>
-            <Table.Cell>{log.content_type.app_label}</Table.Cell>
+            <Table.Cell>{log.content_type.model}</Table.Cell>
             <Table.Cell>
               {BookingActivity.formatAction(log.action_flag)}
             </Table.Cell>
@@ -205,6 +206,8 @@ class BookingActivity extends Component {
         <Dropdown placeholder="# logs" search selection options={elementsPerPage} onChange={this.handlePaginationSettingsChange} />
 
         <Input icon={<Icon name="search" inverted circular link onClick={this.handleSearch} />} placeholder="Type..." name="contentTypeId" onChange={this.handleSearchInput} />
+        <Input icon={<Icon name="search" inverted circular link onClick={this.handleSearch} />} placeholder="Object ID..." name="objectId" onChange={this.handleSearchInput} />
+        <Input icon={<Icon name="search" inverted circular link onClick={this.handleSearch} />} placeholder="User..." name="userId" onChange={this.handleSearchInput} />
 
         <Table sortable celled fixed selectable>
           <Table.Header>
@@ -229,10 +232,16 @@ class BookingActivity extends Component {
   }
 
   render() {
+    const { selectedLog, showBookingActivityModal } = this.state;
     return (
       <div className="admin">
         <h1>Booking activity</h1>
         { this.renderBookingActivity() }
+        <BookingActivityModal
+          log={selectedLog}
+          show={showBookingActivityModal}
+          onClose={this.handleOnCloseBookingActivityModal}
+        />
       </div>
     );
   }

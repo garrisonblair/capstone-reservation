@@ -9,3 +9,23 @@
     margin: 30px;
   }
 }
+
+.booking-activity-modal {
+  width: 300px !important;
+  text-align: left;
+  &__container {
+    padding: 20px;
+  }
+  .controls {
+    padding: 0 20px 20px 20px;
+    text-align: right;
+  }
+  table {
+    padding: 20px;
+    width: 100%;
+    text-align: left;
+    td {
+      text-align: right;
+    }
+  }
+}
