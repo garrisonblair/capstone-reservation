@@ -7,8 +7,12 @@ import {
   Icon,
   Dropdown,
   Input,
+  Button,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
+import 'react-dates/initialize';
+import { SingleDatePicker } from 'react-dates';
+import 'react-dates/lib/css/_datepicker.css';
 import api from '../../../utils/api';
 import BookingActivityModal from './BookingActivityModal';
 import '../Admin.scss';
@@ -56,6 +60,8 @@ class BookingActivity extends Component {
     userId: null,
     showBookingActivityModal: false,
     selectedLog: null,
+    focusedFrom: false,
+    focusedTo: false,
   }
 
   componentDidMount() {
@@ -187,35 +193,46 @@ class BookingActivity extends Component {
       logsToDisplay,
       activePage,
       elementsPerPage,
+      from,
+      to,
+      focusedFrom,
+      focusedTo,
     } = this.state;
     const totalPages = logsToDisplay.length;
 
     return (
       <div>
-        <Pagination
-          activePage={activePage}
-          ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
-          firstItem={{ content: <Icon name="angle double left" />, icon: true }}
-          lastItem={{ content: <Icon name="angle double right" />, icon: true }}
-          prevItem={{ content: <Icon name="angle left" />, icon: true }}
-          nextItem={{ content: <Icon name="angle right" />, icon: true }}
-          totalPages={totalPages}
-          onPageChange={this.handlePaginationChange}
-        />
-
-        <Dropdown placeholder="# logs" search selection options={elementsPerPage} onChange={this.handlePaginationSettingsChange} />
-
-        <Input icon={<Icon name="search" inverted circular link onClick={this.handleSearch} />} placeholder="Type..." name="contentTypeId" onChange={this.handleSearchInput} />
-        <Input icon={<Icon name="search" inverted circular link onClick={this.handleSearch} />} placeholder="Object ID..." name="objectId" onChange={this.handleSearchInput} />
-        <Input icon={<Icon name="search" inverted circular link onClick={this.handleSearch} />} placeholder="User..." name="userId" onChange={this.handleSearchInput} />
-
+        <div>
+          <SingleDatePicker
+            isOutsideRange={() => false}
+            date={from}
+            onDateChange={date => this.setState({ from: date })}
+            focused={focusedFrom}
+            onFocusChange={({ focused }) => this.setState({ focusedFrom: focused })}
+            id="from"
+            placeholder="From"
+          />
+          <SingleDatePicker
+            isOutsideRange={() => false}
+            date={to}
+            onDateChange={date => this.setState({ to: date })}
+            focused={focusedTo}
+            onFocusChange={({ focused }) => this.setState({ focusedTo: focused })}
+            id="to"
+            placeholder="To"
+          />
+        </div>
+        <Input placeholder="Type..." name="contentTypeId" onChange={this.handleSearchInput} />
+        <Input placeholder="Object ID..." name="objectId" onChange={this.handleSearchInput} />
+        <Input placeholder="User..." name="userId" onChange={this.handleSearchInput} />
+        <Button onClick={this.handleSearch}>Filter</Button>
         <Table sortable celled fixed selectable>
           <Table.Header>
             <Table.Row>
               { tableHeaders.map(header => (
                 <Table.HeaderCell
                   sorted={column === header ? direction : null}
-                  onClick={this.handleSort(header)}
+                  onClick={header === 'date' ? this.handleSort(header) : null}
                   key={header}
                 >
                   {header}
@@ -227,6 +244,17 @@ class BookingActivity extends Component {
 
           { logsToDisplay.length > 0 ? this.renderLogs() : BookingActivity.renderEmptyLogs() }
         </Table>
+        <Dropdown placeholder="# logs" search selection options={elementsPerPage} onChange={this.handlePaginationSettingsChange} />
+        <Pagination
+          activePage={activePage}
+          ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
+          firstItem={{ content: <Icon name="angle double left" />, icon: true }}
+          lastItem={{ content: <Icon name="angle double right" />, icon: true }}
+          prevItem={{ content: <Icon name="angle left" />, icon: true }}
+          nextItem={{ content: <Icon name="angle right" />, icon: true }}
+          totalPages={totalPages}
+          onPageChange={this.handlePaginationChange}
+        />
       </div>
     );
   }
