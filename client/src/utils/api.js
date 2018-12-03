@@ -211,12 +211,17 @@ function createPrivilege(data) {
   });
 }
 
-function getLogEntries() {
+function getLogEntries(data) {
   const headers = getTokenHeader();
+  let urlq = '/logentries';
+  if (data) {
+    urlq = `/logentries?content_type_id=${data.content_type_id}`;
+  }
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/logentries`,
+    url: `${settings.API_ROOT}${urlq}`,
     headers,
+    data,
     withCredentials: true,
   });
 }

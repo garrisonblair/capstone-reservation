@@ -6,6 +6,7 @@ import {
   Pagination,
   Icon,
   Dropdown,
+  Input,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
@@ -46,12 +47,22 @@ class BookingActivity extends Component {
       { text: '40', value: 40 },
       { text: '50', value: 50 },
     ],
+    from: null,
+    to: null,
+    contentTypeId: null,
+    objectId: null,
+    userId: null,
   }
 
   componentDidMount() {
-    api.getLogEntries()
+    this.getLogs();
+  }
+
+  getLogs = (data) => {
+    api.getLogEntries(data)
       .then((response) => {
         if (response.status === 200) {
+          console.log(response.data);
           const logsToDisplay = this.setLogsToDisplay(response.data);
           this.setState({ logs: response.data, logsToDisplay });
         }
@@ -112,6 +123,61 @@ class BookingActivity extends Component {
     );
   }
 
+  handleSearchInput = (e, change) => {
+    this.setState({ [change.name]: change.value });
+  }
+
+  handleSearch = () => {
+    const {
+      from,
+      to,
+      contentTypeId,
+      objectId,
+      userId,
+    } = this.state;
+
+    const data = {
+      from,
+      to,
+      content_type_id: contentTypeId,
+      object_id: objectId,
+      user_id: userId,
+    };
+    this.getLogs(data);
+  }
+
+  renderLogs = () => {
+    const { logsToDisplay, activePage } = this.state;
+    return (
+      <Table.Body>
+        {logsToDisplay[activePage - 1].map(log => (
+          <Table.Row key={log.id} onClick={() => this.showDetails(log)}>
+            <Table.Cell>
+              {BookingActivity.formatDate(log.action_time)}
+            </Table.Cell>
+            <Table.Cell>{log.content_type.app_label}</Table.Cell>
+            <Table.Cell>
+              {BookingActivity.formatAction(log.action_flag)}
+            </Table.Cell>
+            <Table.Cell>{log.user.username}</Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    );
+  }
+
+  static renderEmptyLogs() {
+    return (
+      <Table.Body>
+        <Table.Row>
+          <Table.Cell>
+            No logs found
+          </Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    );
+  }
+
   renderBookingActivity = () => {
     const {
       column,
@@ -138,7 +204,9 @@ class BookingActivity extends Component {
 
         <Dropdown placeholder="# logs" search selection options={elementsPerPage} onChange={this.handlePaginationSettingsChange} />
 
-        <Table sortable celled fixed selectable inverted>
+        <Input icon={<Icon name="search" inverted circular link onClick={this.handleSearch} />} placeholder="Type..." name="contentTypeId" onChange={this.handleSearchInput} />
+
+        <Table sortable celled fixed selectable>
           <Table.Header>
             <Table.Row>
               { tableHeaders.map(header => (
@@ -153,31 +221,18 @@ class BookingActivity extends Component {
               }
             </Table.Row>
           </Table.Header>
-          <Table.Body>
-            {logsToDisplay[activePage - 1].map(log => (
-              <Table.Row key={log.id} onClick={() => this.showDetails(log)}>
-                <Table.Cell>
-                  {BookingActivity.formatDate(log.action_time)}
-                </Table.Cell>
-                <Table.Cell>{log.content_type.app_label}</Table.Cell>
-                <Table.Cell>
-                  {BookingActivity.formatAction(log.action_flag)}
-                </Table.Cell>
-                <Table.Cell>{log.user}</Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
+
+          { logsToDisplay.length > 0 ? this.renderLogs() : BookingActivity.renderEmptyLogs() }
         </Table>
       </div>
     );
   }
 
   render() {
-    const { logsToDisplay } = this.state;
     return (
       <div className="admin">
         <h1>Booking activity</h1>
-        { logsToDisplay.length > 0 ? this.renderBookingActivity() : null }
+        { this.renderBookingActivity() }
       </div>
     );
   }
