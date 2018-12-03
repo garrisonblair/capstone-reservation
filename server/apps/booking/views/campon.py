@@ -93,7 +93,7 @@ class CampOnCreate(APIView):
         if request_end_time <= current_booking.end_time:
             try:
                 camp_on = serializer.save()
-                utils.log_model_change(camp_on, utils.ADDITION, request.user)
+                utils.log_model_change(camp_on, utils.ADDITION, request.user, CampOnSerializer(camp_on))
                 return Response({"CampOn": CampOnSerializer(camp_on).data}, status=status.HTTP_201_CREATED)
             except ValidationError as error:
                 return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
@@ -131,6 +131,9 @@ class CampOnCreate(APIView):
 
             new_booking.save()
             camp_on.generated_booking = new_booking
+            camp_on.save()
+            utils.log_model_change(camp_on, utils.ADDITION, request.user, CampOnSerializer(camp_on))
+            utils.log_model_change(new_booking, utils.ADDITION, request.user, BookingSerializer(new_booking))
         except (PrivilegeError, ValidationError) as error:
             if isinstance(error, PrivilegeError):
                 return Response(error.message, status=status.HTTP_403_FORBIDDEN)
