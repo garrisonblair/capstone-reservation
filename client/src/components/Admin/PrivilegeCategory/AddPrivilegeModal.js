@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import {
@@ -108,7 +109,7 @@ class AddPrivilegeModal extends Component {
           });
       })
       .catch((error) => {
-        const { status, data } = error.response;
+        const { status, data: dataError } = error.response;
 
         if (status === 500) {
           sweetAlert({
@@ -119,14 +120,13 @@ class AddPrivilegeModal extends Component {
           return;
         }
 
-        // console.log(data);
-        const errors = Object.keys(data).map((field, index) => (
-          <div key={index} className="error-message">
+        const errors = Object.keys(dataError).map((field, index) => (
+          <div key={index[0]} className="error-message">
             <p className="field">
               {field}
             </p>
             <ul>
-              <li>{data[field][0]}</li>
+              <li>{dataError[field][0]}</li>
             </ul>
           </div>
         ));
@@ -273,5 +273,17 @@ class AddPrivilegeModal extends Component {
     );
   }
 }
+
+AddPrivilegeModal.propTypes = {
+  onClose: PropTypes.func,
+  privileges: PropTypes.instanceOf(Array),
+  show: PropTypes.bool,
+};
+
+AddPrivilegeModal.defaultProps = {
+  onClose: () => {},
+  privileges: [],
+  show: false,
+};
 
 export default AddPrivilegeModal;

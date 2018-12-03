@@ -18,9 +18,6 @@ class Settings extends Component {
         this.setState({
           webCalendarBackup: response.data.is_webcalendar_backup_active,
         });
-      })
-      .catch((error) => {
-        console.log(error);
       });
   }
 

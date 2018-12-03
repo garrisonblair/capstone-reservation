@@ -24,7 +24,7 @@ class Hours extends Component {
       </div>
     ));
 
-    return <div className="calendar__hours__wrapper">{hours}</div>
+    return <div className="calendar__hours__wrapper">{hours}</div>;
   }
 }
 

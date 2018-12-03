@@ -15,6 +15,7 @@ class SideNav extends Component {
             className={selectedMenu === row.menu ? 'active' : ''}
             onClick={() => { history.push(row.path); }}
             key={row.menu}
+            onKeyDown={() => {}}
           >
             {row.text}
           </li>))}
