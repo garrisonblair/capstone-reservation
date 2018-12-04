@@ -63,3 +63,18 @@ class AddMembers(APIView):
             group.members.add(member)
         group.save()
         return Response(GroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
+
+
+class RemoveMembers(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def post(self, request, pk):
+        group = Group.objects.get(id=pk)
+        if group.owner != request.user.booker:
+            return Response("Can't modify this Group", status=status.HTTP_401_UNAUTHORIZED)
+        members_to_add = request.data["members"]
+        for member in members_to_add:
+            if member != group.owner:
+                group.members.remove(member)
+        group.save()
+        return Response(GroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
