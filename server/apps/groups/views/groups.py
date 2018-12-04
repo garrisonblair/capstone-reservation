@@ -27,6 +27,7 @@ class GroupList(ListAPIView):
 
         return qs
 
+
 class GroupCreate(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
 
