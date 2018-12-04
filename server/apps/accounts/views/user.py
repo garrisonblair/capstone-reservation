@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..models.Booker import Booker
-from ..serializers.user import UserSerializer, UserSerializerLogin, BookerSerializer
+from ..serializers.user import UserSerializer, BookerSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from ..permissions.IsSuperUser import IsSuperUser
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
@@ -17,7 +18,19 @@ from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 class UserList(ListAPIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
     queryset = User.objects.all()
-    serializer_class = UserSerializerLogin
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        search_term = self.request.GET.get("search_text")
+        print(search_term)
+        users = User.objects.all()
+
+        if search_term is not None:
+            users = users.filter(Q(username__contains=search_term) |
+                                 Q(first_name__contains=search_term) |
+                                 Q(last_name__contains=search_term))
+
+        return users
 
 
 class UserUpdate(APIView):

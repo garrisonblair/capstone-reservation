@@ -6,6 +6,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
+from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 
 from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
@@ -14,6 +15,8 @@ from ..models.Booking import Booking
 from ..views.booking import BookingList
 from ..views.booking import BookingCreate
 from ..views.booking import BookingRetrieveUpdateDestroy
+
+from ..serializers.booking import BookingSerializer
 
 
 class BookingAPITest(TestCase):
@@ -44,7 +47,7 @@ class BookingAPITest(TestCase):
                                     },
                                     format="json")
 
-        force_authenticate(request, user=User.objects.get(username="john"))
+        force_authenticate(request, user=self.user)
 
         response = BookingCreate.as_view()(request)
 
@@ -58,6 +61,13 @@ class BookingAPITest(TestCase):
         self.assertEqual(created_booking.date, datetime.date(2019, 8, 10))
         self.assertEqual(created_booking.room, Room.objects.get(name="H833-17"))
         self.assertEqual(created_booking.booker, Booker.objects.get(booker_id='j_lenn'))
+
+        # LogEntry test
+        latest_booking_log = LogEntry.objects.last()  # type: LogEntry
+        self.assertEqual(latest_booking_log.action_flag, ADDITION)
+        self.assertEqual(latest_booking_log.object_id, str(created_booking.id))
+        self.assertEqual(latest_booking_log.user, self.user)
+        self.assertEqual(latest_booking_log.object_repr, json.dumps(BookingSerializer(created_booking).data))
 
     def testCreateBookingNotAuthenticated(self):
         request = self.factory.post("/booking",
@@ -267,6 +277,13 @@ class BookingAPITest(TestCase):
         self.assertEqual(len(Booking.objects.all()), 1)
         edit_booking = Booking.objects.last()
         self.assertEqual(edit_booking.end_time, datetime.time(16, 00))
+
+        # LogEntry test
+        latest_booking_log = LogEntry.objects.last()  # type: LogEntry
+        self.assertEqual(latest_booking_log.action_flag, CHANGE)
+        self.assertEqual(latest_booking_log.object_id, str(edit_booking.id))
+        self.assertEqual(latest_booking_log.user, self.user)
+        self.assertEqual(latest_booking_log.object_repr, json.dumps(BookingSerializer(edit_booking).data))
 
     def testEditBookingWithBookerId(self):
 

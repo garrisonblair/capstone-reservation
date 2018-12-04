@@ -8,6 +8,7 @@ from apps.accounts.models.Booker import Booker
 class CampOnSerializer(serializers.ModelSerializer):
     booker = serializers.PrimaryKeyRelatedField(queryset=Booker.objects.all())
     camped_on_booking = serializers.PrimaryKeyRelatedField(queryset=Booking.objects.all())
+    generated_booking = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = CampOn

@@ -1,8 +1,11 @@
+import json
+
 from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
+from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 from datetime import timedelta, datetime
 
 from apps.accounts.models.Booker import Booker
@@ -12,6 +15,9 @@ from apps.groups.models import Group
 from apps.rooms.models.Room import Room
 
 from ..views.recurring_booking import RecurringBookingCreate
+
+from ..serializers.recurring_booking import RecurringBookingSerializer
+from ..serializers.booking import BookingSerializer
 
 
 class BookingAPITest(TestCase):
@@ -92,6 +98,27 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking3.room, self.room)
         self.assertEqual(booking3.group, self.group)
         self.assertEqual(booking3.booker, self.group.bookers.get(booker_id='j_lenn'))
+
+        # LogEntry test
+        all_recurring_booking_logs = LogEntry.objects.all()
+        latest_recurring_booking_log = all_recurring_booking_logs.order_by('action_time')[0]
+        self.assertEqual(latest_recurring_booking_log.action_flag, ADDITION)
+        self.assertEqual(latest_recurring_booking_log.object_id, str(recurring_booking.id))
+        self.assertEqual(latest_recurring_booking_log.user, self.user)
+        self.assertEqual(latest_recurring_booking_log.object_repr,
+                         json.dumps(RecurringBookingSerializer(recurring_booking).data))
+
+        for booking in recurring_booking.booking_set.all():
+            booking_logs = LogEntry.objects.filter(
+                content_type=ContentType.objects.get_for_model(booking),
+                object_id=str(booking.id))
+            latest_booking_log = booking_logs.order_by('action_time')[0]
+
+            self.assertEqual(latest_booking_log.action_flag, ADDITION)
+            self.assertEqual(latest_booking_log.object_id, str(booking.id))
+            self.assertEqual(latest_booking_log.user, self.user)
+            self.assertEqual(latest_booking_log.object_repr,
+                             json.dumps(BookingSerializer(booking).data))
 
     def testCreateRecurringBookingFailureDateStartAfterEnd(self):
 
