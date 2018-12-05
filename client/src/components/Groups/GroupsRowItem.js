@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Button, Table, Label } from 'semantic-ui-react';
 import api from '../../utils/api';
 import GroupsModal from './GroupsModal';
-// import sweetAlert from 'sweetalert2';
 
 
 class GroupsRowItem extends Component {
@@ -13,7 +12,6 @@ class GroupsRowItem extends Component {
   }
 
   componentDidMount() {
-    // eslint-disable-next-line react/destructuring-assignment
     api.getMyUser()
       .then((r) => {
         this.setState({ me: r.data.id });
@@ -60,8 +58,14 @@ class GroupsRowItem extends Component {
 
 GroupsRowItem.propTypes = {
   syncGroupsList: PropTypes.func.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  group: PropTypes.object.isRequired,
+  group: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    is_verified: PropTypes.bool.isRequired,
+    owner: PropTypes.string.isRequired,
+    privilege_category: PropTypes.number,
+    members: PropTypes.array.isRequired,
+  }).isRequired,
 };
 
 export default GroupsRowItem;

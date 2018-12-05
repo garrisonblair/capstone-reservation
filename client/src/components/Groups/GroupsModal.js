@@ -10,20 +10,18 @@ import './GroupsModal.scss';
 
 class GroupsModal extends Component {
   state = {
-    // eslint-disable-next-line react/no-unused-state
     groupId: '',
-    // eslint-disable-next-line react/no-unused-state
     groupOwner: '',
     groupName: '',
     groupMembers: [],
+    newMembers: [],
     newMember: '',
   }
 
   componentDidMount() {
     const { selectedGroup } = this.props;
-    if (selectedGroup != null) {
+    if (selectedGroup !== null) {
       this.setState({
-        // eslint-disable-next-line react/no-unused-state
         groupId: selectedGroup.id,
         groupOwner: selectedGroup.owner,
         groupName: selectedGroup.name,
@@ -31,7 +29,7 @@ class GroupsModal extends Component {
       });
     } else {
       this.setState({
-        groupMembers: ['27129312'],
+        newMembers: ['27129312'],
         groupOwner: '27129312',
       });
     }
@@ -53,31 +51,42 @@ class GroupsModal extends Component {
 
 
   handleSubmit = () => {
-    const { groupName, groupMembers } = this.state;
+    const { groupName, newMembers, groupId } = this.state;
     const { onClose } = this.props;
     if (!this.verifyModalForm()) {
       return;
     }
-    api.createGroup(groupName, groupMembers)
-      .then((r) => {
-        if (r.status === 201) {
-          sweetAlert('Completed', 'A group was created.', 'success')
-            .then(() => {
-              onClose();
-            });
-        }
-      });
+    if (groupId === '') {
+      api.createGroup(groupName, newMembers)
+        .then((r) => {
+          if (r.status === 201) {
+            sweetAlert('Completed', 'A group was created.', 'success')
+              .then(() => {
+                onClose();
+              });
+          }
+        });
+    } else {
+      api.addMembersToGroup(groupId, newMembers)
+        .then((r) => {
+          if (r.status === 202) {
+            sweetAlert('Completed', `Group #${groupId} was modified.`, 'success')
+              .then(() => {
+                onClose();
+              });
+          }
+        });
+    }
   }
 
   addMemberToList = () => {
-    const { groupMembers, newMember } = this.state;
+    const { newMember, newMembers } = this.state;
     if (newMember.length < 1) {
       return;
     }
-    console.log(newMember);
-    groupMembers.push(newMember);
+    newMembers.push(newMember);
     this.setState({
-      groupMembers,
+      newMembers,
       newMember: '',
     });
   }
@@ -87,25 +96,34 @@ class GroupsModal extends Component {
   }
 
   renderMembersList = () => {
-    let { groupMembers } = this.state;
-    groupMembers = groupMembers.slice(1, groupMembers.length);
+    const { groupMembers, newMembers, groupOwner } = this.state;
     let content = '';
-    if (groupMembers.length !== 0) {
-      content = (
-        <List divided>
-          {
-            groupMembers.map(
-              (m, index) => (
-                <MemberRowItem
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={index}
-                  selectedMember={m}
-                />
-              ),
-            )}
-        </List>
-      );
-    } else {
+    content = (
+      <List divided>
+        {
+          groupMembers.filter(w => w !== groupOwner).map(
+            (m, index) => (
+              <MemberRowItem
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+                selectedMember={m}
+              />
+            ),
+          )}
+        {
+          newMembers.filter(w => w !== groupOwner).map(
+            (m, index) => (
+              <MemberRowItem
+                // eslint-disable-next-line react/no-array-index-key
+                key={index + 3}
+                selectedMember={m}
+              />
+            ),
+          )
+        }
+      </List>
+    );
+    if (groupMembers.length === 0 && newMembers.length === 0) {
       content = (<Message visible>There is currently no members except you.</Message>);
     }
     return content;
@@ -164,7 +182,7 @@ GroupsModal.propTypes = {
     name: PropTypes.string.isRequired,
     is_verified: PropTypes.bool.isRequired,
     owner: PropTypes.string.isRequired,
-    privilege_category: PropTypes.number.isRequired,
+    privilege_category: PropTypes.number,
     members: PropTypes.array.isRequired,
   }),
 };

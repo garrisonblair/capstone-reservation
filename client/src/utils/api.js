@@ -235,6 +235,19 @@ function createGroup(name, members) {
   });
 }
 
+function addMembersToGroup(id, members) {
+  const headers = getTokenHeader();
+  const data = {
+    members,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group/${id}/add_members`,
+    headers,
+    data,
+  });
+}
+
 const api = {
   register,
   login,
@@ -257,6 +270,7 @@ const api = {
   createPrivilege,
   getMyGroups,
   createGroup,
+  addMembersToGroup,
 };
 
 export default api;
