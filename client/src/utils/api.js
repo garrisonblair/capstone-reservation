@@ -211,22 +211,42 @@ function createPrivilege(data) {
   });
 }
 
-function getLogEntries(data) {
+function getLogEntries(params) {
   const headers = getTokenHeader();
-  let url = `${settings.API_ROOT}/logentries?`;
-  if (data) {
-    const keys = Object.keys(data);
-    const values = Object.values(data);
-    for (let i = 0; i < keys.length; i += 1) {
-      if (values[i] != null) { url = `${url}${keys[i]}=${values[i]}&`; }
-    }
-  }
-
+  // let url = `${settings.API_ROOT}/logentries?`;
+  // if (data) {
+  //   const keys = Object.keys(data);
+  //   const values = Object.values(data);
+  //   for (let i = 0; i < keys.length; i += 1) {
+  //     if (values[i] != null) { url = `${url}${keys[i]}=${values[i]}&`; }
+  //   }
+  // }
   return axios({
     method: 'GET',
-    url,
+    url: `${settings.API_ROOT}/logentries`,
     headers,
-    data,
+    params,
+    withCredentials: true,
+  });
+}
+
+function getContentTypes() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/content_types`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function getUsers(params) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/users`,
+    params,
+    headers,
     withCredentials: true,
   });
 }
@@ -252,6 +272,8 @@ const api = {
   getPrivileges,
   createPrivilege,
   getLogEntries,
+  getContentTypes,
+  getUsers,
 };
 
 export default api;

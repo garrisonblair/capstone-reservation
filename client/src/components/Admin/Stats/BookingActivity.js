@@ -13,6 +13,7 @@ import sweetAlert from 'sweetalert2';
 import 'react-dates/initialize';
 import { SingleDatePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
+import moment from 'moment';
 import api from '../../../utils/api';
 import BookingActivityModal from './BookingActivityModal';
 import '../Admin.scss';
@@ -62,10 +63,17 @@ class BookingActivity extends Component {
     selectedLog: null,
     focusedFrom: false,
     focusedTo: false,
+    contentTypes: [],
   }
 
   componentDidMount() {
     this.getLogs();
+    api.getContentTypes()
+      .then((response) => {
+        if (response.status === 200) {
+          this.setState({ contentTypes: response.data });
+        }
+      });
   }
 
   getLogs = (data) => {
@@ -130,6 +138,21 @@ class BookingActivity extends Component {
     this.setState({ [change.name]: change.value !== '' ? change.value : null });
   }
 
+  // handleContentTypeSearch = (e, change) => {
+  //   this.setState({ })
+  //   api.getLogEntries(data)
+  //     .then((response) => {
+  //       if (response.status === 200) {
+  //         console.log(response.data);
+  //         const logsToDisplay = this.setLogsToDisplay(response.data);
+  //         this.setState({ logs: response.data, logsToDisplay });
+  //       }
+  //     })
+  //     .catch(() => {
+  //       sweetAlert(':(', 'We are sorry. There was a problem getting the logs', 'error');
+  //     });
+  // }
+
   handleOnCloseBookingActivityModal = () => {
     this.setState({ showBookingActivityModal: false, selectedLog: null });
   }
@@ -144,8 +167,8 @@ class BookingActivity extends Component {
     } = this.state;
 
     const data = {
-      from,
-      to,
+      from: from == null ? null : `${moment(from).format('MM/DD/YYYY')} 00:00:00`,
+      to: to == null ? null : `${moment(to).format('MM/DD/YYYY')} 23:59:59`,
       content_type_id: contentTypeId,
       object_id: objectId,
       user_id: userId,
@@ -197,14 +220,25 @@ class BookingActivity extends Component {
       to,
       focusedFrom,
       focusedTo,
+      contentTypes,
     } = this.state;
     const totalPages = logsToDisplay.length;
+
+    const contentTypesOptions = [];
+    contentTypes.forEach((c) => {
+      let text = c.model.charAt(0).toUpperCase() + c.model.slice(1);
+      if (text === 'Recurringbooking') {
+        text = 'Recurring booking';
+      }
+      contentTypesOptions.push({ text, value: c.id });
+    });
 
     return (
       <div>
         <div>
           <SingleDatePicker
             isOutsideRange={() => false}
+            numberOfMonths={1}
             date={from}
             onDateChange={date => this.setState({ from: date })}
             focused={focusedFrom}
@@ -214,6 +248,7 @@ class BookingActivity extends Component {
           />
           <SingleDatePicker
             isOutsideRange={() => false}
+            numberOfMonths={1}
             date={to}
             onDateChange={date => this.setState({ to: date })}
             focused={focusedTo}
@@ -222,7 +257,7 @@ class BookingActivity extends Component {
             placeholder="To"
           />
         </div>
-        <Input placeholder="Type..." name="contentTypeId" onChange={this.handleSearchInput} />
+        <Dropdown placeholder="Type..." fluid search selection options={contentTypesOptions} name="contentTypeId" onChange={this.handleSearchInput} />
         <Input placeholder="Object ID..." name="objectId" onChange={this.handleSearchInput} />
         <Input placeholder="User..." name="userId" onChange={this.handleSearchInput} />
         <Button onClick={this.handleSearch}>Filter</Button>
