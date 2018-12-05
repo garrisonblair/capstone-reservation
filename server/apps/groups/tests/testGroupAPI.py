@@ -81,3 +81,15 @@ class RoomAPITest(TestCase):
         self.assertTrue(self.user.booker in group.members.all())
         self.assertEqual(group.owner, self.user.booker)
 
+    def testAddMember(self):
+        request = self.factory.post("/group/1/add_members",
+                                    {
+                                        "members": ["booker_2"]
+                                    }, format="json")
+        force_authenticate(request, user=self.user)
+        response = AddMembers.as_view()(request, 1)
+        group = Group.objects.get(id=1)
+        self.assertEqual(len(group.members.all()), 2)
+
+        self.assertTrue(self.booker_2 in group.members.all())
+
