@@ -37,9 +37,11 @@ class TestBookingPrivileges(TestCase):
 
         self.group = Group(name="Group 1",
                            is_verified=True,
-                           privilege_category=self.p_c_group)
+                           owner=self.booker,
+                           privilege_category=self.p_c_group
+                           )
         self.group.save()
-        self.group.bookers.add(self.booker)
+        self.group.members.add(self.booker)
         self.group.save()
 
         self.room = Room(name="H916-01")
@@ -73,7 +75,7 @@ class TestBookingPrivileges(TestCase):
                           room=self.room,
                           date=date_in_5_days,
                           start_time=time(8, 30, 0),
-                          end_time=time(22, 30, 0)
+                          end_time=time(22, 30, 0),
                           )
 
         try:
