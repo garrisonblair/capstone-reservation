@@ -93,3 +93,18 @@ class RoomAPITest(TestCase):
 
         self.assertTrue(self.booker_2 in group.members.all())
 
+    def testRemoveMember(self):
+        self.group1.members.add(self.booker_2)
+
+        self.group1.save()
+        request = self.factory.post("group/" + str(self.group1.id) + "/remove_members",
+                                    {
+                                    "members": ["booker_2"]
+                                    }, format="json")
+        force_authenticate(request, user=self.user)
+
+        response = RemoveMembers.as_view()(request, self.group1.id)
+        self.group1.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(len(self.group1.members.all()), 1)
+        self.assertTrue(self.booker_2 not in self.group1.members.all())
