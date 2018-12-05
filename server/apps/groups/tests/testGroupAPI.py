@@ -79,8 +79,6 @@ class RoomAPITest(TestCase):
 
         response = GroupCreate.as_view()(request)
 
-        print(response)
-
         group = Group.objects.get(name="The Group Name", owner=self.user.booker)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

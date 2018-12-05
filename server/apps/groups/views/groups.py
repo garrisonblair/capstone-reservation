@@ -46,6 +46,7 @@ class GroupCreate(APIView):
         try:
             group = serializer.save()
             group.members.add(owner)
+            group.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
@@ -72,8 +73,8 @@ class RemoveMembers(APIView):
         group = Group.objects.get(id=pk)
         if group.owner != request.user.booker:
             return Response("Can't modify this Group", status=status.HTTP_401_UNAUTHORIZED)
-        members_to_add = request.data["members"]
-        for member in members_to_add:
+            members_to_remove = request.data["members"]
+        for member in members_to_remove:
             if member != group.owner:
                 group.members.remove(member)
         group.save()
