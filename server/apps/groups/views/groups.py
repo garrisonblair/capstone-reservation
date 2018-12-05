@@ -73,7 +73,7 @@ class RemoveMembers(APIView):
         group = Group.objects.get(id=pk)
         if group.owner != request.user.booker:
             return Response("Can't modify this Group", status=status.HTTP_401_UNAUTHORIZED)
-            members_to_remove = request.data["members"]
+        members_to_remove = request.data["members"]
         for member in members_to_remove:
             if member != group.owner:
                 group.members.remove(member)
