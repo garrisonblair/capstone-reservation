@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Button, Icon, Table, TableBody } from 'semantic-ui-react';
+import {
+  Button, Icon, Table, TableBody,
+} from 'semantic-ui-react';
 import api from '../../utils/api';
 import GroupsRowItem from './GroupsRowItem';
 import GroupsModal from './GroupsModal';
@@ -9,30 +11,25 @@ import './Groups.scss';
 class Groups extends Component {
   state = {
     showModal: false,
-    groups: [
-      { id: 1, name: 'grpu1', members: [{ name: 'm1' }], admin:true },
-      { id: 2, name: 'grpu2', members: [{ name: 'm1' }], admin: false }
-    ],
+    groups: [],
+  }
+
+  componentDidMount() {
+    this.syncGroups();
   }
 
   syncGroups = () => {
-    // api.getMyGroups()
-    //   .then((r) => {
-    //     this.setState({ groups: r.data });
-    //   });
-    this.setState({
-      groups: [
-      { id: 1, name: 'grpu1', members: [{ name: 'm1' }], admin:true },
-      { id: 2, name: 'grpu2', members: [{ name: 'm1' }], admin: false }
-    ],});
-    console.log('sync')
+    api.getMyGroups()
+      .then((r) => {
+        this.setState({ groups: r.data });
+      });
   }
 
-  showGroupsModal = () =>{this.setState({showModal: true})}
+  showGroupsModal = () => { this.setState({ showModal: true }); }
 
-  closeGroupsModal = () =>{
+  closeGroupsModal = () => {
     this.syncGroups();
-    this.setState({showModal: false});
+    this.setState({ showModal: false });
   }
 
   render() {
@@ -54,16 +51,17 @@ class Groups extends Component {
           </Table.Header>
           <TableBody>
             {groups.map(
-              g =>
-                (<GroupsRowItem
+              g => (
+                <GroupsRowItem
                   key={g.id}
                   group={g}
-                  syncGroupsList = {this.syncGroups}
-                />)
+                  syncGroupsList={this.syncGroups}
+                />
+              ),
             )}
           </TableBody>
         </Table>
-        {showModal ? <GroupsModal show onClose = {this.closeGroupsModal} /> : ''}
+        {showModal ? <GroupsModal show onClose={this.closeGroupsModal} /> : ''}
       </div>
     );
   }

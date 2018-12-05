@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { Button, Table, Label } from 'semantic-ui-react';
-// import api from '../../utils/api';
+import api from '../../utils/api';
 import GroupsModal from './GroupsModal';
 // import sweetAlert from 'sweetalert2';
 
@@ -9,6 +9,15 @@ import GroupsModal from './GroupsModal';
 class GroupsRowItem extends Component {
   state = {
     openModal: false,
+    me: '',
+  }
+
+  componentDidMount() {
+    // eslint-disable-next-line react/destructuring-assignment
+    api.getMyUser()
+      .then((r) => {
+        this.setState({ me: r.data.id });
+      });
   }
 
   openModal = () => {
@@ -20,38 +29,39 @@ class GroupsRowItem extends Component {
     syncGroupsList();
     this.setState({ openModal: false });
   }
-  componentDidMount() {
-    console.log('mounted')
-  }
+
 
   render() {
     const { group, syncGroupsList } = this.props;
-    const { openModal } = this.state;
+    const { openModal, me } = this.state;
     return (
       <Table.Row key={group.id}>
         <Table.Cell>
           <h4>{group.name}</h4>
         </Table.Cell>
         <Table.Cell>
-          {group.admin ? <Label color='yellow'>ADMIN</Label> : <Label color='grey'>MEMBER</Label>}
-          </Table.Cell>
+          {group.owner === me ? <Label color="yellow">ADMIN</Label> : <Label color="grey">MEMBER</Label>}
+        </Table.Cell>
         <Table.Cell textAlign="center">
           <Button icon="edit" onClick={this.openModal} />
         </Table.Cell>
-        {openModal?<GroupsModal
-          show={true}
-          selectedGroup={group}
-          onClose={this.closeModal}
-          syncGroupsList={syncGroupsList}
-        />:''}
-
+        {openModal ? (
+          <GroupsModal
+            show
+            selectedGroup={group}
+            onClose={this.closeModal}
+            syncGroupsList={syncGroupsList}
+          />
+        ) : ''}
       </Table.Row>
     );
   }
 }
 
-// GroupsRowItem.propTypes = {
-
-// };
+GroupsRowItem.propTypes = {
+  syncGroupsList: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  group: PropTypes.object.isRequired,
+};
 
 export default GroupsRowItem;

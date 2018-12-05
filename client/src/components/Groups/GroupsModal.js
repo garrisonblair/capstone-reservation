@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, List, Message
+  Modal, Button, FormField, Input, List, Message,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import MemberRowItem from './MemberRowItem';
@@ -10,20 +10,29 @@ import './GroupsModal.scss';
 
 class GroupsModal extends Component {
   state = {
-    groupID: '',
+    // eslint-disable-next-line react/no-unused-state
+    groupId: '',
+    // eslint-disable-next-line react/no-unused-state
+    groupOwner: '',
     groupName: '',
     groupMembers: [],
     newMember: '',
   }
 
   componentDidMount() {
-    console.log('me')
     const { selectedGroup } = this.props;
     if (selectedGroup != null) {
       this.setState({
-        groupID: selectedGroup.id,
+        // eslint-disable-next-line react/no-unused-state
+        groupId: selectedGroup.id,
+        groupOwner: selectedGroup.owner,
         groupName: selectedGroup.name,
         groupMembers: selectedGroup.members,
+      });
+    } else {
+      this.setState({
+        groupMembers: ['27129312'],
+        groupOwner: '27129312',
       });
     }
   }
@@ -44,18 +53,29 @@ class GroupsModal extends Component {
 
 
   handleSubmit = () => {
+    const { groupName, groupMembers } = this.state;
+    const { onClose } = this.props;
     if (!this.verifyModalForm()) {
       return;
     }
-
+    api.createGroup(groupName, groupMembers)
+      .then((r) => {
+        if (r.status === 201) {
+          sweetAlert('Completed', 'A group was created.', 'success')
+            .then(() => {
+              onClose();
+            });
+        }
+      });
   }
 
   addMemberToList = () => {
-    let { groupMembers, newMember } = this.state;
+    const { groupMembers, newMember } = this.state;
     if (newMember.length < 1) {
       return;
     }
-    groupMembers.push({name:newMember});
+    console.log(newMember);
+    groupMembers.push(newMember);
     this.setState({
       groupMembers,
       newMember: '',
@@ -63,34 +83,37 @@ class GroupsModal extends Component {
   }
 
   handleAddMemberOnChange = (e) => {
-    this.setState({ newMember: e.target.value })
+    this.setState({ newMember: e.target.value });
   }
 
   renderMembersList = () => {
-    const { groupMembers } = this.state;
+    let { groupMembers } = this.state;
+    groupMembers = groupMembers.slice(1, groupMembers.length);
     let content = '';
     if (groupMembers.length !== 0) {
       content = (
-      <List divided>
-        {groupMembers.map(
-          (m, index) =>
-            (
-              <MemberRowItem
-                key={index}
-                selectedMember={m.name}
-              />
-            ))}
-      </List>
-      )
-    } else{
-      content = (<Message visible>There is currently no members.</Message>)
+        <List divided>
+          {
+            groupMembers.map(
+              (m, index) => (
+                <MemberRowItem
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={index}
+                  selectedMember={m}
+                />
+              ),
+            )}
+        </List>
+      );
+    } else {
+      content = (<Message visible>There is currently no members except you.</Message>);
     }
     return content;
   }
 
   render() {
     const { onClose, show, selectedGroup } = this.props;
-    const { groupName, newMember} = this.state;
+    const { groupName, newMember, groupOwner } = this.state;
     return (
       <Modal centered={false} size="tiny" open={show} id="group-modal" onClose={onClose}>
         <Modal.Header>
@@ -107,13 +130,17 @@ class GroupsModal extends Component {
                 readOnly={selectedGroup}
               />
             </FormField>
+            <h3>
+              Group Owner:
+              {groupOwner}
+            </h3>
             <h3>Members:</h3>
             <FormField>
               <Input
                 size="small"
-                action={<Button content='Add' onClick={this.addMemberToList} />}
+                action={<Button content="Add" onClick={this.addMemberToList} />}
                 onChange={this.handleAddMemberOnChange}
-                placeholder='Add members'
+                placeholder="Add members"
                 value={newMember}
               />
             </FormField>
@@ -128,6 +155,23 @@ class GroupsModal extends Component {
     );
   }
 }
+
+GroupsModal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  show: PropTypes.bool.isRequired,
+  selectedGroup: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    is_verified: PropTypes.bool.isRequired,
+    owner: PropTypes.string.isRequired,
+    privilege_category: PropTypes.number.isRequired,
+    members: PropTypes.array.isRequired,
+  }),
+};
+
+GroupsModal.defaultProps = {
+  selectedGroup: null,
+};
 
 
 export default GroupsModal;
