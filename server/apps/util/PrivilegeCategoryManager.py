@@ -43,7 +43,7 @@ class PrivilegeCategoryManager:
 
         booker.save()
 
-    def assign_all_booker_privileges(self):
+    def assign_all_booker_privileges(self, server=ldap_server):
         bookers = Booker.objects.all()
         for booker in bookers:
-            self.assign_booker_privileges(booker)
+            self.assign_booker_privileges(booker, server)
