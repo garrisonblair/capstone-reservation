@@ -176,6 +176,17 @@ class BookingActivity extends Component {
     this.getLogs(data);
   }
 
+  handleClear = () => {
+    this.setState({
+      from: null,
+      to: null,
+      contentTypeId: null,
+      objectId: null,
+      userId: null,
+    });
+    this.getLogs();
+  }
+
   renderLogs = () => {
     const { logsToDisplay, activePage } = this.state;
     return (
@@ -221,6 +232,9 @@ class BookingActivity extends Component {
       focusedFrom,
       focusedTo,
       contentTypes,
+      contentTypeId,
+      objectId,
+      userId,
     } = this.state;
     const totalPages = logsToDisplay.length;
 
@@ -257,10 +271,11 @@ class BookingActivity extends Component {
             placeholder="To"
           />
         </div>
-        <Dropdown placeholder="Type..." fluid search selection options={contentTypesOptions} name="contentTypeId" onChange={this.handleSearchInput} />
-        <Input placeholder="Object ID..." name="objectId" onChange={this.handleSearchInput} />
-        <Input placeholder="User..." name="userId" onChange={this.handleSearchInput} />
+        <Dropdown placeholder="Type..." fluid search selection options={contentTypesOptions} name="contentTypeId" value={contentTypeId == null ? '' : contentTypeId} onChange={this.handleSearchInput} />
+        <Input placeholder="Object ID..." name="objectId" value={objectId == null ? '' : objectId} onChange={this.handleSearchInput} />
+        <Input placeholder="User..." name="userId" value={userId == null ? '' : userId} onChange={this.handleSearchInput} />
         <Button onClick={this.handleSearch}>Filter</Button>
+        <Button onClick={this.handleClear}>Clear</Button>
         <Table sortable celled fixed selectable>
           <Table.Header>
             <Table.Row>
