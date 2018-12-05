@@ -4,9 +4,9 @@ from rest_framework import status
 from django.contrib.auth.models import User
 
 from apps.accounts.models.Booker import Booker
-from apps.groups.models.Group import Group, GroupCreate, AddMembers, RemoveMembers
+from apps.groups.models.Group import Group
 
-from ..views.groups import GroupList
+from ..views.groups import GroupList, GroupCreate, AddMembers, RemoveMembers
 
 
 class RoomAPITest(TestCase):
@@ -22,11 +22,11 @@ class RoomAPITest(TestCase):
         self.booker.user = self.user
         self.booker.save()
 
-        self.group1 = Group(name="Group1")
         self.booker_2 = Booker(booker_id="booker_2")
         self.booker_2.save()
 
         self.group1 = Group(name="Group1", owner=self.booker)
+        self.group1.save()
         self.group1.members.add(self.booker)
         self.group1.save()
 
