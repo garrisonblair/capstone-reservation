@@ -25,7 +25,7 @@ class PrivilegeCategoriesAssignSingle(APIView):
         manager = PrivilegeCategoryManager()
         manager.assign_booker_privileges(booker)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 class PrivilegeCategoriesAssignAll(APIView):
@@ -40,4 +40,4 @@ class PrivilegeCategoriesAssignAll(APIView):
         except Booker.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
