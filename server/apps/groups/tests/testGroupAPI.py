@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework import status
@@ -42,22 +44,87 @@ class RoomAPITest(TestCase):
 
         response = GroupList.as_view()(request)
         response_data = [
-            {
-                'members': ['j_lenn'],
-                'owner': 'j_lenn',
-                'id': 1,
-                'is_verified': False,
-                'name': 'Group1',
-                'privilege_category': None
-            },
-            {
-                'members': ['j_lenn'],
-                'owner': 'j_lenn',
-                'id': 2,
-                'is_verified': False,
-                'name': 'The Beatles',
-                'privilege_category': None
-            }
+            OrderedDict(
+                [
+                    ('id', 1),
+                    ('owner', OrderedDict(
+                        [
+                            ('booker_id', 'j_lenn'),
+                            ('user', OrderedDict(
+                                [
+                                    ('id', 1),
+                                    ('username', 'john'),
+                                    ('first_name', ''),
+                                    ('last_name', ''),
+                                    ('email', 'jlennon@beatles.com'),
+                                    ('is_superuser', False),
+                                    ('is_staff', False),
+                                    ('is_active', True)
+                                ])
+                             )
+                        ])
+                     ),
+                    ('members', [OrderedDict(
+                        [
+                            ('booker_id', 'j_lenn'),
+                            ('user', OrderedDict(
+                                [
+                                    ('id', 1),
+                                    ('username', 'john'),
+                                    ('first_name', ''),
+                                    ('last_name', ''),
+                                    ('email', 'jlennon@beatles.com'),
+                                    ('is_superuser', False),
+                                    ('is_staff', False),
+                                    ('is_active', True)
+                                ])
+                             )
+                        ])
+                    ]),
+                    ('name', 'Group1'),
+                    ('is_verified', False),
+                    ('privilege_category', None)]),
+            OrderedDict(
+                [
+                    ('id', 2),
+                    ('owner', OrderedDict(
+                        [
+                            ('booker_id', 'j_lenn'),
+                            ('user', OrderedDict(
+                                [
+                                    ('id', 1),
+                                    ('username', 'john'),
+                                    ('first_name', ''),
+                                    ('last_name', ''),
+                                    ('email', 'jlennon@beatles.com'),
+                                    ('is_superuser', False),
+                                    ('is_staff', False),
+                                    ('is_active', True)
+                                ])
+                             )
+                        ])
+                     ),
+                    ('members', [OrderedDict(
+                        [
+                            ('booker_id', 'j_lenn'),
+                            ('user', OrderedDict(
+                                [
+                                    ('id', 1),
+                                    ('username', 'john'),
+                                    ('first_name', ''),
+                                    ('last_name', ''),
+                                    ('email', 'jlennon@beatles.com'),
+                                    ('is_superuser', False),
+                                    ('is_staff', False),
+                                    ('is_active', True)
+                                ])
+                             )
+                        ])
+                    ]),
+                    ('name', 'The Beatles'),
+                    ('is_verified', False),
+                    ('privilege_category', None)]
+            )
         ]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -71,8 +138,7 @@ class RoomAPITest(TestCase):
     def testCreateGroups(self):
         request = self.factory.post("/group",
                                     {
-                                        "name": "The Group Name",
-                                        "owner": self.user.booker
+                                        "name": "The Group Name"
                                     }, format="json")
 
         force_authenticate(request, user=self.user)
@@ -92,7 +158,7 @@ class RoomAPITest(TestCase):
                                     }, format="json")
         force_authenticate(request, user=self.user)
 
-        response = AddMembers.as_view()(request, 1)
+        AddMembers.as_view()(request, 1)
 
         group = Group.objects.get(id=1)
 
@@ -105,7 +171,7 @@ class RoomAPITest(TestCase):
 
         request = self.factory.post("group/" + str(self.group1.id) + "/remove_members",
                                     {
-                                    "members": ["booker_2"]
+                                        "members": ["booker_2"]
                                     }, format="json")
 
         force_authenticate(request, user=self.user)
