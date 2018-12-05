@@ -68,16 +68,16 @@ class BookingActivityModal extends Component {
                   <td>{obj.id}</td>
                 </tr>
                 <tr>
-                  <th>Date</th>
-                  <td>{obj.date}</td>
+                  <th>{obj.date ? 'Date' : 'End Date'}</th>
+                  <td>{obj.date ? obj.date : obj.end_date}</td>
                 </tr>
                 <tr>
                   <th>Start Time</th>
-                  <td>{obj.start_time}</td>
+                  <td>{obj.start_time ? obj.start_time : obj.booking_start_time}</td>
                 </tr>
                 <tr>
                   <th>End Time</th>
-                  <td>{obj.end_time}</td>
+                  <td>{obj.end_time ? obj.end_time : obj.booking_end_time}</td>
                 </tr>
                 <tr>
                   <th>Room</th>

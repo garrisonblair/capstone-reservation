@@ -167,8 +167,8 @@ class BookingActivity extends Component {
     } = this.state;
 
     const data = {
-      from: from == null ? null : `${moment(from).format('MM/DD/YYYY')} 00:00:00`,
-      to: to == null ? null : `${moment(to).format('MM/DD/YYYY')} 23:59:59`,
+      from: from == null ? null : moment(from).format('DD-MM-YYYY 00:59:59'),
+      to: to == null ? null : moment(to).format('DD-MM-YYYY 23:59:59'),
       content_type_id: contentTypeId,
       object_id: objectId,
       user_id: userId,
