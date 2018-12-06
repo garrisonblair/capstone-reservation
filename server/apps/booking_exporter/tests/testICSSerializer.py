@@ -21,7 +21,7 @@ class testWebCalendarExporter(TestCase):
         booker = Booker(booker_id="s_loc")
         booker2 = Booker(booker_id="f_daigl")
 
-        booker.save()
+        booker2.save()
 
         self.booking = Booking(start_time=datetime.time(13, 0, 0),
                                end_time=datetime.time(14, 0, 0),
@@ -32,12 +32,13 @@ class testWebCalendarExporter(TestCase):
         self.booking.save()
 
         group = Group(name='Test Group',
-                      is_verified=True)
+                      is_verified=True,
+                      owner=booker)
 
         group.save()
 
-        group.bookers.set(booker.booker_id)
-        group.bookers.set(booker2.booker_id)
+        group.members.add(booker)
+        group.members.add(booker2)
 
         self.booking2 = Booking(start_time=datetime.time(14, 0, 0),
                                 end_time=datetime.time(15, 0, 0),

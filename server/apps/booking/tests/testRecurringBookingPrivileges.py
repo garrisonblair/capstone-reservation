@@ -35,9 +35,10 @@ class TestBookingPrivileges(TestCase):
 
         self.group = Group(name="Group 1",
                            is_verified=True,
+                           owner=self.booker,
                            privilege_category=self.p_c_group)
         self.group.save()
-        self.group.bookers.add(self.booker)
+        self.group.members.add(self.booker)
         self.group.save()
 
         self.room = Room(name="H916-01")

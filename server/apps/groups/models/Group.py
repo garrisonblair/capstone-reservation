@@ -7,9 +7,9 @@ from apps.util.AbstractBooker import AbstractBooker
 
 class Group(models.Model, AbstractBooker):
     name = models.CharField(max_length=50)
-    bookers = models.ManyToManyField(Booker)
+    members = models.ManyToManyField(Booker, blank=True, related_name="groups")
     is_verified = models.BooleanField(default=False)
-
+    owner = models.ForeignKey(Booker, on_delete=models.CASCADE, related_name="owned_groups")
     privilege_category = models.ForeignKey(PrivilegeCategory, blank=True, null=True, on_delete=models.SET_NULL)
 
     def get_privileges(self):
