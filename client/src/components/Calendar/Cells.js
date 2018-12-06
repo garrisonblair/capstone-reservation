@@ -66,13 +66,30 @@ class Cells extends Component {
     const bookingEnd = Cells.timeStringToInt(booking.end_time);
     const calendarStart = Cells.timeStringToInt(hoursSettings.start);
     let color = '#5a9ab2';
-    const currentDate = (new Date());
+    const currentDate = new Date();
     const currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`;
-    if (campOnsNumber > 0) {
-      color = '#77993b';
+
+    // Change booking color if it's passed
+    const bookingDate = booking.date.split('-');
+    let datePassed = false;
+    let sameDate = false;
+    if (parseInt(bookingDate[0], 10) < currentDate.getFullYear()) {
+      datePassed = true;
+    } else if (parseInt(bookingDate[0], 10) === currentDate.getFullYear()) {
+      if (parseInt(bookingDate[1], 10) < currentDate.getMonth() + 1) {
+        datePassed = true;
+      } else if (parseInt(bookingDate[1], 10) === currentDate.getMonth() + 1) {
+        if (parseInt(bookingDate[2], 10) < currentDate.getDate()) {
+          datePassed = true;
+        } else if (parseInt(bookingDate[2], 10) === currentDate.getDate()) {
+          sameDate = true;
+        }
+      }
     }
-    if (parseInt(booking.date.substring(8, 10), 10) !== (new Date()).getDate() || parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10)) {
+    if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10))) {
       color = 'rgb(114, 120, 126)';
+    } else if (campOnsNumber > 0) {
+      color = '#77993b';
     }
 
     // Find the rows in the grid the booking corresponds to.
