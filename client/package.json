@@ -49,6 +49,7 @@
     "mini-css-extract-plugin": "^0.4.3",
     "node-sass": "^4.9.3",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "react-dates": "^18.2.2",
     "react-test-renderer": "^16.5.2",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.0",

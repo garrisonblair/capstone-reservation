@@ -17,7 +17,7 @@ class FakeLDAP:
             'memberOf: soen490, DC=Concordia',
             'memberOf: soen311, DC=Concordia',
             'memberOf: comp248, DC=Concordia',
-            'memberOf: , DC=Concordia',
+            'memberOf: comp390, DC=Concordia',
         ]
     )
 

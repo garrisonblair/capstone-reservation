@@ -248,6 +248,38 @@ function addMembersToGroup(id, members) {
   });
 }
 
+function getLogEntries(params) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/logentries`,
+    headers,
+    params,
+    withCredentials: true,
+  });
+}
+
+function getContentTypes() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/content_types`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function getUsers(params) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/users`,
+    params,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -271,6 +303,9 @@ const api = {
   getMyGroups,
   createGroup,
   addMembersToGroup,
+  getLogEntries,
+  getContentTypes,
+  getUsers,
 };
 
 export default api;

@@ -29,7 +29,7 @@ PROJECT_APPS = [
     'apps.rooms.apps.RoomsConfig',
     'apps.booking.apps.BookingConfig',
     'apps.booking_exporter.apps.BookingExporterConfig',
-    'apps.system_settings.apps.SystemSettingConfig',
+    'apps.system_administration.apps.CalendarAdminConfig',
     'apps.groups.apps.GroupsConfig'
 ]
 
