@@ -67,8 +67,11 @@ class AddMembers(APIView):
         if group.owner != request.user.booker:
             return Response("Can't modify this Group", status=status.HTTP_401_UNAUTHORIZED)
         members_to_add = request.data["members"]
-        for member in members_to_add:
-            group.members.add(member)
+        for member_id in members_to_add:
+            if not group.members.filter(booker_id=member_id).exists():
+                group.members.add(member_id)
+            else:
+                print("Booker {} is already in group".format(member_id))
         group.save()
         return Response(WriteGroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
 
@@ -81,8 +84,13 @@ class RemoveMembers(APIView):
         if group.owner != request.user.booker:
             return Response("Can't modify this Group", status=status.HTTP_401_UNAUTHORIZED)
         members_to_remove = request.data["members"]
-        for member in members_to_remove:
-            if member != group.owner:
-                group.members.remove(member)
+        for member_id in members_to_remove:
+            if member_id == group.owner.booker_id:
+                print("Owner can not be removed from group")
+                continue
+            if group.members.filter(booker_id=member_id).exists():
+                group.members.remove(member_id)
+            else:
+                print("Booker {} is not in the group".format(member_id))
         group.save()
         return Response(WriteGroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
