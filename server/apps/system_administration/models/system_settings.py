@@ -10,7 +10,7 @@ class SystemSettings(models.Model):
     webcalendar_username = models.TextField()
     webcalendar_password = models.TextField()
 
-    tracker = FieldTracker()
+    # tracker = FieldTracker()
 
     @staticmethod
     def get_settings():
@@ -27,11 +27,11 @@ class SystemSettings(models.Model):
         this = super(SystemSettings, self).save(*args, **kwargs)
 
         # Check if Webcalendar exporter needs to be registered/unregistered.
-        if self.tracker.has_changed("is_webcalendar_backup_active"):
-            booking_exporter_config = apps.get_app_config("booking_exporter")
-            if self.is_webcalendar_backup_active:
-                booking_exporter_config.register_web_calender_exporter()
-            else:
-                booking_exporter_config.unregister_web_calendar_exporter()
+        # if self.tracker.has_changed("is_webcalendar_backup_active"):
+        #     booking_exporter_config = apps.get_app_config("booking_exporter")
+        #     if self.is_webcalendar_backup_active:
+        #         booking_exporter_config.register_web_calender_exporter()
+        #     else:
+        #         booking_exporter_config.unregister_web_calendar_exporter()
 
         return this
