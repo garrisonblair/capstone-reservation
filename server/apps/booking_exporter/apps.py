@@ -10,10 +10,15 @@ class BookingExporterConfig(AppConfig):
 
     def ready(self):
         from apps.system_administration.models.system_settings import SystemSettings
-        settings = SystemSettings.get_settings()
 
-        if settings.is_webcalendar_backup_active:
-            self.register_web_calender_exporter()
+        try:
+            settings = SystemSettings.get_settings()
+
+            if settings.is_webcalendar_backup_active:
+                self.register_web_calender_exporter()
+
+        except Exception:  # Fails during migrations
+            pass
 
     def register_web_calender_exporter(self):
         from .WEBCalendarExporter.WEBCalendarExporter import WEBCalendarExporter
