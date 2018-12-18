@@ -30,7 +30,7 @@ class SystemSettings(models.Model):
         if self.tracker.has_changed("is_webcalendar_backup_active"):
             booking_exporter_config = apps.get_app_config("booking_exporter")
             if self.is_webcalendar_backup_active:
-                booking_exporter_config.register_web_calendar_exporter
+                booking_exporter_config.register_web_calender_exporter()
             else:
                 booking_exporter_config.unregister_web_calendar_exporter()
 
