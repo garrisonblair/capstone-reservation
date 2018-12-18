@@ -77,4 +77,4 @@ class TestLogEntryAPI(TestCase):
         response = LogEntryView.as_view()(request)
 
         for log_entry in response.data:
-            self.assertEqual(log_entry["user"], 3)
+            self.assertEqual(log_entry["user"]["id"], 3)
