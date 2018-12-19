@@ -69,6 +69,7 @@ class TestAssignPrivileges(TestCase):
         self.assertEqual(self.booker1.privilege_categories.count(), 1)
         self.assertEqual(self.booker1.privilege_categories.all()[0], self.category1)
         self.assertEqual(self.booker2.privilege_categories.count(), 0)
+        self.assertEqual(response.data, [66666666])
 
     def testAssignPrivilegesWrongCategory(self):
         body = {
