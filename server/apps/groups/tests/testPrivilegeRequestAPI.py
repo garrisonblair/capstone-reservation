@@ -115,6 +115,24 @@ class PrivilegeRequestTest(TestCase):
 
         self.assertEqual(db_privilege_request.status, PrivilegeRequest.AP)
 
+    def testApprovePrivilegeRequestUnauthorized(self):
+        privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
+        with mock_datetime(datetime.datetime(2018, 1, 1, 12, 30, 0, 0), datetime):
+            privilege_request.save()
+
+        request = self.factory.post("/approve_privilege_request",
+                                    {
+                                        "privilege_request": privilege_request.id
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = ApprovePrivilegeRequest.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(len(mail.outbox), 0)
+
     def testDenyPrivilegeRequest(self):
         privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
         with mock_datetime(datetime.datetime(2018, 1, 1, 12, 30, 0, 0), datetime):
@@ -146,3 +164,22 @@ class PrivilegeRequestTest(TestCase):
         db_privilege_request = PrivilegeRequest.objects.get(id=privilege_request.id)
 
         self.assertEqual(db_privilege_request.status, PrivilegeRequest.DE)
+
+    def testDenyPrivilegeRequestUnauthorized(self):
+        privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
+        with mock_datetime(datetime.datetime(2018, 1, 1, 12, 30, 0, 0), datetime):
+            privilege_request.save()
+
+        request = self.factory.post("/deny_privilege_request",
+                                    {
+                                        "privilege_request": privilege_request.id,
+                                        "denial_reason": "Test Reason"
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = DenyPrivilegeRequest.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(len(mail.outbox), 0)
