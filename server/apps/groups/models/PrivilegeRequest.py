@@ -8,7 +8,7 @@ from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 class PrivilegeRequest(models.Model):
     group = models.ForeignKey(Group, null=True, on_delete=models.CASCADE)
     privilege_category = models.ForeignKey(PrivilegeCategory, null=True, on_delete=models.CASCADE)
-    submission_date = models.DateField()
+    submission_date = models.DateField(null=True, blank=True)
 
     PE = 'Pending'
     DE = 'Denied'
