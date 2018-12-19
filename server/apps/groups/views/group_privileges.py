@@ -1,6 +1,9 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -58,7 +61,7 @@ class PrivilegeRequestCreate(APIView):
 
 
 class PrivilegeRequestsList(ListAPIView):
-    permission_classes = (IsAuthenticated, IsAdminUser)
+    permission_classes = (IsAuthenticated, IsSuperUser)
     serializer_class = ReadPrivilegeRequestSerializer
     queryset = PrivilegeRequest.objects.all()
 
@@ -74,3 +77,39 @@ class PrivilegeRequestsList(ListAPIView):
             qs = qs.filter(status=PrivilegeRequest.AP)
 
         return qs
+
+
+class ApprovePrivilegeRequest(APIView):
+    permission_classes = (IsAuthenticated, IsSuperUser)
+
+    def post(self, request):
+        data = dict(request.data)
+        pk = data['privilege_request']
+        try:
+            privilege_request = PrivilegeRequest.objects.get(id=pk)
+        except PrivilegeRequest.DoesNotExist:
+            return Response("Privilege Request does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        group = privilege_request.group
+        category = privilege_request.privilege_category
+        group.privilege_category = category
+        group.save()
+        privilege_request.status = PrivilegeRequest.AP
+        privilege_request.save()
+
+        subject = "Group Booking Privilege Request Approval"
+        message = "Your request for group privileges has been approved." \
+                  "" \
+                  "Group: {}" \
+                  "Privilege Category: {}" \
+                  "" \
+                  "You can view your booking privileges on your account"
+
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [group.owner.user.email]
+        )
+
+        return Response("Request Approved", status=status.HTTP_200_OK)
