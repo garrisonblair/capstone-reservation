@@ -9,5 +9,6 @@ urlpatterns = [
     path(r'group', GroupCreate.as_view()),
     path(r'groups', GroupList.as_view()),
     path(r'privilege_requests', PrivilegeRequestList.as_view()),
+    path(r'privilege_requests/<str:status>', PrivilegeRequestList.as_view()),
     path(r'request_privilege', PrivilegeRequestCreate.as_view())
 ]

@@ -19,10 +19,16 @@ class PrivilegeRequestList(ListAPIView):
     def get_queryset(self):
         qs = super(PrivilegeRequestList, self).get_queryset()
         try:
-            owned_groups = self.request.user.booker.owned_groups
-            qs = qs.filter(group_in=owned_groups)
+            owner = Booker.objects.get(booker_id=self.request.user.booker)
+            owned_groups = owner.owned_groups.all()
+            qs = qs.filter(group__in=owned_groups)
         except Booker.DoesNotExist:
             pass
+
+        request_status = self.request.GET.get('status')
+        print(request_status)
+        if request_status is not None:
+            qs = qs.filter(status=request_status)
 
         return qs
 
