@@ -11,7 +11,7 @@ from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.models.Booker import Booker
 from apps.util.mock_datetime import mock_datetime
-from apps.groups.views.group_privileges import ApprovePrivilegeRequest, PrivilegeRequestCreate
+from apps.groups.views.group_privileges import ApprovePrivilegeRequest, PrivilegeRequestCreate, DenyPrivilegeRequest
 
 
 class PrivilegeRequestTest(TestCase):
@@ -71,15 +71,13 @@ class PrivilegeRequestTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(PrivilegeRequest.objects.count(), 0)
 
-    def testPrivilegeRequestCreate(self):
+    def testPrivilegeRequestCreateUnauthorized(self):
         request = self.factory.post("/request_privilege",
                                     {
                                         "group": self.group.id,
                                         "privilege_category": self.category.id
                                     },
                                     format="json")
-
-        # force_authenticate(request, user=User.objects.get(username="john"))
 
         response = PrivilegeRequestCreate.as_view()(request)
 
@@ -105,6 +103,46 @@ class PrivilegeRequestTest(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, "Group Booking Privilege Request Approval")
 
+        body = "Your request for group privileges has been approved.\n" \
+                  "\n" \
+                  "Group: Queen\n" \
+                  "Privilege Category: Category\n" \
+                  "\n" \
+                  "You can view your booking privileges on your account"
+        self.assertEqual(mail.outbox[0].body, body)
+
         db_privilege_request = PrivilegeRequest.objects.get(id=privilege_request.id)
 
         self.assertEqual(db_privilege_request.status, PrivilegeRequest.AP)
+
+    def testDenyPrivilegeRequest(self):
+        privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
+        with mock_datetime(datetime.datetime(2018, 1, 1, 12, 30, 0, 0), datetime):
+            privilege_request.save()
+
+        request = self.factory.post("/deny_privilege_request",
+                                    {
+                                        "privilege_request": privilege_request.id,
+                                        "denial_reason": "Test Reason"
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="admin"))
+
+        response = DenyPrivilegeRequest.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, "Group Booking Privilege Request Denied")
+
+        body = "Your request for group privileges has been denied.\n" \
+                  "\n" \
+                  "Group: Queen\n" \
+                  "Privilege Category: Category\n" \
+                  "\n" \
+                  "Reason Provided: Test Reason"
+        self.assertEqual(mail.outbox[0].body, body)
+
+        db_privilege_request = PrivilegeRequest.objects.get(id=privilege_request.id)
+
+        self.assertEqual(db_privilege_request.status, PrivilegeRequest.DE)

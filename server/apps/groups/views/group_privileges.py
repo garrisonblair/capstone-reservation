@@ -98,12 +98,12 @@ class ApprovePrivilegeRequest(APIView):
         privilege_request.save()
 
         subject = "Group Booking Privilege Request Approval"
-        message = "Your request for group privileges has been approved." \
-                  "" \
-                  "Group: {}" \
-                  "Privilege Category: {}" \
-                  "" \
-                  "You can view your booking privileges on your account"
+        message = "Your request for group privileges has been approved.\n" \
+                  "\n" \
+                  "Group: {}\n" \
+                  "Privilege Category: {}\n" \
+                  "\n" \
+                  "You can view your booking privileges on your account".format(group.name, category.name)
 
         send_mail(
             subject,
@@ -113,3 +113,40 @@ class ApprovePrivilegeRequest(APIView):
         )
 
         return Response("Request Approved", status=status.HTTP_200_OK)
+
+
+class DenyPrivilegeRequest(APIView):
+    permission_classes = (IsAuthenticated, IsSuperUser)
+
+    def post(self, request):
+        data = dict(request.data)
+        pk = data['privilege_request']
+        try:
+            privilege_request = PrivilegeRequest.objects.get(id=pk)
+        except PrivilegeRequest.DoesNotExist:
+            return Response("Privilege Request does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        group = privilege_request.group
+        category = privilege_request.privilege_category
+        privilege_request.status = PrivilegeRequest.DE
+        privilege_request.save()
+
+        denial_reason = data['denial_reason']
+
+        subject = "Group Booking Privilege Request Denied"
+        message = "Your request for group privileges has been denied.\n" \
+                  "\n" \
+                  "Group: {}\n" \
+                  "Privilege Category: {}\n" \
+                  "\n" \
+                  "Reason Provided: {}".format(group.name, category.name, denial_reason)
+
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [group.owner.user.email]
+        )
+
+        return Response("Request Denied", status=status.HTTP_200_OK)
+

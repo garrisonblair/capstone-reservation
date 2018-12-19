@@ -1,7 +1,7 @@
 from django.urls import path
 from .views.groups import GroupList, AddMembers, GroupCreate, RemoveMembers
 from .views.group_privileges import PrivilegeRequestList, PrivilegeRequestCreate
-from .views.group_privileges import PrivilegeRequestsList, ApprovePrivilegeRequest
+from .views.group_privileges import PrivilegeRequestsList, ApprovePrivilegeRequest, DenyPrivilegeRequest
 
 
 urlpatterns = [
@@ -14,5 +14,6 @@ urlpatterns = [
     path(r'request_privilege', PrivilegeRequestCreate.as_view()),
     path(r'privilege_requests', PrivilegeRequestsList.as_view()),
     path(r'privilege_requests/<str:status>', PrivilegeRequestsList.as_view()),
-    path(r'approve_privilege_request', ApprovePrivilegeRequest.as_view())
+    path(r'approve_privilege_request', ApprovePrivilegeRequest.as_view()),
+    path(r'deny_privilege_request', DenyPrivilegeRequest.as_view())
 ]
