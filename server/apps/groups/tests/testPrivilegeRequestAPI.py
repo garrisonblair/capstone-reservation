@@ -11,7 +11,7 @@ from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.models.Booker import Booker
 from apps.util.mock_datetime import mock_datetime
-from apps.groups.views.group_privileges import ApprovePrivilegeRequest
+from apps.groups.views.group_privileges import ApprovePrivilegeRequest, PrivilegeRequestCreate
 
 
 class PrivilegeRequestTest(TestCase):
@@ -40,6 +40,51 @@ class PrivilegeRequestTest(TestCase):
                                               password='admin')
         self.admin.is_superuser = True
         self.admin.save()
+
+    def testPrivilegeRequestCreate(self):
+        request = self.factory.post("/request_privilege",
+                                    {
+                                        "group": self.group.id,
+                                        "privilege_category": self.category.id
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = PrivilegeRequestCreate.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(PrivilegeRequest.objects.count(), 1)
+
+    def testPrivilegeRequestCreateFailure(self):
+        request = self.factory.post("/request_privilege",
+                                    {
+                                        "group": 7,
+                                        "privilege_category": self.category.id
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = PrivilegeRequestCreate.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(PrivilegeRequest.objects.count(), 0)
+
+    def testPrivilegeRequestCreate(self):
+        request = self.factory.post("/request_privilege",
+                                    {
+                                        "group": self.group.id,
+                                        "privilege_category": self.category.id
+                                    },
+                                    format="json")
+
+        # force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = PrivilegeRequestCreate.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(PrivilegeRequest.objects.count(), 0)
 
     def testApprovePrivilegeRequest(self):
         privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
