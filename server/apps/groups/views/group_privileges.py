@@ -149,4 +149,3 @@ class DenyPrivilegeRequest(APIView):
         )
 
         return Response("Request Denied", status=status.HTTP_200_OK)
-

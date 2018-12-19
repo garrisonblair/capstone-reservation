@@ -104,11 +104,11 @@ class PrivilegeRequestTest(TestCase):
         self.assertEqual(mail.outbox[0].subject, "Group Booking Privilege Request Approval")
 
         body = "Your request for group privileges has been approved.\n" \
-                  "\n" \
-                  "Group: Queen\n" \
-                  "Privilege Category: Category\n" \
-                  "\n" \
-                  "You can view your booking privileges on your account"
+               "\n" \
+               "Group: Queen\n" \
+               "Privilege Category: Category\n" \
+               "\n" \
+               "You can view your booking privileges on your account"
         self.assertEqual(mail.outbox[0].body, body)
 
         db_privilege_request = PrivilegeRequest.objects.get(id=privilege_request.id)
@@ -154,11 +154,11 @@ class PrivilegeRequestTest(TestCase):
         self.assertEqual(mail.outbox[0].subject, "Group Booking Privilege Request Denied")
 
         body = "Your request for group privileges has been denied.\n" \
-                  "\n" \
-                  "Group: Queen\n" \
-                  "Privilege Category: Category\n" \
-                  "\n" \
-                  "Reason Provided: Test Reason"
+               "\n" \
+               "Group: Queen\n" \
+               "Privilege Category: Category\n" \
+               "\n" \
+               "Reason Provided: Test Reason"
         self.assertEqual(mail.outbox[0].body, body)
 
         db_privilege_request = PrivilegeRequest.objects.get(id=privilege_request.id)
