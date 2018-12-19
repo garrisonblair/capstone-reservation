@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -26,15 +26,19 @@ class PrivilegeRequestList(ListAPIView):
             pass
 
         request_status = self.request.GET.get('status')
-        print(request_status)
-        if request_status is not None:
-            qs = qs.filter(status=request_status)
+        if request_status == PrivilegeRequest.PE:
+            qs = qs.filter(status=PrivilegeRequest.PE)
+        elif request_status == PrivilegeRequest.DE:
+            qs = qs.filter(status=PrivilegeRequest.DE)
+        elif request_status == PrivilegeRequest.AP:
+            qs = qs.filter(status=PrivilegeRequest.AP)
 
         return qs
 
 
 class PrivilegeRequestCreate(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
+    serializer_class = ReadPrivilegeRequestSerializer
 
     def post(self, request):
         data = dict(request.data)
@@ -51,3 +55,22 @@ class PrivilegeRequestCreate(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PrivilegeRequestsList(ListAPIView):
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    serializer_class = ReadPrivilegeRequestSerializer
+    queryset = PrivilegeRequest.objects.all()
+
+    def get_queryset(self):
+        qs = super(PrivilegeRequestsList, self).get_queryset()
+
+        request_status = self.request.GET.get('status')
+        if request_status == PrivilegeRequest.PE:
+            qs = qs.filter(status=PrivilegeRequest.PE)
+        elif request_status == PrivilegeRequest.DE:
+            qs = qs.filter(status=PrivilegeRequest.DE)
+        elif request_status == PrivilegeRequest.AP:
+            qs = qs.filter(status=PrivilegeRequest.AP)
+
+        return qs
