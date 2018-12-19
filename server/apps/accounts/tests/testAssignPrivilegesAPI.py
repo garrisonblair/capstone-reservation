@@ -10,7 +10,7 @@ from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.views.assign_privileges import PrivilegeCategoriesAssignManual
 
 
-class TestAssignPrivileges(TestCase):
+class AssignPrivilegesTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
 
