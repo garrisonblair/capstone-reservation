@@ -2,15 +2,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import permission_classes
 
 from ..models.Booker import Booker
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
-class PrivilegeCategoriesAssignSingle(APIView):
+class PrivilegeCategoriesAssignSingleAutomatic(APIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
 
     def patch(self, request, pk):
@@ -28,7 +28,7 @@ class PrivilegeCategoriesAssignSingle(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class PrivilegeCategoriesAssignAll(APIView):
+class PrivilegeCategoriesAssignAllAutomatic(APIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
 
     def patch(self, request):
@@ -39,5 +39,31 @@ class PrivilegeCategoriesAssignAll(APIView):
             manager.assign_all_booker_privileges()
         except Booker.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class PrivilegeCategoriesAssignManual(APIView):
+    permission_classes = (IsAuthenticated, IsSuperUser)
+
+    def patch(self, request):
+
+        data = request.data
+        booker_ids = data['bookers']
+        category_id = data['privilege_category']
+
+        try:
+            privilege_category = PrivilegeCategory.objects.get(id=category_id)
+        except PrivilegeCategory.DoesNotExist:
+            return Response("Privilege category does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        booker_qs = Booker.objects.all()
+
+        for booker_id in booker_ids:
+            try:
+                booker = booker_qs.get(booker_id=booker_id)
+                booker.privilege_categories.add(privilege_category)
+            except Booker.DoesNotExist:
+                print("Booker with id: {} does not exist.".format(booker_id))
 
         return Response(status=status.HTTP_200_OK)
