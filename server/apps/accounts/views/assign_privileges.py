@@ -49,7 +49,7 @@ class PrivilegeCategoriesAssignManual(APIView):
     def patch(self, request):
 
         data = request.data
-        booker_ids = data['bookers']
+        user_ids = data['users']
         category_id = data['privilege_category']
 
         try:
@@ -60,11 +60,11 @@ class PrivilegeCategoriesAssignManual(APIView):
         booker_qs = Booker.objects.all()
         ids_do_not_exist = list()
 
-        for booker_id in booker_ids:
+        for user_id in user_ids:
             try:
-                booker = booker_qs.get(booker_id=booker_id)
+                booker = booker_qs.get(user__username=user_id)
                 booker.privilege_categories.add(privilege_category)
             except Booker.DoesNotExist:
-                ids_do_not_exist.append(booker_id)
+                ids_do_not_exist.append(user_id)
 
         return Response(ids_do_not_exist, status=status.HTTP_200_OK)
