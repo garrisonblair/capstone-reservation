@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, List, Message,
+  Modal, Button, FormField, Input, List, Message, Dropdown,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import MemberRowItem from './MemberRowItem';
@@ -16,10 +16,12 @@ class GroupsModal extends Component {
     groupMembers: [],
     newMembers: [],
     newMember: '',
+    stateOptions: [],
   }
 
   componentDidMount() {
     const { selectedGroup } = this.props;
+    const newStateOptions = [];
     if (selectedGroup !== null) {
       this.setState({
         groupId: selectedGroup.id,
@@ -28,10 +30,19 @@ class GroupsModal extends Component {
         groupMembers: selectedGroup.members,
       });
     } else {
-      this.setState({
-        newMembers: ['27129312'],
-        groupOwner: '27129312',
-      });
+      api.getMyUser()
+        .then((r) => {
+          this.setState({ groupOwner: r.data.username });
+          // get all users and add them to the dropbox
+          api.getUsers()
+            .then((r2) => {
+              r2.data.filter(u => u.id !== r.data.id && u.is_superuser === false)
+                .map(u => newStateOptions.push({
+                  key: u.username, value: u.username, text: u.username,
+                }));
+              this.setState({ stateOptions: newStateOptions });
+            });
+        });
     }
   }
 
@@ -48,7 +59,6 @@ class GroupsModal extends Component {
   handleNameOnChange = (event) => {
     this.setState({ groupName: event.target.value });
   }
-
 
   handleSubmit = () => {
     const { groupName, newMembers, groupId } = this.state;
@@ -91,8 +101,8 @@ class GroupsModal extends Component {
     });
   }
 
-  handleAddMemberOnChange = (e) => {
-    this.setState({ newMember: e.target.value });
+  handleDropboxChange = (e, { value }) => {
+    this.setState({ newMember: value });
   }
 
   renderMembersList = () => {
@@ -123,6 +133,7 @@ class GroupsModal extends Component {
         }
       </List>
     );
+
     if (groupMembers.length === 0 && newMembers.length === 0) {
       content = (<Message visible>There is currently no members except you.</Message>);
     }
@@ -131,7 +142,10 @@ class GroupsModal extends Component {
 
   render() {
     const { onClose, show, selectedGroup } = this.props;
-    const { groupName, newMember, groupOwner } = this.state;
+    const {
+      // eslint-disable-next-line no-unused-vars
+      groupName, newMember, groupOwner, stateOptions,
+    } = this.state;
     return (
       <Modal centered={false} size="tiny" open={show} id="group-modal" onClose={onClose}>
         <Modal.Header>
@@ -154,13 +168,14 @@ class GroupsModal extends Component {
             </h3>
             <h3>Members:</h3>
             <FormField>
-              <Input
-                size="small"
-                action={<Button content="Add" onClick={this.addMemberToList} />}
-                onChange={this.handleAddMemberOnChange}
-                placeholder="Add members"
-                value={newMember}
+              <Dropdown
+                placeholder="New member"
+                search
+                selection
+                options={stateOptions}
+                onChange={this.handleDropboxChange}
               />
+              <Button onClick={this.addMemberToList}>Add member</Button>
             </FormField>
             {this.renderMembersList()}
             <br />

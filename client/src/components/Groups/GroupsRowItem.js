@@ -8,13 +8,17 @@ import GroupsModal from './GroupsModal';
 class GroupsRowItem extends Component {
   state = {
     openModal: false,
-    me: '',
+    myId: '',
+    showPrivilege: false,
   }
 
   componentDidMount() {
     api.getMyUser()
       .then((r) => {
-        this.setState({ me: r.data.id });
+        this.setState({
+          myId: r.data.id,
+          showPrivilege: true,
+        });
       });
   }
 
@@ -28,29 +32,38 @@ class GroupsRowItem extends Component {
     this.setState({ openModal: false });
   }
 
+  renderPrivilege = () => {
+    const { group } = this.props;
+    const { myId } = this.state;
+    let label = <Label color="grey">MEMBER</Label>;
+    if (myId === group.owner.user.id) {
+      label = <Label color="yellow">ADMIN</Label>;
+    }
+    return label;
+  }
 
   render() {
     const { group, syncGroupsList } = this.props;
-    const { openModal, me } = this.state;
+    const { openModal, showPrivilege } = this.state;
     return (
       <Table.Row key={group.id}>
         <Table.Cell>
           <h4>{group.name}</h4>
         </Table.Cell>
         <Table.Cell>
-          {group.owner === me ? <Label color="yellow">ADMIN</Label> : <Label color="grey">MEMBER</Label>}
+          {showPrivilege === true ? this.renderPrivilege() : ''}
         </Table.Cell>
         <Table.Cell textAlign="center">
           <Button icon="edit" onClick={this.openModal} />
+          {openModal ? (
+            <GroupsModal
+              show
+              selectedGroup={group}
+              onClose={this.closeModal}
+              syncGroupsList={syncGroupsList}
+            />
+          ) : ''}
         </Table.Cell>
-        {openModal ? (
-          <GroupsModal
-            show
-            selectedGroup={group}
-            onClose={this.closeModal}
-            syncGroupsList={syncGroupsList}
-          />
-        ) : ''}
       </Table.Row>
     );
   }
@@ -62,7 +75,7 @@ GroupsRowItem.propTypes = {
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     is_verified: PropTypes.bool.isRequired,
-    owner: PropTypes.string.isRequired,
+    owner: PropTypes.object.isRequired,
     privilege_category: PropTypes.number,
     members: PropTypes.array.isRequired,
   }).isRequired,
