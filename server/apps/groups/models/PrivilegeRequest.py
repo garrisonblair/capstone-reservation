@@ -27,4 +27,5 @@ class PrivilegeRequest(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.submission_date = datetime.datetime.now().date()
+            self.status = PrivilegeRequest.PE
         return super(PrivilegeRequest, self).save(*args, **kwargs)
