@@ -46,6 +46,11 @@ class PrivilegeRequestCreate(APIView):
     def post(self, request):
         data = dict(request.data)
 
+        group_id = data["group"]
+
+        if not request.user.booker.owned_groups.filter(id=group_id).exists():
+            return Response("User does not own this group", status=status.HTTP_400_BAD_REQUEST)
+
         serializer = ReadPrivilegeRequestSerializer(data=data)
 
         if not serializer.is_valid():
