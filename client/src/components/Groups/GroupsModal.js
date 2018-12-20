@@ -14,6 +14,7 @@ class GroupsModal extends Component {
     groupOwner: '',
     groupName: '',
     groupMembers: [],
+    cleanGroupMembers: [],
     newMembers: [],
     deletedMembers: [],
     newMember: '',
@@ -32,14 +33,16 @@ class GroupsModal extends Component {
         groupOwner: selectedGroup.owner.user.username,
         groupName: selectedGroup.name,
         groupMembers: tempGroupMembers,
+        cleanGroupMembers: tempGroupMembers,
       });
     } else {
       api.getMyUser()
         .then((r) => {
           this.setState({ groupOwner: r.data.username });
-          // get all users and add them to the dropbox
         });
     }
+
+    // get all users and add them to the dropbox
     api.getUsers()
       .then((r2) => {
         r2.data.filter(u => u.is_superuser === false)
@@ -64,10 +67,67 @@ class GroupsModal extends Component {
     this.setState({ groupName: event.target.value });
   }
 
+  addMemberToList = () => {
+    const {
+      newMember, newMembers, groupOwner, groupMembers, cleanGroupMembers, deletedMembers,
+    } = this.state;
+    if (newMember.length < 1) {
+      return;
+    }
+    if (newMember === groupOwner) {
+      sweetAlert('Info', 'Cannot add yourself. You are already part of the group.', 'warning');
+      return;
+    }
+    if (groupMembers.includes(newMember) || newMembers.includes(newMember)) {
+      sweetAlert('Info', `${newMember} already exists in the list.`, 'warning');
+      return;
+    }
+    if (cleanGroupMembers.includes(newMember) && deletedMembers.includes(newMember)) {
+      this.setState({
+        deletedMembers: deletedMembers.filter(m => m !== newMember),
+        groupMembers: groupMembers.concat([newMember]),
+      });
+    } else {
+      newMembers.push(newMember);
+      this.setState({
+        newMembers,
+        newMember: '',
+      });
+    }
+  }
+
+  handleDropboxChange = (e, { value }) => {
+    this.setState({ newMember: value });
+  }
+
+  deleteFunction = (member) => {
+    const { groupMembers, newMembers, deletedMembers } = this.state;
+
+    if (groupMembers.includes(member)) {
+      this.setState({
+        groupMembers: groupMembers.filter(m => m !== member),
+        deletedMembers: deletedMembers.concat([member]),
+      });
+    } else if (newMembers.includes(member)) {
+      this.setState({ newMembers: newMembers.filter(m => m !== member) });
+    }
+  }
+
   handleSubmit = () => {
-    const { groupName, newMembers, groupId } = this.state;
+    const {
+      groupName, newMembers, groupId, deletedMembers, groupMembers,
+    } = this.state;
     const { onClose } = this.props;
     if (!this.verifyModalForm()) {
+      return;
+    }
+    console.log('groupmembers:');
+    console.log(groupMembers);
+    console.log('newmembers:');
+    console.log(newMembers);
+    console.log('deletedmembers:');
+    console.log(deletedMembers);
+    if (true) {
       return;
     }
     if (groupId === '') {
@@ -93,51 +153,10 @@ class GroupsModal extends Component {
     }
   }
 
-  addMemberToList = () => {
-    const {
-      newMember, newMembers, groupOwner, groupMembers,
-    } = this.state;
-    if (newMember.length < 1) {
-      return;
-    }
-    if (newMember === groupOwner) {
-      sweetAlert('Info', 'Cannot add yourself. You are already part of the group.', 'warning');
-      return;
-    }
-
-    if (groupMembers.includes(newMember) || newMembers.includes(newMember)) {
-      sweetAlert('Info', `${newMember} already exists in the list.`, 'warning');
-      return;
-    }
-
-    newMembers.push(newMember);
-    this.setState({
-      newMembers,
-      newMember: '',
-    });
-  }
-
-  handleDropboxChange = (e, { value }) => {
-    this.setState({ newMember: value });
-  }
-
-  deleteFunction = (member) => {
-    const { groupMembers, newMembers, deletedMembers } = this.state;
-
-    if (groupMembers.includes(member)) {
-      deletedMembers.push(member);
-      this.setState({
-        groupMembers: groupMembers.filter(m => m !== member),
-        deletedMembers,
-      });
-    } else if (newMembers.includes(member)) {
-      this.setState({ newMembers: newMembers.filter(m => m !== member) });
-    }
-  }
-
   renderMembersList = () => {
     const { groupMembers, newMembers, groupOwner } = this.state;
     const list = groupMembers.concat(newMembers);
+
     let content = (
       <List divided>
         {
@@ -163,7 +182,7 @@ class GroupsModal extends Component {
   render() {
     const { onClose, show, selectedGroup } = this.props;
     const {
-      groupName, groupOwner, stateOptions,
+      groupName, groupOwner, stateOptions, newMember,
     } = this.state;
     return (
       <Modal centered={false} size="tiny" open={show} id="group-modal" onClose={onClose}>
@@ -193,6 +212,7 @@ class GroupsModal extends Component {
                 selection
                 options={stateOptions}
                 onChange={this.handleDropboxChange}
+                value={newMember}
               />
               <Button onClick={this.addMemberToList}>Add member</Button>
             </FormField>
