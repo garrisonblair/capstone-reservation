@@ -15,6 +15,7 @@ class GroupsModal extends Component {
     groupName: '',
     groupMembers: [],
     newMembers: [],
+    deletedMembers: [],
     newMember: '',
     stateOptions: [],
   }
@@ -22,28 +23,31 @@ class GroupsModal extends Component {
   componentDidMount() {
     const { selectedGroup } = this.props;
     const newStateOptions = [];
+
     if (selectedGroup !== null) {
+      const tempGroupMembers = [];
+      selectedGroup.members.map(m => tempGroupMembers.push(m.user.username));
       this.setState({
         groupId: selectedGroup.id,
-        groupOwner: selectedGroup.owner,
+        groupOwner: selectedGroup.owner.user.username,
         groupName: selectedGroup.name,
-        groupMembers: selectedGroup.members,
+        groupMembers: tempGroupMembers,
       });
     } else {
       api.getMyUser()
         .then((r) => {
           this.setState({ groupOwner: r.data.username });
           // get all users and add them to the dropbox
-          api.getUsers()
-            .then((r2) => {
-              r2.data.filter(u => u.id !== r.data.id && u.is_superuser === false)
-                .map(u => newStateOptions.push({
-                  key: u.username, value: u.username, text: u.username,
-                }));
-              this.setState({ stateOptions: newStateOptions });
-            });
         });
     }
+    api.getUsers()
+      .then((r2) => {
+        r2.data.filter(u => u.is_superuser === false)
+          .map(u => newStateOptions.push({
+            key: u.username, value: u.username, text: u.username,
+          }));
+        this.setState({ stateOptions: newStateOptions });
+      });
   }
 
   verifyModalForm = () => {
@@ -90,10 +94,22 @@ class GroupsModal extends Component {
   }
 
   addMemberToList = () => {
-    const { newMember, newMembers } = this.state;
+    const {
+      newMember, newMembers, groupOwner, groupMembers,
+    } = this.state;
     if (newMember.length < 1) {
       return;
     }
+    if (newMember === groupOwner) {
+      sweetAlert('Info', 'Cannot add yourself. You are already part of the group.', 'warning');
+      return;
+    }
+
+    if (groupMembers.includes(newMember) || newMembers.includes(newMember)) {
+      sweetAlert('Info', `${newMember} already exists in the list.`, 'warning');
+      return;
+    }
+
     newMembers.push(newMember);
     this.setState({
       newMembers,
@@ -105,32 +121,36 @@ class GroupsModal extends Component {
     this.setState({ newMember: value });
   }
 
+  deleteFunction = (member) => {
+    const { groupMembers, newMembers, deletedMembers } = this.state;
+
+    if (groupMembers.includes(member)) {
+      deletedMembers.push(member);
+      this.setState({
+        groupMembers: groupMembers.filter(m => m !== member),
+        deletedMembers,
+      });
+    } else if (newMembers.includes(member)) {
+      this.setState({ newMembers: newMembers.filter(m => m !== member) });
+    }
+  }
+
   renderMembersList = () => {
     const { groupMembers, newMembers, groupOwner } = this.state;
-    let content = '';
-    content = (
+    const list = groupMembers.concat(newMembers);
+    let content = (
       <List divided>
         {
-          groupMembers.filter(w => w !== groupOwner).map(
-            (m, index) => (
+          list.filter(w => w !== groupOwner).map(
+            m => (
               <MemberRowItem
                 // eslint-disable-next-line react/no-array-index-key
-                key={index}
+                key={m}
                 selectedMember={m}
+                deleteFunction={this.deleteFunction}
               />
             ),
           )}
-        {
-          newMembers.filter(w => w !== groupOwner).map(
-            (m, index) => (
-              <MemberRowItem
-                // eslint-disable-next-line react/no-array-index-key
-                key={index + 3}
-                selectedMember={m}
-              />
-            ),
-          )
-        }
       </List>
     );
 
@@ -143,8 +163,7 @@ class GroupsModal extends Component {
   render() {
     const { onClose, show, selectedGroup } = this.props;
     const {
-      // eslint-disable-next-line no-unused-vars
-      groupName, newMember, groupOwner, stateOptions,
+      groupName, groupOwner, stateOptions,
     } = this.state;
     return (
       <Modal centered={false} size="tiny" open={show} id="group-modal" onClose={onClose}>
@@ -181,7 +200,6 @@ class GroupsModal extends Component {
             <br />
             <br />
             <Button onClick={this.handleSubmit} color="blue">SAVE</Button>
-
           </Modal.Description>
         </Modal.Content>
       </Modal>
@@ -196,7 +214,7 @@ GroupsModal.propTypes = {
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     is_verified: PropTypes.bool.isRequired,
-    owner: PropTypes.string.isRequired,
+    owner: PropTypes.object.isRequired,
     privilege_category: PropTypes.number,
     members: PropTypes.array.isRequired,
   }),
