@@ -4,7 +4,7 @@ class ICSSerializer:
 
     def serialize_booking(self, booking):
 
-        booker_id = booking.booker.booker_id
+        booker_id = booking.booker.user.username
         if booking.group is not None:
             group = booking.group.name
             summary = 'Booker: ' + str(booker_id) + ', ' + 'Group: ' + str(group)
