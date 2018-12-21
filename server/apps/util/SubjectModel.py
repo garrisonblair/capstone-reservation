@@ -13,7 +13,11 @@ class SubjectModel:
         self.get_observers().append(model_observer)
 
     def unregister(self, model_observer):
-        self.get_observers().remove(model_observer)
+        try:
+            self.get_observers().remove(model_observer)
+        except ValueError:
+            # TODO: Log Invalid observer removal
+            pass
 
     def object_created(self):
         for observer in self.get_observers():
