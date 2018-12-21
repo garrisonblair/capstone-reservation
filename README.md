@@ -76,6 +76,25 @@ The application depends on environment variables stored in .env
     cp .env.config .env
 ```
 
+### MySQL Database Setup
+
+- Install MySQL through this link:
+https://www.digitalocean.com/community/tutorials/how-to-create-a-django-app-and-connect-it-to-a-database
+
+- Configure /etc/my.cnf:
+```
+[client]
+database = capstone_room_reservation
+user = db_user
+password = db_password
+default-character-set = utf8
+```
+
+- Connect to MySQL and create our database
+```
+CREATE DATABASE capstone_room_reservation;
+```
+
 ### LDAP Setup
 
 ![Alt text](docs/ldap_tunnel.png)
@@ -178,9 +197,14 @@ The default port of the React app is **3000**
     python3 manage.py --help
 ```
 
-- Dump DB
+- Dump DB (MySQLite)
 ```
     python3 scripts/dump_database.py
+```
+
+- Dump DB (MySQL)
+```
+    ./scripts/dump_database.sh
 ```
 
 - Populate DB
