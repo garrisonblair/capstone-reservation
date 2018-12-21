@@ -51,16 +51,12 @@ class BookingCreate(APIView):
         serializer = BookingSerializer(data=data)
 
         if not serializer.is_valid():
-            print("here")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             booking = serializer.save()
-            print("First save")
             booking.merge_with_neighbouring_bookings()
-            print("post merge")
             booking.save()
-            print("after 2nd save")
 
             utils.log_model_change(booking, utils.ADDITION, request.user, BookingSerializer(booking))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
