@@ -28,6 +28,7 @@ class SystemSettingsAPI(APIView):
         settings = SystemSettings.get_settings()
 
         for key in settings_updates:
+            print(key, settings_updates[key])
             setattr(settings, key, settings_updates[key])
 
         try:
