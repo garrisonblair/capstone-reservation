@@ -1,6 +1,7 @@
 /* eslint camelcase: 0 */ // --> OFF
 import React, { Component } from 'react';
 import { Checkbox, Button, Input } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import WebCalendarLogin from './WebCalendarLogin';
 import DisableBackupModal from './DisableBackupModal';
 import api from '../../../utils/api';
@@ -13,13 +14,13 @@ class Settings extends Component {
     settings: {
       is_webcalendar_backup_active: false,
       merge_adjacent_bookings: false,
+      merge_threshold_minutes: 0,
     },
   }
 
   getSettings() {
     api.getAdminSettings()
       .then((response) => {
-        console.log('loaded');
         const settings = response.data;
         this.setState({ settings });
       });
@@ -55,6 +56,15 @@ class Settings extends Component {
     });
   }
 
+  handleChangeMergeThreshold = (e, data) => {
+    const { value } = data;
+    const { settings } = this.state;
+    settings.merge_threshold_minutes = value;
+    this.setState({
+      settings,
+    });
+  }
+
   handleCloseLoginModal = () => {
     this.setState({ showLoginModal: false });
     this.getSettings();
@@ -73,8 +83,8 @@ class Settings extends Component {
   saveSettings = () => {
     const { settings } = this.state;
     api.updateAdminSettings(settings).then(() => {
-      console.log('Saved');
       this.getSettings();
+      sweetAlert('Save Successful', null, 'success');
     });
   }
 
@@ -88,6 +98,7 @@ class Settings extends Component {
     const {
       is_webcalendar_backup_active,
       merge_adjacent_bookings,
+      merge_threshold_minutes,
     } = settings;
 
     return (
@@ -95,16 +106,23 @@ class Settings extends Component {
         <form>
           <div>
             <Checkbox
+              className="settings_item"
               label="Automatically export to Web Calendar"
               checked={is_webcalendar_backup_active}
               onChange={this.handleChangeWebcaledarExport}
             />
             <Checkbox
+              className="settings_item"
               label="Merge adjacent bookings"
               checked={merge_adjacent_bookings}
               onChange={this.handleChangeMergeBooking}
             />
-            <Input label="Merge threshold in minutes" />
+            <Input
+              className="settings_item"
+              label="Merge threshold in minutes"
+              value={merge_threshold_minutes}
+              onChange={this.handleChangeMergeThreshold}
+            />
           </div>
           <Button onClick={this.saveSettings}>
             Save Changes
