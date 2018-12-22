@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Checkbox } from 'semantic-ui-react';
+import { Checkbox, Button } from 'semantic-ui-react';
 import WebCalendarLogin from './WebCalendarLogin';
 import DisableBackupModal from './DisableBackupModal';
 import api from '../../../utils/api';
@@ -9,19 +9,21 @@ class Settings extends Component {
   state = {
     showLoginModal: false,
     showDisableBackupModal: false,
-    webCalendarBackup: false,
+    settings: {
+      is_webcalendar_backup_active: false,
+      merge_adjacent_bookings: false,
+    },
   }
 
   getSettings() {
     api.getAdminSettings()
       .then((response) => {
-        this.setState({
-          webCalendarBackup: response.data.is_webcalendar_backup_active,
-        });
+        const settings = response.data;
+        this.setState({ settings });
       });
   }
 
-  handleChangeSetting = (e, data) => {
+  handleChangeWebcaledarExport = (e, data) => {
     const { checked } = data;
     let showLoginModal = false;
     let showDisableBackupModal = false;
@@ -32,11 +34,25 @@ class Settings extends Component {
       showDisableBackupModal = true;
     }
 
+    const { settings } = this.state;
+    settings.webCalendarBackup = checked;
+
     this.setState({
-      webCalendarBackup: checked,
+      settings,
       showLoginModal,
       showDisableBackupModal,
     });
+  }
+
+  handleChangeMergeBooking = (e, data) => {
+    const { checked } = data;
+    const { settings } = this.state;
+    settings.merge_adjacent_bookings = checked;
+    this.setState({
+      settings,
+    });
+
+    console.log('Here');
   }
 
   handleCloseLoginModal = () => {
@@ -52,19 +68,43 @@ class Settings extends Component {
     this.getSettings();
   }
 
+  saveSettings = () => {
+    const { settings } = this.state;
+    api.updateAdminSettings(settings).then((response) => {
+      console.log(response);
+    });
+  }
+
   render() {
-    const { webCalendarBackup, showLoginModal, showDisableBackupModal } = this.state;
+    const {
+      showLoginModal,
+      showDisableBackupModal,
+      settings,
+    } = this.state;
+
+    const {
+      is_webcalendar_backup_active,
+      merge_adjacent_bookings,
+    } = settings;
 
     return (
       <div>
-        <form onSubmit={this.saveSettings}>
+        <form>
           <div>
             <Checkbox
               label="Automatically export to Web Calendar"
-              checked={webCalendarBackup}
-              onChange={this.handleChangeSetting}
+              checked={is_webcalendar_backup_active}
+              onChange={this.handleChangeWebcaledarExport}
+            />
+            <Checkbox
+              label="Merge adjacent bookings"
+              checked={merge_adjacent_bookings}
+              onChange={this.handleChangeMergeBooking}
             />
           </div>
+          <Button onClick={this.saveSettings}>
+            Save Changes
+          </Button>
         </form>
         <WebCalendarLogin
           show={showLoginModal}
@@ -74,6 +114,7 @@ class Settings extends Component {
           show={showDisableBackupModal}
           onClose={this.handleCloseDisableBackupModal}
         />
+
       </div>
     );
   }
