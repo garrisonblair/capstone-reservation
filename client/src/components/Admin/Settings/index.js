@@ -84,7 +84,7 @@ class Settings extends Component {
     const { settings } = this.state;
     api.updateAdminSettings(settings).then(() => {
       this.getSettings();
-      sweetAlert('Save Successful', null, 'success');
+      sweetAlert('Save Successful', '', 'success');
     });
   }
 
