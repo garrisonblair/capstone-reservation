@@ -1,5 +1,6 @@
+/* eslint camelcase: 0 */ // --> OFF
 import React, { Component } from 'react';
-import { Checkbox, Button } from 'semantic-ui-react';
+import { Checkbox, Button, Input } from 'semantic-ui-react';
 import WebCalendarLogin from './WebCalendarLogin';
 import DisableBackupModal from './DisableBackupModal';
 import api from '../../../utils/api';
@@ -18,6 +19,7 @@ class Settings extends Component {
   getSettings() {
     api.getAdminSettings()
       .then((response) => {
+        console.log('loaded');
         const settings = response.data;
         this.setState({ settings });
       });
@@ -51,16 +53,16 @@ class Settings extends Component {
     this.setState({
       settings,
     });
-
-    console.log('Here');
   }
 
   handleCloseLoginModal = () => {
     this.setState({ showLoginModal: false });
+    this.getSettings();
   }
 
   handleCloseDisableBackupModal = () => {
     this.setState({ showDisableBackupModal: false });
+    this.getSettings();
   }
 
   componentDidMount = () => {
@@ -70,8 +72,9 @@ class Settings extends Component {
 
   saveSettings = () => {
     const { settings } = this.state;
-    api.updateAdminSettings(settings).then((response) => {
-      console.log(response);
+    api.updateAdminSettings(settings).then(() => {
+      console.log('Saved');
+      this.getSettings();
     });
   }
 
@@ -101,6 +104,7 @@ class Settings extends Component {
               checked={merge_adjacent_bookings}
               onChange={this.handleChangeMergeBooking}
             />
+            <Input label="Merge threshold in minutes" />
           </div>
           <Button onClick={this.saveSettings}>
             Save Changes
