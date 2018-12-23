@@ -28,15 +28,22 @@ body {
 .calendar__container {
   // display: inline-grid;
   margin-top: 10px;
-  padding: 20px;
+  // padding: 20px;
   overflow-x: visible;
   background-color: $backgroundColorContainer;
 }
 
+.calendar__wrapper {
+  display: inline-grid;
+  padding: 2px;
+}
+
+
 .calendar__date {
   color: white;
-  left: 45%;
-  position: fixed;
+  -ms-transform: translate(45vw,0);
+  -webkit-transform: translate(45vw,0);
+  transform: translate(45vw,0);
   margin-top: 10px;
   font-size: 50;
   &__header {
@@ -46,14 +53,12 @@ body {
   }
 }
 
-.calendar__wrapper {
-  display: inline-grid;
-  padding: 2px;
-}
-
 .calendar__rooms__wrapper {
   display: inline-grid;
   grid-column-start: 2;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
   grid-template-columns: repeat(var(--colNum), 1fr);
   background-color: $backgroundColorRooms;
   color: $textColorHeader;
@@ -61,6 +66,9 @@ body {
 
 .calendar__hours__wrapper {
   display: inline-grid;
+  position: sticky;
+  position: -webkit-sticky;
+  left: 0;
   grid-template-rows: repeat(var(--rowNum), 1fr);
   background-color:$backgroundColorHours;
   color: $textColorHeader;
