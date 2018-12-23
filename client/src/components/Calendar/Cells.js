@@ -21,6 +21,7 @@ class Cells extends Component {
     selectedRoomId: '',
     selectedRoomCurrentBookings: [],
     selectedBooking: {},
+    selectedBookingCampons: null,
     bookingModal: false,
     bookingInfoModal: false,
   };
@@ -176,15 +177,28 @@ class Cells extends Component {
   }
 
   handleClickBooking = (booking) => {
-    const { roomsList } = this.props;
+    const { roomsList, campOns } = this.props;
+    const selectedBookingCampons = [];
     let roomName = '';
+
     roomsList.forEach((room) => {
       if (room.id === booking.room) {
         roomName = room.name;
         // return;
       }
     });
-    this.setState({ selectedBooking: booking, selectedRoomName: roomName }, () => {
+    if (campOns.length > 0) {
+      campOns.forEach((campon) => {
+        if (campon.camped_on_booking === booking.id) {
+          selectedBookingCampons.push(campon);
+        }
+      });
+    }
+    this.setState({
+      selectedBooking: booking,
+      selectedRoomName: roomName,
+      selectedBookingCampons,
+    }, () => {
       this.toggleBookingInfoModal();
     });
   }
@@ -285,6 +299,7 @@ class Cells extends Component {
       selectedBookingId,
       bookingInfoModal,
       selectedBooking,
+      selectedBookingCampons,
     } = this.state;
     const { selectedDate } = this.props;
     return (
@@ -309,6 +324,7 @@ class Cells extends Component {
           selectedRoomName={selectedRoomName}
           onClose={this.toggleBookingInfoModal}
           onCloseWithAction={this.toggleBookingInfoWithAction}
+          campons={selectedBookingCampons}
         />
       </div>
     );
