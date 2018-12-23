@@ -3,7 +3,11 @@ import requests
 from ..BookingExporter import BookingExporter
 from .ICSSerializer import ICSSerializer
 
-from apps.system_settings.models.system_settings import SystemSettings
+from apps.system_administration.models.system_settings import SystemSettings
+
+from apps.util import Logging
+
+logger = Logging.get_logger()
 
 
 class WEBCalendarExporter(BookingExporter):
@@ -39,8 +43,7 @@ class WEBCalendarExporter(BookingExporter):
         response = self.session.post(self.LOGIN_URL, data={"login": username, "password": password})
 
         if self.LOGIN_FAILED_MESSAGE in response.text:
-            print("Login to WebCalendar failed.")
-            # TODO: handle login failure (Log it)
+            logger.error("WebCalendar login failed.")
             pass
 
         pass
@@ -55,12 +58,8 @@ class WEBCalendarExporter(BookingExporter):
         response = self.session.post(self.IMPORT_HANDLER_URL, files=file, data=data)
 
         if self.NOT_AUTHORIZED_MESSAGE in response.text:
-            # TODO: handle request failure (Log it)
-            print("ICS upload failed.")
-            pass
+            logger.error("WebCalendar .ics Upload failed.")
 
-    # BookingExporter
-    # TODO: Investigate if using threads here could improve performance
     def backup_booking(self, booking):
         # only backup if room has external id
         if not hasattr(booking.room, "externalroomid"):

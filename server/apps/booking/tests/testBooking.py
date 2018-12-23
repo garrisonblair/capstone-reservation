@@ -58,12 +58,6 @@ class TestBooking(TestCase):
 
         self.assertEqual(read_booking, booking)
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
-        assert re.match(r'^Booking: \d+,'
-                        r' Booker: 12345678,'
-                        r' Room: 1,'
-                        r' Date: 2019-09-29,'
-                        r' Start time: 12:00:00,'
-                        r' End Time: 13:00:00$', str(read_booking))
 
     def testOverlappedStartTimeBooking(self):
         # Case with existing time 12:00 to 13:00, compare to 12:30 to 13:00

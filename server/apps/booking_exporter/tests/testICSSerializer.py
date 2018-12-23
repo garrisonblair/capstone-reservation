@@ -2,13 +2,14 @@
 import datetime
 
 from django.test import TestCase
-from unittest import mock
 
 from apps.booking.models import Booking
 from apps.rooms.models import Room
 from apps.accounts.models import Booker
 from ..WEBCalendarExporter.ICSSerializer import ICSSerializer
 from apps.groups.models import Group
+
+from django.contrib.auth.models import User
 
 
 class testWebCalendarExporter(TestCase):
@@ -18,10 +19,15 @@ class testWebCalendarExporter(TestCase):
         room = Room(name="Room 19")
         room.save()
 
-        booker = Booker(booker_id="s_loc")
-        booker2 = Booker(booker_id="f_daigl")
-
+        booker = Booker(booker_id="11111111")
         booker.save()
+
+        user = User.objects.create_user("s_loc", "good_password")
+        booker.user = user
+        booker.save()
+
+        booker2 = Booker(booker_id="22222222")
+        booker2.save()
 
         self.booking = Booking(start_time=datetime.time(13, 0, 0),
                                end_time=datetime.time(14, 0, 0),
@@ -32,12 +38,13 @@ class testWebCalendarExporter(TestCase):
         self.booking.save()
 
         group = Group(name='Test Group',
-                      is_verified=True)
+                      is_verified=True,
+                      owner=booker)
 
         group.save()
 
-        group.bookers.set(booker.booker_id)
-        group.bookers.set(booker2.booker_id)
+        group.members.add(booker)
+        group.members.add(booker2)
 
         self.booking2 = Booking(start_time=datetime.time(14, 0, 0),
                                 end_time=datetime.time(15, 0, 0),

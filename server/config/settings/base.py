@@ -29,7 +29,7 @@ PROJECT_APPS = [
     'apps.rooms.apps.RoomsConfig',
     'apps.booking.apps.BookingConfig',
     'apps.booking_exporter.apps.BookingExporterConfig',
-    'apps.system_settings.apps.SystemSettingConfig',
+    'apps.system_administration.apps.CalendarAdminConfig',
     'apps.groups.apps.GroupsConfig'
 ]
 
@@ -126,5 +126,39 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'formatter': 'verbose'
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 # DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models.Booking import RecurringBooking
+from ..models.RecurringBooking import RecurringBooking
 from apps.rooms.models.Room import Room
 from apps.groups.models.Group import Group
 from apps.accounts.models.Booker import Booker

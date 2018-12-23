@@ -1,3 +1,6 @@
+import json
+import datetime
+
 from django.db import models
 from apps.accounts.models.Booker import Booker
 from apps.groups.models.Group import Group
@@ -5,7 +8,6 @@ from apps.rooms.models.Room import Room
 from ..models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
-import datetime
 
 from apps.util.SubjectModel import SubjectModel
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory

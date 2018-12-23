@@ -17,7 +17,7 @@ class FakeLDAP:
             'memberOf: soen490, DC=Concordia',
             'memberOf: soen311, DC=Concordia',
             'memberOf: comp248, DC=Concordia',
-            'memberOf: , DC=Concordia',
+            'memberOf: comp390, DC=Concordia',
         ]
     )
 
@@ -27,17 +27,17 @@ class FakeLDAP:
 
 class TestPrivilegeCategoryManager(TestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user(username='username1', email="", password="")
+        self.user1 = User.objects.create_user(username='username1', email="user1@gmail", password="abc")
         self.user1.save()
-        self.booker1 = Booker()
+        self.booker1 = Booker(booker_id="1")
         self.booker1.user = self.user1
         self.booker1.save()
 
-        self.user2 = User.objects.create_user(username='username2', email="", password="")
+        self.user2 = User.objects.create_user(username='username2', email="user2@gmail", password="123")
         self.user2.save()
-        self.booker2 = Booker()
+        self.booker2 = Booker(booker_id="2")
         self.booker2.user = self.user2
-        self.user2.save()
+        self.booker2.save()
 
         self.category1 = PrivilegeCategory()
         self.category1.name = "Cat 1"
@@ -67,6 +67,21 @@ class TestPrivilegeCategoryManager(TestCase):
         self.assertEqual(privileges1[2], self.category3)
 
         manager.assign_booker_privileges(self.booker2, self.ldap)
+
+        privileges2 = self.booker2.privilege_categories.all()
+        self.assertEqual(privileges2.count(), 2)
+        self.assertEqual(privileges2[0], self.category1)
+        self.assertEqual(privileges2[1], self.category2)
+
+    def testAssignAllPrivilegesSuccess(self):
+        manager = PrivilegeCategoryManager()
+        manager.assign_all_booker_privileges(self.ldap)
+
+        privileges1 = self.booker1.privilege_categories.all()
+        self.assertEqual(privileges1.count(), 3)
+        self.assertEqual(privileges1[0], self.category1)
+        self.assertEqual(privileges1[1], self.category2)
+        self.assertEqual(privileges1[2], self.category3)
 
         privileges2 = self.booker2.privilege_categories.all()
         self.assertEqual(privileges2.count(), 2)
