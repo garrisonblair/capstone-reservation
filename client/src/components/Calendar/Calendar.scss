@@ -27,6 +27,7 @@ body {
 
 .calendar__container {
   // display: inline-grid;
+  margin-top: 10px;
   padding: 20px;
   overflow-x: visible;
   background-color: $backgroundColorContainer;
@@ -34,8 +35,9 @@ body {
 
 .calendar__date {
   color: white;
-  text-align: center;
-  margin-bottom: 10px;
+  left: 45%;
+  position: fixed;
+  margin-top: 10px;
   font-size: 50;
   &__header {
     display: inline;
