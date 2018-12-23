@@ -189,11 +189,12 @@ class Calendar extends Component {
     } = this.state;
     return (
       <div>
-        <SelectedDate changeDate={this.changeDate} />
-        <br />
+        <div className="date__container">
+          <SelectedDate changeDate={this.changeDate} />
+        </div>
         <div className="calendar__container">
           <div className="calendar__wrapper">
-            <Rooms roomsList={roomsList} />
+            <Rooms roomsList={roomsList} changeDate={this.changeDate} />
             <Hours hoursList={hoursList} />
             <Cells
               hoursSettings={hoursSettings}
