@@ -10,7 +10,7 @@ from apps.accounts.exceptions import PrivilegeError
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.CampOn import CampOn
 from apps.booking.models.Booking import Booking
-from apps.booking.serializers.campon import CampOnSerializer
+from apps.booking.serializers.campon import CampOnSerializer, ReadCampOnSerializer
 from apps.booking.serializers.booking import BookingSerializer
 from apps.util import utils
 
@@ -48,7 +48,7 @@ class CampOnList(ListAPIView):
     def get(self, request):
         try:
             qs = self.get_queryset()
-            serializer = CampOnSerializer(qs, many=True)
+            serializer = ReadCampOnSerializer(qs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             # print(str(e))
