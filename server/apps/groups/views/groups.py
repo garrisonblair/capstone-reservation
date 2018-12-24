@@ -10,6 +10,7 @@ from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.models.Booker import Booker
 from apps.groups.serializers.group import WriteGroupSerializer, ReadGroupSerializer
 from apps.groups.models.Group import Group
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 
 class GroupList(ListAPIView):
@@ -50,6 +51,7 @@ class GroupCreate(APIView):
         try:
             group = serializer.save()
             group.members.add(owner)
+            group.privilege_category = PrivilegeCategory.objects.get(is_default=True)
             group.save()
 
             serializer = WriteGroupSerializer(group)
