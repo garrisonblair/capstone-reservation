@@ -1,6 +1,5 @@
 from django.test import TestCase
 from apps.booking.models.Booking import Booking
-from apps.booking.models.CampOn import CampOn
 from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 from datetime import datetime
@@ -166,75 +165,3 @@ class TestBooking(TestCase):
             booking.save()
         except ValidationError:
             self.assertTrue(True)
-
-    def testOverlappedStartTimeCampOn(self):
-        # Case with existing Booking from 12:00 to 13:00, then a CampOn is made on the Booking.
-        # Afterward, the Booking is moved from 14 to 15:00 but 12:00 to 13:00 is still CampOned.
-        booking = Booking(booker=self.booker,
-                          room=self.room,
-                          date=self.date,
-                          start_time=self.start_time,
-                          end_time=self.end_time)
-        booking.save()
-        created_booking = Booking.objects.last()
-
-        camp_on_start_time = datetime.strptime("12:15", "%H:%M").time()
-        camp_on = CampOn.objects.create(booker=self.campon_booker,
-                                        camped_on_booking=booking,
-                                        start_time=camp_on_start_time,
-                                        end_time=self.end_time)
-
-        new_start_time = datetime.strptime("14:00", "%H:%M").time()
-        new_end_time = datetime.strptime("15:00", "%H:%M").time()
-        updated_booking = Booking.objects.filter(id=created_booking.id).update(start_time=new_start_time,
-                                                                               end_time=new_end_time)
-
-        start_time2 = datetime.strptime("12:00", "%H:%M").time()
-        end_time2 = datetime.strptime("14:00", "%H:%M").time()
-        booking2 = Booking(booker=self.booker2,
-                           room=self.room,
-                           date=self.date,
-                           start_time=start_time2,
-                           end_time=end_time2)
-        with self.assertRaises(ValidationError) as ex:
-            booking2.save()
-        self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
-
-    def testOverlappedEndTimeCampOn(self):
-        # Case with existing time 12:00 to 13:00, compare to 11:30 to 12:30
-        start_time3 = datetime.strptime("11:30", "%H:%M").time()
-        end_time3 = datetime.strptime("12:30", "%H:%M").time()
-
-        booking = Booking(booker=self.booker,
-                          room=self.room,
-                          date=self.date,
-                          start_time=self.start_time,
-                          end_time=self.end_time)
-        booking.save()
-        booking3 = Booking(booker=self.booker,
-                           room=self.room,
-                           date=self.date,
-                           start_time=start_time3,
-                           end_time=end_time3)
-
-        with self.assertRaises(ValidationError) as ex:
-            booking3.save()
-        self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
-
-    def testOverlappedSameTimeCampOn(self):
-        # Case with existing time 12:00 to 13:00, compare to 12:00 to 13:00
-        booking = Booking(booker=self.booker,
-                          room=self.room,
-                          date=self.date,
-                          start_time=self.start_time,
-                          end_time=self.end_time)
-        booking.save()
-        booking4 = Booking(booker=self.booker,
-                           room=self.room,
-                           date=self.date,
-                           start_time=self.start_time,
-                           end_time=self.end_time)
-
-        with self.assertRaises(ValidationError) as ex:
-            booking4.save()
-        self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)

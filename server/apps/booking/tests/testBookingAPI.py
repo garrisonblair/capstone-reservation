@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 
 from apps.accounts.models.Booker import Booker
+from apps.booking.models.CampOn import CampOn
 from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 
@@ -412,3 +413,83 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(len(Booking.objects.all()), 2)
+
+    def testConvertCamponToBooing(self):
+        # Case with existing Booking from 12:00 to 13:00, then a CampOn is made on the Booking.
+        # The Booking is moved from 14 to 15:00 but 12:00 to 13:00 is still CampOned.
+        # So the first CampOn on the Booking will be converted to a Booking and the other
+        # CampOns related to this Booking will update the related Booking entity
+
+        # Setup one Booking
+        room = Room(name=2, capacity=4, number_of_computers=1)
+        room.save()
+        date = datetime.datetime.now().strftime("%Y-%m-%d")
+        start_time = datetime.datetime.strptime("12:00", "%H:%M").time()
+        end_time = datetime.datetime.strptime("13:00", "%H:%M").time()
+        booking1 = Booking(booker=self.booker,
+                           room=room, date=date,
+                           start_time=start_time,
+                           end_time=end_time)
+        booking1.save()
+        created_booking = Booking.objects.last()
+
+        # Create 2 CampOns for testing campon to booking conversion in this special case
+        user2 = User.objects.create_user(username='solji',
+                                         email='solji@exid.com',
+                                         password='maskking')
+        user2.save()
+        sid1 = '11111111'
+        campon_booker_1 = Booker(booker_id=sid1)
+        campon_booker_1.user = user2
+        campon_booker_1.save()
+        created_booker_1 = Booker.objects.filter(booker_id=sid1)
+        self.assertEqual(len(Booker.objects.all()), 2)
+        camp_on_start_time_1 = datetime.datetime.strptime("12:15", "%H:%M").time()
+        campon1 = CampOn.objects.create(booker=campon_booker_1,
+                                        camped_on_booking=created_booking,
+                                        start_time=camp_on_start_time_1,
+                                        end_time=end_time)
+
+        user3 = User.objects.create_user(username='hani',
+                                         email='hani@exid.com',
+                                         password='hanisi')
+        user3.save()
+        sid2 = '22222222'
+        campon_booker_2 = Booker(booker_id=sid2)
+        campon_booker_2.user = user3
+        campon_booker_2.save()
+        created_booker_2 = Booker.objects.filter(booker_id=sid2)
+        self.assertEqual(len(Booker.objects.all()), 3)
+        camp_on_start_time_2 = datetime.datetime.strptime("12:17", "%H:%M").time()
+        campon2 = CampOn.objects.create(booker=campon_booker_2,
+                                        camped_on_booking=created_booking,
+                                        start_time=camp_on_start_time_2,
+                                        end_time=end_time)
+
+        # Before the booking gets moved, there should be only one Booking
+        self.assertEqual(len(Booking.objects.all()), 1)
+
+        new_start_time = datetime.datetime.strptime("14:00", "%H:%M").time()
+        new_end_time = datetime.datetime.strptime("15:00", "%H:%M").time()
+        request = self.factory.patch("/booking", {
+                                     "room": 2,
+                                     "date": date,
+                                     "start_time": new_start_time,
+                                     "end_time": new_end_time
+                                     },
+                                     format="json")
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = BookingRetrieveUpdateDestroy.as_view()(request, 1)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Total 2 Booking: the edit Booking and a new Booking converted from the first CampOn
+        self.assertEqual(len(Booking.objects.all()), 2)
+        campon_to_booking = Booking.objects.last()
+        self.assertEqual(campon_to_booking.booker.booker_id, sid1)
+        # Total 1 CampOn left
+        self.assertEqual(len(CampOn.objects.all()), 1)
+        created_campon_2 = CampOn.objects.last()
+        self.assertEqual(created_campon_2.booker_id, sid2)
+        # camped_on_booking is updated to a new Booking
+        self.assertEqual(created_campon_2.camped_on_booking, campon_to_booking)

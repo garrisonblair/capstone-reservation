@@ -98,18 +98,6 @@ class Booking(models.Model, SubjectModel):
                                     end_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
-        elif CampOn.objects.filter(~Q(start_time=self.end_time),
-                                   camped_on_booking__room=self.room,
-                                   camped_on_booking__date=self.date,
-                                   start_time__range=(self.start_time, self.end_time)).exists():
-            raise ValidationError("Specified time is overlapped with a CampOn.")
-
-        elif CampOn.objects.filter(~Q(end_time=self.start_time),
-                                   camped_on_booking__room=self.room,
-                                   camped_on_booking__date=self.date,
-                                   end_time__range=(self.start_time, self.end_time)).exists():
-            raise ValidationError("Specified time is overlapped with a CampOn.")
-
     def get_active_bookings(self, booker_entity):
         today = datetime.datetime.now().date()
         now = datetime.datetime.now().time()
