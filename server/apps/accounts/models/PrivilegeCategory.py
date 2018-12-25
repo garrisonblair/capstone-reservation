@@ -25,6 +25,7 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
     max_days_until_booking = models.PositiveIntegerField(null=True, blank=True)
     can_make_recurring_booking = models.BooleanField(null=True, blank=True)
     max_bookings = models.PositiveIntegerField(null=True, blank=True)
+    max_daily_bookings = models.PositiveIntegerField(null=True, blank=True)
     max_recurring_bookings = models.PositiveIntegerField(null=True, blank=True)
 
     booking_start_time = models.TimeField(null=True, blank=True)
@@ -41,6 +42,10 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
         ),
         "max_bookings": FieldMetadata(
             error_message="Booker has too many bookings.",
+            comparator=IntegerComparator()
+        ),
+        "max_daily_bookings": FieldMetadata(
+            error_message="Booker has too many bookings for one day.",
             comparator=IntegerComparator()
         ),
         "max_recurring_bookings": FieldMetadata(
