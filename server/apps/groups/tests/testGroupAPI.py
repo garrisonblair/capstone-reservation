@@ -39,7 +39,7 @@ class RoomAPITest(TestCase):
         self.group2.save()
 
         self.category = PrivilegeCategory(is_default=True)
-        self.category.save()
+        self.category.save(bypass_validation=True)
 
     def testGetGroups(self):
         request = self.factory.get("/groups")

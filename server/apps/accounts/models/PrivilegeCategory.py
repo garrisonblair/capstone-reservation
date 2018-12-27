@@ -58,9 +58,11 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
         )
     }
 
-    def save(self, *args, **kwargs):
+    # bypass_validation for testing without defining all fields
+    def save(self, bypass_validation=False, *args, **kwargs):
 
-        self.validate_model()
+        if not bypass_validation:
+            self.validate_model()
 
         if self.is_default:
             try:
