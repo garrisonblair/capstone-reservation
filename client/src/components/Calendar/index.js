@@ -188,24 +188,22 @@ class Calendar extends Component {
       selectedDate,
     } = this.state;
     return (
-      <div>
+      <div className="calendar__container">
         <div className="date__container">
           <SelectedDate changeDate={this.changeDate} />
         </div>
-        <div className="calendar__container">
-          <div className="calendar__wrapper">
-            <Rooms roomsList={roomsList} changeDate={this.changeDate} />
-            <Hours hoursList={hoursList} />
-            <Cells
-              hoursSettings={hoursSettings}
-              bookings={bookings}
-              roomsList={roomsList}
-              hoursList={hoursList}
-              campOns={campOns}
-              selectedDate={selectedDate}
-              onCloseModalWithAction={this.onCloseModalWithAction}
-            />
-          </div>
+        <div className="calendar__wrapper">
+          <Rooms roomsList={roomsList} changeDate={this.changeDate} />
+          <Hours hoursList={hoursList} />
+          <Cells
+            hoursSettings={hoursSettings}
+            bookings={bookings}
+            roomsList={roomsList}
+            hoursList={hoursList}
+            campOns={campOns}
+            selectedDate={selectedDate}
+            onCloseModalWithAction={this.onCloseModalWithAction}
+          />
         </div>
       </div>
     );

@@ -47,13 +47,13 @@ class Cells extends Component {
     const { hoursSettings } = this.props;
     const rowStart = (hourRow * hoursSettings.increment / 10) + 1;
     const rowEnd = rowStart + hoursSettings.increment / 10;
-    const height = '75px';
+    // const height = '75px';
 
     const style = {
       cell_style: {
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
-        height,
+        // height,
       },
     };
     return style;
@@ -193,41 +193,41 @@ class Cells extends Component {
   * COMPONENT RENDERING
   */
 
-  renderCells() {
-    const { roomsList, hoursList, bookings } = this.props;
+  renderModals() {
+    const {
+      bookingModal,
+      selectedRoomId,
+      selectedRoomName,
+      selectedHour,
+      selectedRoomCurrentBookings,
+      selectedBookingId,
+      bookingInfoModal,
+      selectedBooking,
+    } = this.state;
+    const { selectedDate } = this.props;
 
-    const cells = [];
-    let roomsCells = [];
-    let cell = 0;
-
-    for (let i = 0; i < roomsList.length; i += 1) {
-      const currentRoom = roomsList[i];
-      for (let j = 0; j < hoursList.length; j += 1) {
-        const currentHour = hoursList[j];
-        roomsCells.push(
-          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} role="button" tabIndex="0" key={cell} onClick={() => this.handleClickCell(currentHour, currentRoom)} onKeyDown={() => {}} />,
-        );
-        cell += 1;
-      }
-
-      const bookedCells = [];
-      if (bookings) {
-        const bookingsList = bookings.filter(booking => booking.room === currentRoom.id);
-        if (bookingsList.length > 0) {
-          bookedCells.push(this.renderCurrentBookings(bookingsList));
-        }
-      }
-
-      cells.push(
-        <div className="calendar__rooms__cells" key={i}>
-          {roomsCells}
-          {bookedCells}
-        </div>,
-      );
-
-      roomsCells = [];
-    }
-    return <div className="calendar__cells__wrapper">{cells}</div>;
+    return (
+      <div className="modals">
+        <ReservationDetailsModal
+          show={bookingModal}
+          selectedRoomId={selectedRoomId}
+          selectedRoomName={selectedRoomName}
+          selectedHour={selectedHour}
+          selectedDate={selectedDate}
+          selectedRoomCurrentBookings={selectedRoomCurrentBookings}
+          selectedBookingId={selectedBookingId}
+          onClose={this.toggleBookingModal}
+          onCloseWithReservation={this.toggleBookingModalWithReservation}
+        />
+        <BookingInfoModal
+          show={bookingInfoModal}
+          booking={selectedBooking}
+          selectedRoomName={selectedRoomName}
+          onClose={this.toggleBookingInfoModal}
+          onCloseWithAction={this.toggleBookingInfoWithAction}
+        />
+      </div>
+    );
   }
 
   renderCurrentBookings(bookings) {
@@ -276,40 +276,43 @@ class Cells extends Component {
   }
 
   render() {
-    const {
-      bookingModal,
-      selectedRoomId,
-      selectedRoomName,
-      selectedHour,
-      selectedRoomCurrentBookings,
-      selectedBookingId,
-      bookingInfoModal,
-      selectedBooking,
-    } = this.state;
-    const { selectedDate } = this.props;
+    const { roomsList, hoursList, bookings } = this.props;
+
+    const cells = [];
+    let roomsCells = [];
+    let cell = 0;
+
+    for (let i = 0; i < roomsList.length; i += 1) {
+      const currentRoom = roomsList[i];
+      for (let j = 0; j < hoursList.length; j += 1) {
+        const currentHour = hoursList[j];
+        roomsCells.push(
+          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} role="button" tabIndex="0" key={cell} onClick={() => this.handleClickCell(currentHour, currentRoom)} onKeyDown={() => {}} />,
+        );
+        cell += 1;
+      }
+
+      const bookedCells = [];
+      if (bookings) {
+        const bookingsList = bookings.filter(booking => booking.room === currentRoom.id);
+        if (bookingsList.length > 0) {
+          bookedCells.push(this.renderCurrentBookings(bookingsList));
+        }
+      }
+
+      cells.push(
+        <div className="calendar__rooms__cells" key={i}>
+          {roomsCells}
+          {bookedCells}
+        </div>,
+      );
+
+      roomsCells = [];
+    }
     return (
-      <div>
-        {this.renderCells()}
-
-        <ReservationDetailsModal
-          show={bookingModal}
-          selectedRoomId={selectedRoomId}
-          selectedRoomName={selectedRoomName}
-          selectedHour={selectedHour}
-          selectedDate={selectedDate}
-          selectedRoomCurrentBookings={selectedRoomCurrentBookings}
-          selectedBookingId={selectedBookingId}
-          onClose={this.toggleBookingModal}
-          onCloseWithReservation={this.toggleBookingModalWithReservation}
-        />
-
-        <BookingInfoModal
-          show={bookingInfoModal}
-          booking={selectedBooking}
-          selectedRoomName={selectedRoomName}
-          onClose={this.toggleBookingInfoModal}
-          onCloseWithAction={this.toggleBookingInfoWithAction}
-        />
+      <div className="calendar__cells__wrapper">
+        {cells}
+        {this.renderModals()}
       </div>
     );
   }
