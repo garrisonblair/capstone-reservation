@@ -24,7 +24,8 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.category = PrivilegeCategory(name="Base Category")
         self.category.max_days_until_booking = 2
         self.category.can_make_recurring_booking = False
-        self.category.max_bookings = 5
+        self.category.max_overall_bookings = 5
+        self.category.max_daily_bookings = 2
         self.category.max_recurring_bookings = 0
         self.category.booking_start_time = datetime.time(8, 0)
         self.category.booking_end_time = datetime.time(23, 0)
@@ -37,7 +38,8 @@ class TestPrivilegeCategoryAPI(TestCase):
             "is_default": True,
             "max_days_until_booking": 4,
             "can_make_recurring_booking": True,
-            "max_bookings": 2,
+            "max_overall_bookings": 2,
+            "max_daily_bookings": 3,
             "max_recurring_bookings": 3,
             "booking_start_time": self.category.booking_start_time,
             "booking_end_time": self.category.booking_end_time
@@ -56,7 +58,8 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         self.assertEqual(created_category.get_parameter("max_days_until_booking"), 4)
         self.assertEqual(created_category.get_parameter("can_make_recurring_booking"), True)
-        self.assertEqual(created_category.get_parameter("max_bookings"), 2)
+        self.assertEqual(created_category.get_parameter("max_overall_bookings"), 2)
+        self.assertEqual(created_category.get_parameter("max_daily_bookings"), 3)
         self.assertEqual(created_category.get_parameter("max_recurring_bookings"), 3)
         self.assertEqual(created_category.get_parameter("booking_start_time"), self.category.booking_start_time)
         self.assertEqual(created_category.get_parameter("booking_end_time"), self.category.booking_end_time)
@@ -68,7 +71,8 @@ class TestPrivilegeCategoryAPI(TestCase):
             "is_default": False,
             "max_days_until_booking": None,
             "can_make_recurring_booking": True,
-            "max_bookings": 2,
+            "max_overall_bookings": 2,
+            "max_daily_bookings": 3,
             "max_recurring_bookings": 3,
             "booking_start_time": self.category.booking_start_time,
             "booking_end_time": self.category.booking_end_time
@@ -87,7 +91,8 @@ class TestPrivilegeCategoryAPI(TestCase):
         # Uses parent category for num_days_to_booking
         self.assertEqual(created_category.get_parameter("max_days_until_booking"), self.category.max_days_until_booking)
         self.assertEqual(created_category.get_parameter("can_make_recurring_booking"), True)
-        self.assertEqual(created_category.get_parameter("max_bookings"), 2)
+        self.assertEqual(created_category.get_parameter("max_overall_bookings"), 2)
+        self.assertEqual(created_category.get_parameter("max_daily_bookings"), 3)
         self.assertEqual(created_category.get_parameter("max_recurring_bookings"), 3)
         self.assertEqual(created_category.get_parameter("booking_start_time"), self.category.booking_start_time)
         self.assertEqual(created_category.get_parameter("booking_end_time"), self.category.booking_end_time)
@@ -98,7 +103,8 @@ class TestPrivilegeCategoryAPI(TestCase):
             "parent_category": self.category.id,
             "max_days_until_booking": 4,
             "can_make_recurring_booking": None,
-            "max_bookings": 2,
+            "max_overall_bookings": 2,
+            "max_daily_bookings": 3,
             "max_recurring_bookings": 3,
             "booking_start_time": self.category.booking_start_time,
             "booking_end_time": self.category.booking_end_time
@@ -116,7 +122,8 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.assertEqual(created_category.get_parameter("max_days_until_booking"), 4)
         # Uses parent category for can_make_recurring_booking
         self.assertEqual(created_category.get_parameter("can_make_recurring_booking"), False)
-        self.assertEqual(created_category.get_parameter("max_bookings"), 2)
+        self.assertEqual(created_category.get_parameter("max_overall_bookings"), 2)
+        self.assertEqual(created_category.get_parameter("max_daily_bookings"), 3)
         self.assertEqual(created_category.get_parameter("max_recurring_bookings"), 3)
         self.assertEqual(created_category.get_parameter("booking_start_time"), self.category.booking_start_time)
         self.assertEqual(created_category.get_parameter("booking_end_time"), self.category.booking_end_time)
@@ -127,7 +134,8 @@ class TestPrivilegeCategoryAPI(TestCase):
             "parent_category": "WrongFormat",
             "max_days_until_booking": 4,
             "can_make_recurring_booking": "True",
-            "max_bookings": 2,
+            "max_overall_bookings": 2,
+            "max_daily_bookings": 3,
             "max_recurring_bookings": 3,
             "booking_start_time": self.category.booking_start_time,
             "booking_end_time": self.category.booking_end_time
@@ -152,7 +160,8 @@ class TestPrivilegeCategoryAPI(TestCase):
             "parent_category": self.category.id,
             "max_days_until_booking": 4,
             "can_make_recurring_booking": "True",
-            "max_bookings": 2,
+            "max_overall_bookings": 2,
+            "max_daily_bookings": 3,
             "max_recurring_bookings": 3,
             "booking_start_time": self.category.booking_start_time,
             "booking_end_time": self.category.booking_end_time
@@ -171,7 +180,8 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.category1 = PrivilegeCategory(name="Second Tier")
         self.category1.max_days_until_booking = 4
         self.category1.can_make_recurring_booking = True
-        self.category1.max_bookings = 8
+        self.category1.max_overall_bookings = 8
+        self.category1.max_daily_bookings = 5
         self.category1.max_recurring_bookings = 2
         self.category1.booking_start_time = datetime.time(5, 0)
         self.category1.booking_end_time = datetime.time(12, 0)
@@ -189,7 +199,8 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.category1 = PrivilegeCategory(name="Second Tier")
         self.category1.max_days_until_booking = 4
         self.category1.can_make_recurring_booking = True
-        self.category1.max_bookings = 8
+        self.category1.max_overall_bookings = 8
+        self.category1.max_daily_bookings = 5
         self.category1.max_recurring_bookings = 2
         self.category1.booking_start_time = datetime.time(5, 0)
         self.category1.booking_end_time = datetime.time(12, 0)
@@ -210,7 +221,8 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.category1 = PrivilegeCategory(name="Second Tier")
         self.category1.max_days_until_booking = 4
         self.category1.can_make_recurring_booking = True
-        self.category1.max_bookings = 8
+        self.category1.max_overall_bookings = 8
+        self.category1.max_daily_bookings = 5
         self.category1.max_recurring_bookings = 2
         self.category1.booking_start_time = datetime.time(5, 0)
         self.category1.booking_end_time = datetime.time(12, 0)
@@ -244,13 +256,15 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.user.save()
         self.user.refresh_from_db()
 
-        self.category.max_bookings = 10
+        self.category.max_overall_bookings = 10
+        self.category.max_daily_bookings = 7
         self.category.max_days_until_booking = 4
         self.category.save()
 
         data = {
             "name": self.category.name,
-            "max_bookings": self.category.max_bookings,
+            "max_overall_bookings": self.category.max_overall_bookings,
+            "max_daily_bookings": self.category.max_daily_bookings,
             "max_days_until_booking": self.category.max_days_until_booking
         }
 
@@ -262,7 +276,8 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_category = PrivilegeCategory.objects.get(name="Base Category")
         # Updated fields
-        self.assertEqual(updated_category.max_bookings, self.category.max_bookings)
+        self.assertEqual(updated_category.max_overall_bookings, self.category.max_overall_bookings)
+        self.assertEqual(updated_category.max_daily_bookings, self.category.max_daily_bookings)
         self.assertEqual(updated_category.max_days_until_booking, self.category.max_days_until_booking)
         # Unchanged fields
         self.assertEqual(updated_category.booking_start_time, self.category.booking_start_time)

@@ -17,7 +17,8 @@ class TestBookingPrivileges(TestCase):
         self.p_c_booker = PrivilegeCategory(name="Booker Category")
 
         self.p_c_booker.max_days_until_booking = 3
-        self.p_c_booker.max_bookings = 2
+        self.p_c_booker.max_overall_bookings = 2
+        self.p_c_booker.max_daily_bookings = 2
         self.p_c_booker.booking_start_time = time(9, 0, 0)
         self.p_c_booker.booking_end_time = time(22, 0, 0)
 
@@ -30,7 +31,8 @@ class TestBookingPrivileges(TestCase):
 
         self.p_c_group = PrivilegeCategory(name="Group Category")
         self.p_c_group.max_days_until_booking = 5
-        self.p_c_group.max_bookings = 1
+        self.p_c_group.max_overall_bookings = 2
+        self.p_c_group.max_daily_bookings = 2
         self.p_c_group.booking_start_time = time(8, 0, 0)
         self.p_c_group.booking_end_time = time(23, 0, 0)
         self.p_c_group.save()
@@ -185,7 +187,7 @@ class TestBookingPrivileges(TestCase):
 
         self.assertEqual(self.group.booking_set.count(), 0)
 
-    def testTooManyBookingsBooker(self):
+    def testTooManyOverallBookingsBooker(self):
 
         booking1 = Booking(booker=self.booker,
                            room=self.room,
@@ -205,10 +207,12 @@ class TestBookingPrivileges(TestCase):
 
         booking3 = Booking(booker=self.booker,
                            room=self.room,
-                           date=date.today(),
+                           date=date.today() + datetime.timedelta(2),
                            start_time=time(14, 0, 0),
                            end_time=time(15, 0, 0)
                            )
+
+        self.assertEqual(self.booker.booking_set.count(), 2)
         with mock_datetime(datetime.datetime(date.today().year,
                                              date.today().month,
                                              date.today().day,
@@ -216,11 +220,82 @@ class TestBookingPrivileges(TestCase):
             try:
                 booking3.save()
             except PrivilegeError as error:
-                self.assertEqual(error.message, self.p_c_booker.get_error_text("max_bookings"))
+                self.assertEqual(error.message, self.p_c_booker.get_error_text("max_overall_bookings"))
+
+    def testTooManyOverallBookingsGroup(self):
+
+        booking1 = Booking(booker=self.booker,
+                           group=self.group,
+                           room=self.room,
+                           date=date.today(),
+                           start_time=time(12, 0, 0),
+                           end_time=time(13, 0, 0)
+                           )
+        booking1.save()
+
+        booking2 = Booking(booker=self.booker,
+                           group=self.group,
+                           room=self.room,
+                           date=date.today() + datetime.timedelta(1),
+                           start_time=time(13, 0, 0),
+                           end_time=time(14, 0, 0)
+                           )
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker,
+                           group=self.group,
+                           room=self.room,
+                           date=date.today() + datetime.timedelta(2),
+                           start_time=time(13, 0, 0),
+                           end_time=time(14, 0, 0)
+                           )
+
+        self.assertEqual(self.group.booking_set.count(), 2)
+        with mock_datetime(datetime.datetime(date.today().year,
+                                             date.today().month,
+                                             date.today().day,
+                                             11, 30, 0, 0), datetime):
+            try:
+                booking3.save()
+            except PrivilegeError as error:
+                self.assertEqual(error.message, self.p_c_group.get_error_text("max_overall_bookings"))
+
+    def testTooManyDailyBookingsBooker(self):
+
+        booking1 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=date.today(),
+                           start_time=time(12, 0, 0),
+                           end_time=time(13, 0, 0)
+                           )
+        booking1.save()
+
+        booking2 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=date.today(),
+                           start_time=time(13, 0, 0),
+                           end_time=time(14, 0, 0)
+                           )
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=date.today(),
+                           start_time=time(14, 0, 0),
+                           end_time=time(15, 0, 0)
+                           )
 
         self.assertEqual(self.booker.booking_set.count(), 2)
+        with mock_datetime(datetime.datetime(date.today().year,
+                                             date.today().month,
+                                             date.today().day,
+                                             11, 30, 0, 0), datetime):
+            try:
+                booking3.save()
+            except PrivilegeError as error:
+                self.assertEqual(error.message, self.p_c_booker.get_error_text("max_daily_bookings"))
 
-    def testTooManyBookingsGroup(self):
+    def testTooManyDailyBookingsGroup(self):
 
         booking1 = Booking(booker=self.booker,
                            group=self.group,
@@ -235,16 +310,25 @@ class TestBookingPrivileges(TestCase):
                            group=self.group,
                            room=self.room,
                            date=date.today(),
+                           start_time=time(15, 0, 0),
+                           end_time=time(16, 0, 0)
+                           )
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker,
+                           group=self.group,
+                           room=self.room,
+                           date=date.today(),
                            start_time=time(13, 0, 0),
                            end_time=time(14, 0, 0)
                            )
+
+        self.assertEqual(self.group.booking_set.count(), 2)
         with mock_datetime(datetime.datetime(date.today().year,
                                              date.today().month,
                                              date.today().day,
                                              11, 30, 0, 0), datetime):
             try:
-                booking2.save()
+                booking3.save()
             except PrivilegeError as error:
-                self.assertEqual(error.message, self.p_c_group.get_error_text("max_bookings"))
-
-        self.assertEqual(self.group.booking_set.count(), 1)
+                self.assertEqual(error.message, self.p_c_group.get_error_text("max_daily_bookings"))

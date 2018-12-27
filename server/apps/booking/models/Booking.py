@@ -137,7 +137,8 @@ class Booking(models.Model, SubjectModel):
             raise PrivilegeError(p_c.get_error_text("max_days_until_booking"))
 
         # max_overall_bookings
-        num_overall_bookings = self.get_active_overall_non_recurring_bookings(booker_entity).distinct('date').count()
+        num_overall_bookings = self.get_active_overall_non_recurring_bookings(booker_entity)\
+                                   .values_list('date', flat=True).distinct().count()
 
         if num_overall_bookings >= max_overall_bookings:
             raise PrivilegeError(p_c.get_error_text("max_overall_bookings"))
