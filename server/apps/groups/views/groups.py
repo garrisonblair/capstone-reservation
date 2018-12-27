@@ -17,6 +17,7 @@ from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 from ..models.GroupInvitation import GroupInvitation
+from ..serializers.group_invitation import ReadGroupInvitationSerializer
 
 
 class GroupList(ListAPIView):
@@ -93,26 +94,37 @@ class InviteMembers(APIView):
         if group.owner != request.user.booker:
             return Response("Cant modify this Group", status=status.HTTP_401_UNAUTHORIZED)
 
-        members_to_invite = request.data["members"]  # User.id list
+        members_to_invite = request.data["invited_bookers"]  # User.id list
 
+        created_invitations = list()
         for user_id in members_to_invite:
             user = User.objects.get(id=user_id)
 
-            invitation = GroupInvitation(invited_booker=user.booker,
-                                         group=group)
-            invitation.save()
+            try:
+                existing_invitation = GroupInvitation.objects.get(invited_booker=user.booker, group=group)
+                existing_invitation.save()  # update timestamp
+                created_invitations.append(existing_invitation)
+                continue
+            except GroupInvitation.DoesNotExist:
+                invitation = GroupInvitation(invited_booker=user.booker,
+                                             group=group)
+                invitation.save()
+                created_invitations.append(invitation)
 
             subject = "Capstone Room System: Group Invitation"
             message = "Hi {},\n"\
                       "You have been invited to the group {} by {}."\
                       "Press on the link below to accept the invitation.".format(user.first_name,
                                                                                  group.name,
-                                                                                 group.owner.username)
+                                                                                 group.owner.user.username)
 
             mail.send_mail(subject,
                            message,
                            settings.EMAIL_HOST_USER,
                            [user.email])
+
+        serializer = ReadGroupInvitationSerializer(created_invitations, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class RemoveMembers(APIView):

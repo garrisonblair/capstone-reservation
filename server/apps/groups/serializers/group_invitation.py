@@ -19,3 +19,4 @@ class WriteGroupInvitationSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupInvitation
         fields = '__all__'
+        exclude = ['timestamp']

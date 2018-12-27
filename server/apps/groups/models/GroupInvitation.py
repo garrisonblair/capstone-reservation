@@ -7,8 +7,8 @@ from .Group import Group
 
 class GroupInvitation(models.Model):
 
-    invited_booker = models.ForeignKey(Booker, related_name="group_invitations")
-    group = models.ForeignKey(Group, related_name="invitations")
+    invited_booker = models.ForeignKey(Booker, related_name="group_invitations", on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, related_name="invitations", on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
 
     def save(self, *args, **kwargs):
