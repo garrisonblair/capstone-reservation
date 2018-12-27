@@ -28,8 +28,9 @@ class GroupList(ListAPIView):
     def get_queryset(self):
         qs = super(GroupList, self).get_queryset()
         try:
-            booker = self.request.user.booker
-            qs = booker.groups
+            if not self.request.user.is_superuser:
+                booker = self.request.user.booker
+                qs = booker.groups
         except Booker.DoesNotExist:
             pass
 
