@@ -4,13 +4,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from django.conf import settings
+from django.core import mail
 from django.core.exceptions import ValidationError
+
+from django.contrib.auth.models import User
 
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.models.Booker import Booker
 from apps.groups.serializers.group import WriteGroupSerializer, ReadGroupSerializer
 from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+
+from ..models.GroupInvitation import GroupInvitation
 
 
 class GroupList(ListAPIView):
@@ -76,6 +82,37 @@ class AddMembers(APIView):
                 print("Booker {} is already in group".format(member_id))
         group.save()
         return Response(WriteGroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
+
+
+class InviteMembers(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def post(self, request, pk):
+        group = Group.objects.get(id=pk)
+
+        if group.owner != request.user.booker:
+            return Response("Cant modify this Group", status=status.HTTP_401_UNAUTHORIZED)
+
+        members_to_invite = request.data["members"]  # User.id list
+
+        for user_id in members_to_invite:
+            user = User.objects.get(id=user_id)
+
+            invitation = GroupInvitation(invited_booker=user.booker,
+                                         group=group)
+            invitation.save()
+
+            subject = "Capstone Room System: Group Invitation"
+            message = "Hi {},\n"\
+                      "You have been invited to the group {} by {}."\
+                      "Press on the link below to accept the invitation.".format(user.first_name,
+                                                                                 group.name,
+                                                                                 group.owner.username)
+
+            mail.send_mail(subject,
+                           message,
+                           settings.EMAIL_HOST_USER,
+                           [user.email])
 
 
 class RemoveMembers(APIView):
