@@ -2,6 +2,7 @@ from django.db import models
 
 from apps.util.comparators import *
 from apps.util.AbstractPrivilege import AbstractPrivilege
+from django.core.exceptions import ValidationError
 
 
 class FieldMetadata:
@@ -59,6 +60,8 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
 
     def save(self, *args, **kwargs):
 
+        self.validate_model()
+
         if self.is_default:
             try:
                 current_default = PrivilegeCategory.objects.get(is_default=True)
@@ -68,6 +71,14 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
                 pass
 
         return super(PrivilegeCategory, self).save(*args, **kwargs)
+
+    def validate_model(self):
+
+        for field_name in PrivilegeCategory.field_metadata.keys():
+            try:
+                self.get_parameter(field_name)
+            except AttributeError:
+                raise ValidationError("Field " + field_name + " not defined or inherited from parent category.")
 
     def get_parameter(self, param_name):
         value = getattr(self, param_name)
@@ -82,19 +93,6 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
         return value
 
     def get_error_text(self, param_name):
-
-        # error_messages = {
-        #     "max_days_until_booking": "Attempting to book too many days in advance. Maximum: " +
-        #                               str(self.max_days_until_booking),
-        #     "can_make_recurring_bookings": "Not permitted to make recurring bookings.",
-        #     "max_bookings": "Booker has too many bookings. Maximum: " + str(self.max_bookings),
-        #     "max_recurring_bookings": "Booker has too many recurring bookings. Maximum: " +
-        #                               str(self.max_recurring_bookings),
-        #
-        #     "booking_start_time": "Cannot book before " + str(self.booking_start_time),
-        #     "booking_end_time": "Cannot book after " + str(self.booking_end_time)
-        # }
-
         return self.field_metadata.get(param_name).error_message
 
     def __str__(self):
