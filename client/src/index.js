@@ -12,6 +12,7 @@ import RoomManager from './components/Admin/RoomManager';
 // import Stats from './components/Admin/Stats';
 import BookingActivity from './components/Admin/Stats/BookingActivity';
 import Settings from './components/Admin/Settings';
+import Bookers from './components/Admin/Bookers';
 
 
 ReactDOM.render(
@@ -27,6 +28,7 @@ ReactDOM.render(
         <Route exact path="/admin/privileges" render={() => <Admin menuType="privileges" content={<PrivilegeCategory />} />} />
         <Route exact path="/admin/rooms" render={() => <Admin menuType="rooms" content={<RoomManager />} />} />
         <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<BookingActivity />} />} />
+        <Route exact path="/admin/bookers" render={() => <Admin menuType="bookers" content={<Bookers />} />} />
         <Route component={NotFound} />
       </Switch>
     </div>
