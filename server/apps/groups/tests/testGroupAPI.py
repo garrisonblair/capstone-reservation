@@ -6,6 +6,7 @@ from rest_framework import status
 from django.contrib.auth.models import User
 
 from apps.accounts.models.Booker import Booker
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.groups.models.Group import Group
 
 from ..views.groups import GroupList, GroupCreate, AddMembers, RemoveMembers
@@ -36,6 +37,9 @@ class RoomAPITest(TestCase):
         self.group2.save()
         self.group2.members.add(self.booker)
         self.group2.save()
+
+        self.category = PrivilegeCategory(is_default=True)
+        self.category.save()
 
     def testGetGroups(self):
         request = self.factory.get("/groups")
