@@ -62,7 +62,7 @@ class CampOnCreate(APIView):
     def post(self, request):
 
         data = request.data
-        data["booker"] = request.user.booker.booker_id
+        data["booker"] = request.user.booker.id
 
         # Rounding to nearest 10th minute, as bookings and camp-ons can only be made every ten minute interval
         time = datetime.datetime.now().replace(microsecond=0)
