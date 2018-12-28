@@ -50,4 +50,4 @@ class BookerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booker
-        fields = ('booker_id', 'user')
+        fields = ('id', 'booker_id', 'user')
