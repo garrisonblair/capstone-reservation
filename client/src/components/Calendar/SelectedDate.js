@@ -32,26 +32,28 @@ class SelectedDate extends Component {
     const { selectedDate } = this.state;
     return (
       <div className="calendar__date">
-        <Button
-          basic
-          circular
-          color="olive"
-          icon="chevron left"
-          size="tiny"
-          onClick={this.handleClickPreviousDate}
-        />
-        <h3 className="calendar__date__header">
-          <Icon name="calendar alternate outline" />
-          {selectedDate.toDateString()}
-        </h3>
-        <Button
-          basic
-          circular
-          color="olive"
-          icon="chevron right"
-          size="tiny"
-          onClick={this.handleClickNextDate}
-        />
+        <div className="calendar__date__header">
+          <Button
+            basic
+            circular
+            color="olive"
+            icon="chevron left"
+            size="tiny"
+            onClick={this.handleClickPreviousDate}
+          />
+          <h3 className="calendar__date__header">
+            <Icon name="calendar alternate outline" />
+            {selectedDate.toDateString()}
+          </h3>
+          <Button
+            basic
+            circular
+            color="olive"
+            icon="chevron right"
+            size="tiny"
+            onClick={this.handleClickNextDate}
+          />
+        </div>
       </div>
     );
   }

@@ -45,16 +45,12 @@ class Login extends Component {
 
   handleLogin = () => {
     // eslint-disable-next-line react/prop-types
-    const { history } = this.props;
     const { username, password } = this.state;
 
     api.login(username, password)
       .then(response => response.data)
       .then((data) => {
         localStorage.setItem('CapstoneReservationUser', JSON.stringify(data));
-        if (data.is_superuser) {
-          history.push('/admin');
-        }
         sweetAlert(
           'Logged in',
           '',

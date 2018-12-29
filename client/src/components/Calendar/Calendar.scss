@@ -26,13 +26,14 @@ body {
 }
 
 .calendar__container {
-  // display: inline-grid;
+  display: inline-grid;
   margin-top: 10px;
   // padding: 20px;
   width: 100%;
   height: 100%;
   overflow-x: visible;
   background-color: $backgroundColorContainer;
+  grid-template-rows: max-content auto;
 }
 
 .calendar__wrapper {
@@ -49,11 +50,13 @@ body {
 }
 
 .calendar__date {
-  text-align: center;
   color: white;
   margin-top: 10px;
   font-size: 50;
   &__header {
+    position: -webkit-sticky;
+    position: sticky;
+    left: 40%;
     display: inline;
     font-weight: 400;
     margin: 0 10px;

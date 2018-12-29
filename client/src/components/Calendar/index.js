@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Button } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import './Calendar.scss';
 import SelectedDate from './SelectedDate';
@@ -225,8 +226,8 @@ class Calendar extends Component {
         <div className="date__container">
           <SelectedDate changeDate={this.changeDate} />
           {isLoggedIn
-            ? <button type="button" onClick={this.logout}>Logout</button>
-            : <button type="button" onClick={this.openLogin}>Login</button>
+            ? <Button onClick={this.logout}>Logout</Button>
+            : <Button onClick={this.openLogin}>Login</Button>
           }
           <Login show={showLogin} onClose={this.closeLogin} />
         </div>
