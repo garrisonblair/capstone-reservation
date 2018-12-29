@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { Dropdown, Menu } from 'semantic-ui-react';
+import { Dropdown, Icon, Menu } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import Login from '../Login';
 import api from '../../utils/api';
+import './Navigation.scss';
 
 
 class Navigation extends Component {
@@ -48,6 +49,7 @@ class Navigation extends Component {
     const { history } = this.props;
     const component = (
       <Menu.Item onClick={() => { history.push('admin'); }}>
+        <Icon name="university" />
         Admin
       </Menu.Item>
     );
@@ -55,33 +57,51 @@ class Navigation extends Component {
     return component;
   }
 
+  renderLoggedInInfo = () => {
+    if (!localStorage.CapstoneReservationUser) {
+      return '';
+    }
+
+    const user = JSON.parse(localStorage.CapstoneReservationUser);
+    const component = (
+      <Menu.Item>
+        <Icon name="user" />
+        {`Logged in as ${user.username}`}
+      </Menu.Item>
+    );
+    return component;
+  }
+
   render() {
     const { showLogin } = this.state;
 
     return (
-      <Menu inverted fixed="top">
-        <Menu.Item>
-          Capstone
-        </Menu.Item>
-        <Menu.Menu position="right" inverted="true">
-          {this.renderAdminSettings()}
-          <Dropdown item text="Account">
-            <Dropdown.Menu>
-              <Dropdown.Item icon="user" text="Profile" />
-              <Dropdown.Item icon="cog" text="Settings" />
-            </Dropdown.Menu>
-          </Dropdown>
-          <Menu.Item
-            onClick={this.handleLogin}
-          >
-            {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
+      <div className="navigation">
+        <Menu inverted fixed="top">
+          <Menu.Item>
+            Capstone
           </Menu.Item>
-        </Menu.Menu>
-        <Login
-          show={showLogin}
-          onClose={this.closeLogin}
-        />
-      </Menu>
+          <Menu.Menu position="right" inverted="true">
+            {this.renderLoggedInInfo()}
+            {this.renderAdminSettings()}
+            <Dropdown item text="Account">
+              <Dropdown.Menu>
+                <Dropdown.Item icon="user" text="Profile" />
+                <Dropdown.Item icon="cog" text="Settings" />
+              </Dropdown.Menu>
+            </Dropdown>
+            <Menu.Item
+              onClick={this.handleLogin}
+            >
+              {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
+            </Menu.Item>
+          </Menu.Menu>
+          <Login
+            show={showLogin}
+            onClose={this.closeLogin}
+          />
+        </Menu>
+      </div>
     );
   }
 }
