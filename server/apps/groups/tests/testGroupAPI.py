@@ -6,6 +6,7 @@ from rest_framework import status
 from django.contrib.auth.models import User
 
 from apps.accounts.models.Booker import Booker
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.groups.models.Group import Group
 
 from ..views.groups import GroupList, GroupCreate, AddMembers, RemoveMembers
@@ -37,6 +38,9 @@ class RoomAPITest(TestCase):
         self.group2.members.add(self.booker)
         self.group2.save()
 
+        self.category = PrivilegeCategory(is_default=True)
+        self.category.save()
+
     def testGetGroups(self):
         request = self.factory.get("/groups")
 
@@ -49,6 +53,7 @@ class RoomAPITest(TestCase):
                     ('id', 1),
                     ('owner', OrderedDict(
                         [
+                            ('id', 1),
                             ('booker_id', 'j_lenn'),
                             ('user', OrderedDict(
                                 [
@@ -66,6 +71,7 @@ class RoomAPITest(TestCase):
                      ),
                     ('members', [OrderedDict(
                         [
+                            ('id', 1),
                             ('booker_id', 'j_lenn'),
                             ('user', OrderedDict(
                                 [
@@ -89,6 +95,7 @@ class RoomAPITest(TestCase):
                     ('id', 2),
                     ('owner', OrderedDict(
                         [
+                            ('id', 1),
                             ('booker_id', 'j_lenn'),
                             ('user', OrderedDict(
                                 [
@@ -106,6 +113,7 @@ class RoomAPITest(TestCase):
                      ),
                     ('members', [OrderedDict(
                         [
+                            ('id', 1),
                             ('booker_id', 'j_lenn'),
                             ('user', OrderedDict(
                                 [
@@ -154,7 +162,7 @@ class RoomAPITest(TestCase):
     def testAddMember(self):
         request = self.factory.post("/group/1/add_members",
                                     {
-                                        "members": ["booker_2"]
+                                        "members": [self.booker_2.id]
                                     }, format="json")
         force_authenticate(request, user=self.user)
 
@@ -171,7 +179,7 @@ class RoomAPITest(TestCase):
 
         request = self.factory.post("group/" + str(self.group1.id) + "/remove_members",
                                     {
-                                        "members": ["booker_2"]
+                                        "members": [self.booker_2.id]
                                     }, format="json")
 
         force_authenticate(request, user=self.user)

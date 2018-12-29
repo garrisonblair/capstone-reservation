@@ -46,7 +46,7 @@ class BookingCreate(APIView):
 
     def post(self, request):
         data = request.data
-        data["booker"] = request.user.booker.booker_id
+        data["booker"] = request.user.booker.id
 
         serializer = BookingSerializer(data=data)
 
@@ -68,7 +68,7 @@ class BookingRetrieveUpdateDestroy(APIView):
     def patch(self, request, pk):
 
         try:
-            booking = Booking.objects.get(pk=pk)
+            booking = Booking.objects.get(id=pk)
         except Booking.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -76,7 +76,7 @@ class BookingRetrieveUpdateDestroy(APIView):
         self.check_object_permissions(request, booking.booker.user)
 
         data = request.data
-        data["booker"] = booking.booker.booker_id
+        data["booker"] = booking.booker.id
         serializer = BookingSerializer(booking, data=data, partial=True)
 
         if not serializer.is_valid():

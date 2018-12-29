@@ -1,14 +1,15 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
-import './Calendar.scss';
 import SelectedDate from './SelectedDate';
 import Rooms from './Rooms';
 import Hours from './Hours';
 import Cells from './Cells';
 import Login from '../Login';
+import Navigation from '../Navigation';
 import api from '../../utils/api';
+import './Calendar.scss';
 
 
 class Calendar extends Component {
@@ -152,7 +153,7 @@ class Calendar extends Component {
   }
 
   logout = () => {
-    localStorage.removeItem('CapstoneReservationUser');
+    api.logout();
     sweetAlert(
       'Logged out',
       '',
@@ -221,8 +222,9 @@ class Calendar extends Component {
       showLogin,
       isLoggedIn,
     } = this.state;
-    return (
-      <div className="calendar__container">
+    return [
+      <Navigation key={0} />,
+      <div className="calendar__container" key={1}>
         <div className="date__container">
           <SelectedDate changeDate={this.changeDate} />
           {isLoggedIn
@@ -244,8 +246,8 @@ class Calendar extends Component {
             onCloseModalWithAction={this.onCloseModalWithAction}
           />
         </div>
-      </div>
-    );
+      </div>,
+    ];
   }
 }
 
