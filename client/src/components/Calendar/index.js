@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import { Button } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import sweetAlert from 'sweetalert2';
 import SelectedDate from './SelectedDate';
 import Rooms from './Rooms';
 import Hours from './Hours';
 import Cells from './Cells';
-import Login from '../Login';
 import Navigation from '../Navigation';
 import api from '../../utils/api';
 import './Calendar.scss';
@@ -26,8 +23,6 @@ class Calendar extends Component {
     roomsList: [],
     hoursList: [],
     selectedDate: new Date(),
-    showLogin: false,
-    isLoggedIn: false,
   };
 
   /*
@@ -35,7 +30,6 @@ class Calendar extends Component {
    */
 
   componentDidMount() {
-    this.checkLogin();
     document.body.style.backgroundColor = '#3d3d3e';
 
     this.getBookings();
@@ -137,31 +131,6 @@ class Calendar extends Component {
    * HELPER METHOD
    */
 
-  openLogin = () => {
-    this.setState({ showLogin: true });
-  }
-
-  closeLogin = () => {
-    this.setState({ showLogin: false });
-    this.checkLogin();
-  }
-
-  checkLogin = () => {
-    if (localStorage.getItem('CapstoneReservationUser') != null) {
-      this.setState({ isLoggedIn: true });
-    }
-  }
-
-  logout = () => {
-    api.logout();
-    sweetAlert(
-      'Logged out',
-      '',
-      'success',
-    );
-    this.setState({ isLoggedIn: false });
-  }
-
   changeDate = (date) => {
     this.setState({ selectedDate: date }, () => {
       this.getBookings();
@@ -170,7 +139,6 @@ class Calendar extends Component {
 
   onCloseModalWithAction = () => {
     this.getBookings();
-    this.checkLogin();
   }
 
   campOnToBooking = () => {
@@ -219,19 +187,12 @@ class Calendar extends Component {
       bookings,
       campOns,
       selectedDate,
-      showLogin,
-      isLoggedIn,
     } = this.state;
     return [
       <Navigation key={0} />,
       <div className="calendar__container" key={1}>
         <div className="date__container">
           <SelectedDate changeDate={this.changeDate} />
-          {isLoggedIn
-            ? <Button onClick={this.logout}>Logout</Button>
-            : <Button onClick={this.openLogin}>Login</Button>
-          }
-          <Login show={showLogin} onClose={this.closeLogin} />
         </div>
         <div className="calendar__wrapper">
           <Rooms roomsList={roomsList} changeDate={this.changeDate} />
