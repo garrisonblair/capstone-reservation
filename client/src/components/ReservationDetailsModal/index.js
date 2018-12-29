@@ -13,10 +13,8 @@ class ReservationDetailsModal extends Component {
     show: false,
     startHour: '8',
     startMinute: '00',
-    defaultToHour: '8',
-    defaultToMinute: '30',
-    endHour: '-1',
-    endMinute: '-1',
+    endHour: '8',
+    endMinute: '30',
     hourOptions: [],
     reservedOptions: [],
     isRecurring: false,
@@ -71,7 +69,7 @@ class ReservationDetailsModal extends Component {
       startHour: hour,
       startMinute: minute,
     });
-    this.getDefaultToTime(hour, minute);
+    this.getDefaultEndTime(hour, minute);
   }
 
   generateHourOptions = (minHour, maxHour) => {
@@ -96,7 +94,7 @@ class ReservationDetailsModal extends Component {
     return result;
   }
 
-  getDefaultToTime = (startHour, startMinute) => {
+  getDefaultEndTime = (startHour, startMinute) => {
     if (startHour !== '' && startMinute !== '') {
       let hour = parseInt(startHour, 10);
       let minute = parseInt(startMinute, 10);
@@ -106,7 +104,9 @@ class ReservationDetailsModal extends Component {
       } else {
         minute += 30;
       }
-      this.setState({ defaultToHour: hour.toString(10), defaultToMinute: minute.toString(10) });
+      hour = hour.toString(10);
+      minute = minute.toString(10);
+      this.setState({ endHour: hour, endMinute: minute });
     }
   }
 
@@ -401,8 +401,8 @@ class ReservationDetailsModal extends Component {
       minuteOptions,
       reservedOptions,
       isRecurring,
-      defaultToHour,
-      defaultToMinute,
+      endHour,
+      endMinute,
     } = this.state;
     const { selectedDate } = this.props;
     return (
@@ -447,7 +447,7 @@ class ReservationDetailsModal extends Component {
               className="dropdown--fixed-width"
               placeholder="hh"
               options={hourOptions}
-              defaultValue={defaultToHour}
+              defaultValue={endHour}
               onChange={this.handleEndHourChange}
             />
             <Dropdown
@@ -456,7 +456,7 @@ class ReservationDetailsModal extends Component {
               className="dropdown--fixed-width"
               placeholder="mm"
               options={minuteOptions}
-              defaultValue={defaultToMinute}
+              defaultValue={endMinute}
               onChange={this.handleEndMinuteChange}
             />
           </div>
