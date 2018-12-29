@@ -5,6 +5,7 @@ import SelectedDate from './SelectedDate';
 import Rooms from './Rooms';
 import Hours from './Hours';
 import Cells from './Cells';
+import Login from '../Login';
 import api from '../../utils/api';
 
 
@@ -22,6 +23,8 @@ class Calendar extends Component {
     roomsList: [],
     hoursList: [],
     selectedDate: new Date(),
+    showLogin: false,
+    isLoggedIn: false,
   };
 
   /*
@@ -29,6 +32,9 @@ class Calendar extends Component {
    */
 
   componentDidMount() {
+    if (localStorage.getItem('CapstoneReservationUser') != null) {
+      this.setState({ isLoggedIn: true });
+    }
     document.body.style.backgroundColor = '#3d3d3e';
 
     this.getBookings();
@@ -130,6 +136,17 @@ class Calendar extends Component {
    * HELPER METHOD
    */
 
+  openLogin = () => {
+    this.setState({ showLogin: true });
+  }
+
+  closeLogin = () => {
+    this.setState({ showLogin: false });
+    if (localStorage.getItem('CapstoneReservationUser') != null) {
+      this.setState({ isLoggedIn: true });
+    }
+  }
+
   changeDate = (date) => {
     this.setState({ selectedDate: date }, () => {
       this.getBookings();
@@ -186,11 +203,18 @@ class Calendar extends Component {
       bookings,
       campOns,
       selectedDate,
+      showLogin,
+      isLoggedIn,
     } = this.state;
     return (
       <div className="calendar__container">
         <div className="date__container">
           <SelectedDate changeDate={this.changeDate} />
+          {isLoggedIn
+            ? <button type="button">Logout</button>
+            : <button type="button" onClick={this.openLogin}>Login</button>
+          }
+          <Login show={showLogin} onClose={this.closeLogin} />
         </div>
         <div className="calendar__wrapper">
           <Rooms roomsList={roomsList} changeDate={this.changeDate} />
