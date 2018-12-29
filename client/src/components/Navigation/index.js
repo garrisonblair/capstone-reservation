@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { Menu } from 'semantic-ui-react';
+import { Dropdown, Menu } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import Login from '../Login';
 import api from '../../utils/api';
@@ -65,6 +65,12 @@ class Navigation extends Component {
         </Menu.Item>
         <Menu.Menu position="right" inverted="true">
           {this.renderAdminSettings()}
+          <Dropdown item text="Account">
+            <Dropdown.Menu>
+              <Dropdown.Item icon="user" text="Profile" />
+              <Dropdown.Item icon="cog" text="Settings" />
+            </Dropdown.Menu>
+          </Dropdown>
           <Menu.Item
             onClick={this.handleLogin}
           >
