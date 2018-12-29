@@ -6,11 +6,13 @@ import {
 import sweetAlert from 'sweetalert2';
 import './ReservationDetailsModal.scss';
 import toDateInputValue from '../../utils/dateFormatter';
+import Login from '../Login';
 import api from '../../utils/api';
 
 class ReservationDetailsModal extends Component {
   state = {
     show: false,
+    showLogin: false,
     startHour: '8',
     startMinute: '00',
     endHour: '8',
@@ -132,6 +134,22 @@ class ReservationDetailsModal extends Component {
     this.setState({
       show: false,
     });
+  }
+
+  closeLogin = () => {
+    const { isRecurring } = this.state;
+    this.setState({ showLogin: false });
+    if (localStorage.getItem('CapstoneReservationUser') == null) {
+      sweetAlert(
+        'Reservation failed',
+        'Please Log in to make a reservation.',
+        'error',
+      );
+    } else if (isRecurring) {
+      this.sendPostRequestRecurringBooking(false);
+    } else {
+      this.sendPostRequestBooking();
+    }
   }
 
   handleOpen = () => this.setState({ show: true });
@@ -289,6 +307,7 @@ class ReservationDetailsModal extends Component {
   }
 
   handleSubmit = () => {
+    console.log(localStorage.getItem('CapstoneReservationUser'));
     const { tabIndex, isRecurring } = this.state;
     // Verify requirements before sending the POST request
     try {
@@ -308,7 +327,9 @@ class ReservationDetailsModal extends Component {
       return;
     }
 
-    if (isRecurring) {
+    if (localStorage.getItem('CapstoneReservationUser') == null) {
+      this.setState({ showLogin: true });
+    } else if (isRecurring) {
       this.sendPostRequestRecurringBooking(false);
     } else {
       this.sendPostRequestBooking();
@@ -491,7 +512,7 @@ class ReservationDetailsModal extends Component {
   }
 
   render() {
-    const { show } = this.state;
+    const { show, showLogin } = this.state;
     const { selectedRoomName } = this.props;
     return (
       <div id="reservation-details-modal">
@@ -503,6 +524,7 @@ class ReservationDetailsModal extends Component {
           </Modal.Header>
           {this.renderDescription()}
         </Modal>
+        <Login show={showLogin} onClose={this.closeLogin} />
       </div>
     );
   }

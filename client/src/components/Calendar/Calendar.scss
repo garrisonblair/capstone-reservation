@@ -63,8 +63,8 @@ body {
 .calendar__rooms__wrapper {
   display: inline-grid;
   grid-column-start: 2;
-  position: sticky;
   position: -webkit-sticky;
+  position: sticky;
   top: 0;
   // height: 50px;
   grid-template-columns: repeat(var(--colNum), 1fr);
@@ -74,8 +74,8 @@ body {
 
 .calendar__hours__wrapper {
   display: inline-grid;
-  position: sticky;
   position: -webkit-sticky;
+  position: sticky;
   left: 0;
   grid-template-rows: repeat(var(--rowNum), 1fr);
   background-color:$backgroundColorHours;

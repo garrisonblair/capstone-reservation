@@ -55,6 +55,11 @@ class Login extends Component {
         if (data.is_superuser) {
           history.push('/admin');
         }
+        sweetAlert(
+          'Logged in',
+          '',
+          'success',
+        );
         this.closeModal();
       })
       .catch(() => {

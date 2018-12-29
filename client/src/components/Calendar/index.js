@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import sweetAlert from 'sweetalert2';
 import './Calendar.scss';
 import SelectedDate from './SelectedDate';
 import Rooms from './Rooms';
@@ -32,9 +33,7 @@ class Calendar extends Component {
    */
 
   componentDidMount() {
-    if (localStorage.getItem('CapstoneReservationUser') != null) {
-      this.setState({ isLoggedIn: true });
-    }
+    this.checkLogin();
     document.body.style.backgroundColor = '#3d3d3e';
 
     this.getBookings();
@@ -142,6 +141,10 @@ class Calendar extends Component {
 
   closeLogin = () => {
     this.setState({ showLogin: false });
+    this.checkLogin();
+  }
+
+  checkLogin = () => {
     if (localStorage.getItem('CapstoneReservationUser') != null) {
       this.setState({ isLoggedIn: true });
     }
@@ -149,6 +152,11 @@ class Calendar extends Component {
 
   logout = () => {
     localStorage.removeItem('CapstoneReservationUser');
+    sweetAlert(
+      'Logged out',
+      '',
+      'success',
+    );
     this.setState({ isLoggedIn: false });
   }
 
@@ -160,6 +168,7 @@ class Calendar extends Component {
 
   onCloseModalWithAction = () => {
     this.getBookings();
+    this.checkLogin();
   }
 
   campOnToBooking = () => {
