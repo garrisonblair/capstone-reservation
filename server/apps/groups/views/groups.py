@@ -36,11 +36,11 @@ class GroupCreate(APIView):
         data = dict(request.data)
 
         try:
-            owner = Booker.objects.get(booker_id=request.user.booker.booker_id)
+            owner = Booker.objects.get(id=request.user.booker.id)
         except Group.DoesNotExist as error:
             return Response(error.messages, status=status.HTTP_404_NOT_FOUND)
 
-        data["owner"] = owner.booker_id
+        data["owner"] = owner.id
 
         serializer = ReadGroupSerializer(data=data)
 
@@ -70,7 +70,7 @@ class AddMembers(APIView):
             return Response("Can't modify this Group", status=status.HTTP_401_UNAUTHORIZED)
         members_to_add = request.data["members"]
         for member_id in members_to_add:
-            if not group.members.filter(booker_id=member_id).exists():
+            if not group.members.filter(id=member_id).exists():
                 group.members.add(member_id)
             else:
                 print("Booker {} is already in group".format(member_id))
@@ -90,7 +90,7 @@ class RemoveMembers(APIView):
             if member_id == group.owner.booker_id:
                 print("Owner can not be removed from group")
                 continue
-            if group.members.filter(booker_id=member_id).exists():
+            if group.members.filter(id=member_id).exists():
                 group.members.remove(member_id)
             else:
                 print("Booker {} is not in the group".format(member_id))

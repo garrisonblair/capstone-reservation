@@ -1,16 +1,18 @@
 [
 {
   "model": "accounts.booker",
-  "pk": "11111111",
+  "pk": "1",
   "fields": {
-    "user": 2
+    "user": 2,
+    "booker_id": 11111111
   }
 },
 {
   "model": "accounts.booker",
-  "pk": "22222222",
+  "pk": "2",
   "fields": {
-    "user": 3
+    "user": 3,
+    "booker_id": 22222222
   }
 }
 ]

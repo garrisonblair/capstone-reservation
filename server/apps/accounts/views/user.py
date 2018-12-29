@@ -71,7 +71,7 @@ class UserUpdate(APIView):
         booker = None
         if booker_id:
             try:
-                booker = Booker.objects.get(user=user)
+                booker = Booker.objects.get(user_id=user.id)
                 # Restrict student from changing its student ID once it's set
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
             except Booker.DoesNotExist:

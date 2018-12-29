@@ -24,7 +24,7 @@ class PrivilegeRequestList(ListAPIView):
 
         if not self.request.user.is_superuser:
             try:
-                owner = Booker.objects.get(booker_id=self.request.user.booker)
+                owner = Booker.objects.get(id=self.request.user.booker.id)
                 owned_groups = owner.owned_groups.all()
                 qs = qs.filter(group__in=owned_groups)
             except Booker.DoesNotExist:

@@ -18,7 +18,7 @@ class RecurringBookingCreate(APIView):
     def post(self, request):
 
         recurring_booking_data = request.data
-        recurring_booking_data["booker"] = request.user.booker.booker_id
+        recurring_booking_data["booker"] = request.user.booker.id
 
         serializer = RecurringBookingSerializer(data=recurring_booking_data)
         if not serializer.is_valid():
