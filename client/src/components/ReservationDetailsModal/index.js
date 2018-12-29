@@ -13,6 +13,8 @@ class ReservationDetailsModal extends Component {
     show: false,
     startHour: '8',
     startMinute: '00',
+    defaultToHour: '8',
+    defaultToMinute: '30',
     endHour: '-1',
     endMinute: '-1',
     hourOptions: [],
@@ -69,6 +71,7 @@ class ReservationDetailsModal extends Component {
       startHour: hour,
       startMinute: minute,
     });
+    this.getDefaultToTime(hour, minute);
   }
 
   generateHourOptions = (minHour, maxHour) => {
@@ -91,6 +94,20 @@ class ReservationDetailsModal extends Component {
       });
     }
     return result;
+  }
+
+  getDefaultToTime = (startHour, startMinute) => {
+    if (startHour !== '' && startMinute !== '') {
+      let hour = parseInt(startHour, 10);
+      let minute = parseInt(startMinute, 10);
+      if (minute >= 30) {
+        hour += 1;
+        minute -= 30;
+      } else {
+        minute += 30;
+      }
+      this.setState({ defaultToHour: hour.toString(10), defaultToMinute: minute.toString(10) });
+    }
   }
 
   // TODO: This method needs to be changed when accessing groups
@@ -378,7 +395,14 @@ class ReservationDetailsModal extends Component {
 
   renderDescription() {
     const {
-      startHour, startMinute, hourOptions, minuteOptions, reservedOptions, isRecurring,
+      startHour,
+      startMinute,
+      hourOptions,
+      minuteOptions,
+      reservedOptions,
+      isRecurring,
+      defaultToHour,
+      defaultToMinute,
     } = this.state;
     const { selectedDate } = this.props;
     return (
@@ -423,6 +447,7 @@ class ReservationDetailsModal extends Component {
               className="dropdown--fixed-width"
               placeholder="hh"
               options={hourOptions}
+              defaultValue={defaultToHour}
               onChange={this.handleEndHourChange}
             />
             <Dropdown
@@ -431,6 +456,7 @@ class ReservationDetailsModal extends Component {
               className="dropdown--fixed-width"
               placeholder="mm"
               options={minuteOptions}
+              defaultValue={defaultToMinute}
               onChange={this.handleEndMinuteChange}
             />
           </div>
