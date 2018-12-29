@@ -35,6 +35,25 @@ class Navigation extends Component {
 
   // handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
+  renderAdminSettings = () => {
+    if (!localStorage.CapstoneReservationUser) {
+      return '';
+    }
+
+    const user = JSON.parse(localStorage.CapstoneReservationUser);
+    if (!user.is_superuser) {
+      return '';
+    }
+
+    const component = (
+      <Menu.Item>
+        Admin
+      </Menu.Item>
+    );
+
+    return component;
+  }
+
   render() {
     const { showLogin } = this.state;
 
@@ -44,10 +63,11 @@ class Navigation extends Component {
           Capstone
         </Menu.Item>
         <Menu.Menu position="right" inverted="true">
+          {this.renderAdminSettings()}
           <Menu.Item
             onClick={this.handleLogin}
           >
-            {localStorage.getItem('CapstoneReservationUser') ? 'Logout' : 'Login'}
+            {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
           </Menu.Item>
         </Menu.Menu>
         <Login
