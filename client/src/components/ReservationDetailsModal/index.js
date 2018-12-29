@@ -307,7 +307,6 @@ class ReservationDetailsModal extends Component {
   }
 
   handleSubmit = () => {
-    console.log(localStorage.getItem('CapstoneReservationUser'));
     const { tabIndex, isRecurring } = this.state;
     // Verify requirements before sending the POST request
     try {
