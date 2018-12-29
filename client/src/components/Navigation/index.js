@@ -7,14 +7,13 @@ import Login from '../Login';
 import api from '../../utils/api';
 
 
-// eslint-disable-next-line react/prefer-stateless-function
 class Navigation extends Component {
   state = {
     showLogin: false,
   }
 
   handleLogin = () => {
-    if (localStorage.getItem('CapstoneReservationUser')) {
+    if (localStorage.CapstoneReservationUser) {
       api.logout()
         .then(() => {
           sweetAlert(
@@ -45,8 +44,10 @@ class Navigation extends Component {
       return '';
     }
 
+    // eslint-disable-next-line react/prop-types
+    const { history } = this.props;
     const component = (
-      <Menu.Item>
+      <Menu.Item onClick={() => { history.push('admin'); }}>
         Admin
       </Menu.Item>
     );
@@ -58,7 +59,7 @@ class Navigation extends Component {
     const { showLogin } = this.state;
 
     return (
-      <Menu inverted>
+      <Menu inverted fixed="top">
         <Menu.Item>
           Capstone
         </Menu.Item>

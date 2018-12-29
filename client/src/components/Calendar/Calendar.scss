@@ -27,7 +27,7 @@ body {
 
 .calendar__container {
   display: inline-grid;
-  margin-top: 10px;
+  margin-top: 50px;
   // padding: 20px;
   width: 100%;
   height: 100%;
@@ -81,7 +81,7 @@ body {
   position: sticky;
   left: 0;
   grid-template-rows: repeat(var(--rowNum), 1fr);
-  background-color:$backgroundColorHours;
+  background-color: $backgroundColorHours;
   color: $textColorHeader;
 }
 
@@ -102,7 +102,7 @@ body {
 }
 
 .calendar__cells__cell:hover {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); 
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
   cursor: pointer;
 }
 
@@ -117,7 +117,7 @@ body {
 }
 
 .calendar__booking:hover {
-  box-shadow: 0 0 20px rgba(33,33,33,.2); 
+  box-shadow: 0 0 20px rgba(33, 33, 33, .2);
   cursor: pointer;
 }
 
