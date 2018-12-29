@@ -147,6 +147,11 @@ class Calendar extends Component {
     }
   }
 
+  logout = () => {
+    localStorage.removeItem('CapstoneReservationUser');
+    this.setState({ isLoggedIn: false });
+  }
+
   changeDate = (date) => {
     this.setState({ selectedDate: date }, () => {
       this.getBookings();
@@ -211,7 +216,7 @@ class Calendar extends Component {
         <div className="date__container">
           <SelectedDate changeDate={this.changeDate} />
           {isLoggedIn
-            ? <button type="button">Logout</button>
+            ? <button type="button" onClick={this.logout}>Logout</button>
             : <button type="button" onClick={this.openLogin}>Login</button>
           }
           <Login show={showLogin} onClose={this.closeLogin} />

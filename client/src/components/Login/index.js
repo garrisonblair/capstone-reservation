@@ -57,8 +57,7 @@ class Login extends Component {
         }
         this.closeModal();
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
         sweetAlert(
           ':(',
           'Invalid credentials',
