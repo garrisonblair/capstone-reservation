@@ -93,29 +93,27 @@ class BookingRetrieveUpdateDestroy(APIView):
 
             try:
                 new_booking = related_campons.first()
-                campon_to_booking_data = dict()
-                campon_to_booking_data["booker"] = new_booking.booker
-                campon_to_booking_data["room"] = booking.room.id
-                campon_to_booking_data["date"] = booking.date
-                campon_to_booking_data["start_time"] = new_booking.start_time
-                campon_to_booking_data["end_time"] = new_booking.end_time
-                campon_to_booking_serializer = BookingSerializer(data=campon_to_booking_data)
-                if campon_to_booking_serializer.is_valid():
-                    campon_to_booking_serializer.save()
+
+                campon_to_booking = Booking(booker=new_booking.booker,
+                                            room=booking.room,
+                                            date=booking.date,
+                                            start_time=new_booking.start_time,
+                                            end_time=new_booking.end_time)
+                campon_to_booking.save()
+                # TO-DO: logs the creation operation
+
                 CampOn.objects.filter(id=related_campons[0].id).delete()
+                # TO-DO: log the deletion operation
                 created_booking = Booking.objects.order_by('id').last()
-                # log for system operation
 
                 related_campons = CampOn.objects.filter(camped_on_booking__id=update_booking.id).order_by('id')
                 for campon in related_campons:
-                    campon_data = dict()
-                    campon_data["camped_on_booking"] = created_booking.id
-                    campon_serializer = CampOnSerializer(campon, data=campon_data, partial=True)
-                    if campon_serializer.is_valid():
-                        campon_serializer.save()
+                    CampOn.objects.filter(id=campon.id).update(camped_on_booking=created_booking)
+                    # TO-DO: logs the operation
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
             except BaseException as error:
+                print(error)
                 return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         except ValidationError as error:
