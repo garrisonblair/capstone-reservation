@@ -64,10 +64,26 @@ class Navigation extends Component {
     const { history } = this.props;
     const component = (
       <Menu.Item onClick={() => { history.push('admin'); }}>
+        <Icon name="university" />
         Admin
       </Menu.Item>
     );
 
+    return component;
+  }
+
+  renderLoggedInInfo = () => {
+    if (!localStorage.CapstoneReservationUser) {
+      return '';
+    }
+
+    const user = JSON.parse(localStorage.CapstoneReservationUser);
+    const component = (
+      <Menu.Item>
+        <Icon name="user" />
+        {`Logged in as ${user.username}`}
+      </Menu.Item>
+    );
     return component;
   }
 
@@ -76,49 +92,52 @@ class Navigation extends Component {
     const { showDate } = this.props;
 
     return (
-      <Menu inverted fixed="top">
-        <Menu.Item>
-          Capstone
-        </Menu.Item>
-        { showDate
-          ? (
-            <Menu.Item position="right">
-              <Icon name="calendar alternate outline" onClick={() => this.setState({ focusDate: true })} />
-              <div className="datepicker">
-                <SingleDatePicker
-                  isOutsideRange={() => false}
-                  numberOfMonths={1}
-                  date={date}
-                  onDateChange={d => this.handleChangeDate(d)}
-                  focused={focusDate}
-                  onFocusChange={({ f }) => this.setState({ focusDate: f })}
-                  id="datepicker"
-                />
-              </div>
-              {date.format('YYYY-MM-DD')}
-            </Menu.Item>
-          )
-          : null
-        }
-        <Menu.Menu position="right" inverted="true">
-          {this.renderAdminSettings()}
-          <Dropdown item text="Account">
-            <Dropdown.Menu>
-              <Dropdown.Item icon="user" text="Profile" />
-              <Dropdown.Item icon="cog" text="Settings" />
-            </Dropdown.Menu>
-          </Dropdown>
-          <Menu.Item
-            onClick={this.handleLogin}
-          >
-            {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
+      <div className="navigation">
+        <Menu inverted fixed="top">
+          <Menu.Item>
+            Capstone
           </Menu.Item>
-        </Menu.Menu>
-        <Login
-          show={showLogin}
-          onClose={this.closeLogin}
-        />
-      </Menu>
+          { showDate
+            ? (
+              <Menu.Item position="right">
+                <Icon name="calendar alternate outline" onClick={() => this.setState({ focusDate: true })} />
+                <div className="datepicker">
+                  <SingleDatePicker
+                    isOutsideRange={() => false}
+                    numberOfMonths={1}
+                    date={date}
+                    onDateChange={d => this.handleChangeDate(d)}
+                    focused={focusDate}
+                    onFocusChange={({ f }) => this.setState({ focusDate: f })}
+                    id="datepicker"
+                  />
+                </div>
+                <span onClick={() => this.setState({ focusDate: true })} role="presentation" onKeyDown={() => {}}>{date.format('YYYY-MM-DD')}</span>
+              </Menu.Item>
+            )
+            : null
+          }
+          <Menu.Menu position="right" inverted="true">
+            {this.renderLoggedInInfo()}
+            {this.renderAdminSettings()}
+            <Dropdown item text="Account">
+              <Dropdown.Menu>
+                <Dropdown.Item icon="user" text="Profile" />
+                <Dropdown.Item icon="cog" text="Settings" />
+              </Dropdown.Menu>
+            </Dropdown>
+            <Menu.Item
+              onClick={this.handleLogin}
+            >
+              {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
+            </Menu.Item>
+          </Menu.Menu>
+          <Login
+            show={showLogin}
+            onClose={this.closeLogin}
+          />
+        </Menu>
+      </div>
     );
   }
 }
