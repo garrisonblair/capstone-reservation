@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import SelectedDate from './SelectedDate';
+// import SelectedDate from './SelectedDate';
 import Rooms from './Rooms';
 import Hours from './Hours';
 import Cells from './Cells';
@@ -189,11 +189,11 @@ class Calendar extends Component {
       selectedDate,
     } = this.state;
     return [
-      <Navigation key={0} />,
+      <Navigation key={0} showDate changeDate={this.changeDate} />,
       <div className="calendar__container" key={1}>
-        <div className="date__container">
+        {/* <div className="date__container">
           <SelectedDate changeDate={this.changeDate} />
-        </div>
+        </div> */}
         <div className="calendar__wrapper">
           <Rooms roomsList={roomsList} changeDate={this.changeDate} />
           <Hours hoursList={hoursList} />
