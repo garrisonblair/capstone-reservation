@@ -205,6 +205,15 @@ class TestBookingPrivileges(TestCase):
                            )
         booking2.save()
 
+        # Date is the same as booking2, should not be counted
+        booking2_2 = Booking(booker=self.booker,
+                             room=self.room,
+                             date=date.today() + datetime.timedelta(1),
+                             start_time=time(14, 0, 0),
+                             end_time=time(16, 0, 0)
+                             )
+        booking2_2.save()
+
         booking3 = Booking(booker=self.booker,
                            room=self.room,
                            date=date.today() + datetime.timedelta(2),
@@ -212,7 +221,7 @@ class TestBookingPrivileges(TestCase):
                            end_time=time(15, 0, 0)
                            )
 
-        self.assertEqual(self.booker.booking_set.count(), 2)
+        self.assertEqual(self.booker.booking_set.count(), 3)
         with mock_datetime(datetime.datetime(date.today().year,
                                              date.today().month,
                                              date.today().day,
@@ -242,6 +251,16 @@ class TestBookingPrivileges(TestCase):
                            )
         booking2.save()
 
+        # Date is the same as booking2, should not be counted
+        booking2_2 = Booking(booker=self.booker,
+                             group=self.group,
+                             room=self.room,
+                             date=date.today() + datetime.timedelta(1),
+                             start_time=time(14, 0, 0),
+                             end_time=time(16, 0, 0)
+                             )
+        booking2_2.save()
+
         booking3 = Booking(booker=self.booker,
                            group=self.group,
                            room=self.room,
@@ -250,7 +269,7 @@ class TestBookingPrivileges(TestCase):
                            end_time=time(14, 0, 0)
                            )
 
-        self.assertEqual(self.group.booking_set.count(), 2)
+        self.assertEqual(self.group.booking_set.count(), 3)
         with mock_datetime(datetime.datetime(date.today().year,
                                              date.today().month,
                                              date.today().day,
@@ -278,6 +297,15 @@ class TestBookingPrivileges(TestCase):
                            )
         booking2.save()
 
+        # Date is not the same as booking2, should not be counted
+        booking2_2 = Booking(booker=self.booker,
+                             room=self.room,
+                             date=date.today() + datetime.timedelta(1),
+                             start_time=time(15, 0, 0),
+                             end_time=time(16, 0, 0)
+                             )
+        booking2_2.save()
+
         booking3 = Booking(booker=self.booker,
                            room=self.room,
                            date=date.today(),
@@ -285,7 +313,7 @@ class TestBookingPrivileges(TestCase):
                            end_time=time(15, 0, 0)
                            )
 
-        self.assertEqual(self.booker.booking_set.count(), 2)
+        self.assertEqual(self.booker.booking_set.count(), 3)
         with mock_datetime(datetime.datetime(date.today().year,
                                              date.today().month,
                                              date.today().day,
@@ -315,6 +343,16 @@ class TestBookingPrivileges(TestCase):
                            )
         booking2.save()
 
+        # Date is not the same as booking2, should not be counted
+        booking2_2 = Booking(booker=self.booker,
+                             group=self.group,
+                             room=self.room,
+                             date=date.today() + datetime.timedelta(1),
+                             start_time=time(15, 0, 0),
+                             end_time=time(16, 0, 0)
+                             )
+        booking2_2.save()
+
         booking3 = Booking(booker=self.booker,
                            group=self.group,
                            room=self.room,
@@ -323,7 +361,7 @@ class TestBookingPrivileges(TestCase):
                            end_time=time(14, 0, 0)
                            )
 
-        self.assertEqual(self.group.booking_set.count(), 2)
+        self.assertEqual(self.group.booking_set.count(), 3)
         with mock_datetime(datetime.datetime(date.today().year,
                                              date.today().month,
                                              date.today().day,

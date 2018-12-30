@@ -97,15 +97,13 @@ class Booking(models.Model, SubjectModel):
                                     end_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
-    def get_active_daily_bookings(self, booker_entity, selected_date=datetime.datetime.now()):
-        current_date = selected_date.date()
-        current_time = selected_date.time()
-
+    def get_active_daily_bookings(self, booker_entity, current_date, current_time):
         return booker_entity.booking_set.filter(Q(Q(date=current_date) & Q(end_time__gte=current_time))
                                                 | Q(date__gt=current_date))
 
-    def get_active_daily_non_recurring_bookings(self, booker_entity):
-        return self.get_active_daily_bookings(booker_entity).filter(recurring_booking=None)
+    def get_active_daily_non_recurring_bookings(self, booker_entity, selected_date, selected_time):
+        return self.get_active_daily_bookings(booker_entity, selected_date, selected_time
+                                              ).filter(recurring_booking=None)
 
     def get_active_overall_non_recurring_bookings(self, booker_entity):
         return booker_entity.booking_set.filter(recurring_booking=None)
@@ -138,15 +136,15 @@ class Booking(models.Model, SubjectModel):
 
         # max_overall_bookings
         num_overall_bookings = self.get_active_overall_non_recurring_bookings(booker_entity)\
-                                   .values_list('date', flat=True).distinct().count()
+                                   .values_list('date').distinct().count()
 
-        if num_overall_bookings >= max_overall_bookings:
+        if num_overall_bookings > max_overall_bookings:
             raise PrivilegeError(p_c.get_error_text("max_overall_bookings"))
 
         # max_daily_bookings
-        num_daily_bookings = self.get_active_daily_non_recurring_bookings(booker_entity).count()
+        num_daily_bookings = self.get_active_daily_non_recurring_bookings(booker_entity, self.date, self.start_time).count()
 
-        if num_daily_bookings >= max_daily_bookings:
+        if num_daily_bookings > max_daily_bookings:
             raise PrivilegeError(p_c.get_error_text("max_daily_bookings"))
 
         # booking_start_time
