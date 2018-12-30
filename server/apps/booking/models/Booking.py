@@ -142,7 +142,8 @@ class Booking(models.Model, SubjectModel):
             raise PrivilegeError(p_c.get_error_text("max_overall_bookings"))
 
         # max_daily_bookings
-        num_daily_bookings = self.get_active_daily_non_recurring_bookings(booker_entity, self.date, self.start_time).count()
+        num_daily_bookings = self.get_active_daily_non_recurring_bookings(booker_entity, self.date, self.start_time
+                                                                          ).count()
 
         if num_daily_bookings > max_daily_bookings:
             raise PrivilegeError(p_c.get_error_text("max_daily_bookings"))
