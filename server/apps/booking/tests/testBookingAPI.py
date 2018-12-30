@@ -490,6 +490,5 @@ class BookingAPITest(TestCase):
         # Total 1 CampOn left
         self.assertEqual(len(CampOn.objects.all()), 1)
         created_campon_2 = CampOn.objects.last()
-        self.assertEqual(created_campon_2.booker_id, sid2)
         # camped_on_booking is updated to a new Booking
         self.assertEqual(created_campon_2.camped_on_booking, campon_to_booking)
