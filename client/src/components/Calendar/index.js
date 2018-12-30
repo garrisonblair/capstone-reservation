@@ -191,9 +191,6 @@ class Calendar extends Component {
     return [
       <Navigation key={0} showDate changeDate={this.changeDate} />,
       <div className="calendar__container" key={1}>
-        {/* <div className="date__container">
-          <SelectedDate changeDate={this.changeDate} />
-        </div> */}
         <div className="calendar__wrapper">
           <Rooms roomsList={roomsList} changeDate={this.changeDate} />
           <Hours hoursList={hoursList} />

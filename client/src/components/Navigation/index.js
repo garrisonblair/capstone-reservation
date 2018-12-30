@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { Dropdown, Menu, Icon } from 'semantic-ui-react';
+import {
+  Dropdown,
+  Menu,
+  Icon,
+} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
-import { SingleDatePicker } from 'react-dates';
-import * as moment from 'moment';
+import SelectedDate from '../Calendar/SelectedDate';
 import Login from '../Login';
 import api from '../../utils/api';
 import './Navigation.scss';
@@ -13,8 +16,6 @@ import './Navigation.scss';
 class Navigation extends Component {
   state = {
     showLogin: false,
-    focusDate: false,
-    date: moment(),
   }
 
   handleLogin = () => {
@@ -39,13 +40,7 @@ class Navigation extends Component {
 
   handleChangeDate = (date) => {
     const { changeDate } = this.props;
-    this.setState({ date });
-    const d = date.format('YYYY-MM-DD').split('-');
-    const selectedDate = new Date();
-    selectedDate.setFullYear(parseInt(d[0], 10));
-    selectedDate.setMonth(parseInt(d[1], 10) - 1);
-    selectedDate.setDate(parseInt(d[2], 10));
-    changeDate(selectedDate);
+    changeDate(date);
   }
 
   // handleItemClick = (e, { name }) => this.setState({ activeItem: name })
@@ -88,7 +83,7 @@ class Navigation extends Component {
   }
 
   render() {
-    const { showLogin, focusDate, date } = this.state;
+    const { showLogin } = this.state;
     const { showDate } = this.props;
 
     return (
@@ -97,26 +92,7 @@ class Navigation extends Component {
           <Menu.Item>
             Capstone
           </Menu.Item>
-          { showDate
-            ? (
-              <Menu.Item position="right">
-                <Icon name="calendar alternate outline" onClick={() => this.setState({ focusDate: true })} />
-                <div className="datepicker">
-                  <SingleDatePicker
-                    isOutsideRange={() => false}
-                    numberOfMonths={1}
-                    date={date}
-                    onDateChange={d => this.handleChangeDate(d)}
-                    focused={focusDate}
-                    onFocusChange={({ f }) => this.setState({ focusDate: f })}
-                    id="datepicker"
-                  />
-                </div>
-                <span onClick={() => this.setState({ focusDate: true })} role="presentation" onKeyDown={() => {}}>{date.format('YYYY-MM-DD')}</span>
-              </Menu.Item>
-            )
-            : null
-          }
+          { showDate ? <SelectedDate changeDate={this.handleChangeDate} /> : null}
           <Menu.Menu position="right" inverted="true">
             {this.renderLoggedInInfo()}
             {this.renderAdminSettings()}

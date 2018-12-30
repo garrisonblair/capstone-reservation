@@ -1,60 +1,70 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import './Calendar.scss';
-import { Button, Icon } from 'semantic-ui-react';
+import { Icon, Menu } from 'semantic-ui-react';
+import { SingleDatePicker } from 'react-dates';
+import * as moment from 'moment';
 
 
 class SelectedDate extends Component {
   state = {
-    selectedDate: new Date(),
+    focusDate: false,
+    date: moment(),
   }
 
   handleClickNextDate = () => {
-    const { selectedDate } = this.state;
-    selectedDate.setDate(selectedDate.getDate() + 1);
-    this.setState({ selectedDate });
-    this.changeDate(selectedDate);
+    const { date } = this.state;
+    this.setState({ date: date.add(1, 'days').calendar() });
+    this.handleChangeDate(date);
   }
 
   handleClickPreviousDate = () => {
-    const { selectedDate } = this.state;
-    selectedDate.setDate(selectedDate.getDate() - 1);
-    this.setState({ selectedDate });
-    this.changeDate(selectedDate);
+    const { date } = this.state;
+    this.setState({ date: date.subtract(1, 'days').calendar() });
+    this.handleChangeDate(date);
   }
 
-  changeDate = (day) => {
+  handleChangeDate = (date) => {
     const { changeDate } = this.props;
-    changeDate(day);
+    this.setState({ date });
+    const d = date.format('YYYY-MM-DD').split('-');
+    const selectedDate = new Date();
+    selectedDate.setFullYear(parseInt(d[0], 10));
+    selectedDate.setMonth(parseInt(d[1], 10) - 1);
+    selectedDate.setDate(parseInt(d[2], 10));
+    changeDate(selectedDate);
   }
 
   render() {
-    const { selectedDate } = this.state;
+    const { date, focusDate } = this.state;
     return (
-      <div className="calendar__date">
-        <div className="calendar__date__header">
-          <Button
-            basic
-            circular
-            color="olive"
-            icon="chevron left"
-            size="tiny"
-            onClick={this.handleClickPreviousDate}
-          />
-          <h3 className="calendar__date__header">
-            <Icon name="calendar alternate outline" />
-            {selectedDate.toDateString()}
-          </h3>
-          <Button
-            basic
-            circular
-            color="olive"
-            icon="chevron right"
-            size="tiny"
-            onClick={this.handleClickNextDate}
+      <Menu.Item position="right">
+        <Icon
+          circular
+          color="olive"
+          name="angle left"
+          onClick={this.handleClickPreviousDate}
+        />
+        <Icon name="calendar alternate outline" onClick={() => this.setState({ focusDate: true })} />
+        <div className="datepicker">
+          <SingleDatePicker
+            isOutsideRange={() => false}
+            numberOfMonths={1}
+            date={date}
+            onDateChange={d => this.handleChangeDate(d)}
+            focused={focusDate}
+            onFocusChange={({ f }) => this.setState({ focusDate: f })}
+            id="datepicker"
           />
         </div>
-      </div>
+        <span onClick={() => this.setState({ focusDate: true })} role="presentation" onKeyDown={() => {}}>{date.format('YYYY-MM-DD')}</span>
+        <Icon
+          circular
+          color="olive"
+          name="angle right"
+          onClick={this.handleClickNextDate}
+        />
+      </Menu.Item>
     );
   }
 }
