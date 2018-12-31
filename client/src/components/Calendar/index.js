@@ -19,6 +19,17 @@ class Calendar extends Component {
     return timeInt;
   }
 
+  static onOpenDatePicker() {
+    document.documentElement.style.setProperty('--opacity', 0.2);
+    document.documentElement.style.setProperty('--pointerEvents', 'none');
+  }
+
+  static onCloseDatePicker() {
+    document.documentElement.style.setProperty('--opacity', 1);
+    document.documentElement.style.setProperty('--pointerEvents', 'auto');
+  }
+
+
   state = {
     roomsList: [],
     hoursList: [],
@@ -189,7 +200,13 @@ class Calendar extends Component {
       selectedDate,
     } = this.state;
     return [
-      <Navigation key={0} showDate changeDate={this.changeDate} />,
+      <Navigation
+        key={0}
+        showDate
+        changeDate={this.changeDate}
+        onOpenDatePicker={Calendar.onOpenDatePicker}
+        onCloseDatePicker={Calendar.onCloseDatePicker}
+      />,
       <div className="calendar__container" key={1}>
         <div className="calendar__wrapper">
           <Rooms roomsList={roomsList} changeDate={this.changeDate} />

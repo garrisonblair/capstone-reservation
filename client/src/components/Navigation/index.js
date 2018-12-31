@@ -43,6 +43,16 @@ class Navigation extends Component {
     changeDate(date);
   }
 
+  onOpenDatePicker = () => {
+    const { onOpenDatePicker } = this.props;
+    onOpenDatePicker();
+  }
+
+  onCloseDatePicker = () => {
+    const { onCloseDatePicker } = this.props;
+    onCloseDatePicker();
+  }
+
   // handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
   renderAdminSettings = () => {
@@ -92,7 +102,15 @@ class Navigation extends Component {
           <Menu.Item>
             Capstone
           </Menu.Item>
-          { showDate ? <SelectedDate changeDate={this.handleChangeDate} /> : null}
+          { showDate
+            ? (
+              <SelectedDate
+                changeDate={this.handleChangeDate}
+                onOpenDatePicker={this.onOpenDatePicker}
+                onCloseDatePicker={this.onCloseDatePicker}
+              />
+            )
+            : null}
           <Menu.Menu position="right" inverted="true">
             {this.renderLoggedInInfo()}
             {this.renderAdminSettings()}
@@ -121,11 +139,15 @@ class Navigation extends Component {
 Navigation.propTypes = {
   showDate: PropTypes.bool,
   changeDate: PropTypes.func,
+  onOpenDatePicker: PropTypes.func,
+  onCloseDatePicker: PropTypes.func,
 };
 
 Navigation.defaultProps = {
   showDate: false,
   changeDate: () => {},
+  onOpenDatePicker: () => {},
+  onCloseDatePicker: () => {},
 };
 
 export default withRouter(Navigation);

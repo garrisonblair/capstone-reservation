@@ -35,6 +35,18 @@ class SelectedDate extends Component {
     changeDate(selectedDate);
   }
 
+  focusDate = () => {
+    const { onOpenDatePicker } = this.props;
+    this.setState({ focusDate: true });
+    onOpenDatePicker();
+  }
+
+  focusOutDate = (f) => {
+    const { onCloseDatePicker } = this.props;
+    this.setState({ focusDate: f });
+    onCloseDatePicker();
+  }
+
   render() {
     const { date, focusDate } = this.state;
     return (
@@ -45,7 +57,7 @@ class SelectedDate extends Component {
           name="angle left"
           onClick={this.handleClickPreviousDate}
         />
-        <Icon name="calendar alternate outline" onClick={() => this.setState({ focusDate: true })} />
+        <Icon name="calendar alternate outline" onClick={this.focusDate} />
         <div className="datepicker">
           <SingleDatePicker
             isOutsideRange={() => false}
@@ -53,11 +65,11 @@ class SelectedDate extends Component {
             date={date}
             onDateChange={d => this.handleChangeDate(d)}
             focused={focusDate}
-            onFocusChange={({ f }) => this.setState({ focusDate: f })}
+            onFocusChange={({ f }) => this.focusOutDate(f)}
             id="datepicker"
           />
         </div>
-        <span onClick={() => this.setState({ focusDate: true })} role="presentation" onKeyDown={() => {}}>{date.format('YYYY-MM-DD')}</span>
+        <span onClick={this.focusDate} role="presentation" onKeyDown={() => {}}>{date.format('ddd MMM Do YYYY')}</span>
         <Icon
           circular
           color="olive"
@@ -71,10 +83,14 @@ class SelectedDate extends Component {
 
 SelectedDate.propTypes = {
   changeDate: PropTypes.func,
+  onOpenDatePicker: PropTypes.func,
+  onCloseDatePicker: PropTypes.func,
 };
 
 SelectedDate.defaultProps = {
   changeDate: () => {},
+  onOpenDatePicker: () => {},
+  onCloseDatePicker: () => {},
 };
 
 export default SelectedDate;

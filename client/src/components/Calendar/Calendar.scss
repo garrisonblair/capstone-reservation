@@ -6,6 +6,8 @@
   --gridHeight: 120px;
   --wrapperH: 40px;
   --cellsDivisionNum: 0;
+  --opacity: 1;
+  --pointerEvents: auto;
 }
 
 $textColor: black;
@@ -26,9 +28,11 @@ body {
 }
 
 .calendar__container {
+  opacity: var(--opacity);
+  pointer-events: var(--pointerEvents);
   position: fixed;
   display: inline-grid;
-  margin-top: 50px;
+  margin-top: 65px;
   // padding: 20px;
   width: 100%;
   height: 100%;
