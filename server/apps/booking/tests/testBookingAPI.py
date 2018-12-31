@@ -467,7 +467,7 @@ class BookingAPITest(TestCase):
                                         end_time=end_time)
 
         # Before the booking gets moved, there should be only one Booking
-        self.assertEqual(len(Booking.objects.all()), 1)
+        self.assertEqual(Booking.objects.count(), 1)
 
         new_start_time = datetime.datetime.strptime("14:00", "%H:%M").time()
         new_end_time = datetime.datetime.strptime("15:00", "%H:%M").time()
@@ -484,11 +484,11 @@ class BookingAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Total 2 Booking: the edit Booking and a new Booking converted from the first CampOn
-        self.assertEqual(len(Booking.objects.all()), 2)
+        self.assertEqual(Booking.objects.count(), 2)
         campon_to_booking = Booking.objects.last()
         self.assertEqual(campon_to_booking.booker.booker_id, sid1)
         # Total 1 CampOn left
-        self.assertEqual(len(CampOn.objects.all()), 1)
+        self.assertEqual(CampOn.objects.count(), 1)
         created_campon_2 = CampOn.objects.last()
         # camped_on_booking is updated to a new Booking
         self.assertEqual(created_campon_2.camped_on_booking, campon_to_booking)

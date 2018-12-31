@@ -100,16 +100,24 @@ class BookingRetrieveUpdateDestroy(APIView):
                                             start_time=new_booking.start_time,
                                             end_time=new_booking.end_time)
                 campon_to_booking.save()
-                # TO-DO: logs the creation operation
 
-                CampOn.objects.filter(id=related_campons[0].id).delete()
-                # TO-DO: log the deletion operation
-                created_booking = Booking.objects.order_by('id').last()
+                utils.log_model_change(
+                    campon_to_booking,
+                    utils.ADDITION,
+                    request.user,
+                    BookingSerializer(campon_to_booking)
+                )
 
-                related_campons = CampOn.objects.filter(camped_on_booking__id=update_booking.id).order_by('id')
+                CampOn.objects.filter(id=new_booking.id).delete()
+                utils.log_model_change(new_booking, utils.DELETION, request.user, CampOnSerializer(new_booking))
+
+                related_campons = CampOn.objects.filter(camped_on_booking__id=update_booking.id)
                 for campon in related_campons:
-                    CampOn.objects.filter(id=campon.id).update(camped_on_booking=created_booking)
+                    campon.camped_on_booking = campon_to_booking
+                    campon.save()
                     # TO-DO: logs the operation
+                    utils.log_model_change(campon, utils.CHANGE, request.user,
+                                           CampOnSerializer(campon))
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
             except BaseException as error:
