@@ -50,7 +50,7 @@ class SelectedDate extends Component {
   render() {
     const { date, focusDate } = this.state;
     return (
-      <Menu.Item position="right">
+      <Menu.Item position="right" className="menu--date">
         <Icon
           circular
           color="olive"
