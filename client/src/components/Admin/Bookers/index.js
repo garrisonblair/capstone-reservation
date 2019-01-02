@@ -55,7 +55,10 @@ class Bookers extends Component {
                 </Table.Cell>
               </Table.Row>
             ))}
-            <BookerModal show={showModal} />
+            <BookerModal
+              show={showModal}
+              booker={b}
+            />
           </Table.Body>
         </Table>
       </div>
