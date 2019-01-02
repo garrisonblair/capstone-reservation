@@ -9,12 +9,20 @@ class BookerRow extends Component {
     openModal: false,
   }
 
+  onClickEditButton = () => {
+    this.setState({ openModal: true });
+  }
+
+  closeModal = () => {
+    this.setState({ openModal: false });
+  }
+
   render() {
     const { booker } = this.props;
     const { openModal } = this.state;
     return (
       <Table.Row key={booker.username}>
-        <Table.Cell>
+        <Table.Cell textAlign="center">
           {booker.username}
         </Table.Cell>
         <Table.Cell>
@@ -23,6 +31,7 @@ class BookerRow extends Component {
         <BookerModal
           show={openModal}
           booker={booker}
+          onClose={this.closeModal}
         />
       </Table.Row>
     );

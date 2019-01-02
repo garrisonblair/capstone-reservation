@@ -9,15 +9,15 @@ class BookerModal extends Component {
   }
 
   render() {
-    const { show, booker } = this.props;
+    const { show, booker, onClose } = this.props;
     return (
-      <Modal open={show}>
+      <Modal open={show} onClose={onClose}>
         <Modal.Header>
           Booker details
         </Modal.Header>
         <Modal.Content>
           <Modal.Description>
-            Username:
+            <h4>Username:</h4>
             {booker.username}
           </Modal.Description>
         </Modal.Content>
@@ -30,6 +30,7 @@ BookerModal.propTypes = {
   show: PropTypes.bool.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   booker: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default BookerModal;

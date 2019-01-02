@@ -28,11 +28,12 @@ class Bookers extends Component {
     const { bookers } = this.state;
     return (
       <div id="bookers">
+        <h1>Bookers</h1>
         <Table>
           <Table.Header>
             <Table.Row key="-1">
               <Table.HeaderCell textAlign="center">
-                User
+                Username
               </Table.HeaderCell>
               <Table.HeaderCell>
                 {}
