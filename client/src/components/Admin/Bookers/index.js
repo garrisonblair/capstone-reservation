@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { Table, Button } from 'semantic-ui-react';
-import BookerModal from './BookerModal';
+import { Table } from 'semantic-ui-react';
 import './Bookers.scss';
 import api from '../../../utils/api';
+import BookerRow from './BookerRow';
 
 
 class Bookers extends Component {
   state = {
     bookers: [],
-    showModal: false,
   }
 
   componentDidMount() {
@@ -25,17 +24,13 @@ class Bookers extends Component {
       });
   }
 
-  onClickEditButton = () => {
-    this.setState({ showModal: true });
-  }
-
   render() {
-    const { bookers, showModal } = this.state;
+    const { bookers } = this.state;
     return (
       <div id="bookers">
         <Table>
           <Table.Header>
-            <Table.Row>
+            <Table.Row key="-1">
               <Table.HeaderCell textAlign="center">
                 User
               </Table.HeaderCell>
@@ -46,19 +41,8 @@ class Bookers extends Component {
           </Table.Header>
           <Table.Body>
             {bookers.map(b => (
-              <Table.Row key={b.id}>
-                <Table.Cell textAlign="center">
-                  {b.username}
-                </Table.Cell>
-                <Table.Cell>
-                  <Button icon="edit" className="edit-button" onClick={this.onClickEditButton} />
-                </Table.Cell>
-              </Table.Row>
+              <BookerRow booker={b} key={b.id} />
             ))}
-            <BookerModal
-              show={showModal}
-              booker={b}
-            />
           </Table.Body>
         </Table>
       </div>
