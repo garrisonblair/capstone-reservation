@@ -5,7 +5,9 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIRequestFactory, APIClient, force_authenticate
 
+from apps.accounts.models.Booker import Booker
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+from apps.accounts.views.privilege_categories import MyPrivilegeCategoryList
 from apps.accounts.views.privilege_categories import PrivilegeCategoryList
 from apps.accounts.views.privilege_categories import PrivilegeCategoryCreate
 from apps.accounts.views.privilege_categories import PrivilegeCategoryRetrieveUpdateDestroy
@@ -238,6 +240,28 @@ class TestPrivilegeCategoryAPI(TestCase):
 
         # A permission class returns either 401/403 if the user is not authorized
         self.assertTrue(response.status_code in [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED])
+
+    def testViewBookerPrivileges(self):
+        booker = Booker.objects.create(booker_id=11111111, user=self.user)
+        self.user.is_superuser = False
+        self.user.save()
+        self.user.refresh_from_db()
+
+        request = self.factory.get("my_privileges")
+        force_authenticate(request, user=self.user)
+        response = MyPrivilegeCategoryList.as_view()(request)
+
+        self.assertEqual(len(response.data), 0)
+
+        booker.privilege_categories.add(self.category)
+        booker.save()
+
+        request = self.factory.get("my_privileges")
+        force_authenticate(request, user=self.user)
+        response = MyPrivilegeCategoryList.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 
     def testUpdateSuccess(self):
         self.user.is_superuser = True

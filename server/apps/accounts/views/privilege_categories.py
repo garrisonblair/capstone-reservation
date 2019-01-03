@@ -34,7 +34,6 @@ class MyPrivilegeCategoryList(ListAPIView):
         return qs
 
 
-
 class PrivilegeCategoryCreate(CreateAPIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
     serializer_class = PrivilegeCategorySerializer
