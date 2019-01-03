@@ -6,6 +6,7 @@ from apps.accounts.views.logout import LogoutView
 from apps.accounts.views.user import UserList, UserUpdate
 from apps.accounts.views.me import MyUser
 from apps.accounts.views.privilege_categories import PrivilegeCategoryList
+from apps.accounts.views.privilege_categories import MyPrivilegeCategoryList
 from apps.accounts.views.privilege_categories import PrivilegeCategoryCreate
 from apps.accounts.views.privilege_categories import PrivilegeCategoryRetrieveUpdateDestroy
 from apps.accounts.views.assign_privileges import PrivilegeCategoriesAssignSingleAutomatic
@@ -23,6 +24,7 @@ urlpatterns = [
     path(r'me', MyUser.as_view()),
 
     path(r'privilege_categories', PrivilegeCategoryList.as_view()),
+    path(r'my_privileges', MyPrivilegeCategoryList.as_view()),
     path(r'privilege_category', PrivilegeCategoryCreate.as_view()),
     path(r'privilege_category/<int:pk>', PrivilegeCategoryRetrieveUpdateDestroy.as_view()),
 
