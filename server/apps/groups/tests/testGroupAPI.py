@@ -60,6 +60,7 @@ class RoomAPITest(TestCase):
                     ('id', 1),
                     ('owner', OrderedDict(
                         [
+                            ('id', 1),
                             ('booker_id', 'j_lenn'),
                             ('user', OrderedDict(
                                 [
@@ -77,6 +78,7 @@ class RoomAPITest(TestCase):
                      ),
                     ('members', [OrderedDict(
                         [
+                            ('id', 1),
                             ('booker_id', 'j_lenn'),
                             ('user', OrderedDict(
                                 [
@@ -100,6 +102,7 @@ class RoomAPITest(TestCase):
                     ('id', 2),
                     ('owner', OrderedDict(
                         [
+                            ('id', 1),
                             ('booker_id', 'j_lenn'),
                             ('user', OrderedDict(
                                 [
@@ -117,6 +120,7 @@ class RoomAPITest(TestCase):
                      ),
                     ('members', [OrderedDict(
                         [
+                            ('id', 1),
                             ('booker_id', 'j_lenn'),
                             ('user', OrderedDict(
                                 [
@@ -165,7 +169,7 @@ class RoomAPITest(TestCase):
     def testAddMember(self):
         request = self.factory.post("/group/1/add_members",
                                     {
-                                        "members": ["booker_2"]
+                                        "members": [self.booker_2.id]
                                     }, format="json")
         force_authenticate(request, user=self.user)
 
@@ -182,7 +186,7 @@ class RoomAPITest(TestCase):
 
         request = self.factory.post("group/" + str(self.group1.id) + "/remove_members",
                                     {
-                                        "members": ["booker_2"]
+                                        "members": [self.booker_2.id]
                                     }, format="json")
 
         force_authenticate(request, user=self.user)
