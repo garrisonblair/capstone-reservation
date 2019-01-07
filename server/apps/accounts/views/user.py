@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -8,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.accounts.permissions.IsBooker import IsBooker
 from ..models.Booker import Booker
 from ..serializers.user import UserSerializer, BookerSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
@@ -21,8 +21,7 @@ class UserList(ListAPIView):
     serializer_class = UserSerializer
 
     def get_queryset(self):
-        search_term = self.request.GET.get("search_text")
-        print(search_term)
+        search_term = self.request.query_params.get("search_text")
         users = User.objects.all()
 
         if search_term is not None:
@@ -31,6 +30,23 @@ class UserList(ListAPIView):
                                  Q(last_name__contains=search_term))
 
         return users
+
+
+class BookerList(ListAPIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+    queryset = Booker.objects.all()
+    serializer_class = BookerSerializer
+
+    def get_queryset(self):
+        search_term = self.request.GET.get("search_text")
+        qs = super(BookerList, self).get_queryset()
+
+        if search_term is not None:
+            qs = qs.filter(Q(user__username__contains=search_term) |
+                           Q(user__first_name__contains=search_term) |
+                           Q(user__last_name__contains=search_term))
+
+        return qs
 
 
 class UserUpdate(APIView):
@@ -71,7 +87,7 @@ class UserUpdate(APIView):
         booker = None
         if booker_id:
             try:
-                booker = Booker.objects.get(user=user)
+                booker = Booker.objects.get(user_id=user.id)
                 # Restrict student from changing its student ID once it's set
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
             except Booker.DoesNotExist:
