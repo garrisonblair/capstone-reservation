@@ -69,7 +69,7 @@ class AddMembers(APIView):
         members_to_add = request.data["members"]
         for member_user_id in members_to_add:
             if not group.members.filter(user_id=member_user_id).exists():
-                booker_to_add = Booker.objects.all().filter(user=member_user_id)[0]
+                booker_to_add = Booker.objects.get(user=member_user_id)
                 group.members.add(booker_to_add)
             else:
                 print("User {} is already in group".format(member_user_id))
@@ -88,7 +88,7 @@ class RemoveMembers(APIView):
         members_to_remove = request.data["members"]
 
         for member_user_id in members_to_remove:
-            booker_to_remove = Booker.objects.all().filter(user=member_user_id)[0]
+            booker_to_remove = Booker.objects.get(user=member_user_id)
             if booker_to_remove == group.owner:
                 print("Owner can not be removed from group")
                 continue
