@@ -14,16 +14,20 @@ class BookerRow extends Component {
   }
 
   closeModal = () => {
+    const { syncBookers } = this.props;
+
     this.setState({ openModal: false });
+    syncBookers();
   }
 
   render() {
     const { booker } = this.props;
     const { openModal } = this.state;
+    console.log(booker);
     return (
       <Table.Row key={booker.username}>
         <Table.Cell textAlign="center">
-          {booker.username}
+          {booker.user.username}
         </Table.Cell>
         <Table.Cell>
           <Button icon="edit" className="edit-button" onClick={this.onClickEditButton} />
@@ -41,5 +45,7 @@ class BookerRow extends Component {
 BookerRow.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   booker: PropTypes.object.isRequired,
+  // eslint-disable-next-line react/no-unused-prop-types
+  syncBookers: PropTypes.func.isRequired,
 };
 export default BookerRow;

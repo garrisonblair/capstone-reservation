@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Dropdown, Button } from 'semantic-ui-react';
+import {
+  Modal, Dropdown, Button, List,
+} from 'semantic-ui-react';
 // import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
+import PrivilegeRow from './PrivilegeRow';
 
 class BookerModal extends Component {
   state = {
@@ -31,12 +34,11 @@ class BookerModal extends Component {
   handleAddPrivilegeClick = () => {
     const { privilegeValue } = this.state;
     const { booker } = this.props;
-    console.log(booker.username);
-    console.log(privilegeValue);
-    api.addPrivilege([booker.username], privilegeValue)
+    api.addPrivilege([booker.user.username], privilegeValue)
       .then((r) => {
+        console.log(r);
         if (r.status !== 200) {
-          console.log(r);
+          // console.log(r);
         }
       });
   }
@@ -52,8 +54,8 @@ class BookerModal extends Component {
         <Modal.Content>
           <Modal.Description>
             <h4>Username:</h4>
-            {booker.username}
-            <h4>Add privileges</h4>
+            {booker.user.username}
+            <h4>Privileges</h4>
             <Dropdown
               placeholder="Privilege"
               selection
@@ -61,6 +63,11 @@ class BookerModal extends Component {
               options={privileges}
             />
             <Button onClick={this.handleAddPrivilegeClick}>Add Privilege</Button>
+            <List>
+              {booker.privilege_categories.map(
+                p => <PrivilegeRow divided privilege={p} key={p.id} />,
+              )}
+            </List>
           </Modal.Description>
         </Modal.Content>
       </Modal>

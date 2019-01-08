@@ -19,7 +19,7 @@ class Bookers extends Component {
       .then((r) => {
         if (r.status === 200) {
           console.log(r.data);
-          // this.setState({ bookers: r.data });
+          this.setState({ bookers: r.data });
         }
       });
   }
@@ -42,7 +42,7 @@ class Bookers extends Component {
           </Table.Header>
           <Table.Body>
             {bookers.map(b => (
-              <BookerRow booker={b} key={b.id} />
+              <BookerRow booker={b} key={b.id} syncBookers={this.syncBookers} />
             ))}
           </Table.Body>
         </Table>
