@@ -15,11 +15,11 @@ class Bookers extends Component {
   }
 
   syncBookers = () => {
-    api.getUsers()
+    api.getBookers()
       .then((r) => {
         if (r.status === 200) {
           console.log(r.data);
-          this.setState({ bookers: r.data });
+          // this.setState({ bookers: r.data });
         }
       });
   }

@@ -258,6 +258,16 @@ function addPrivilege(username, privilegeID) {
   });
 }
 
+function getBookers() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/bookers`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -282,6 +292,7 @@ const api = {
   getContentTypes,
   getUsers,
   addPrivilege,
+  getBookers,
 };
 
 export default api;
