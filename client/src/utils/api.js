@@ -220,11 +220,10 @@ function getMyGroups() {
   });
 }
 
-function createGroup(name, members) {
+function createGroup(name) {
   const headers = getTokenHeader();
   const data = {
     name,
-    members,
   };
 
   return axios({
@@ -280,6 +279,16 @@ function getUsers(params) {
   });
 }
 
+function getBookers() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/bookers`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -306,6 +315,7 @@ const api = {
   getLogEntries,
   getContentTypes,
   getUsers,
+  getBookers,
 };
 
 export default api;

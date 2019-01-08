@@ -19,6 +19,8 @@ class GroupsModal extends Component {
     deletedMembers: [],
     newMember: '',
     stateOptions: [],
+    // eslint-disable-next-line react/no-unused-state
+    bookers: [],
   }
 
   componentDidMount() {
@@ -27,7 +29,7 @@ class GroupsModal extends Component {
 
     if (selectedGroup !== null) {
       const tempGroupMembers = [];
-      selectedGroup.members.map(m => tempGroupMembers.push(m.user.username));
+      selectedGroup.members.map(m => tempGroupMembers.push(m.user));
       this.setState({
         groupId: selectedGroup.id,
         groupOwner: selectedGroup.owner.user.username,
@@ -38,18 +40,21 @@ class GroupsModal extends Component {
     } else {
       api.getMyUser()
         .then((r) => {
-          this.setState({ groupOwner: r.data.username });
+          this.setState({ groupOwner: r.data });
         });
     }
 
     // get all users and add them to the dropbox
-    api.getUsers()
+    api.getBookers()
       .then((r2) => {
-        r2.data.filter(u => u.is_superuser === false)
-          .map(u => newStateOptions.push({
-            key: u.username, value: u.username, text: u.username,
-          }));
-        this.setState({ stateOptions: newStateOptions });
+        r2.data.map(b => newStateOptions.push({
+          key: b.id, value: b.user.id, text: b.user.username,
+        }));
+        this.setState({
+          stateOptions: newStateOptions,
+          // eslint-disable-next-line react/no-unused-state
+          bookers: r2.data,
+        });
       });
   }
 
@@ -69,17 +74,14 @@ class GroupsModal extends Component {
 
   addMemberToList = () => {
     const {
-      newMember, newMembers, groupOwner, groupMembers, cleanGroupMembers, deletedMembers,
+      newMember, newMembers, groupOwner, groupMembers,
+      cleanGroupMembers, deletedMembers, stateOptions,
     } = this.state;
     if (newMember.length < 1) {
       return;
     }
-    if (newMember === groupOwner) {
+    if (newMember === groupOwner.id) {
       sweetAlert('Info', 'Cannot add yourself. You are already part of the group.', 'warning');
-      return;
-    }
-    if (groupMembers.includes(newMember) || newMembers.includes(newMember)) {
-      sweetAlert('Info', `${newMember} already exists in the list.`, 'warning');
       return;
     }
     if (cleanGroupMembers.includes(newMember) && deletedMembers.includes(newMember)) {
@@ -94,6 +96,7 @@ class GroupsModal extends Component {
         newMember: '',
       });
     }
+    this.setState({ stateOptions: stateOptions.filter(o => o.value !== newMember) });
   }
 
   handleDropboxChange = (e, { value }) => {
@@ -101,7 +104,9 @@ class GroupsModal extends Component {
   }
 
   deleteFunction = (member) => {
-    const { groupMembers, newMembers, deletedMembers } = this.state;
+    const {
+      groupMembers, newMembers, deletedMembers, bookers, stateOptions,
+    } = this.state;
 
     if (groupMembers.includes(member)) {
       this.setState({
@@ -111,6 +116,11 @@ class GroupsModal extends Component {
     } else if (newMembers.includes(member)) {
       this.setState({ newMembers: newMembers.filter(m => m !== member) });
     }
+    // eslint-disable-next-line no-unused-vars
+    const m = bookers.find(b => b.user.id === member);
+    // console.log(m);
+    stateOptions.push({ key: m.user.id, value: m.user.id, text: m.user.username });
+    this.setState({ stateOptions });
   }
 
   handleSubmit = () => {
@@ -127,16 +137,18 @@ class GroupsModal extends Component {
     console.log(newMembers);
     console.log('deletedmembers:');
     console.log(deletedMembers);
-    if (true) {
-      return;
-    }
     if (groupId === '') {
-      api.createGroup(groupName, newMembers)
+      api.createGroup(groupName)
         .then((r) => {
           if (r.status === 201) {
-            sweetAlert('Completed', 'A group was created.', 'success')
-              .then(() => {
-                onClose();
+            api.addMembersToGroup(r.data.id, newMembers)
+              .then((r2) => {
+                if (r2.status === 202) {
+                  sweetAlert('Completed', 'A group was created.', 'success')
+                    .then(() => {
+                      onClose();
+                    });
+                }
               });
           }
         });
@@ -154,21 +166,25 @@ class GroupsModal extends Component {
   }
 
   renderMembersList = () => {
-    const { groupMembers, newMembers, groupOwner } = this.state;
+    const {
+      groupMembers, newMembers, groupOwner, bookers,
+    } = this.state;
     const list = groupMembers.concat(newMembers);
-
     let content = (
       <List divided>
         {
           list.filter(w => w !== groupOwner).map(
-            m => (
-              <MemberRowItem
-                // eslint-disable-next-line react/no-array-index-key
-                key={m}
-                selectedMember={m}
-                deleteFunction={this.deleteFunction}
-              />
-            ),
+            (m) => {
+              const user = bookers.find(b => b.user.id === m);
+              return (
+                <MemberRowItem
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={m}
+                  selectedMember={user}
+                  deleteFunction={this.deleteFunction}
+                />
+              );
+            },
           )}
       </List>
     );
@@ -202,7 +218,7 @@ class GroupsModal extends Component {
             </FormField>
             <h3>
               Group Owner:
-              {groupOwner}
+              {groupOwner.username}
             </h3>
             <h3>Members:</h3>
             <FormField>

@@ -3,30 +3,17 @@ import { Button, List } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
 class MemberRowItem extends Component {
-  state = {
-    member: '',
-  }
-
-  componentDidMount() {
-    const { selectedMember } = this.props;
-    this.setState({
-      member: selectedMember,
-    });
-  }
-
   handleDeletion = () => {
-    const { member } = this.state;
-    // eslint-disable-next-line react/prop-types
-    const { deleteFunction } = this.props;
-    deleteFunction(member);
+    const { deleteFunction, selectedMember } = this.props;
+    deleteFunction(selectedMember.user.id);
   }
 
   render() {
-    const { member } = this.state;
+    const { selectedMember } = this.props;
     return (
       <List.Item>
         <List.Content floated="left">
-          <h2>{member}</h2>
+          <h2>{selectedMember.user.username}</h2>
         </List.Content>
         <List.Content floated="right">
           <Button onClick={this.handleDeletion}>Remove</Button>
@@ -37,11 +24,9 @@ class MemberRowItem extends Component {
 }
 
 MemberRowItem.propTypes = {
-  selectedMember: PropTypes.string,
-};
-
-MemberRowItem.defaultProps = {
-  selectedMember: null,
+  // eslint-disable-next-line react/forbid-prop-types
+  selectedMember: PropTypes.object.isRequired,
+  deleteFunction: PropTypes.func.isRequired,
 };
 
 export default MemberRowItem;
