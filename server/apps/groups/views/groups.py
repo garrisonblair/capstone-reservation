@@ -10,6 +10,7 @@ from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.models.Booker import Booker
 from apps.groups.serializers.group import WriteGroupSerializer, ReadGroupSerializer
 from apps.groups.models.Group import Group
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 
 class GroupList(ListAPIView):
@@ -35,11 +36,11 @@ class GroupCreate(APIView):
         data = dict(request.data)
 
         try:
-            owner = Booker.objects.get(booker_id=request.user.booker.booker_id)
+            owner = Booker.objects.get(id=request.user.booker.id)
         except Group.DoesNotExist as error:
             return Response(error.messages, status=status.HTTP_404_NOT_FOUND)
 
-        data["owner"] = owner.booker_id
+        data["owner"] = owner.id
 
         serializer = ReadGroupSerializer(data=data)
 
@@ -50,6 +51,7 @@ class GroupCreate(APIView):
         try:
             group = serializer.save()
             group.members.add(owner)
+            group.privilege_category = PrivilegeCategory.objects.get(is_default=True)
             group.save()
 
             serializer = WriteGroupSerializer(group)
