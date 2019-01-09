@@ -8,7 +8,7 @@ from rest_framework import status
 from apps.accounts.models.Booker import Booker
 from ..models.GroupInvitation import GroupInvitation
 from ..models.Group import Group
-from ..views.group_invitations import GroupInvitationsList, AcceptInvitation
+from ..views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation
 
 
 class TestGroupInvitationAPI(TestCase):
@@ -79,6 +79,23 @@ class TestGroupInvitationAPI(TestCase):
         response = AcceptInvitation.as_view()(request, 3)
 
         self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)
+
+    def testRejectInvitationSuccess(self):
+        request = self.factory.post("/group_invitation/1/reject")
+        force_authenticate(request, self.user2)
+
+        response = RejectInvitation.as_view()(request, self.invitation1.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(self.booker2 not in self.group.members.all())
+
+        #  Check invitation was deleted
+        try:
+            self.invitation1.refresh_from_db()
+        except GroupInvitation.DoesNotExist:
+            self.assertTrue(True)
+            return
+        self.fail()
 
     def testGetInvitationsAuthenticatedBooker(self):
 

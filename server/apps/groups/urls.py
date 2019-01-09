@@ -2,7 +2,7 @@ from django.urls import path
 from .views.groups import GroupList, AddMembers, InviteMembers, GroupCreate, RemoveMembers
 from .views.group_privileges import PrivilegeRequestList, PrivilegeRequestCreate
 from .views.group_privileges import ApprovePrivilegeRequest, DenyPrivilegeRequest
-from .views.group_invitations import GroupInvitationsList, AcceptInvitation
+from .views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation
 
 
 urlpatterns = [
@@ -18,4 +18,5 @@ urlpatterns = [
     path(r'deny_privilege_request', DenyPrivilegeRequest.as_view()),
     path(r'group_invitations', GroupInvitationsList.as_view()),
     path(r'group_invitation/<int:pk>/accept', AcceptInvitation.as_view()),
+    path(r'group_invitation/<int:pk>/reject', RejectInvitation.as_view()),
 ]

@@ -49,3 +49,22 @@ class AcceptInvitation(APIView):
         invitation.delete()
 
         return Response("Member added successfully.", status=status.HTTP_200_OK)
+
+
+class RejectInvitation(APIView):
+
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def post(self, request, pk):
+
+        try:
+            invitation = GroupInvitation.objects.get(id=pk)
+        except GroupInvitation.DoesNotExist:
+            return Response("Invitation does not exist.", status.HTTP_412_PRECONDITION_FAILED)
+
+        if request.user.booker.booker_id != invitation.invited_booker.booker_id:
+            return Response("Can't reject this invitation", status.HTTP_401_UNAUTHORIZED)
+
+        invitation.delete()
+
+        return Response("Invitation Rejected", status=status.HTTP_200_OK)
