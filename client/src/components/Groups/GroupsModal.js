@@ -19,20 +19,19 @@ class GroupsModal extends Component {
     deletedMembers: [],
     newMember: '',
     stateOptions: [],
-    // eslint-disable-next-line react/no-unused-state
     bookers: [],
   }
 
   componentDidMount() {
     const { selectedGroup } = this.props;
-    const newStateOptions = [];
+    let newStateOptions = [];
 
     if (selectedGroup !== null) {
       const tempGroupMembers = [];
-      selectedGroup.members.map(m => tempGroupMembers.push(m.user));
+      selectedGroup.members.map(m => tempGroupMembers.push(m.user.id));
       this.setState({
         groupId: selectedGroup.id,
-        groupOwner: selectedGroup.owner.user.username,
+        groupOwner: selectedGroup.owner.user,
         groupName: selectedGroup.name,
         groupMembers: tempGroupMembers,
         cleanGroupMembers: tempGroupMembers,
@@ -50,9 +49,15 @@ class GroupsModal extends Component {
         r2.data.map(b => newStateOptions.push({
           key: b.id, value: b.user.id, text: b.user.username,
         }));
+        if (selectedGroup !== null) {
+          selectedGroup.members
+            .filter(m => m.user.id !== selectedGroup.owner.user.id)
+            .forEach((m) => {
+              newStateOptions = newStateOptions.filter(o => o.value !== m.user.id);
+            });
+        }
         this.setState({
           stateOptions: newStateOptions,
-          // eslint-disable-next-line react/no-unused-state
           bookers: r2.data,
         });
       });
@@ -116,27 +121,19 @@ class GroupsModal extends Component {
     } else if (newMembers.includes(member)) {
       this.setState({ newMembers: newMembers.filter(m => m !== member) });
     }
-    // eslint-disable-next-line no-unused-vars
     const m = bookers.find(b => b.user.id === member);
-    // console.log(m);
     stateOptions.push({ key: m.user.id, value: m.user.id, text: m.user.username });
     this.setState({ stateOptions });
   }
 
   handleSubmit = () => {
     const {
-      groupName, newMembers, groupId, deletedMembers, groupMembers,
+      groupName, newMembers, groupId, deletedMembers,
     } = this.state;
     const { onClose } = this.props;
     if (!this.verifyModalForm()) {
       return;
     }
-    console.log('groupmembers:');
-    console.log(groupMembers);
-    console.log('newmembers:');
-    console.log(newMembers);
-    console.log('deletedmembers:');
-    console.log(deletedMembers);
     if (groupId === '') {
       api.createGroup(groupName)
         .then((r) => {
@@ -144,25 +141,41 @@ class GroupsModal extends Component {
             api.addMembersToGroup(r.data.id, newMembers)
               .then((r2) => {
                 if (r2.status === 202) {
-                  sweetAlert('Completed', 'A group was created.', 'success')
-                    .then(() => {
-                      onClose();
-                    });
+                  sweetAlert('Completed', 'A group was created.', 'success');
                 }
               });
           }
         });
     } else {
-      api.addMembersToGroup(groupId, newMembers)
-        .then((r) => {
-          if (r.status === 202) {
-            sweetAlert('Completed', `Group #${groupId} was modified.`, 'success')
-              .then(() => {
-                onClose();
-              });
-          }
-        });
+      if (newMembers.length === 0 && deletedMembers.length === 0) {
+        sweetAlert('Completed', 'Group was saved.', 'success');
+        return;
+      }
+      if (newMembers.length !== 0) {
+        api.addMembersToGroup(groupId, newMembers)
+          .then((r) => {
+            if (r.status === 202 && deletedMembers.length === 0) {
+              sweetAlert('Completed', 'Group was saved.', 'success');
+            }
+          })
+          .catch((error) => {
+            sweetAlert('Error', JSON.stringify(error), 'error');
+          });
+      }
+
+      if (deletedMembers.length !== 0) {
+        api.removeMembersToGroup(groupId, deletedMembers)
+          .then((r) => {
+            if (r.status === 202) {
+              sweetAlert('Completed', 'Group was saved.', 'success');
+            }
+          })
+          .catch((error) => {
+            sweetAlert('Error', JSON.stringify(error), 'error');
+          });
+      }
     }
+    onClose();
   }
 
   renderMembersList = () => {
@@ -173,17 +186,16 @@ class GroupsModal extends Component {
     let content = (
       <List divided>
         {
-          list.filter(w => w !== groupOwner).map(
+          list.filter(w => w !== groupOwner.id).map(
             (m) => {
               const user = bookers.find(b => b.user.id === m);
-              return (
+              return user !== undefined ? (
                 <MemberRowItem
-                  // eslint-disable-next-line react/no-array-index-key
                   key={m}
                   selectedMember={user}
                   deleteFunction={this.deleteFunction}
                 />
-              );
+              ) : '';
             },
           )}
       </List>

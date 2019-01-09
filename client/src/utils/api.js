@@ -247,6 +247,19 @@ function addMembersToGroup(id, members) {
   });
 }
 
+function removeMembersToGroup(id, members) {
+  const headers = getTokenHeader();
+  const data = {
+    members,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group/${id}/remove_members`,
+    headers,
+    data,
+  });
+}
+
 function getLogEntries(params) {
   const headers = getTokenHeader();
   return axios({
@@ -312,6 +325,7 @@ const api = {
   getMyGroups,
   createGroup,
   addMembersToGroup,
+  removeMembersToGroup,
   getLogEntries,
   getContentTypes,
   getUsers,

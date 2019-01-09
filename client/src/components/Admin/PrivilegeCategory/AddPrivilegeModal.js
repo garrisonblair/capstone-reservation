@@ -12,14 +12,6 @@ import './AddPrivilegeModal.scss';
 class AddPrivilegeModal extends Component {
   state = {
     name: '',
-    // parent: '',
-    // maxDaysUntilBooking: 0,
-    // maxBookings: 0,
-    // maxRecurringBookings: 0,
-    // recurringBookingPermission: false,
-    // isDefault: false,
-    // bookingStartTime: '08:00:00',
-    // bookingEndTime: '23:00:00'
   }
 
   handleInputChange = (state, e) => {
