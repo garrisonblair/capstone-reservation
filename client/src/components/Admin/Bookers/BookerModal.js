@@ -3,13 +3,11 @@ import PropTypes from 'prop-types';
 import {
   Modal, Dropdown, Button, List,
 } from 'semantic-ui-react';
-// import sweetAlert from 'sweetalert2';
+import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
-import PrivilegeRow from './PrivilegeRow';
 
 class BookerModal extends Component {
   state = {
-    // eslint-disable-next-line react/destructuring-assignment
     myPrivileges: [],
     dropdownOptions: [],
     privilegeValue: '',
@@ -37,9 +35,19 @@ class BookerModal extends Component {
     this.setState({ privilegeValue: value });
   }
 
+  handleRemovePrivilege = (privilege) => {
+    const { myPrivileges } = this.state;
+    console.log(myPrivileges);
+    console.log(privilege);
+  }
+
   handleAddPrivilegeClick = () => {
     const { privilegeValue, privileges, myPrivileges } = this.state;
     const { booker } = this.props;
+    if (myPrivileges.some(p => p.id === privilegeValue)) {
+      sweetAlert('Warning', 'You already have that privilege', 'warning');
+      return;
+    }
     api.addPrivilege([booker.user.username], privilegeValue)
       .then((r) => {
         if (r.status === 200) {
@@ -49,6 +57,17 @@ class BookerModal extends Component {
         }
       });
   }
+
+  renderPrivilegeRow = (privilege, removePrivilegeAction) => (
+    <List.Item key={privilege.id}>
+      <List.Content floated="right">
+        <Button onClick={removePrivilegeAction}>Remove</Button>
+      </List.Content>
+      <List.Content>
+        {privilege.name}
+      </List.Content>
+    </List.Item>
+  )
 
   render() {
     const { show, booker, onClose } = this.props;
@@ -70,9 +89,9 @@ class BookerModal extends Component {
               options={dropdownOptions}
             />
             <Button onClick={this.handleAddPrivilegeClick}>Add Privilege</Button>
-            <List>
+            <List divided>
               {myPrivileges.map(
-                p => <PrivilegeRow divided privilege={p} key={p.id} />,
+                p => this.renderPrivilegeRow(p, this.handleRemovePrivilege),
               )}
             </List>
           </Modal.Description>
