@@ -52,13 +52,13 @@ class Booking(models.Model, SubjectModel):
     observers = list()
 
     def save(self, *args, **kwargs):
-        self.evaluate_privilege()
         self.validate_model()
 
         is_create = False
         if self.id is None:
             is_create = True
 
+        self.evaluate_privilege(is_create)
         this = super(Booking, self).save(*args, **kwargs)
 
         if is_create:
@@ -108,7 +108,7 @@ class Booking(models.Model, SubjectModel):
     def get_active_non_recurring_bookings(self, booker_entity):
         return self.get_active_bookings(booker_entity).filter(recurring_booking=None)
 
-    def evaluate_privilege(self):
+    def evaluate_privilege(self, is_create):
 
         if self.group is not None:
             booker_entity = self.group  # type: AbstractBooker
@@ -129,15 +129,16 @@ class Booking(models.Model, SubjectModel):
         # max_days_until_booking
         today = datetime.date.today()
 
-        day_delta = self.date - today
-        if day_delta.days > max_days_until_booking and self.recurring_booking is None:
-            raise PrivilegeError(p_c.get_error_text("max_days_until_booking"))
+        if is_create:
+            day_delta = self.date - today
+            if day_delta.days > max_days_until_booking and self.recurring_booking is None:
+                raise PrivilegeError(p_c.get_error_text("max_days_until_booking"))
 
-        # max_bookings
-        num_bookings = self.get_active_non_recurring_bookings(booker_entity).count()
+            # max_bookings
+            num_bookings = self.get_active_non_recurring_bookings(booker_entity).count()
 
-        if num_bookings >= max_bookings:
-            raise PrivilegeError(p_c.get_error_text("max_bookings"))
+            if num_bookings >= max_bookings:
+                raise PrivilegeError(p_c.get_error_text("max_bookings"))
 
         # booking_start_time
         if self.start_time < start_time:
