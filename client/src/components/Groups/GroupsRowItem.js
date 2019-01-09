@@ -1,25 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table, Label } from 'semantic-ui-react';
-import api from '../../utils/api';
 import GroupsModal from './GroupsModal';
 
 
 class GroupsRowItem extends Component {
   state = {
     openModal: false,
-    myId: '',
-    showPrivilege: false,
-  }
-
-  componentDidMount() {
-    api.getMyUser()
-      .then((r) => {
-        this.setState({
-          myId: r.data.id,
-          showPrivilege: true,
-        });
-      });
   }
 
   openModal = () => {
@@ -33,25 +20,24 @@ class GroupsRowItem extends Component {
   }
 
   renderPrivilege = () => {
-    const { group } = this.props;
-    const { myId } = this.state;
+    const { group, myUserId } = this.props;
     let label = <Label color="grey">MEMBER</Label>;
-    if (myId === group.owner.user.id) {
+    if (myUserId === group.owner.user.id) {
       label = <Label color="yellow">ADMIN</Label>;
     }
     return label;
   }
 
   render() {
-    const { group, syncGroupsList } = this.props;
-    const { openModal, showPrivilege } = this.state;
+    const { group, syncGroupsList, myUserId } = this.props;
+    const { openModal } = this.state;
     return (
       <Table.Row key={group.id}>
         <Table.Cell>
           <h4>{group.name}</h4>
         </Table.Cell>
         <Table.Cell>
-          {showPrivilege === true ? this.renderPrivilege() : ''}
+          {this.renderPrivilege()}
         </Table.Cell>
         <Table.Cell textAlign="center">
           <Button icon="edit" onClick={this.openModal} />
@@ -61,6 +47,7 @@ class GroupsRowItem extends Component {
               selectedGroup={group}
               onClose={this.closeModal}
               syncGroupsList={syncGroupsList}
+              isAdmin={myUserId === group.owner.user.id}
             />
           ) : ''}
         </Table.Cell>
@@ -79,6 +66,7 @@ GroupsRowItem.propTypes = {
     privilege_category: PropTypes.number,
     members: PropTypes.array.isRequired,
   }).isRequired,
+  myUserId: PropTypes.number.isRequired,
 };
 
 export default GroupsRowItem;

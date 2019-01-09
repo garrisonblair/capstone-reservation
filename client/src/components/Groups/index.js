@@ -12,10 +12,17 @@ class Groups extends Component {
   state = {
     showModal: false,
     groups: [],
+    myUserId: 0,
   }
 
   componentDidMount() {
     this.syncGroups();
+    api.getMyUser()
+      .then((r) => {
+        if (r.status === 200) {
+          this.setState({ myUserId: r.data.id });
+        }
+      });
   }
 
   syncGroups = () => {
@@ -33,7 +40,7 @@ class Groups extends Component {
   }
 
   render() {
-    const { groups, showModal } = this.state;
+    const { groups, showModal, myUserId } = this.state;
     return (
       <div id="groups">
         <h1>Groups</h1>
@@ -56,6 +63,7 @@ class Groups extends Component {
                   key={g.id}
                   group={g}
                   syncGroupsList={this.syncGroups}
+                  myUserId={myUserId}
                 />
               ),
             )}

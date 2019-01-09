@@ -142,6 +142,7 @@ class GroupsModal extends Component {
               .then((r2) => {
                 if (r2.status === 202) {
                   sweetAlert('Completed', 'A group was created.', 'success');
+                  onClose();
                 }
               });
           }
@@ -156,6 +157,7 @@ class GroupsModal extends Component {
           .then((r) => {
             if (r.status === 202 && deletedMembers.length === 0) {
               sweetAlert('Completed', 'Group was saved.', 'success');
+              onClose();
             }
           })
           .catch((error) => {
@@ -168,6 +170,7 @@ class GroupsModal extends Component {
           .then((r) => {
             if (r.status === 202) {
               sweetAlert('Completed', 'Group was saved.', 'success');
+              onClose();
             }
           })
           .catch((error) => {
@@ -175,13 +178,13 @@ class GroupsModal extends Component {
           });
       }
     }
-    onClose();
   }
 
   renderMembersList = () => {
     const {
       groupMembers, newMembers, groupOwner, bookers,
     } = this.state;
+    const { isAdmin } = this.props;
     const list = groupMembers.concat(newMembers);
     let content = (
       <List divided>
@@ -194,6 +197,7 @@ class GroupsModal extends Component {
                   key={m}
                   selectedMember={user}
                   deleteFunction={this.deleteFunction}
+                  isAdmin={isAdmin}
                 />
               ) : '';
             },
@@ -208,7 +212,9 @@ class GroupsModal extends Component {
   }
 
   render() {
-    const { onClose, show, selectedGroup } = this.props;
+    const {
+      onClose, show, selectedGroup, isAdmin,
+    } = this.props;
     const {
       groupName, groupOwner, stateOptions, newMember,
     } = this.state;
@@ -248,6 +254,9 @@ class GroupsModal extends Component {
             <br />
             <br />
             <Button onClick={this.handleSubmit} color="blue">SAVE</Button>
+            <Button color="red" onClick={isAdmin ? this.handleDeleteGroup : this.handleLeaveGroup}>
+              {isAdmin ? 'Delete group' : 'Leave group'}
+            </Button>
           </Modal.Description>
         </Modal.Content>
       </Modal>
@@ -266,10 +275,12 @@ GroupsModal.propTypes = {
     privilege_category: PropTypes.number,
     members: PropTypes.array.isRequired,
   }),
+  isAdmin: PropTypes.bool,
 };
 
 GroupsModal.defaultProps = {
   selectedGroup: null,
+  isAdmin: false,
 };
 
 
