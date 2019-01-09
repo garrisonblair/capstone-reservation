@@ -23,10 +23,10 @@ class GroupInvitationsList(ListAPIView):
 
         if not self.request.user.is_superuser:
             try:
-                invited_booker = Booker.objects.get(booker_id=self.request.user.booker)
-                qs.filter(invited_booker=invited_booker)
+                invited_booker = Booker.objects.get(id=self.request.user.booker.id)
+                qs = qs.filter(invited_booker=invited_booker)
             except Booker.DoesNotExist:
-                pass
+                return
 
         return qs
 
@@ -43,11 +43,9 @@ class AcceptInvitation(APIView):
             return Response("Invitation does not exist.", status.HTTP_412_PRECONDITION_FAILED)
 
         if request.user.booker.booker_id != invitation.invited_booker.booker_id:
-            print('Here')
-            print(request.user.booker.booker_id)
-            print(invitation.invited_booker.booker_id)
             return Response("Can't accept this invitation", status.HTTP_401_UNAUTHORIZED)
 
-        invitation.group.members.add(invitation.invited_booker.booker_id)
+        invitation.group.members.add(invitation.invited_booker)
+        invitation.delete()
 
         return Response("Member added successfully.", status=status.HTTP_200_OK)

@@ -22,7 +22,6 @@ class UserList(ListAPIView):
 
     def get_queryset(self):
         search_term = self.request.GET.get("search_text")
-        print(search_term)
         users = User.objects.all()
 
         if search_term is not None:
