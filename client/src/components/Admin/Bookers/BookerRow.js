@@ -23,7 +23,6 @@ class BookerRow extends Component {
   render() {
     const { booker } = this.props;
     const { openModal } = this.state;
-    console.log(booker);
     return (
       <Table.Row key={booker.username}>
         <Table.Cell textAlign="center">

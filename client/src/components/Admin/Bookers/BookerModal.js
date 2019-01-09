@@ -9,19 +9,25 @@ import PrivilegeRow from './PrivilegeRow';
 
 class BookerModal extends Component {
   state = {
-    privileges: [],
+    // eslint-disable-next-line react/destructuring-assignment
+    myPrivileges: [],
+    dropdownOptions: [],
     privilegeValue: '',
+    privileges: [],
   }
 
   componentDidMount() {
-    const { privileges } = this.state;
+    const { booker } = this.props;
+    const { dropdownOptions } = this.state;
+    this.setState({ myPrivileges: booker.privilege_categories });
     api.getPrivileges()
       .then((result) => {
+        this.setState({ privileges: result.data });
         result.data.map(
           // eslint-disable-next-line array-callback-return
           (p) => {
-            privileges.push({ text: p.name, value: p.id, key: p.id });
-            this.setState({ privileges });
+            dropdownOptions.push({ text: p.name, value: p.id, key: p.id });
+            this.setState({ dropdownOptions });
           },
         );
       });
@@ -32,20 +38,21 @@ class BookerModal extends Component {
   }
 
   handleAddPrivilegeClick = () => {
-    const { privilegeValue } = this.state;
+    const { privilegeValue, privileges, myPrivileges } = this.state;
     const { booker } = this.props;
     api.addPrivilege([booker.user.username], privilegeValue)
       .then((r) => {
-        console.log(r);
-        if (r.status !== 200) {
-          // console.log(r);
+        if (r.status === 200) {
+          const privilege = privileges.find(p => p.id === privilegeValue);
+          myPrivileges.push(privilege);
+          this.setState({ myPrivileges });
         }
       });
   }
 
   render() {
     const { show, booker, onClose } = this.props;
-    const { privileges } = this.state;
+    const { dropdownOptions, myPrivileges } = this.state;
     return (
       <Modal open={show} onClose={onClose} size="small">
         <Modal.Header>
@@ -60,11 +67,11 @@ class BookerModal extends Component {
               placeholder="Privilege"
               selection
               onChange={this.handleDropdownChange}
-              options={privileges}
+              options={dropdownOptions}
             />
             <Button onClick={this.handleAddPrivilegeClick}>Add Privilege</Button>
             <List>
-              {booker.privilege_categories.map(
+              {myPrivileges.map(
                 p => <PrivilegeRow divided privilege={p} key={p.id} />,
               )}
             </List>
