@@ -17,8 +17,8 @@ class TestBookingPrivileges(TestCase):
         self.p_c_booker = PrivilegeCategory(name="Booker Category")
 
         self.p_c_booker.max_days_until_booking = 3
-        self.p_c_booker.max_overall_bookings = 2
-        self.p_c_booker.max_daily_bookings = 2
+        self.p_c_booker.max_num_days_with_bookings = 2
+        self.p_c_booker.max_num_bookings_for_date = 2
         self.p_c_booker.booking_start_time = time(9, 0, 0)
         self.p_c_booker.booking_end_time = time(22, 0, 0)
 
@@ -31,8 +31,8 @@ class TestBookingPrivileges(TestCase):
 
         self.p_c_group = PrivilegeCategory(name="Group Category")
         self.p_c_group.max_days_until_booking = 5
-        self.p_c_group.max_overall_bookings = 2
-        self.p_c_group.max_daily_bookings = 2
+        self.p_c_group.max_num_days_with_bookings = 2
+        self.p_c_group.max_num_bookings_for_date = 2
         self.p_c_group.booking_start_time = time(8, 0, 0)
         self.p_c_group.booking_end_time = time(23, 0, 0)
         self.p_c_group.save()
@@ -229,7 +229,7 @@ class TestBookingPrivileges(TestCase):
             try:
                 booking3.save()
             except PrivilegeError as error:
-                self.assertEqual(error.message, self.p_c_booker.get_error_text("max_overall_bookings"))
+                self.assertEqual(error.message, self.p_c_booker.get_error_text("max_num_days_with_bookings"))
 
     def testTooManyOverallBookingsGroup(self):
 
@@ -277,9 +277,9 @@ class TestBookingPrivileges(TestCase):
             try:
                 booking3.save()
             except PrivilegeError as error:
-                self.assertEqual(error.message, self.p_c_group.get_error_text("max_overall_bookings"))
+                self.assertEqual(error.message, self.p_c_group.get_error_text("max_num_days_with_bookings"))
 
-    def testTooManyDailyBookingsBooker(self):
+    def testTooManyBookingsForDateBooker(self):
 
         booking1 = Booking(booker=self.booker,
                            room=self.room,
@@ -321,7 +321,7 @@ class TestBookingPrivileges(TestCase):
             try:
                 booking3.save()
             except PrivilegeError as error:
-                self.assertEqual(error.message, self.p_c_booker.get_error_text("max_daily_bookings"))
+                self.assertEqual(error.message, self.p_c_booker.get_error_text("max_num_bookings_for_date"))
 
     def testTooManyDailyBookingsGroup(self):
 
@@ -369,4 +369,4 @@ class TestBookingPrivileges(TestCase):
             try:
                 booking3.save()
             except PrivilegeError as error:
-                self.assertEqual(error.message, self.p_c_group.get_error_text("max_daily_bookings"))
+                self.assertEqual(error.message, self.p_c_group.get_error_text("max_num_bookings_for_date"))

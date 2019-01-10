@@ -17,5 +17,8 @@ class Booker(models.Model, AbstractBooker):
 
         return PrivilegeMerger(list(self.privilege_categories.all()))
 
+    def get_bookings(self):
+        return self.booking_set
+
     def __str__(self):
         return self.booker_id

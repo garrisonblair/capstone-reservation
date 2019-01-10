@@ -15,5 +15,8 @@ class Group(models.Model, AbstractBooker):
     def get_privileges(self):
         return self.privilege_category
 
+    def get_bookings(self):
+        return self.booking_set
+
     def __str__(self):
         return str(self.name)

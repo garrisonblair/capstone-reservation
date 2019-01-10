@@ -97,17 +97,6 @@ class Booking(models.Model, SubjectModel):
                                     end_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
-    def get_active_daily_bookings(self, booker_entity, current_date, current_time):
-        return booker_entity.booking_set.filter(Q(Q(date=current_date) & Q(end_time__gte=current_time))
-                                                | Q(date__gt=current_date))
-
-    def get_active_daily_non_recurring_bookings(self, booker_entity, selected_date, selected_time):
-        return self.get_active_daily_bookings(booker_entity, selected_date, selected_time
-                                              ).filter(recurring_booking=None)
-
-    def get_active_overall_non_recurring_bookings(self, booker_entity):
-        return booker_entity.booking_set.filter(recurring_booking=None)
-
     def evaluate_privilege(self):
 
         if self.group is not None:
@@ -122,8 +111,8 @@ class Booking(models.Model, SubjectModel):
         p_c = booker_entity.get_privileges()  # type: PrivilegeCategory
 
         max_days_until_booking = p_c.get_parameter("max_days_until_booking")
-        max_overall_bookings = p_c.get_parameter("max_overall_bookings")
-        max_daily_bookings = p_c.get_parameter("max_daily_bookings")
+        max_num_days_with_bookings = p_c.get_parameter("max_num_days_with_bookings")
+        max_num_bookings_for_date = p_c.get_parameter("max_num_bookings_for_date")
         start_time = p_c.get_parameter("booking_start_time")
         end_time = p_c.get_parameter("booking_end_time")
 
@@ -134,19 +123,21 @@ class Booking(models.Model, SubjectModel):
         if day_delta.days > max_days_until_booking and self.recurring_booking is None:
             raise PrivilegeError(p_c.get_error_text("max_days_until_booking"))
 
-        # max_overall_bookings
-        num_overall_bookings = self.get_active_overall_non_recurring_bookings(booker_entity)\
-                                   .values_list('date').distinct().count()
+        # max_num_days_with_bookings
+        num_days_with_bookings = booker_entity.get_days_with_active_bookings().count()
 
-        if num_overall_bookings > max_overall_bookings:
-            raise PrivilegeError(p_c.get_error_text("max_overall_bookings"))
+        if num_days_with_bookings >= max_num_days_with_bookings and \
+                not booker_entity.get_days_with_active_bookings().filter(date=self.date).exists():
+            # check that the new booking is in day that already has booking
+            raise PrivilegeError(p_c.get_error_text("max_num_days_with_bookings"))
 
-        # max_daily_bookings
-        num_daily_bookings = self.get_active_daily_non_recurring_bookings(booker_entity, self.date, self.start_time
-                                                                          ).count()
+        # max_num_bookings_for_date
+        num_bookings_for_date = booker_entity.get_non_recurring_bookings_for_date(self.date).count()
 
-        if num_daily_bookings > max_daily_bookings:
-            raise PrivilegeError(p_c.get_error_text("max_daily_bookings"))
+        if num_bookings_for_date >= max_num_bookings_for_date:
+            print("too many bookings in day")
+
+            raise PrivilegeError(p_c.get_error_text("max_num_bookings_for_date"))
 
         # booking_start_time
         if self.start_time < start_time:

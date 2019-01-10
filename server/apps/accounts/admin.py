@@ -36,8 +36,8 @@ class PrivilegeCategoryAdmin(admin.ModelAdmin):
                     'parent_category',
                     'max_days_until_booking',
                     'can_make_recurring_booking',
-                    'max_overall_bookings',
-                    'max_daily_bookings',
+                    'max_num_days_with_bookings',
+                    'max_num_bookings_for_date',
                     'max_recurring_bookings',
                     'booking_start_time',
                     'booking_end_time'

@@ -24,8 +24,8 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
     # (Important for delegation to parent category)
     max_days_until_booking = models.PositiveIntegerField(null=True, blank=True)
     can_make_recurring_booking = models.BooleanField(null=True, blank=True)
-    max_overall_bookings = models.PositiveIntegerField(null=True, blank=True)
-    max_daily_bookings = models.PositiveIntegerField(null=True, blank=True)
+    max_num_days_with_bookings = models.PositiveIntegerField(null=True, blank=True)
+    max_num_bookings_for_date = models.PositiveIntegerField(null=True, blank=True)
     max_recurring_bookings = models.PositiveIntegerField(null=True, blank=True)
 
     booking_start_time = models.TimeField(null=True, blank=True)
@@ -40,12 +40,12 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
             error_message="Not permitted to make recurring bookings.",
             comparator=BooleanComparator()
         ),
-        "max_overall_bookings": FieldMetadata(
-            error_message="Booker has too many bookings.",
+        "max_num_days_with_bookings": FieldMetadata(
+            error_message="Booker has bookings on too many days.",
             comparator=IntegerComparator()
         ),
-        "max_daily_bookings": FieldMetadata(
-            error_message="Booker has too many daily bookings.",
+        "max_num_bookings_for_date": FieldMetadata(
+            error_message="Booker has too many bookings on this day.",
             comparator=IntegerComparator()
         ),
         "max_recurring_bookings": FieldMetadata(
@@ -92,7 +92,7 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
         #     "max_days_until_booking": "Attempting to book too many days in advance. Maximum: " +
         #                               str(self.max_days_until_booking),
         #     "can_make_recurring_bookings": "Not permitted to make recurring bookings.",
-        #     "max_bookings": "Booker has too many bookings. Maximum: " + str(self.max_bookings),
+        #     "max_bookings": "Booker has bookings on too many days. Maximum: " + str(self.max_bookings),
         #     "max_recurring_bookings": "Booker has too many recurring bookings. Maximum: " +
         #                               str(self.max_recurring_bookings),
         #
