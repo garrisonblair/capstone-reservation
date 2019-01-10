@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, List } from 'semantic-ui-react';
+import { Button, List, Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
 class MemberRowItem extends Component {
@@ -12,8 +12,12 @@ class MemberRowItem extends Component {
     const { selectedMember, isAdmin } = this.props;
     return (
       <List.Item>
+
         <List.Content floated="left">
-          <h2>{selectedMember.user.username}</h2>
+          <h3>
+            <Icon name="envelope" />
+            {selectedMember.user.username}
+          </h3>
         </List.Content>
         <List.Content floated="right">
           {isAdmin ? <Button onClick={this.handleDeletion}>Remove</Button> : ''}

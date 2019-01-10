@@ -16,7 +16,7 @@ class GroupsModal extends Component {
     groupInvitations: [],
     cleanGroupInvitations: [],
     newInvitations: [],
-    deletedMembers: [],
+    deletedInvitations: [],
     newInvitation: '',
     stateOptions: [],
     bookers: [],
@@ -28,7 +28,7 @@ class GroupsModal extends Component {
 
     if (selectedGroup !== null) {
       const tempInvitations = [];
-      selectedGroup.members.map(m => tempInvitations.push(m.user.id));
+      selectedGroup.group_invitations.map(m => tempInvitations.push(m.invited_booker.user.id));
       this.setState({
         groupId: selectedGroup.id,
         groupOwner: selectedGroup.owner.user,
@@ -50,10 +50,10 @@ class GroupsModal extends Component {
           key: b.id, value: b.user.id, text: b.user.username,
         }));
         if (selectedGroup !== null) {
-          selectedGroup.members
-            .filter(m => m.user.id !== selectedGroup.owner.user.id)
+          // add to dropbox if not already in invited list
+          selectedGroup.group_invitations
             .forEach((m) => {
-              newStateOptions = newStateOptions.filter(o => o.value !== m.user.id);
+              newStateOptions = newStateOptions.filter(o => o.value !== m.invited_booker.user.id);
             });
         }
         this.setState({
@@ -80,7 +80,7 @@ class GroupsModal extends Component {
   addMemberToList = () => {
     const {
       newInvitation, newInvitations, groupOwner, groupInvitations,
-      cleanGroupInvitations, deletedMembers, stateOptions,
+      cleanGroupInvitations, deletedInvitations, stateOptions,
     } = this.state;
     if (newInvitation.length < 1) {
       return;
@@ -89,9 +89,10 @@ class GroupsModal extends Component {
       sweetAlert('Info', 'Cannot add yourself. You are already part of the group.', 'warning');
       return;
     }
-    if (cleanGroupInvitations.includes(newInvitation) && deletedMembers.includes(newInvitation)) {
+    if (cleanGroupInvitations.includes(newInvitation)
+      && deletedInvitations.includes(newInvitation)) {
       this.setState({
-        deletedMembers: deletedMembers.filter(m => m !== newInvitation),
+        deletedInvitations: deletedInvitations.filter(m => m !== newInvitation),
         groupInvitations: groupInvitations.concat([newInvitation]),
       });
     } else {
@@ -122,13 +123,13 @@ class GroupsModal extends Component {
 
   deleteFunction = (member) => {
     const {
-      groupInvitations, newInvitations, deletedMembers, bookers, stateOptions,
+      groupInvitations, newInvitations, deletedInvitations, bookers, stateOptions,
     } = this.state;
 
     if (groupInvitations.includes(member)) {
       this.setState({
         groupInvitations: groupInvitations.filter(m => m !== member),
-        deletedMembers: deletedMembers.concat([member]),
+        deletedInvitations: deletedInvitations.concat([member]),
       });
     } else if (newInvitations.includes(member)) {
       this.setState({ newInvitations: newInvitations.filter(m => m !== member) });
@@ -140,7 +141,7 @@ class GroupsModal extends Component {
 
   handleSubmit = () => {
     const {
-      groupName, newInvitations, groupId, deletedMembers,
+      groupName, newInvitations, groupId, deletedInvitations,
     } = this.state;
     const { onClose } = this.props;
     if (!this.verifyModalForm()) {
@@ -150,9 +151,9 @@ class GroupsModal extends Component {
       api.createGroup(groupName)
         .then((r) => {
           if (r.status === 201) {
-            api.addMembersToGroup(r.data.id, newInvitations)
+            api.inviteMembers(r.data.id, newInvitations)
               .then((r2) => {
-                if (r2.status === 202) {
+                if (r2.status === 201) {
                   sweetAlert('Completed', 'A group was created.', 'success');
                   onClose();
                 }
@@ -160,14 +161,14 @@ class GroupsModal extends Component {
           }
         });
     } else {
-      if (newInvitations.length === 0 && deletedMembers.length === 0) {
+      if (newInvitations.length === 0 && deletedInvitations.length === 0) {
         sweetAlert('Completed', 'Group was saved.', 'success');
         return;
       }
       if (newInvitations.length !== 0) {
-        api.addMembersToGroup(groupId, newInvitations)
+        api.inviteMembers(groupId, newInvitations)
           .then((r) => {
-            if (r.status === 202 && deletedMembers.length === 0) {
+            if (r.status === 201 && deletedInvitations.length === 0) {
               sweetAlert('Completed', 'Group was saved.', 'success');
               onClose();
             }
@@ -176,9 +177,9 @@ class GroupsModal extends Component {
             sweetAlert('Error', JSON.stringify(error), 'error');
           });
       }
-
-      if (deletedMembers.length !== 0) {
-        api.removeMembersToGroup(groupId, deletedMembers)
+      console.log(deletedInvitations);
+      if (deletedInvitations.length !== 0) {
+        api.removeMembersToGroup(groupId, deletedInvitations)
           .then((r) => {
             if (r.status === 202) {
               sweetAlert('Completed', 'Group was saved.', 'success');
@@ -196,7 +197,6 @@ class GroupsModal extends Component {
     const {
       groupInvitations, newInvitations, groupOwner, bookers,
     } = this.state;
-    console.log(groupInvitations);
     const { isAdmin } = this.props;
     const list = groupInvitations.concat(newInvitations);
     let content = (
@@ -267,17 +267,17 @@ class GroupsModal extends Component {
               Group Owner:
               {groupOwner.username}
             </h3>
-            <h3>Members:</h3>
+            <h3>Invitation List:</h3>
             <FormField>
               <Dropdown
-                placeholder="New member"
+                placeholder="Users"
                 search
                 selection
                 options={stateOptions}
                 onChange={this.handleDropboxChange}
                 value={newInvitation}
               />
-              <Button onClick={this.addMemberToList}>Add member</Button>
+              <Button onClick={this.addMemberToList}>Invite</Button>
             </FormField>
             {this.renderMembersList()}
             <br />

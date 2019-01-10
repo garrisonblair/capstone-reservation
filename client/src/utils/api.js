@@ -256,6 +256,30 @@ function leaveGroup(id) {
   });
 }
 
+function inviteMembers(groupId, members) {
+  const headers = getTokenHeader();
+  const data = {
+    invited_bookers: members,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group/${groupId}/invite_members`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function revokeInvitation(invitationId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/groups/${invitationId}/revoke`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function removeMembersToGroup(id, members) {
   const headers = getTokenHeader();
   const data = {
@@ -335,6 +359,8 @@ const api = {
   createGroup,
   addMembersToGroup,
   leaveGroup,
+  inviteMembers,
+  revokeInvitation,
   removeMembersToGroup,
   getLogEntries,
   getContentTypes,
