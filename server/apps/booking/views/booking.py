@@ -77,6 +77,12 @@ class BookingRetrieveUpdateDestroy(APIView):
         # Check user permissions
         self.check_object_permissions(request, booking.booker.user)
 
+        # Check if Booking started.
+        now = datetime.datetime.now()
+
+        if now.date() > booking.date or (now.date() == booking.date and now.time() >= booking.time):
+            return Response("Can't modify booking after it has started", status=status.HTTP_403_FORBIDDEN)
+
         data = request.data
         data["booker"] = booking.booker.id
         serializer = BookingSerializer(booking, data=data, partial=True)
@@ -87,39 +93,6 @@ class BookingRetrieveUpdateDestroy(APIView):
         try:
             update_booking = serializer.save()
             utils.log_model_change(update_booking, utils.CHANGE, request.user)
-            related_campons = CampOn.objects.filter(camped_on_booking__id=update_booking.id).order_by('id')
-            if not related_campons:
-                return Response(serializer.data, status=status.HTTP_200_OK)
-
-            try:
-                new_booking = related_campons.first()
-
-                campon_to_booking = Booking(booker=new_booking.booker,
-                                            room=booking.room,
-                                            date=booking.date,
-                                            start_time=new_booking.start_time,
-                                            end_time=new_booking.end_time)
-                campon_to_booking.save()
-
-                utils.log_model_change(
-                    campon_to_booking,
-                    utils.ADDITION,
-                )
-
-                CampOn.objects.filter(id=new_booking.id).delete()
-                utils.log_model_change(new_booking, utils.DELETION)
-
-                related_campons = CampOn.objects.filter(camped_on_booking__id=update_booking.id)
-                for campon in related_campons:
-                    campon.camped_on_booking = campon_to_booking
-                    campon.save()
-                    # TO-DO: logs the operation
-                    utils.log_model_change(campon, utils.CHANGE)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-
-            except BaseException as error:
-                print(error)
-                return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
