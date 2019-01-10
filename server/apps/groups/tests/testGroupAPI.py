@@ -9,10 +9,10 @@ from apps.accounts.models.Booker import Booker
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.groups.models.Group import Group
 
-from ..views.groups import GroupList, GroupCreate, AddMembers, RemoveMembers
+from ..views.groups import GroupList, GroupCreate, AddMembers, RemoveMembers, LeaveGroup
 
 
-class RoomAPITest(TestCase):
+class GroupAPITest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
 
@@ -211,3 +211,56 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         self.assertEqual(len(self.group1.members.all()), 1)
         self.assertTrue(self.booker in self.group1.members.all())
+
+    def testLeaveGroupNotOwner(self):
+
+        self.group1 = Group(name="Group1", owner=self.booker)
+        self.group1.save()
+        self.group1.members.add(self.booker)
+        self.group1.save()
+
+        self.assertEqual(len(self.group1.members.all()), 1)
+
+        self.group1.members.add(self.booker_2)
+        self.group1.save()
+
+        self.assertEqual(len(self.group1.members.all()), 2)
+
+        request = self.factory.post("group/" + str(self.group1.id) + "/leave_group",
+                                    {
+                                    }, format="json")
+
+        force_authenticate(request, user=self.user2)
+
+        response = LeaveGroup.as_view()(request, self.group1.id)
+
+        # self.group1.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(len(self.group1.members.all()), 1)
+        self.assertTrue(self.booker in self.group1.members.all())
+
+    def testLeaveGroupOwner(self):
+
+        self.group1 = Group(name="Group1", owner=self.booker)
+        self.group1.save()
+        self.group1.members.add(self.booker)
+        self.group1.save()
+
+        self.assertEqual(len(self.group1.members.all()), 1)
+
+        self.group1.members.add(self.booker_2)
+        self.group1.save()
+
+        self.assertEqual(len(self.group1.members.all()), 2)
+
+        request = self.factory.post("group/" + str(self.group1.id) + "/leave_group",
+                                    {
+                                    }, format="json")
+
+        force_authenticate(request, user=self.user)
+
+        response = LeaveGroup.as_view()(request, self.group1.id)
+
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(len(self.group1.members.all()), 0)
+        self.assertFalse(self.booker in self.group1.members.all())
