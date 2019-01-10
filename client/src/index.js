@@ -27,7 +27,7 @@ ReactDOM.render(
         <Route exact path="/admin/settings" render={() => <Admin menuType="settings" content={<Settings />} />} />
         <Route exact path="/admin/privileges" render={() => <Admin menuType="privileges" content={<PrivilegeCategory />} />} />
         <Route exact path="/admin/rooms" render={() => <Admin menuType="rooms" content={<RoomManager />} />} />
-        <Route exact path="/test" component={Groups} />
+        <Route exact path="/myGroups" component={Groups} />
         <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<BookingActivity />} />} />
         <Route component={NotFound} />
       </Switch>
