@@ -14,7 +14,7 @@ class PrivilegeRequestTest(TestCase):
         self.owner.save()
 
         self.category = PrivilegeCategory(name="Category")
-        self.category.save()
+        self.category.save(bypass_validation=True)
 
         self.group = Group(name="Queen", is_verified=False, owner=self.owner)
         self.group.save()

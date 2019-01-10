@@ -9,11 +9,13 @@ from ..models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 
-from apps.util.SubjectModel import SubjectModel
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.exceptions import PrivilegeError
+from apps.system_administration.models.system_settings import SystemSettings
 
+from apps.util.SubjectModel import SubjectModel
 from apps.util.AbstractBooker import AbstractBooker
+from apps.util import utils
 
 
 class BookingManager(models.Manager):
@@ -75,7 +77,6 @@ class Booking(models.Model, SubjectModel):
 
     def validate_model(self):
 
-        from ..models.CampOn import CampOn
         if not isinstance(self.start_time, datetime.time):
             self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
         if not isinstance(self.end_time, datetime.time):
@@ -98,15 +99,33 @@ class Booking(models.Model, SubjectModel):
                                     end_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
-    def get_active_bookings(self, booker_entity):
-        today = datetime.datetime.now().date()
-        now = datetime.datetime.now().time()
+    def merge_with_neighbouring_bookings(self):
+        settings = SystemSettings.get_settings()
 
-        return booker_entity.booking_set.filter(Q(Q(date=today) & Q(end_time__gte=now))
-                                                | Q(date__gt=today))
+        if settings.merge_adjacent_bookings is False:
+            return
 
-    def get_active_non_recurring_bookings(self, booker_entity):
-        return self.get_active_bookings(booker_entity).filter(recurring_booking=None)
+        threshold_minutes = settings.merge_threshold_minutes
+        threshold_minutes = datetime.timedelta(minutes=threshold_minutes)
+
+        start_time_max = (datetime.datetime.combine(datetime.date.today(), self.end_time) + threshold_minutes).time()
+        end_time_min = (datetime.datetime.combine(datetime.date.today(), self.start_time) - threshold_minutes).time()
+
+        possible_neighbours = Booking.objects.filter(room=self.room, booker=self.booker, date=self.date)
+        neighbours = possible_neighbours.filter(Q(Q(start_time__lte=start_time_max)
+                                                  & Q(start_time__gte=self.end_time)
+                                                  | Q(end_time__gte=end_time_min)
+                                                  & Q(end_time__lte=self.start_time)))
+
+        for neighbour in neighbours:  # type: Booking
+
+            if neighbour.end_time > self.end_time:
+                self.end_time = neighbour.end_time
+            if neighbour.start_time < self.start_time:
+                self.start_time = neighbour.start_time
+
+            neighbour.delete()
+            utils.log_model_change(neighbour, utils.DELETION)
 
     def evaluate_privilege(self, is_create):
 
@@ -122,23 +141,31 @@ class Booking(models.Model, SubjectModel):
         p_c = booker_entity.get_privileges()  # type: PrivilegeCategory
 
         max_days_until_booking = p_c.get_parameter("max_days_until_booking")
-        max_bookings = p_c.get_parameter("max_bookings")
+        max_num_days_with_bookings = p_c.get_parameter("max_num_days_with_bookings")
+        max_num_bookings_for_date = p_c.get_parameter("max_num_bookings_for_date")
         start_time = p_c.get_parameter("booking_start_time")
         end_time = p_c.get_parameter("booking_end_time")
 
-        # max_days_until_booking
-        today = datetime.date.today()
-
         if is_create:
+            # max_days_until_booking
+            today = datetime.date.today()
             day_delta = self.date - today
             if day_delta.days > max_days_until_booking and self.recurring_booking is None:
                 raise PrivilegeError(p_c.get_error_text("max_days_until_booking"))
 
-            # max_bookings
-            num_bookings = self.get_active_non_recurring_bookings(booker_entity).count()
+            # max_num_days_with_bookings
+            num_days_with_bookings = booker_entity.get_days_with_active_bookings().count()
 
-            if num_bookings >= max_bookings:
-                raise PrivilegeError(p_c.get_error_text("max_bookings"))
+            if num_days_with_bookings >= max_num_days_with_bookings and \
+                    not booker_entity.get_days_with_active_bookings().filter(date=self.date).exists():
+                # check that the new booking is in day that already has booking
+                raise PrivilegeError(p_c.get_error_text("max_num_days_with_bookings"))
+
+            # max_num_bookings_for_date
+            num_bookings_for_date = booker_entity.get_non_recurring_bookings_for_date(self.date).count()
+
+            if num_bookings_for_date >= max_num_bookings_for_date:
+                raise PrivilegeError(p_c.get_error_text("max_num_bookings_for_date"))
 
         # booking_start_time
         if self.start_time < start_time:

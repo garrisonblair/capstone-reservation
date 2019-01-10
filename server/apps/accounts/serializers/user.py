@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
 from apps.accounts.models.Booker import Booker
+from apps.accounts.serializers.privilege_category import PrivilegeCategorySerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -47,7 +48,8 @@ class UserSerializerLogin(UserSerializer):
 class BookerSerializer(serializers.ModelSerializer):
 
     user = UserSerializer()
+    privilege_categories = PrivilegeCategorySerializer(many=True)
 
     class Meta:
         model = Booker
-        fields = ('id', 'booker_id', 'user')
+        fields = ('id', 'booker_id', 'user', 'privilege_categories')

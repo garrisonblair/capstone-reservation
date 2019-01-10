@@ -57,7 +57,10 @@ class BookingCreate(APIView):
 
         try:
             booking = serializer.save()
+            booking.merge_with_neighbouring_bookings()
+            booking.save()
             utils.log_model_change(booking, utils.ADDITION, request.user)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
@@ -92,7 +95,14 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         try:
             update_booking = serializer.save()
+
             utils.log_model_change(update_booking, utils.CHANGE, request.user)
+
+            update_booking.merge_with_neighbouring_bookings()
+            update_booking.save()
+
+            utils.log_model_change(update_booking, utils.CHANGE, request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)

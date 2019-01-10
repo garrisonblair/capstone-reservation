@@ -2,9 +2,11 @@ from django.test import TestCase
 from apps.booking.models.Booking import Booking
 from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
-from datetime import datetime
+from datetime import datetime, time
 import re
 from django.core.exceptions import ValidationError
+
+from apps.system_administration.models.system_settings import SystemSettings
 
 
 class TestBooking(TestCase):
@@ -165,3 +167,172 @@ class TestBooking(TestCase):
             booking.save()
         except ValidationError:
             self.assertTrue(True)
+            return
+        self.fail()
+
+    def testMergeBookingExactMatchStart(self):
+        self.activateMerging(0)
+
+        booking1 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(12, 0),
+                           end_time=time(13, 0))
+
+        booking1.save()
+
+        booking2 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(11, 0),
+                           end_time=time(12, 0))
+
+        booking2.save()
+        booking2.merge_with_neighbouring_bookings()
+
+        self.assertEqual(booking2.end_time, booking1.end_time)
+
+        try:
+            booking1.refresh_from_db()
+        except Booking.DoesNotExist:
+            self.assertTrue(True)
+            return
+
+        self.fail("Merged booking not deleted")
+
+    def testMergeBookingExactMatchEnd(self):
+        self.activateMerging(0)
+
+        booking1 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(12, 0),
+                           end_time=time(13, 0))
+
+        booking1.save()
+
+        booking2 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(13, 0),
+                           end_time=time(14, 0))
+
+        booking2.save()
+        booking2.merge_with_neighbouring_bookings()
+
+        self.assertEqual(booking2.start_time, booking1.start_time)
+
+        try:
+            booking1.refresh_from_db()
+        except Booking.DoesNotExist:
+            self.assertTrue(True)
+            return
+
+        self.fail("Merged booking not deleted")
+
+    def testMergeBookingStartInThreshold(self):
+        self.activateMerging(15)
+
+        booking1 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(12, 0),
+                           end_time=time(13, 0))
+
+        booking1.save()
+
+        booking2 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(13, 10),
+                           end_time=time(14, 0))
+
+        booking2.save()
+        booking2.merge_with_neighbouring_bookings()
+
+        self.assertEqual(booking2.start_time, booking1.start_time)
+
+        try:
+            booking1.refresh_from_db()
+        except Booking.DoesNotExist:
+            self.assertTrue(True)
+            return
+
+        self.fail("Merged booking not deleted")
+
+    def testMergeBookingEndInThreshold(self):
+        self.activateMerging(15)
+
+        booking1 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(12, 0),
+                           end_time=time(13, 0))
+
+        booking1.save()
+
+        booking2 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(10, 0),
+                           end_time=time(11, 50))
+
+        booking2.save()
+        booking2.merge_with_neighbouring_bookings()
+
+        self.assertEqual(booking2.end_time, booking1.end_time)
+
+        try:
+            booking1.refresh_from_db()
+        except Booking.DoesNotExist:
+            self.assertTrue(True)
+            return
+
+        self.fail("Merged booking not deleted")
+
+    def testMergeBookingStartAndEnd(self):
+        self.activateMerging(0)
+
+        booking1 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(12, 0),
+                           end_time=time(13, 0))
+
+        booking1.save()
+
+        booking2 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(14, 0),
+                           end_time=time(15, 0))
+
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(13, 0),
+                           end_time=time(15, 0))
+
+        booking3.merge_with_neighbouring_bookings()
+
+        self.assertEqual(booking3.end_time, booking2.end_time)
+        self.assertEqual(booking3.start_time, booking1.start_time)
+
+        try:
+            booking1.refresh_from_db()
+            booking2.refresh_from_db()
+        except Booking.DoesNotExist:
+            self.assertTrue(True)
+            return
+
+        self.fail("Merged booking not deleted")
+
+    def activateMerging(self, threshold):
+        settings = SystemSettings.get_settings()
+
+        settings.merge_adjacent_bookings = True
+        settings.merge_threshold_minutes = threshold
+
+        settings.save()
