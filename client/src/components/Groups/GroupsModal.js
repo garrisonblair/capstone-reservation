@@ -13,11 +13,11 @@ class GroupsModal extends Component {
     groupId: '',
     groupOwner: '',
     groupName: '',
-    groupMembers: [],
-    cleanGroupMembers: [],
-    newMembers: [],
+    groupInvitations: [],
+    cleanGroupInvitations: [],
+    newInvitations: [],
     deletedMembers: [],
-    newMember: '',
+    newInvitation: '',
     stateOptions: [],
     bookers: [],
   }
@@ -27,14 +27,14 @@ class GroupsModal extends Component {
     let newStateOptions = [];
 
     if (selectedGroup !== null) {
-      const tempGroupMembers = [];
-      selectedGroup.members.map(m => tempGroupMembers.push(m.user.id));
+      const tempInvitations = [];
+      selectedGroup.members.map(m => tempInvitations.push(m.user.id));
       this.setState({
         groupId: selectedGroup.id,
         groupOwner: selectedGroup.owner.user,
         groupName: selectedGroup.name,
-        groupMembers: tempGroupMembers,
-        cleanGroupMembers: tempGroupMembers,
+        groupInvitations: tempInvitations,
+        cleanGroupInvitations: tempInvitations,
       });
     } else {
       api.getMyUser()
@@ -79,33 +79,33 @@ class GroupsModal extends Component {
 
   addMemberToList = () => {
     const {
-      newMember, newMembers, groupOwner, groupMembers,
-      cleanGroupMembers, deletedMembers, stateOptions,
+      newInvitation, newInvitations, groupOwner, groupInvitations,
+      cleanGroupInvitations, deletedMembers, stateOptions,
     } = this.state;
-    if (newMember.length < 1) {
+    if (newInvitation.length < 1) {
       return;
     }
-    if (newMember === groupOwner.id) {
+    if (newInvitation === groupOwner.id) {
       sweetAlert('Info', 'Cannot add yourself. You are already part of the group.', 'warning');
       return;
     }
-    if (cleanGroupMembers.includes(newMember) && deletedMembers.includes(newMember)) {
+    if (cleanGroupInvitations.includes(newInvitation) && deletedMembers.includes(newInvitation)) {
       this.setState({
-        deletedMembers: deletedMembers.filter(m => m !== newMember),
-        groupMembers: groupMembers.concat([newMember]),
+        deletedMembers: deletedMembers.filter(m => m !== newInvitation),
+        groupInvitations: groupInvitations.concat([newInvitation]),
       });
     } else {
-      newMembers.push(newMember);
+      newInvitations.push(newInvitation);
       this.setState({
-        newMembers,
-        newMember: '',
+        newInvitations,
+        newInvitation: '',
       });
     }
-    this.setState({ stateOptions: stateOptions.filter(o => o.value !== newMember) });
+    this.setState({ stateOptions: stateOptions.filter(o => o.value !== newInvitation) });
   }
 
   handleDropboxChange = (e, { value }) => {
-    this.setState({ newMember: value });
+    this.setState({ newInvitation: value });
   }
 
   handleLeaveGroup = () => {
@@ -122,16 +122,16 @@ class GroupsModal extends Component {
 
   deleteFunction = (member) => {
     const {
-      groupMembers, newMembers, deletedMembers, bookers, stateOptions,
+      groupInvitations, newInvitations, deletedMembers, bookers, stateOptions,
     } = this.state;
 
-    if (groupMembers.includes(member)) {
+    if (groupInvitations.includes(member)) {
       this.setState({
-        groupMembers: groupMembers.filter(m => m !== member),
+        groupInvitations: groupInvitations.filter(m => m !== member),
         deletedMembers: deletedMembers.concat([member]),
       });
-    } else if (newMembers.includes(member)) {
-      this.setState({ newMembers: newMembers.filter(m => m !== member) });
+    } else if (newInvitations.includes(member)) {
+      this.setState({ newInvitations: newInvitations.filter(m => m !== member) });
     }
     const m = bookers.find(b => b.user.id === member);
     stateOptions.push({ key: m.user.id, value: m.user.id, text: m.user.username });
@@ -140,7 +140,7 @@ class GroupsModal extends Component {
 
   handleSubmit = () => {
     const {
-      groupName, newMembers, groupId, deletedMembers,
+      groupName, newInvitations, groupId, deletedMembers,
     } = this.state;
     const { onClose } = this.props;
     if (!this.verifyModalForm()) {
@@ -150,7 +150,7 @@ class GroupsModal extends Component {
       api.createGroup(groupName)
         .then((r) => {
           if (r.status === 201) {
-            api.addMembersToGroup(r.data.id, newMembers)
+            api.addMembersToGroup(r.data.id, newInvitations)
               .then((r2) => {
                 if (r2.status === 202) {
                   sweetAlert('Completed', 'A group was created.', 'success');
@@ -160,12 +160,12 @@ class GroupsModal extends Component {
           }
         });
     } else {
-      if (newMembers.length === 0 && deletedMembers.length === 0) {
+      if (newInvitations.length === 0 && deletedMembers.length === 0) {
         sweetAlert('Completed', 'Group was saved.', 'success');
         return;
       }
-      if (newMembers.length !== 0) {
-        api.addMembersToGroup(groupId, newMembers)
+      if (newInvitations.length !== 0) {
+        api.addMembersToGroup(groupId, newInvitations)
           .then((r) => {
             if (r.status === 202 && deletedMembers.length === 0) {
               sweetAlert('Completed', 'Group was saved.', 'success');
@@ -194,11 +194,11 @@ class GroupsModal extends Component {
 
   renderMembersList = () => {
     const {
-      groupMembers, newMembers, groupOwner, bookers,
+      groupInvitations, newInvitations, groupOwner, bookers,
     } = this.state;
-    console.log(groupMembers);
+    console.log(groupInvitations);
     const { isAdmin } = this.props;
-    const list = groupMembers.concat(newMembers);
+    const list = groupInvitations.concat(newInvitations);
     let content = (
       <List divided>
         {
@@ -218,7 +218,7 @@ class GroupsModal extends Component {
       </List>
     );
 
-    if (groupMembers.length === 0 && newMembers.length === 0) {
+    if (groupInvitations.length === 0 && newInvitations.length === 0) {
       content = (<Message visible>There is currently no members except you.</Message>);
     }
     return content;
@@ -245,7 +245,7 @@ class GroupsModal extends Component {
       onClose, show, selectedGroup,
     } = this.props;
     const {
-      groupName, groupOwner, stateOptions, newMember,
+      groupName, groupOwner, stateOptions, newInvitation,
     } = this.state;
     return (
       <Modal centered={false} size="tiny" open={show} id="group-modal" onClose={onClose}>
@@ -275,7 +275,7 @@ class GroupsModal extends Component {
                 selection
                 options={stateOptions}
                 onChange={this.handleDropboxChange}
-                value={newMember}
+                value={newInvitation}
               />
               <Button onClick={this.addMemberToList}>Add member</Button>
             </FormField>
