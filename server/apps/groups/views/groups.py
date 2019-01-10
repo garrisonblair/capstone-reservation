@@ -157,11 +157,11 @@ class LeaveGroup(APIView):
 
     def post(self, request, pk):
         group = Group.objects.get(id=pk)
-        leaving_member_id = request.user.booker.id
+        leaving_member_id = request.user.id
 
-        if group.owner.id != leaving_member_id:
+        if group.owner.user_id != leaving_member_id:
             if group.members.filter(user_id=leaving_member_id).exists():
-                group.members.remove(leaving_member_id)
+                group.members.remove(request.user.booker)
                 group.save()
         else:
             group.delete()
