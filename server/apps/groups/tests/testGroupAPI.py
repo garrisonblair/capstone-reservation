@@ -12,7 +12,7 @@ from apps.groups.models.Group import Group
 from ..views.groups import GroupList, GroupCreate, AddMembers, RemoveMembers, LeaveGroup
 
 
-class RoomAPITest(TestCase):
+class GroupAPITest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
 
