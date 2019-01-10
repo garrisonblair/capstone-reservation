@@ -196,6 +196,7 @@ class GroupsModal extends Component {
     const {
       groupMembers, newMembers, groupOwner, bookers,
     } = this.state;
+    console.log(groupMembers);
     const { isAdmin } = this.props;
     const list = groupMembers.concat(newMembers);
     let content = (
@@ -223,9 +224,25 @@ class GroupsModal extends Component {
     return content;
   }
 
+  renderRedButton = () => {
+    const { isAdmin } = this.props;
+    const { groupId } = this.state;
+    let button = '';
+    if (groupId === '') {
+      return '';
+    }
+    if (isAdmin === true) {
+      button = <Button onClick={this.handleDeleteGroup} color="red">Delete Group</Button>;
+    } else if (isAdmin === false) {
+      button = <Button onClick={this.handleLeaveGroup} color="red">Leave Group</Button>;
+    }
+
+    return (button);
+  }
+
   render() {
     const {
-      onClose, show, selectedGroup, isAdmin,
+      onClose, show, selectedGroup,
     } = this.props;
     const {
       groupName, groupOwner, stateOptions, newMember,
@@ -266,9 +283,7 @@ class GroupsModal extends Component {
             <br />
             <br />
             <Button onClick={this.handleSubmit} color="blue">SAVE</Button>
-            <Button color="red" onClick={isAdmin ? this.handleDeleteGroup : this.handleLeaveGroup}>
-              {isAdmin ? 'Delete group' : 'Leave group'}
-            </Button>
+            {this.renderRedButton()}
           </Modal.Description>
         </Modal.Content>
       </Modal>

@@ -23,7 +23,7 @@ class GroupsRowItem extends Component {
     const { group, myUserId } = this.props;
     let label = <Label color="grey">MEMBER</Label>;
     if (myUserId === group.owner.user.id) {
-      label = <Label color="yellow">ADMIN</Label>;
+      label = <Label color="yellow">OWNER</Label>;
     }
     return label;
   }
