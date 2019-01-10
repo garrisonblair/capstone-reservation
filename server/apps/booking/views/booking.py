@@ -57,7 +57,7 @@ class BookingCreate(APIView):
 
         try:
             booking = serializer.save()
-            utils.log_model_change(booking, utils.ADDITION, request.user, BookingSerializer(booking))
+            utils.log_model_change(booking, utils.ADDITION, request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
@@ -86,7 +86,7 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         try:
             update_booking = serializer.save()
-            utils.log_model_change(update_booking, utils.CHANGE, request.user, BookingSerializer(update_booking))
+            utils.log_model_change(update_booking, utils.CHANGE, request.user)
             related_campons = CampOn.objects.filter(camped_on_booking__id=update_booking.id).order_by('id')
             if not related_campons:
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -104,20 +104,17 @@ class BookingRetrieveUpdateDestroy(APIView):
                 utils.log_model_change(
                     campon_to_booking,
                     utils.ADDITION,
-                    request.user,
-                    BookingSerializer(campon_to_booking)
                 )
 
                 CampOn.objects.filter(id=new_booking.id).delete()
-                utils.log_model_change(new_booking, utils.DELETION, request.user, CampOnSerializer(new_booking))
+                utils.log_model_change(new_booking, utils.DELETION)
 
                 related_campons = CampOn.objects.filter(camped_on_booking__id=update_booking.id)
                 for campon in related_campons:
                     campon.camped_on_booking = campon_to_booking
                     campon.save()
                     # TO-DO: logs the operation
-                    utils.log_model_change(campon, utils.CHANGE, request.user,
-                                           CampOnSerializer(campon))
+                    utils.log_model_change(campon, utils.CHANGE)
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
             except BaseException as error:

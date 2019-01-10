@@ -150,3 +150,7 @@ class Booking(models.Model, SubjectModel):
 
     def get_observers(self):
         return Booking.observers
+
+    def json_serialize(self):
+        from ..serializers.booking import BookingSerializer
+        return json.dumps(BookingSerializer(self).data)
