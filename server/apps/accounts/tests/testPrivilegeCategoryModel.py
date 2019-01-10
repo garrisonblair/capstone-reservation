@@ -1,6 +1,7 @@
 from datetime import time
 
 from django.test import TestCase
+from django.core.exceptions import ValidationError
 
 from ..models.PrivilegeCategory import PrivilegeCategory, PrivilegeMerger
 
@@ -30,7 +31,7 @@ class TestPrivilegeCategoryModel(TestCase):
 
     def testCreation(self):
 
-        privilege_category = PrivilegeCategory(name="Category 1")
+        privilege_category = PrivilegeCategory(name="Category 1", parent_category=self.category_1)
         privilege_category.save()
 
         read_category = PrivilegeCategory.objects.get(name="Category 1")  # type: PrivilegeCategory
@@ -43,6 +44,17 @@ class TestPrivilegeCategoryModel(TestCase):
         self.assertEqual(read_category.max_recurring_bookings, None)
         self.assertEqual(read_category.booking_start_time, None)
         self.assertEqual(read_category.booking_end_time, None)
+
+    def testCreationMissingParameter(self):
+        category = PrivilegeCategory(name="Incomplete Category")
+        category.max_days_until_booking = 2
+
+        try:
+            category.save()
+        except ValidationError:
+            self.assertTrue(True)
+            return
+        self.fail()
 
     def testParameterDelegation(self):
 
@@ -74,13 +86,13 @@ class TestPrivilegeCategoryModel(TestCase):
         self.assertEqual(merger.get_parameter("booking_end_time"), time(23, 0, 0))
 
     def testSetDefaultPrivilegeCategory(self):
-        category1 = PrivilegeCategory(name="C1", is_default=True)
-        category1.save()
+        self.category_1.is_default = True
+        self.category_1.save()
 
-        category2 = PrivilegeCategory(name="C2", is_default=True)
-        category2.save()
+        self.category_2.is_default = True
+        self.category_2.save()
 
-        category1.refresh_from_db()
+        self.category_1.refresh_from_db()
 
-        self.assertFalse(category1.is_default)
-        self.assertTrue(category2.is_default)
+        self.assertFalse(self.category_1.is_default)
+        self.assertTrue(self.category_2.is_default)

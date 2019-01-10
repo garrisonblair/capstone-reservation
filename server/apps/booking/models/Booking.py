@@ -9,10 +9,11 @@ from apps.booking.models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 
-from apps.util.SubjectModel import SubjectModel
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.exceptions import PrivilegeError
+from apps.system_administration.models.system_settings import SystemSettings
 
+from apps.util.SubjectModel import SubjectModel
 from apps.util.AbstractBooker import AbstractBooker
 
 
@@ -96,6 +97,33 @@ class Booking(models.Model, SubjectModel):
                                     date=self.date,
                                     end_time__range=(self.start_time, self.end_time)).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
+
+    def merge_with_neighbouring_bookings(self):
+        settings = SystemSettings.get_settings()
+
+        if settings.merge_adjacent_bookings is False:
+            return
+
+        threshold_minutes = settings.merge_threshold_minutes
+        threshold_minutes = datetime.timedelta(minutes=threshold_minutes)
+
+        start_time_max = (datetime.datetime.combine(datetime.date.today(), self.end_time) + threshold_minutes).time()
+        end_time_min = (datetime.datetime.combine(datetime.date.today(), self.start_time) - threshold_minutes).time()
+
+        possible_neighbours = Booking.objects.filter(room=self.room, booker=self.booker, date=self.date)
+        neighbours = possible_neighbours.filter(Q(Q(start_time__lte=start_time_max)
+                                                  & Q(start_time__gte=self.end_time)
+                                                  | Q(end_time__gte=end_time_min)
+                                                  & Q(end_time__lte=self.start_time)))
+
+        for neighbour in neighbours:  # type: Booking
+
+            if neighbour.end_time > self.end_time:
+                self.end_time = neighbour.end_time
+            if neighbour.start_time < self.start_time:
+                self.start_time = neighbour.start_time
+
+            neighbour.delete()
 
     def evaluate_privilege(self):
 
