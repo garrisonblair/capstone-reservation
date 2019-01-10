@@ -108,6 +108,18 @@ class GroupsModal extends Component {
     this.setState({ newMember: value });
   }
 
+  handleLeaveGroup = () => {
+    const { groupId } = this.state;
+    const { onClose } = this.props;
+    api.leaveGroup(groupId)
+      .then((r) => {
+        if (r.status === 202) {
+          onClose();
+          sweetAlert('Completed', 'You left the group.', 'success');
+        }
+      });
+  }
+
   deleteFunction = (member) => {
     const {
       groupMembers, newMembers, deletedMembers, bookers, stateOptions,

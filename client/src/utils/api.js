@@ -247,6 +247,15 @@ function addMembersToGroup(id, members) {
   });
 }
 
+function leaveGroup(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group/${id}/leave_group`,
+    headers,
+  });
+}
+
 function removeMembersToGroup(id, members) {
   const headers = getTokenHeader();
   const data = {
@@ -325,6 +334,7 @@ const api = {
   getMyGroups,
   createGroup,
   addMembersToGroup,
+  leaveGroup,
   removeMembersToGroup,
   getLogEntries,
   getContentTypes,
