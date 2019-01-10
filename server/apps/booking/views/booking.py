@@ -55,6 +55,9 @@ class BookingCreate(APIView):
 
         try:
             booking = serializer.save()
+            booking.merge_with_neighbouring_bookings()
+            booking.save()
+
             utils.log_model_change(booking, utils.ADDITION, request.user, BookingSerializer(booking))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
@@ -84,6 +87,9 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         try:
             update_booking = serializer.save()
+            update_booking.merge_with_neighbouring_bookings()
+            update_booking.save()
+
             utils.log_model_change(update_booking, utils.CHANGE, request.user, BookingSerializer(update_booking))
             return Response(serializer.data, status=status.HTTP_200_OK)
         except ValidationError as error:
