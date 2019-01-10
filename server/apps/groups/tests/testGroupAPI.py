@@ -228,10 +228,9 @@ class RoomAPITest(TestCase):
 
         request = self.factory.post("group/" + str(self.group1.id) + "/leave_group",
                                     {
-                                        "member": self.booker_2.user.id
                                     }, format="json")
 
-        force_authenticate(request, user=self.user)
+        force_authenticate(request, user=self.user2)
 
         response = LeaveGroup.as_view()(request, self.group1.id)
 
@@ -256,7 +255,6 @@ class RoomAPITest(TestCase):
 
         request = self.factory.post("group/" + str(self.group1.id) + "/leave_group",
                                     {
-                                        "member": self.booker.user.id
                                     }, format="json")
 
         force_authenticate(request, user=self.user)
