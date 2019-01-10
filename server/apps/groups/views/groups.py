@@ -114,5 +114,5 @@ class LeaveGroup(APIView):
                 group.members.remove(member)
                 group.save()
         else:
-            pass
-        return Response(WriteGroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
+            group.delete()
+        return Response("Group deleted", status=status.HTTP_202_ACCEPTED)
