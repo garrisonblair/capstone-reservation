@@ -42,17 +42,17 @@ class TestPrivilegeCategoryManager(TestCase):
         self.category1 = PrivilegeCategory()
         self.category1.name = "Cat 1"
         self.category1.is_default = True
-        self.category1.save()
+        self.category1.save(bypass_validation=True)
 
         self.category2 = PrivilegeCategory()
         self.category2.name = "Cat 2"
         self.category2.related_course = 'soen490'
-        self.category2.save()
+        self.category2.save(bypass_validation=True)
 
         self.category3 = PrivilegeCategory()
         self.category3.name = "Cat 3"
         self.category3.related_course = 'comp335'
-        self.category3.save()
+        self.category3.save(bypass_validation=True)
 
         self.ldap = FakeLDAP()
 
