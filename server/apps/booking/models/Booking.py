@@ -163,8 +163,6 @@ class Booking(models.Model, SubjectModel):
         num_bookings_for_date = booker_entity.get_non_recurring_bookings_for_date(self.date).count()
 
         if num_bookings_for_date >= max_num_bookings_for_date:
-            print("too many bookings in day")
-
             raise PrivilegeError(p_c.get_error_text("max_num_bookings_for_date"))
 
         # booking_start_time

@@ -41,15 +41,10 @@ class AssignPrivilegesTest(TestCase):
         self.category1 = PrivilegeCategory(name="Base Category")
         self.category1.max_days_until_booking = 2
         self.category1.can_make_recurring_booking = False
-        self.category1.max_bookings = 5
         self.category1.max_recurring_bookings = 0
         self.category1.booking_start_time = datetime.time(8, 0)
         self.category1.booking_end_time = datetime.time(23, 0)
-        self.category1.save()
-
-        self.category2 = PrivilegeCategory(name="Category 2")
-        self.category2.parent_category = self.category1
-        self.category2.save()
+        self.category1.save(bypass_validation=True)
 
     def testAssignPrivilegeSuccess(self):
         body = {
