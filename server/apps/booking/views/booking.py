@@ -80,7 +80,7 @@ class BookingRetrieveUpdateDestroy(APIView):
         # Check if Booking started.
         now = datetime.datetime.now()
 
-        if now.date() > booking.date or (now.date() == booking.date and now.time() >= booking.time):
+        if now.date() > booking.date or (now.date() == booking.date and now.time() >= booking.start_time):
             return Response("Can't modify booking after it has started", status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
