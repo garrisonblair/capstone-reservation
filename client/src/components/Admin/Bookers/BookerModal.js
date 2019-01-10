@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Modal, Dropdown, Button, List,
+  Modal, Dropdown, Button, List, Icon,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
+import './BookerModal.scss';
 
 class BookerModal extends Component {
   state = {
@@ -63,7 +64,8 @@ class BookerModal extends Component {
       <List.Content floated="right">
         <Button onClick={removePrivilegeAction}>Remove</Button>
       </List.Content>
-      <List.Content>
+      <List.Content className="privilege-name">
+        <Icon name="eye" />
         {privilege.name}
       </List.Content>
     </List.Item>
@@ -72,30 +74,40 @@ class BookerModal extends Component {
   render() {
     const { show, booker, onClose } = this.props;
     const { dropdownOptions, myPrivileges } = this.state;
+    console.log(booker);
     return (
-      <Modal open={show} onClose={onClose} size="small">
+      <Modal open={show} onClose={onClose} size="small" id="booker-modal">
         <Modal.Header>
-          Booker details
+          Booker details (
+          {booker.user.username}
+          )
         </Modal.Header>
         <Modal.Content>
           <Modal.Description>
-            <h4>Username:</h4>
-            {booker.user.username}
-            <h4>Privileges</h4>
-            <Dropdown
-              placeholder="Privilege"
-              selection
-              onChange={this.handleDropdownChange}
-              options={dropdownOptions}
-            />
-            <Button onClick={this.handleAddPrivilegeClick}>Add Privilege</Button>
-            <List divided>
-              {myPrivileges.map(
-                p => this.renderPrivilegeRow(p, this.handleRemovePrivilege),
-              )}
-            </List>
+            <h3>Fullname:</h3>
+            {`${booker.user.last_name}, ${booker.user.first_name}`}
+            <h3>Email</h3>
+            {booker.user.email.length !== 0 ? booker.user.email : '[Empty]'}
+            <h3>Privileges</h3>
+            <div className="privilege-section">
+              <List divided className="booker-list">
+                {myPrivileges.map(
+                  p => this.renderPrivilegeRow(p, this.handleRemovePrivilege),
+                )}
+              </List>
+              <Dropdown
+                placeholder="Privilege to add"
+                selection
+                onChange={this.handleDropdownChange}
+                options={dropdownOptions}
+              />
+              <Button onClick={this.handleAddPrivilegeClick} color="blue">Add Privilege</Button>
+            </div>
           </Modal.Description>
         </Modal.Content>
+        <Modal.Actions>
+          <Button onClick={onClose}>Close</Button>
+        </Modal.Actions>
       </Modal>
     );
   }
