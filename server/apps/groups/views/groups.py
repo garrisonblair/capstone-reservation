@@ -110,9 +110,8 @@ class LeaveGroup(APIView):
         member = request.data["member"]
 
         if group.owner != request.user.booker:
-            booker_to_remove = Booker.objects.get(user=member)
-            if group.members.filter(user_id=booker_to_remove).exists():
-                group.members.remove(booker_to_remove)
+            if group.members.filter(user_id=member).exists():
+                group.members.remove(member)
                 group.save()
         else:
             pass
