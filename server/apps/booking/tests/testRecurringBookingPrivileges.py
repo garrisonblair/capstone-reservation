@@ -16,7 +16,8 @@ class TestBookingPrivileges(TestCase):
     def setUp(self):
         self.p_c_booker = PrivilegeCategory(name="Booker Category")
         self.p_c_booker.max_days_until_booking = 3
-        self.p_c_booker.max_bookings = 2
+        self.p_c_booker.max_num_days_with_bookings = 2
+        self.p_c_booker.max_num_bookings_for_date = 3
         self.p_c_booker.booking_start_time = time(9, 0, 0)
         self.p_c_booker.booking_end_time = time(22, 0, 0)
         self.p_c_booker.save(bypass_validation=True)
@@ -28,7 +29,8 @@ class TestBookingPrivileges(TestCase):
 
         self.p_c_group = PrivilegeCategory(name="Group Category")
         self.p_c_group.max_days_until_booking = 5
-        self.p_c_group.max_bookings = 1
+        self.p_c_group.max_num_days_with_bookings = 1
+        self.p_c_group.max_num_bookings_for_date = 2
         self.p_c_group.booking_start_time = time(8, 0, 0)
         self.p_c_group.booking_end_time = time(23, 0, 0)
         self.p_c_group.save(bypass_validation=True)
