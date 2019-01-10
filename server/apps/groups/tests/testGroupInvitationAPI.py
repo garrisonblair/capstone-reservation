@@ -8,7 +8,7 @@ from rest_framework import status
 from apps.accounts.models.Booker import Booker
 from ..models.GroupInvitation import GroupInvitation
 from ..models.Group import Group
-from ..views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation
+from ..views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation, RevokeInvitation
 
 
 class TestGroupInvitationAPI(TestCase):
@@ -123,3 +123,37 @@ class TestGroupInvitationAPI(TestCase):
 
         response = GroupInvitationsList.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def testRevokeInvitationOwner(self):
+        request = self.factory.post("/group_invitation/1/revoke")
+        force_authenticate(request, self.user1)
+
+        response = RevokeInvitation.as_view()(request, self.invitation1.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(self.booker2 not in self.group.members.all())
+
+        #  Check invitation was deleted
+        try:
+            self.invitation1.refresh_from_db()
+        except GroupInvitation.DoesNotExist:
+            self.assertTrue(True)
+            return
+        self.fail()
+
+    def testRevokeInvitationNotOwner(self):
+        request = self.factory.post("/group_invitation/1/revoke")
+        force_authenticate(request, self.user2)
+
+        response = RevokeInvitation.as_view()(request, self.invitation1.id)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertTrue(self.booker2 not in self.group.members.all())
+
+        #  Check invitation was deleted
+        try:
+            self.invitation1.refresh_from_db()
+        except GroupInvitation.DoesNotExist:
+            self.fail()
+            return
+        self.assertTrue(True)
