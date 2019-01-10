@@ -100,3 +100,20 @@ class RemoveMembers(APIView):
                 print("User {} is not in the group".format(member_user_id))
         group.save()
         return Response(WriteGroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
+
+
+class LeaveGroup(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def post(self, request, pk):
+        group = Group.objects.get(id=pk)
+        member = request.data["member"]
+
+        if group.owner != request.user.booker:
+            booker_to_remove = Booker.objects.get(user=member)
+            if group.members.filter(user_id=booker_to_remove).exists():
+                group.members.remove(booker_to_remove)
+                group.save()
+        else:
+            pass
+        return Response(WriteGroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
