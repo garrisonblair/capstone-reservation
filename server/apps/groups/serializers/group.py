@@ -8,6 +8,11 @@ class WriteGroupSerializer(serializers.ModelSerializer):
 
     owner = BookerSerializer()
     members = BookerSerializer(many=True)
+    group_invitations = serializers.SerializerMethodField()
+
+    def get_group_invitations(self, group):
+        from apps.groups.serializers.group_invitation import GroupContextInvitationSerializer
+        return GroupContextInvitationSerializer(group.invitations, many=True).data
 
     class Meta:
         model = Group

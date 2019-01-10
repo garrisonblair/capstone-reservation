@@ -14,6 +14,15 @@ class ReadGroupInvitationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class GroupContextInvitationSerializer(serializers.ModelSerializer):
+
+    invited_booker = BookerSerializer()
+
+    class Meta:
+        model = GroupInvitation
+        fields = '__all__'
+
+
 class WriteGroupInvitationSerializer(serializers.ModelSerializer):
 
     class Meta:
