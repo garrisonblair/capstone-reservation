@@ -72,7 +72,7 @@ class TestGroupInvitationAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def testAcceptNonExistantInvitation(self):
+    def testAcceptNonExistentInvitation(self):
         request = self.factory.post("/group_invitation/3/accept")
         force_authenticate(request, self.user1)
 

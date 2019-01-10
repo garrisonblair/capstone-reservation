@@ -97,6 +97,7 @@ class GroupAPITest(TestCase):
                         "privilege_categories": []
                     }
                 ],
+                "group_invitations": [],
                 "name": "Group1",
                 "is_verified": False,
                 "privilege_category": None
@@ -135,6 +136,7 @@ class GroupAPITest(TestCase):
                         "privilege_categories": []
                     }
                 ],
+                "group_invitations": [],
                 "name": "The Beatles",
                 "is_verified": False,
                 "privilege_category": None
@@ -245,6 +247,9 @@ class GroupAPITest(TestCase):
 
         self.group1.members.add(self.booker_2)
         self.group1.save()
+
+        self.booker_2.user = self.user2
+        self.booker_2.save()
 
         self.assertEqual(len(self.group1.members.all()), 2)
 

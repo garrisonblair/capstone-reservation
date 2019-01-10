@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.utils.timezone import make_aware
 from django.db import models
 from apps.accounts.models.Booker import Booker
 from .Group import Group
@@ -13,5 +14,5 @@ class GroupInvitation(models.Model):
 
     def save(self, *args, **kwargs):
 
-        self.timestamp = datetime.now()
+        self.timestamp = make_aware(datetime.now())
         return super(GroupInvitation, self).save(*args, **kwargs)
