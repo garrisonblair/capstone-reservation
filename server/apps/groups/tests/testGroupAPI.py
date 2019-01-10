@@ -7,9 +7,9 @@ from django.contrib.auth.models import User
 
 from apps.accounts.models.Booker import Booker
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.groups.models.Group import Group
-
-from ..views.groups import GroupList, GroupCreate, AddMembers, RemoveMembers, LeaveGroup
+from ..models.Group import Group
+from ..models.GroupInvitation import GroupInvitation
+from ..views.groups import GroupList, GroupCreate, AddMembers, RemoveMembers, InviteMembers, LeaveGroup
 
 
 class GroupAPITest(TestCase):
@@ -32,8 +32,14 @@ class GroupAPITest(TestCase):
         self.booker.user = self.user
         self.booker.save()
 
+        self.user_2 = User.objects.create_user(username="fred",
+                                               email="fred@email.com",
+                                               password='safe password')
+        self.user_2.save()
         self.booker_2 = Booker(booker_id="booker_2")
         self.booker_2.user = self.user2
+        self.booker_2.save()
+        self.booker_2.user = self.user_2
         self.booker_2.save()
 
         self.group1 = Group(name="Group1", owner=self.booker)
@@ -91,6 +97,7 @@ class GroupAPITest(TestCase):
                         "privilege_categories": []
                     }
                 ],
+                "group_invitations": [],
                 "name": "Group1",
                 "is_verified": False,
                 "privilege_category": None
@@ -129,6 +136,7 @@ class GroupAPITest(TestCase):
                         "privilege_categories": []
                     }
                 ],
+                "group_invitations": [],
                 "name": "The Beatles",
                 "is_verified": False,
                 "privilege_category": None
@@ -191,6 +199,22 @@ class GroupAPITest(TestCase):
         self.assertEqual(len(self.group1.members.all()), 1)
         self.assertTrue(self.booker_2 not in self.group1.members.all())
 
+    def testInviteMembers(self):
+        request = self.factory.post("group/1/invite_members",
+                                    {
+                                        "invited_bookers": [self.user_2.id]
+                                    })
+        force_authenticate(request, user=self.user)
+
+        response = InviteMembers.as_view()(request, self.group1.id)
+
+        try:
+            invitation = GroupInvitation.objects.get(invited_booker=self.booker_2, group=self.group1)
+        except GroupInvitation.DoesNotExist:
+            self.fail()
+
+        self.assertTrue(True)
+
     def testAttemptRemoveOwner(self):
 
         self.group1 = Group(name="Group1", owner=self.booker)
@@ -201,7 +225,7 @@ class GroupAPITest(TestCase):
         request = self.factory.post("group/" + str(self.group1.id) + "/remove_members",
                                     {
                                         "members": [self.booker.user.id]
-                                    }, format="json")
+                   }, format="json")
 
         force_authenticate(request, user=self.user)
 
@@ -223,6 +247,9 @@ class GroupAPITest(TestCase):
 
         self.group1.members.add(self.booker_2)
         self.group1.save()
+
+        self.booker_2.user = self.user2
+        self.booker_2.save()
 
         self.assertEqual(len(self.group1.members.all()), 2)
 

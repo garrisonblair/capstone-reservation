@@ -21,6 +21,7 @@ class UserList(ListAPIView):
     serializer_class = UserSerializer
 
     def get_queryset(self):
+
         search_term = self.request.query_params.get("search_text")
         users = User.objects.all()
 
