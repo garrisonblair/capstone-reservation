@@ -3,7 +3,7 @@ from .views.groups import GroupList, AddMembers, InviteMembers, GroupCreate, Rem
 
 from .views.group_privileges import PrivilegeRequestList, PrivilegeRequestCreate
 from .views.group_privileges import ApprovePrivilegeRequest, DenyPrivilegeRequest
-from .views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation
+from .views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation, RevokeInvitation
 
 
 urlpatterns = [
@@ -21,4 +21,5 @@ urlpatterns = [
     path(r'group_invitations', GroupInvitationsList.as_view()),
     path(r'group_invitation/<int:pk>/accept', AcceptInvitation.as_view()),
     path(r'group_invitation/<int:pk>/reject', RejectInvitation.as_view()),
+    path(r'group_invitation/<int:pk>/revoke', RevokeInvitation.as_view()),
 ]

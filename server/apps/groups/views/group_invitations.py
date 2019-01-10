@@ -42,7 +42,7 @@ class AcceptInvitation(APIView):
         except GroupInvitation.DoesNotExist:
             return Response("Invitation does not exist.", status.HTTP_412_PRECONDITION_FAILED)
 
-        if request.user.booker.booker_id != invitation.invited_booker.booker_id:
+        if request.user.booker.id != invitation.invited_booker.id:
             return Response("Can't accept this invitation", status.HTTP_401_UNAUTHORIZED)
 
         invitation.group.members.add(invitation.invited_booker)
@@ -62,9 +62,28 @@ class RejectInvitation(APIView):
         except GroupInvitation.DoesNotExist:
             return Response("Invitation does not exist.", status.HTTP_412_PRECONDITION_FAILED)
 
-        if request.user.booker.booker_id != invitation.invited_booker.booker_id:
+        if request.user.booker.id != invitation.invited_booker.id:
             return Response("Can't reject this invitation", status.HTTP_401_UNAUTHORIZED)
 
         invitation.delete()
 
-        return Response("Invitation Rejected", status=status.HTTP_200_OK)
+        return Response("Invitation rejected.", status=status.HTTP_200_OK)
+
+
+class RevokeInvitation(APIView):
+
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def post(self, request, pk):
+
+        try:
+            invitation = GroupInvitation.objects.get(id=pk)
+        except GroupInvitation.DoesNotExist:
+            return Response("Invitation does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
+
+        if request.user.booker.id != invitation.group.owner.id:
+            return Response("Can't revoke this invitation", status.HTTP_401_UNAUTHORIZED)
+
+        invitation.delete()
+
+        return Response("Invitation revoked.", status.HTTP_200_OK)
