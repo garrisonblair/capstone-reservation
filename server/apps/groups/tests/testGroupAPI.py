@@ -201,9 +201,10 @@ class RoomAPITest(TestCase):
     def testInviteMembers(self):
         request = self.factory.post("group/1/invite_members",
                                     {
-                                        "invited_bookers": [self.user_2.id],
+                                        "invited_bookers": [self.user_2.id]
+                                    })
         force_authenticate(request, user=self.user)
-        
+
         response = InviteMembers.as_view()(request, self.group1.id)
 
         try:
