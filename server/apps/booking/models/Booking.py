@@ -5,7 +5,7 @@ from django.db import models
 from apps.accounts.models.Booker import Booker
 from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
-from apps.booking.models.RecurringBooking import RecurringBooking
+from ..models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 
@@ -15,6 +15,7 @@ from apps.system_administration.models.system_settings import SystemSettings
 
 from apps.util.SubjectModel import SubjectModel
 from apps.util.AbstractBooker import AbstractBooker
+from apps.util import utils
 
 
 class BookingManager(models.Manager):
@@ -53,13 +54,13 @@ class Booking(models.Model, SubjectModel):
     observers = list()
 
     def save(self, *args, **kwargs):
-        self.evaluate_privilege()
         self.validate_model()
 
         is_create = False
         if self.id is None:
             is_create = True
 
+        self.evaluate_privilege(is_create)
         this = super(Booking, self).save(*args, **kwargs)
 
         if is_create:
@@ -124,8 +125,9 @@ class Booking(models.Model, SubjectModel):
                 self.start_time = neighbour.start_time
 
             neighbour.delete()
+            utils.log_model_change(neighbour, utils.DELETION)
 
-    def evaluate_privilege(self):
+    def evaluate_privilege(self, is_create):
 
         if self.group is not None:
             booker_entity = self.group  # type: AbstractBooker
@@ -144,26 +146,26 @@ class Booking(models.Model, SubjectModel):
         start_time = p_c.get_parameter("booking_start_time")
         end_time = p_c.get_parameter("booking_end_time")
 
-        # max_days_until_booking
-        today = datetime.date.today()
+        if is_create:
+            # max_days_until_booking
+            today = datetime.date.today()
+            day_delta = self.date - today
+            if day_delta.days > max_days_until_booking and self.recurring_booking is None:
+                raise PrivilegeError(p_c.get_error_text("max_days_until_booking"))
 
-        day_delta = self.date - today
-        if day_delta.days > max_days_until_booking and self.recurring_booking is None:
-            raise PrivilegeError(p_c.get_error_text("max_days_until_booking"))
+            # max_num_days_with_bookings
+            num_days_with_bookings = booker_entity.get_days_with_active_bookings().count()
 
-        # max_num_days_with_bookings
-        num_days_with_bookings = booker_entity.get_days_with_active_bookings().count()
+            if num_days_with_bookings >= max_num_days_with_bookings and \
+                    not booker_entity.get_days_with_active_bookings().filter(date=self.date).exists():
+                # check that the new booking is in day that already has booking
+                raise PrivilegeError(p_c.get_error_text("max_num_days_with_bookings"))
 
-        if num_days_with_bookings >= max_num_days_with_bookings and \
-                not booker_entity.get_days_with_active_bookings().filter(date=self.date).exists():
-            # check that the new booking is in day that already has booking
-            raise PrivilegeError(p_c.get_error_text("max_num_days_with_bookings"))
+            # max_num_bookings_for_date
+            num_bookings_for_date = booker_entity.get_non_recurring_bookings_for_date(self.date).count()
 
-        # max_num_bookings_for_date
-        num_bookings_for_date = booker_entity.get_non_recurring_bookings_for_date(self.date).count()
-
-        if num_bookings_for_date >= max_num_bookings_for_date:
-            raise PrivilegeError(p_c.get_error_text("max_num_bookings_for_date"))
+            if num_bookings_for_date >= max_num_bookings_for_date:
+                raise PrivilegeError(p_c.get_error_text("max_num_bookings_for_date"))
 
         # booking_start_time
         if self.start_time < start_time:
@@ -175,3 +177,7 @@ class Booking(models.Model, SubjectModel):
 
     def get_observers(self):
         return Booking.observers
+
+    def json_serialize(self):
+        from ..serializers.booking import BookingSerializer
+        return json.dumps(BookingSerializer(self).data)

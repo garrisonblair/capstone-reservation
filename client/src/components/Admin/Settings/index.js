@@ -15,6 +15,7 @@ class Settings extends Component {
       is_webcalendar_backup_active: false,
       merge_adjacent_bookings: false,
       merge_threshold_minutes: 0,
+      booking_edit_lock_timeout: 0,
     },
   }
 
@@ -65,6 +66,15 @@ class Settings extends Component {
     });
   }
 
+  handleBookingEditLock = (e, data) => {
+    const { value } = data;
+    const { settings } = this.state;
+    settings.booking_edit_lock_timeout = value;
+    this.setState({
+      settings,
+    });
+  }
+
   handleCloseLoginModal = () => {
     this.setState({ showLoginModal: false });
     this.getSettings();
@@ -99,6 +109,7 @@ class Settings extends Component {
       is_webcalendar_backup_active,
       merge_adjacent_bookings,
       merge_threshold_minutes,
+      booking_edit_lock_timeout,
     } = settings;
 
     return (
@@ -122,6 +133,13 @@ class Settings extends Component {
               label="Merge threshold in minutes"
               value={merge_threshold_minutes}
               onChange={this.handleChangeMergeThreshold}
+            />
+
+            <Input
+              className="settings_item"
+              label="Booking edit lock timeout"
+              value={booking_edit_lock_timeout}
+              onChange={this.handleBookingEditLock}
             />
           </div>
           <Button onClick={this.saveSettings}>

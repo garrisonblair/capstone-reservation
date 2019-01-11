@@ -17,6 +17,18 @@ class TestBooking(TestCase):
         self.booker.user = None
         self.booker.save()
 
+        # Setup one booker2
+        sid2 = '23456789'
+        self.booker2 = Booker(booker_id=sid2)
+        self.booker2.user = None
+        self.booker2.save()
+
+        # Setup one campon_booker
+        sid3 = '87654321'
+        self.campon_booker = Booker(booker_id=sid3)
+        self.campon_booker.user = None
+        self.campon_booker.save()
+
         # Setup one Room
         name = "1"
         capacity = 7
@@ -25,7 +37,7 @@ class TestBooking(TestCase):
         self.room.save()
 
         # Setup one Date and Time
-        self.date = datetime.strptime("2019-09-29", "%Y-%m-%d").date()
+        self.date = datetime.now().strftime("%Y-%m-%d")
         self.start_time = datetime.strptime("12:00", "%H:%M").time()
         self.end_time = datetime.strptime("13:00", "%H:%M").time()
 
