@@ -259,10 +259,12 @@ class Cells extends Component {
       </span>];
     campOns.forEach((campOn) => {
       text.push(
-        <span key={campOn.id}>
+        <span key={campOn.id} className="calendar__cells__cell--campon">
           {campOn.start_time.substring(0, campOn.start_time.length - 3)}
           -
           {campOn.end_time.substring(0, campOn.end_time.length - 3)}
+          &nbsp;:&nbsp;
+          {campOn.booker.user.username}
           <br />
         </span>,
       );

@@ -20,6 +20,7 @@ $backgroundColorRooms: #292929;
 $backgroundColorHours: #292929;
 $borderWidth: 1px;
 $cellsWidth: 120px;
+$cellsMinHeight: auto;
 
 /* Calendar */
 
@@ -102,9 +103,13 @@ body {
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
   width: $cellsWidth;
+  min-height: $cellsMinHeight;
   grid-column: 1;
   // height: 50px;
   background-color: $backgroundColorCells;
+  &--campon {
+    font-size: 9;
+  }
 }
 
 .calendar__cells__cell:hover {
@@ -160,4 +165,8 @@ body {
 
 .menu--date:hover {
   cursor: pointer;
+}
+
+.menu--date:before{
+  content: none !important;
 }

@@ -66,7 +66,7 @@ class SelectedDate extends Component {
             onDateChange={d => this.handleChangeDate(d)}
             focused={focusDate}
             onFocusChange={({ f }) => this.focusOutDate(f)}
-            hideKeyboardShortcutsPanel={() => true}
+            hideKeyboardShortcutsPanel
             id="datepicker"
           />
         </div>
