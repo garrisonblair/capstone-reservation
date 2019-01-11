@@ -22,7 +22,7 @@ class GroupsModal extends Component {
 
   componentDidMount() {
     const { selectedGroup } = this.props;
-    let newStateOptions = [];
+    const { stateOptions } = this.state;
 
     if (selectedGroup !== null) {
       this.setState({
@@ -41,20 +41,12 @@ class GroupsModal extends Component {
     // get all users and add them to the dropbox
     api.getBookers()
       .then((r2) => {
-        r2.data.map(b => newStateOptions.push({
+        r2.data.map(b => stateOptions.push({
           key: b.user.id, value: b.user.id, text: b.user.username,
         }));
-        if (selectedGroup !== null) {
-          // add to dropbox if not already in invited list
-          selectedGroup.group_invitations
-            .forEach((m) => {
-              newStateOptions = newStateOptions.filter(o => o.value !== m.invited_booker.user.id);
-            });
-        }
         this.setState({
-          stateOptions: newStateOptions,
+          stateOptions,
         });
-        console.log(newStateOptions);
       });
   }
 
@@ -74,16 +66,22 @@ class GroupsModal extends Component {
 
   addMemberToList = () => {
     const {
-      newInvitation, groupId, groupInvitations, stateOptions,
+      newInvitation, groupId, groupInvitations, groupOwner,
     } = this.state;
+    if (groupInvitations.some(i => i.invited_booker.user.id === newInvitation)) {
+      sweetAlert('Warning', 'You already invited that user.', 'warning');
+      return;
+    }
+    if (groupOwner.id === newInvitation) {
+      sweetAlert('Warning', 'Cannot invite yourself', 'warning');
+      return;
+    }
     api.inviteMembers(groupId, [newInvitation])
       .then((r) => {
         if (r.status === 201) {
           groupInvitations.push(r.data[0]);
-          const newSO = stateOptions.filter(o => o.value !== r.data[0].invited_booker.user.id);
           this.setState({
             groupInvitations,
-            stateOptions: newSO,
           });
         }
       });
@@ -107,18 +105,10 @@ class GroupsModal extends Component {
 
   deleteFunction = (invitationId) => {
     let { groupInvitations } = this.state;
-    const { stateOptions } = this.state;
     api.revokeInvitation(invitationId)
       .then((r) => {
         if (r.status === 200) {
-          const removedInvitation = groupInvitations.find(i => i.id === invitationId);
           groupInvitations = groupInvitations.filter(i => i.id !== invitationId);
-          stateOptions.push({
-            key: removedInvitation.invited_booker.user.id,
-            value: removedInvitation.invited_booker.user.id,
-            text: removedInvitation.invited_booker.user.username,
-          });
-          this.setState({ groupInvitations, stateOptions });
         }
       });
   }
@@ -141,7 +131,6 @@ class GroupsModal extends Component {
       groupInvitations, newInvitations,
     } = this.state;
     const { isAdmin } = this.props;
-    // const list = groupInvitations.concat(newInvitations);
     let content = (
       <div>
         <h3>Invitation List:</h3>
