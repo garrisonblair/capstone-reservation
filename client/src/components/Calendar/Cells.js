@@ -217,6 +217,7 @@ class Cells extends Component {
       selectedBookingId,
       bookingInfoModal,
       selectedBooking,
+      selectedBookingCampons,
     } = this.state;
     const { selectedDate } = this.props;
 
