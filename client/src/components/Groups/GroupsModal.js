@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, List, Dropdown,
+  Modal, Button, FormField, Input, List, Dropdown, Message,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
-import './GroupsModal.scss';
+import InvitedRowItem from './InvitedRowItem';
 import MemberRowItem from './MemberRowItem';
 
 class GroupsModal extends Component {
@@ -14,8 +14,8 @@ class GroupsModal extends Component {
     groupOwner: '',
     groupName: '',
     groupInvitations: [],
+    groupMembers: [],
     newInvitations: [],
-    // deletedInvitations: [],
     newInvitation: '',
     stateOptions: [],
   }
@@ -23,11 +23,11 @@ class GroupsModal extends Component {
   componentDidMount() {
     const { selectedGroup } = this.props;
     const { stateOptions } = this.state;
-
     if (selectedGroup !== null) {
       this.setState({
         groupId: selectedGroup.id,
         groupOwner: selectedGroup.owner.user,
+        groupMembers: selectedGroup.members,
         groupName: selectedGroup.name,
         groupInvitations: selectedGroup.group_invitations,
       });
@@ -66,14 +66,18 @@ class GroupsModal extends Component {
 
   addMemberToList = () => {
     const {
-      newInvitation, groupId, groupInvitations, groupOwner,
+      newInvitation, groupId, groupInvitations, groupOwner, groupMembers,
     } = this.state;
     if (groupInvitations.some(i => i.invited_booker.user.id === newInvitation)) {
       sweetAlert('Warning', 'You already invited that user.', 'warning');
       return;
     }
+    if (groupMembers.some(m => m.user.id === newInvitation)) {
+      sweetAlert('Warning', 'User is already a member.', 'warning');
+      return;
+    }
     if (groupOwner.id === newInvitation) {
-      sweetAlert('Warning', 'Cannot invite yourself', 'warning');
+      sweetAlert('Warning', 'Cannot invite yourself.', 'warning');
       return;
     }
     api.inviteMembers(groupId, [newInvitation])
@@ -103,12 +107,22 @@ class GroupsModal extends Component {
       });
   }
 
-  deleteFunction = (invitationId) => {
-    let { groupInvitations } = this.state;
+  deleteInvitation = (invitationId) => {
+    const { groupInvitations } = this.state;
     api.revokeInvitation(invitationId)
       .then((r) => {
         if (r.status === 200) {
-          groupInvitations = groupInvitations.filter(i => i.id !== invitationId);
+          this.setState({ groupInvitations: groupInvitations.filter(i => i.id !== invitationId) });
+        }
+      });
+  }
+
+  deleteMember = (memberId) => {
+    const { groupId, groupMembers } = this.state;
+    api.removeMembersFromGroup(groupId, [memberId])
+      .then((r) => {
+        if (r.status === 202) {
+          this.setState({ groupMembers: groupMembers.filter(m => m.user.id !== memberId) });
         }
       });
   }
@@ -121,26 +135,29 @@ class GroupsModal extends Component {
     api.createGroup(groupName)
       .then((r) => {
         if (r.status === 201) {
-          this.setState({ groupId: r.data.id });
+          this.setState({
+            groupId: r.data.id,
+            groupMembers: r.data.members,
+          });
         }
       });
   }
 
-  renderMembersList = () => {
+  renderInvitedList = () => {
     const {
       groupInvitations, newInvitations,
     } = this.state;
     const { isAdmin } = this.props;
     let content = (
       <div>
-        <h3>Invitation List:</h3>
+        <h3>Invitation:</h3>
         <List divided>
           {
             groupInvitations.map(i => (
-              <MemberRowItem
+              <InvitedRowItem
                 key={i.id}
                 selectedInvitation={i}
-                deleteFunction={this.deleteFunction}
+                deleteFunction={this.deleteInvitation}
                 isAdmin={isAdmin}
               />
             ))
@@ -150,7 +167,6 @@ class GroupsModal extends Component {
     );
 
     if (groupInvitations.length === 0 && newInvitations.length === 0) {
-      // content = (<Message visible>There is currently no members except you.</Message>);
       content = '';
     }
     return content;
@@ -161,21 +177,46 @@ class GroupsModal extends Component {
     const { groupId } = this.state;
     let button = '';
     if (groupId === '') {
-      return '';
-    }
-    if (isAdmin === true) {
+      button = '';
+    } else if (isAdmin === true) {
       button = <Button onClick={this.handleDeleteGroup} color="red">Delete Group</Button>;
     } else if (isAdmin === false) {
       button = <Button onClick={this.handleLeaveGroup} color="red">Leave Group</Button>;
     }
-
     return (button);
+  }
+
+  renderMembersList = () => {
+    const { groupMembers, groupOwner } = this.state;
+    const { isAdmin } = this.props;
+    console.log(groupMembers);
+    let content = (
+      <List divided>
+        {
+          groupMembers.filter(m => m.user.id !== groupOwner.id).map(
+            m => (
+              <MemberRowItem
+                member={m}
+                deleteFunction={this.deleteMember}
+                key={m.id}
+                isAdmin={isAdmin}
+              />
+            ),
+          )
+        }
+      </List>
+    );
+    if (groupMembers.length === 1) {
+      content = (<Message visible>There is currently no members except you.</Message>);
+    }
+    return content;
   }
 
   renderModalContent = () => {
     const {
       groupOwner, stateOptions, newInvitation,
     } = this.state;
+    const { isAdmin } = this.props;
     return (
       <Modal.Content>
         <Modal.Description>
@@ -183,22 +224,26 @@ class GroupsModal extends Component {
             Group Owner:
             {groupOwner.username}
           </h3>
-
           <FormField>
-            <Dropdown
-              placeholder="Users"
-              selection
-              options={stateOptions}
-              onChange={this.handleDropboxChange}
-              value={newInvitation}
-            />
-            <Button onClick={this.addMemberToList}>Invite</Button>
+            {isAdmin ? (
+              <div>
+                <Dropdown
+                  placeholder="Users"
+                  selection
+                  options={stateOptions}
+                  onChange={this.handleDropboxChange}
+                  value={newInvitation}
+                />
+                <Button onClick={this.addMemberToList}>Invite</Button>
+              </div>) : ''
+            }
+
           </FormField>
           <br />
+          <h3>Members:</h3>
           {this.renderMembersList()}
           <br />
-          <br />
-          {this.renderRedButton()}
+          {this.renderInvitedList()}
         </Modal.Description>
       </Modal.Content>
     );
@@ -217,9 +262,13 @@ class GroupsModal extends Component {
             value={groupName}
             readOnly={selectedGroup}
           />
-          {groupId === '' ? <Button onClick={this.handleCreateGroup}>Create group</Button> : ''}
+          {groupId === '' ? <Button onClick={this.handleCreateGroup} color="blue">Create group</Button> : ''}
         </Modal.Header>
         {groupId !== '' ? this.renderModalContent() : ''}
+        <Modal.Actions>
+          <Button onClick={onClose}>Cancel</Button>
+          {this.renderRedButton()}
+        </Modal.Actions>
       </Modal>
     );
   }
@@ -236,12 +285,11 @@ GroupsModal.propTypes = {
     privilege_category: PropTypes.number,
     members: PropTypes.array.isRequired,
   }),
-  isAdmin: PropTypes.bool,
+  isAdmin: PropTypes.bool.isRequired,
 };
 
 GroupsModal.defaultProps = {
   selectedGroup: null,
-  isAdmin: false,
 };
 
 

@@ -280,14 +280,14 @@ function revokeInvitation(invitationId) {
   });
 }
 
-function removeMembersToGroup(id, members) {
+function removeMembersFromGroup(groupId, members) {
   const headers = getTokenHeader();
   const data = {
     members,
   };
   return axios({
     method: 'POST',
-    url: `${settings.API_ROOT}/group/${id}/remove_members`,
+    url: `${settings.API_ROOT}/group/${groupId}/remove_members`,
     headers,
     data,
   });
@@ -361,7 +361,7 @@ const api = {
   leaveGroup,
   inviteMembers,
   revokeInvitation,
-  removeMembersToGroup,
+  removeMembersFromGroup,
   getLogEntries,
   getContentTypes,
   getUsers,

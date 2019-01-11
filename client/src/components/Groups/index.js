@@ -69,7 +69,7 @@ class Groups extends Component {
             )}
           </TableBody>
         </Table>
-        {showModal ? <GroupsModal show onClose={this.closeGroupsModal} /> : ''}
+        {showModal ? <GroupsModal show onClose={this.closeGroupsModal} isAdmin /> : ''}
       </div>
     );
   }
