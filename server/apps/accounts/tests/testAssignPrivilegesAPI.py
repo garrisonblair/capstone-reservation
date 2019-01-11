@@ -7,7 +7,7 @@ from rest_framework.test import APIRequestFactory, APIClient, force_authenticate
 
 from apps.accounts.models.Booker import Booker
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.views.assign_privileges import PrivilegeCategoriesAssignManual
+from apps.accounts.views.assign_privileges import PrivilegeCategoriesAssignManual, PrivilegeCategoriesRemoveManual
 
 
 class AssignPrivilegesTest(TestCase):
@@ -96,3 +96,55 @@ class AssignPrivilegesTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.booker1.privilege_categories.count(), 0)
         self.assertEqual(self.booker2.privilege_categories.count(), 0)
+
+    def testRemovePrivilegeSuccess(self):
+        self.booker1.privilege_categories.add(self.category1)
+        self.booker2.privilege_categories.add(self.category1)
+
+        body = {
+            "users": ["user1", "user2"],
+            "privilege_category": self.category1.id
+        }
+
+        request = self.factory.patch("/remove_privilege", body, format="json")
+        force_authenticate(request, user=User.objects.get(username="admin"))
+        response = PrivilegeCategoriesRemoveManual.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.booker1.privilege_categories.count(), 0)
+        self.assertEqual(self.booker2.privilege_categories.count(), 0)
+
+    def testRemovePrivilegesWrongUser(self):
+        self.booker1.privilege_categories.add(self.category1)
+        self.booker2.privilege_categories.add(self.category1)
+
+        body = {
+            "users": ["user1", "jerry"],
+            "privilege_category": self.category1.id
+        }
+
+        request = self.factory.patch("/remove_privilege", body, format="json")
+        force_authenticate(request, user=User.objects.get(username="admin"))
+        response = PrivilegeCategoriesRemoveManual.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.booker1.privilege_categories.count(), 0)
+        self.assertEqual(self.booker2.privilege_categories.count(), 1)
+        self.assertEqual(response.data, ["jerry"])
+
+    def testAssignPrivilegesWrongCategory(self):
+        self.booker1.privilege_categories.add(self.category1)
+        self.booker2.privilege_categories.add(self.category1)
+
+        body = {
+            "users": ["user1", "user2"],
+            "privilege_category": 12
+        }
+
+        request = self.factory.patch("/assign_privilege", body, format="json")
+        force_authenticate(request, user=User.objects.get(username="admin"))
+        response = PrivilegeCategoriesRemoveManual.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.booker1.privilege_categories.count(), 1)
+        self.assertEqual(self.booker2.privilege_categories.count(), 1)

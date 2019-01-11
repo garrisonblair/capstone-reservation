@@ -57,13 +57,38 @@ class PrivilegeCategoriesAssignManual(APIView):
         except PrivilegeCategory.DoesNotExist:
             return Response("Privilege category does not exist", status=status.HTTP_400_BAD_REQUEST)
 
-        booker_qs = Booker.objects.all()
         ids_do_not_exist = list()
 
         for user_id in user_ids:
             try:
-                booker = booker_qs.get(user__username=user_id)
+                booker = Booker.objects.get(user__username=user_id)
                 booker.privilege_categories.add(privilege_category)
+            except Booker.DoesNotExist:
+                ids_do_not_exist.append(user_id)
+
+        return Response(ids_do_not_exist, status=status.HTTP_200_OK)
+
+
+class PrivilegeCategoriesRemoveManual(APIView):
+    permission_classes = (IsAuthenticated, IsSuperUser)
+
+    def patch(self, request):
+
+        data = request.data
+        user_ids = data['users']
+        category_id = data['privilege_category']
+
+        try:
+            privilege_category = PrivilegeCategory.objects.get(id=category_id)
+        except PrivilegeCategory.DoesNotExist:
+            return Response("Privilege category does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        ids_do_not_exist = list()
+
+        for user_id in user_ids:
+            try:
+                booker = Booker.objects.get(user__username=user_id)
+                booker.privilege_categories.remove(privilege_category)
             except Booker.DoesNotExist:
                 ids_do_not_exist.append(user_id)
 
