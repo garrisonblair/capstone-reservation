@@ -6,7 +6,11 @@ from django.contrib.auth.models import User
 def log_model_change(model_instance, action, user=None):
 
     if user is None:
-        user = User.objects.get(username="system_user")
+        try:
+            user = User.objects.get(username="system_user")
+
+        except User.DoesNotExist:
+            user = User.objects.create_user(username="system_user", password="system_user")
 
     log_entry = LogEntry.objects.log_action(
         user_id=user.id,

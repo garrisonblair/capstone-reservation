@@ -1,6 +1,7 @@
 from django.db import models
 from django.apps import apps
 from model_utils import FieldTracker
+from datetime import timedelta
 
 
 class SystemSettings(models.Model):
@@ -13,6 +14,8 @@ class SystemSettings(models.Model):
 
     merge_adjacent_bookings = models.BooleanField(default=False)
     merge_threshold_minutes = models.PositiveIntegerField(default=0)
+
+    booking_edit_lock_timeout = models.DurationField(default=timedelta())
 
     tracker = FieldTracker()
 

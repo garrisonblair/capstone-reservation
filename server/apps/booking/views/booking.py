@@ -1,6 +1,6 @@
 import datetime
 from django.core.exceptions import ValidationError
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -9,11 +9,10 @@ from rest_framework import status
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
-from apps.booking.models.CampOn import CampOn
 from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer
-from apps.booking.serializers.campon import CampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
 from apps.util import utils
+from apps.system_administration.models.system_settings import SystemSettings
 
 
 class BookingList(ListAPIView):
@@ -83,8 +82,11 @@ class BookingRetrieveUpdateDestroy(APIView):
         # Check if Booking started.
         now = datetime.datetime.now()
 
-        if now.date() > booking.date or (now.date() == booking.date and now.time() >= booking.start_time):
-            return Response("Can't modify booking after it has started", status=status.HTTP_403_FORBIDDEN)
+        settings = SystemSettings.get_settings()
+        timeout = (now + settings.booking_edit_lock_timeout).time()
+
+        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking.start_time):
+            return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
         data["booker"] = booking.booker.id
