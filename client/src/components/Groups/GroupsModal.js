@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, List, Message, Dropdown,
+  Modal, Button, FormField, Input, List, Dropdown,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import './GroupsModal.scss';
@@ -18,7 +18,6 @@ class GroupsModal extends Component {
     // deletedInvitations: [],
     newInvitation: '',
     stateOptions: [],
-    // bookers: [],
   }
 
   componentDidMount() {
@@ -54,7 +53,6 @@ class GroupsModal extends Component {
         }
         this.setState({
           stateOptions: newStateOptions,
-          // bookers: r2.data,
         });
         console.log(newStateOptions);
       });
@@ -145,22 +143,26 @@ class GroupsModal extends Component {
     const { isAdmin } = this.props;
     // const list = groupInvitations.concat(newInvitations);
     let content = (
-      <List divided>
-        {
-          groupInvitations.map(i => (
-            <MemberRowItem
-              key={i.id}
-              selectedInvitation={i}
-              deleteFunction={this.deleteFunction}
-              isAdmin={isAdmin}
-            />
-          ))
-        }
-      </List>
+      <div>
+        <h3>Invitation List:</h3>
+        <List divided>
+          {
+            groupInvitations.map(i => (
+              <MemberRowItem
+                key={i.id}
+                selectedInvitation={i}
+                deleteFunction={this.deleteFunction}
+                isAdmin={isAdmin}
+              />
+            ))
+          }
+        </List>
+      </div>
     );
 
     if (groupInvitations.length === 0 && newInvitations.length === 0) {
-      content = (<Message visible>There is currently no members except you.</Message>);
+      // content = (<Message visible>There is currently no members except you.</Message>);
+      content = '';
     }
     return content;
   }
@@ -192,11 +194,10 @@ class GroupsModal extends Component {
             Group Owner:
             {groupOwner.username}
           </h3>
-          <h3>Invitation List:</h3>
+
           <FormField>
             <Dropdown
               placeholder="Users"
-              search
               selection
               options={stateOptions}
               onChange={this.handleDropboxChange}
@@ -204,6 +205,7 @@ class GroupsModal extends Component {
             />
             <Button onClick={this.addMemberToList}>Invite</Button>
           </FormField>
+          <br />
           {this.renderMembersList()}
           <br />
           <br />
