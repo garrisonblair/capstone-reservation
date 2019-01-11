@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
 

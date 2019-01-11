@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models.Booker import Booker
+from .models.BookerProfile import BookerProfile
 from .models.VerificationToken import VerificationToken
 from .models.PrivilegeCategory import PrivilegeCategory
 
@@ -44,6 +44,6 @@ class PrivilegeCategoryAdmin(admin.ModelAdmin):
                     )
 
 
-admin.site.register(Booker, BookerAdmin)
+admin.site.register(BookerProfile, BookerAdmin)
 admin.site.register(VerificationToken, VerificationTokenAdmin)
 admin.site.register(PrivilegeCategory, PrivilegeCategoryAdmin)

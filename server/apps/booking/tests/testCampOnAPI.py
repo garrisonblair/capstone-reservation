@@ -8,7 +8,7 @@ from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
 from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 from ..models.CampOn import CampOn

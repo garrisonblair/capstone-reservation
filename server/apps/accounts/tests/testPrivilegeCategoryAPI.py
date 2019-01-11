@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIRequestFactory, APIClient, force_authenticate
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.views.privilege_categories import MyPrivilegeCategoryList
 from apps.accounts.views.privilege_categories import PrivilegeCategoryList

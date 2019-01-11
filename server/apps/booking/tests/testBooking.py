@@ -1,6 +1,6 @@
 from django.test import TestCase
 from apps.booking.models.Booking import Booking
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.rooms.models.Room import Room
 from datetime import datetime, time
 import re

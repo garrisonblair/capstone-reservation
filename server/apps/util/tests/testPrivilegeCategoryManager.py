@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 

@@ -1,7 +1,7 @@
 from django.test import TestCase
 from apps.booking.models.Booking import Booking
 from apps.booking.models.CampOn import CampOn
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.rooms.models.Room import Room
 from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError

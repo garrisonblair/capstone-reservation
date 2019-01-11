@@ -1,6 +1,6 @@
 [
 {
-  "model": "accounts.booker",
+  "model": "accounts.bookerprofile",
   "pk": "1",
   "fields": {
     "user": 2,
@@ -8,7 +8,7 @@
   }
 },
 {
-  "model": "accounts.booker",
+  "model": "accounts.bookerprofile",
   "pk": "2",
   "fields": {
     "user": 3,

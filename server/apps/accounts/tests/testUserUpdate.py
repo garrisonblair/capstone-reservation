@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 import unittest
 
 from ..models.PrivilegeCategory import PrivilegeCategory
-from ..models.Booker import Booker
+from ..models.BookerProfile import Booker
 
 
 class TestUserUpdate(TestCase):

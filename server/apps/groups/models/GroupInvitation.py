@@ -2,13 +2,13 @@ from datetime import datetime
 
 from django.utils.timezone import make_aware
 from django.db import models
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.User import User
 from .Group import Group
 
 
 class GroupInvitation(models.Model):
 
-    invited_booker = models.ForeignKey(Booker, related_name="group_invitations", on_delete=models.CASCADE)
+    invited_booker = models.ForeignKey(User, related_name="group_invitations", on_delete=models.CASCADE)
     group = models.ForeignKey(Group, related_name="invitations", on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
 

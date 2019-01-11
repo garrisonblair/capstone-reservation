@@ -9,7 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from ..serializers.group_invitation import ReadGroupInvitationSerializer
 from ..models.GroupInvitation import GroupInvitation
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import BookerProfile
+from apps.accounts.models.User import User
 
 
 class GroupInvitationsList(ListAPIView):
@@ -22,11 +23,7 @@ class GroupInvitationsList(ListAPIView):
         qs = super(GroupInvitationsList, self).get_queryset()
 
         if not self.request.user.is_superuser:
-            try:
-                invited_booker = Booker.objects.get(id=self.request.user.booker.id)
-                qs = qs.filter(invited_booker=invited_booker)
-            except Booker.DoesNotExist:
-                return
+            qs = qs.filter(invited_booker=self.request.id)
 
         return qs
 
@@ -42,7 +39,7 @@ class AcceptInvitation(APIView):
         except GroupInvitation.DoesNotExist:
             return Response("Invitation does not exist.", status.HTTP_412_PRECONDITION_FAILED)
 
-        if request.user.booker.id != invitation.invited_booker.id:
+        if request.user.id != invitation.invited_booker.id:
             return Response("Can't accept this invitation", status.HTTP_401_UNAUTHORIZED)
 
         invitation.group.members.add(invitation.invited_booker)
@@ -62,7 +59,7 @@ class RejectInvitation(APIView):
         except GroupInvitation.DoesNotExist:
             return Response("Invitation does not exist.", status.HTTP_412_PRECONDITION_FAILED)
 
-        if request.user.booker.id != invitation.invited_booker.id:
+        if request.user.id != invitation.invited_booker.id:
             return Response("Can't reject this invitation", status.HTTP_401_UNAUTHORIZED)
 
         invitation.delete()
@@ -81,7 +78,7 @@ class RevokeInvitation(APIView):
         except GroupInvitation.DoesNotExist:
             return Response("Invitation does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
 
-        if request.user.booker.id != invitation.group.owner.id:
+        if request.user.id != invitation.group.owner.id:
             return Response("Can't revoke this invitation", status.HTTP_401_UNAUTHORIZED)
 
         invitation.delete()

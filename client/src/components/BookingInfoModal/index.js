@@ -28,7 +28,7 @@ class BookingInfoModal extends Component {
 
   static checkSameUser(booking) {
     if (localStorage.getItem('CapstoneReservationUser') && !!booking.booker) {
-      return booking.booker.user.username === JSON.parse(localStorage.getItem('CapstoneReservationUser')).username;
+      return booking.booker.username === JSON.parse(localStorage.getItem('CapstoneReservationUser')).username;
     }
     return false;
   }
@@ -88,7 +88,7 @@ class BookingInfoModal extends Component {
             <h3 className="header--inline">
               <Icon name="user" />
               {' '}
-              {booker ? `by ${booking.booker.user.username}` : ''}
+              {booker ? `by ${booking.booker.username}` : ''}
             </h3>
           </div>
           <div className="ui divider" />

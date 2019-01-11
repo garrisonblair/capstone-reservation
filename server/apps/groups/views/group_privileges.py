@@ -9,7 +9,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from apps.accounts.permissions.IsBooker import IsBooker
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import BookerProfile
+from apps.accounts.models.User import User
 from apps.groups.serializers.privilege_request import WritePrivilegeRequestSerializer, ReadPrivilegeRequestSerializer
 from apps.groups.models.PrivilegeRequest import PrivilegeRequest
 
@@ -24,10 +25,10 @@ class PrivilegeRequestList(ListAPIView):
 
         if not self.request.user.is_superuser:
             try:
-                owner = Booker.objects.get(id=self.request.user.booker.id)
+                owner = User.objects.get(id=self.request.user.id)
                 owned_groups = owner.owned_groups.all()
                 qs = qs.filter(group__in=owned_groups)
-            except Booker.DoesNotExist:
+            except User.DoesNotExist:
                 pass
 
         request_status = self.request.GET.get('status')
@@ -46,7 +47,9 @@ class PrivilegeRequestCreate(APIView):
 
         group_id = data["group"]
 
-        if not request.user.booker.owned_groups.filter(id=group_id).exists():
+        user = User.objects.get(id=request.user.id)
+
+        if not user.owned_groups.filter(id=group_id).exists():
             return Response("User does not own this group", status=status.HTTP_400_BAD_REQUEST)
 
         serializer = ReadPrivilegeRequestSerializer(data=data)

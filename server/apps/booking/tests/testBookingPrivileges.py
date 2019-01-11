@@ -3,7 +3,7 @@ from datetime import date, time, timedelta
 import datetime
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 from apps.groups.models.Group import Group

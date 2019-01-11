@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from rest_framework.test import force_authenticate, APIRequestFactory
 from rest_framework import status
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from ..models.GroupInvitation import GroupInvitation
 from ..models.Group import Group
 from ..views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation, RevokeInvitation

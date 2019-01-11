@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 
 
 class TestBooker(TestCase):

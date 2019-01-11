@@ -7,7 +7,7 @@ from django.apps import apps
 from django.test.testcases import TestCase
 
 from apps.booking.models import Booking
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.rooms.models.Room import Room
 
 

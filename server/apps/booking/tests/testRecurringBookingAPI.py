@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 from datetime import timedelta, datetime
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.Booking import Booking
 from apps.groups.models import Group

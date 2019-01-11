@@ -9,7 +9,7 @@ from django.core import mail
 from apps.groups.models.PrivilegeRequest import PrivilegeRequest
 from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import Booker
 from apps.util.mock_datetime import mock_datetime
 from apps.groups.views.group_privileges import ApprovePrivilegeRequest, PrivilegeRequestCreate, DenyPrivilegeRequest
 

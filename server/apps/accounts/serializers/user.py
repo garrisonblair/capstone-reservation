@@ -2,11 +2,16 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.serializers.privilege_category import PrivilegeCategorySerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
+
+    booker_profile = serializers.SerializerMethodField()
+
+    def get_booker_profile(self, user):
+        return BookerSerializer(user.bookerprofile).data
 
     class Meta:
         model = User
@@ -15,6 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
                   'first_name',
                   'last_name',
                   'email',
+                  'booker_profile',
                   'is_superuser',
                   'is_staff',
                   'is_active')
@@ -46,10 +52,8 @@ class UserSerializerLogin(UserSerializer):
 
 
 class BookerSerializer(serializers.ModelSerializer):
-
-    user = UserSerializer()
     privilege_categories = PrivilegeCategorySerializer(many=True)
 
     class Meta:
-        model = Booker
+        model = BookerProfile
         fields = ('id', 'booker_id', 'user', 'privilege_categories')

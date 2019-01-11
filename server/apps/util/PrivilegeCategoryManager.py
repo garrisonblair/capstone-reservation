@@ -1,6 +1,6 @@
 from apps.util import ldap_server
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.models import Booker
+from apps.accounts.models import BookerProfile
 
 
 class PrivilegeCategoryManager:
@@ -10,7 +10,7 @@ class PrivilegeCategoryManager:
         booker.save()
 
     def clear_all_booker_privileges(self):
-        bookers = Booker.objects.all()
+        bookers = BookerProfile.objects.all()
         for booker in bookers:
             self.clear_booker_privileges(booker)
 
@@ -44,6 +44,6 @@ class PrivilegeCategoryManager:
         booker.save()
 
     def assign_all_booker_privileges(self, server=ldap_server):
-        bookers = Booker.objects.all()
+        bookers = BookerProfile.objects.all()
         for booker in bookers:
             self.assign_booker_privileges(booker, server)
