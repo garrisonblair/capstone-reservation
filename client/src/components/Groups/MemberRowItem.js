@@ -4,19 +4,20 @@ import PropTypes from 'prop-types';
 
 class MemberRowItem extends Component {
   handleDeletion = () => {
-    const { deleteFunction, selectedMember } = this.props;
-    deleteFunction(selectedMember.user.id);
+    const { deleteFunction, selectedInvitation } = this.props;
+    console.log(selectedInvitation.id);
+    deleteFunction(selectedInvitation.id);
   }
 
   render() {
-    const { selectedMember, isAdmin } = this.props;
+    const { selectedInvitation, isAdmin } = this.props;
     return (
       <List.Item>
 
         <List.Content floated="left">
           <h3>
             <Icon name="envelope" />
-            {selectedMember.user.username}
+            {selectedInvitation.invited_booker.user.username}
           </h3>
         </List.Content>
         <List.Content floated="right">
@@ -29,7 +30,7 @@ class MemberRowItem extends Component {
 
 MemberRowItem.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  selectedMember: PropTypes.object.isRequired,
+  selectedInvitation: PropTypes.object.isRequired,
   deleteFunction: PropTypes.func.isRequired,
   isAdmin: PropTypes.bool.isRequired,
 };

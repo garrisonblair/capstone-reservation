@@ -274,7 +274,7 @@ function revokeInvitation(invitationId) {
   const headers = getTokenHeader();
   return axios({
     method: 'POST',
-    url: `${settings.API_ROOT}/groups/${invitationId}/revoke`,
+    url: `${settings.API_ROOT}/group_invitation/${invitationId}/revoke`,
     headers,
     withCredentials: true,
   });
