@@ -9,6 +9,13 @@
 .modal-description {
   margin: 15px 0;
 }
+
+.modal-description__container {
+  width: 100%;
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
 #exception-dates{
   font-weight: bold;
    width: 115px;

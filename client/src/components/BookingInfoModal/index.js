@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
   Button,
-  Header,
   Icon,
   Modal,
 } from 'semantic-ui-react';
@@ -64,32 +63,57 @@ class BookingInfoModal extends Component {
 
   handleOpen = () => this.setState({ show: true });
 
+  renderCampons = () => {
+    const { campons } = this.props;
+    const camponsInfo = [];
+    let i = 1;
+    campons.forEach((campon) => {
+      camponsInfo.push(
+        <h3 className="header--inline" key={i}>
+          {`${i}. ${campon.booker}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
+        </h3>,
+      );
+      i += 1;
+    });
+    return <div>{camponsInfo}</div>;
+  }
+
   renderDescription() {
-    const { booking } = this.props;
+    const { booking, campons } = this.props;
     const booker = !!booking.booker;
 
     return (
       <Modal.Content>
         <Modal.Description>
-          <Header>
-            {booking.date}
-          </Header>
-          <div className="modal-description">
-            <h3 className="header--inline">
-              {`from ${booking.start_time ? booking.start_time.slice(0, -3) : ''}`}
-            </h3>
-          </div>
-          <div className="modal-description">
-            <h3 className="header--inline">
-              {`to ${booking.end_time ? booking.end_time.slice(0, -3) : ''}`}
-            </h3>
-          </div>
-          <div className="modal-description">
-            <h3 className="header--inline">
-              <Icon name="user" />
-              {' '}
-              {booker ? `by ${booking.booker.user.username}` : ''}
-            </h3>
+          <div className="modal-description__container">
+            <div className="modal-description--details">
+              <h3 className="header--inline">
+                {booking.date}
+              </h3>
+              <div className="modal-description">
+                <h3 className="header--inline">
+                  {`from ${booking.start_time ? booking.start_time.slice(0, -3) : ''}`}
+                </h3>
+              </div>
+              <div className="modal-description">
+                <h3 className="header--inline">
+                  {`to ${booking.end_time ? booking.end_time.slice(0, -3) : ''}`}
+                </h3>
+              </div>
+              <div className="modal-description">
+                <h3 className="header--inline">
+                  <Icon name="user" />
+                  {' '}
+                  {booker ? `by ${booking.booker.user.username}` : ''}
+                </h3>
+              </div>
+            </div>
+            <div className="modal-description--campons">
+              <h3 className="header--inline">
+                Campons:
+              </h3>
+              {campons == null ? null : this.renderCampons()}
+            </div>
           </div>
           <div className="ui divider" />
           {this.renderForm(booking)}
@@ -146,11 +170,13 @@ BookingInfoModal.propTypes = {
   selectedRoomName: PropTypes.string.isRequired,
   onClose: PropTypes.func,
   onCloseWithAction: PropTypes.func,
+  campons: PropTypes.instanceOf(Array),
 };
 
 BookingInfoModal.defaultProps = {
   onClose: () => {},
   onCloseWithAction: () => {},
+  campons: null,
 };
 
 export default BookingInfoModal;
