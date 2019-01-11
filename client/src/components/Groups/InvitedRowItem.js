@@ -10,7 +10,6 @@ class InvitedRowItem extends Component {
 
   render() {
     const { selectedInvitation, isAdmin } = this.props;
-    console.log(isAdmin);
     return (
       <List.Item>
         <List.Content floated="left">

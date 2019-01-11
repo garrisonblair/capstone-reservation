@@ -189,7 +189,7 @@ class GroupsModal extends Component {
   renderMembersList = () => {
     const { groupMembers, groupOwner } = this.state;
     const { isAdmin } = this.props;
-    console.log(groupMembers);
+
     let content = (
       <List divided>
         {
