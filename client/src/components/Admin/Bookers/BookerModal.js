@@ -65,7 +65,7 @@ class BookerModal extends Component {
         <Button onClick={removePrivilegeAction}>Remove</Button>
       </List.Content>
       <List.Content className="privilege-name">
-        <Icon name="eye" />
+        <Icon name="circle" />
         {privilege.name}
       </List.Content>
     </List.Item>
@@ -84,7 +84,7 @@ class BookerModal extends Component {
         </Modal.Header>
         <Modal.Content>
           <Modal.Description>
-            <h3>Fullname:</h3>
+            <h3>Full name:</h3>
             {`${booker.user.last_name}, ${booker.user.first_name}`}
             <h3>Email</h3>
             {booker.user.email.length !== 0 ? booker.user.email : '[Empty]'}
