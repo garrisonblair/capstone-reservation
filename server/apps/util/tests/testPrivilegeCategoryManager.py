@@ -61,7 +61,7 @@ class TestPrivilegeCategoryManager(TestCase):
 
         manager.assign_booker_privileges(self.user2, self.ldap)
 
-        privileges2 = self.user1.bookerprofile.privilege_categories.all()
+        privileges2 = self.user2.bookerprofile.privilege_categories.all()
         self.assertEqual(privileges2.count(), 2)
         self.assertEqual(privileges2[0], self.category1)
         self.assertEqual(privileges2[1], self.category2)
