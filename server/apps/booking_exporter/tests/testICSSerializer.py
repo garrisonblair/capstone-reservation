@@ -5,11 +5,9 @@ from django.test import TestCase
 
 from apps.booking.models import Booking
 from apps.rooms.models import Room
-from apps.accounts.models import BookerProfile
+from apps.accounts.models.User import User
 from ..WEBCalendarExporter.ICSSerializer import ICSSerializer
 from apps.groups.models import Group
-
-from django.contrib.auth.models import User
 
 
 class testWebCalendarExporter(TestCase):
@@ -19,14 +17,10 @@ class testWebCalendarExporter(TestCase):
         room = Room(name="Room 19")
         room.save()
 
-        booker = BookerProfile(booker_id="11111111")
+        booker = User.objects.create_user(username="s_loc")
         booker.save()
 
-        user = User.objects.create_user("s_loc", "good_password")
-        booker.user = user
-        booker.save()
-
-        booker2 = BookerProfile(booker_id="22222222")
+        booker2 = User.objects.create_user(username="f_daigl")
         booker2.save()
 
         self.booking = Booking(start_time=datetime.time(13, 0, 0),

@@ -96,7 +96,7 @@ class ApprovePrivilegeRequest(APIView):
             subject,
             message,
             settings.EMAIL_HOST_USER,
-            [group.owner.user.email]
+            [group.owner.email]
         )
 
         return Response("Request Approved", status=status.HTTP_200_OK)
@@ -132,7 +132,7 @@ class DenyPrivilegeRequest(APIView):
             subject,
             message,
             settings.EMAIL_HOST_USER,
-            [group.owner.user.email]
+            [group.owner.email]
         )
 
         return Response("Request Denied", status=status.HTTP_200_OK)

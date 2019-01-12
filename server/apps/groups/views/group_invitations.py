@@ -23,7 +23,7 @@ class GroupInvitationsList(ListAPIView):
         qs = super(GroupInvitationsList, self).get_queryset()
 
         if not self.request.user.is_superuser:
-            qs = qs.filter(invited_booker=self.request.id)
+            qs = qs.filter(invited_booker=self.request.user.id)
 
         return qs
 

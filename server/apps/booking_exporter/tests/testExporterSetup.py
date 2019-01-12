@@ -7,7 +7,7 @@ from django.apps import apps
 from django.test.testcases import TestCase
 
 from apps.booking.models import Booking
-from apps.accounts.models.BookerProfile import Booker
+from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 
 
@@ -16,7 +16,9 @@ class TestExporterSetup(TestCase):
     def setUp(self):
         self.exporter_app_config = apps.get_app_config("booking_exporter")
 
-        self.booker = Booker(booker_id="f_daigl")
+        self.booker = User.objects.create_user(username="f_daigl",
+                                               email="fred@email.com",
+                                               password="password")
         self.booker.save()
 
         self.room = Room(name="Room 1")

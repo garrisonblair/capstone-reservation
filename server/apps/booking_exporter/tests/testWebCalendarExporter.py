@@ -8,7 +8,7 @@ from ..models.bookingExporterModels import ExternalRoomID
 
 from apps.booking.models import Booking
 from apps.rooms.models import Room
-from apps.accounts.models import BookerProfile
+from apps.accounts.models.User import User
 from apps.system_administration.models import SystemSettings
 
 
@@ -35,7 +35,7 @@ END:VCALENDAR"""
         external_id.room = room
         external_id.save()
 
-        booker = BookerProfile(booker_id="s_loc")
+        booker = User.objects.create_user(username="s_loc")
         booker.save()
 
         self.booking = Booking(start_time=datetime.time(12, 0, 0),

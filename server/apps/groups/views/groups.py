@@ -76,8 +76,8 @@ class AddMembers(APIView):
             return Response("Can't modify this Group", status=status.HTTP_401_UNAUTHORIZED)
         members_to_add = request.data["members"]
         for member_user_id in members_to_add:
-            if not group.members.filter(user_id=member_user_id).exists():
-                booker_to_add = User.objects.get(user=member_user_id)
+            if not group.members.filter(id=member_user_id).exists():
+                booker_to_add = User.objects.get(id=member_user_id)
                 group.members.add(booker_to_add)
             else:
                 print("User {} is already in group".format(member_user_id))
