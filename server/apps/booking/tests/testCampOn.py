@@ -1,7 +1,7 @@
 from django.test import TestCase
 from apps.booking.models.Booking import Booking
 from apps.booking.models.CampOn import CampOn
-from apps.accounts.models.BookerProfile import Booker
+from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
@@ -11,14 +11,16 @@ class TestCampOn(TestCase):
     def setUp(self):
         # Setup one booker
         sid = '12345678'
-        self.booker = Booker(booker_id=sid)
-        self.booker.user = None
+        self.booker = User.objects.create_user(username="f_daigl",
+                                               email="fred@email.com",
+                                               password="passw0rd")
         self.booker.save()
 
         # Create a second booker for camp-on
         booker_id = '87654321'
-        self.campbooker = Booker(booker_id=booker_id)
-        self.campbooker.user = None
+        self.campbooker = User.objects.create_user(username="j_lenn",
+                                                   email="john@beatles.com",
+                                                   password="password")
         self.campbooker.save()
 
         # Setup one Room

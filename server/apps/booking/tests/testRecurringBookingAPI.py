@@ -8,7 +8,8 @@ from django.contrib.auth.models import User
 from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 from datetime import timedelta, datetime
 
-from apps.accounts.models.BookerProfile import Booker
+from apps.accounts.models.BookerProfile import BookerProfile
+from apps.accounts.models.User import User
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.Booking import Booking
 from apps.groups.models import Group
@@ -24,26 +25,22 @@ class BookingAPITest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
 
-        self.user = User.objects.create_user(username='john',
-                                             email='jlennon@beatles.com',
-                                             password='glass onion')
-        self.user.save()
+        self.user1 = User.objects.create_user(username='john',
+                                              email='jlennon@beatles.com',
+                                              password='glass onion')
+        self.user1.save()
 
-        booker1 = Booker(booker_id="j_lenn")
-        booker1.user = self.user
-        booker1.save()
-
-        sid = '00000002'
-        booker2 = Booker(booker_id=sid)
-        booker2.user = None
-        booker2.save()
+        self.user2 = User.objects.create_user(username="f_daigl",
+                                              email="fred@email.com",
+                                              password="safe_password")
+        self.user2.save()
 
         # Create student group
         name = "Students group"
-        self.group = Group(name=name, is_verified=True, owner=booker1)
+        self.group = Group(name=name, is_verified=True, owner=self.user1)
         self.group.save()
-        self.group.members.add(booker1)
-        self.group.members.add(booker2)
+        self.group.members.add(self.user1)
+        self.group.members.add(self.user2)
 
         self.room = Room(name="H833-17", capacity=4, number_of_computers=1)
         self.room.save()
@@ -81,7 +78,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking1.end_time, self.end_time)
         self.assertEqual(booking1.room, self.room)
         self.assertEqual(booking1.group, self.group)
-        self.assertEqual(booking1.booker, self.group.members.get(booker_id='j_lenn'))
+        self.assertEqual(booking1.booker, self.user1)
 
         booking2 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=7))
 
@@ -89,7 +86,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking2.end_time, self.end_time)
         self.assertEqual(booking2.room, self.room)
         self.assertEqual(booking2.group, self.group)
-        self.assertEqual(booking2.booker, self.group.members.get(booker_id='j_lenn'))
+        self.assertEqual(booking2.booker, self.user1)
 
         booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
 
@@ -97,14 +94,14 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking3.end_time, self.end_time)
         self.assertEqual(booking3.room, self.room)
         self.assertEqual(booking3.group, self.group)
-        self.assertEqual(booking3.booker, self.group.members.get(booker_id='j_lenn'))
+        self.assertEqual(booking3.booker, self.user1)
 
         # LogEntry test
         all_recurring_booking_logs = LogEntry.objects.all()
         latest_recurring_booking_log = all_recurring_booking_logs.order_by('action_time')[0]
         self.assertEqual(latest_recurring_booking_log.action_flag, ADDITION)
         self.assertEqual(latest_recurring_booking_log.object_id, str(recurring_booking.id))
-        self.assertEqual(latest_recurring_booking_log.user, self.user)
+        self.assertEqual(latest_recurring_booking_log.user, self.user1)
         self.assertEqual(latest_recurring_booking_log.object_repr,
                          json.dumps(RecurringBookingSerializer(recurring_booking).data))
 
@@ -116,7 +113,7 @@ class BookingAPITest(TestCase):
 
             self.assertEqual(latest_booking_log.action_flag, ADDITION)
             self.assertEqual(latest_booking_log.object_id, str(booking.id))
-            self.assertEqual(latest_booking_log.user, self.user)
+            self.assertEqual(latest_booking_log.user, self.user1)
             self.assertEqual(latest_booking_log.object_repr,
                              json.dumps(BookingSerializer(booking).data))
 
@@ -191,7 +188,7 @@ class BookingAPITest(TestCase):
 
     def testRecurringBookingConflictFlagNotSet(self):
         Booking(
-            booker=self.group.members.get(booker_id='j_lenn'),
+            booker=self.user1,
             room=self.room,
             date=self.start_date,
             start_time=self.start_time,
@@ -217,7 +214,7 @@ class BookingAPITest(TestCase):
 
     def testRecurringBookingConflictFlagSet(self):
         Booking(
-            booker=self.group.members.get(booker_id='j_lenn'),
+            booker=self.user1,
             room=self.room,
             date=self.start_date,
             start_time=self.start_time,

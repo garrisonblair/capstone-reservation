@@ -5,10 +5,10 @@ from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
-from django.contrib.auth.models import User
+
 from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 
-from apps.accounts.models.BookerProfile import Booker
+from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 from ..models.CampOn import CampOn
@@ -22,9 +22,9 @@ from apps.util.mock_datetime import mock_datetime
 class CampOnAPITest(TestCase):
     def setUp(self):
         # Setup one Booking
-        sid = '12345678'
-        self.booker = Booker(booker_id=sid)
-        self.booker.user = None
+        self.booker = User.objects.create_user(username="f_daigl",
+                                               email="fred@email.com",
+                                               password="safe_password")
         self.booker.save()
 
         name = "H800-1"
@@ -53,11 +53,6 @@ class CampOnAPITest(TestCase):
                                              password='kingmask')
         self.user.save()
 
-        # Setup one booker for the user
-        self.booker = Booker(booker_id="sol_ji")
-        self.booker.user = self.user
-        self.booker.save()
-
     def testCreateCampOnSuccess(self):
         request = self.factory.post("/campon", {
                 "camped_on_booking": 1,
@@ -79,7 +74,7 @@ class CampOnAPITest(TestCase):
         # Verify the content of the created CampOn
         created_camp_on = CampOn.objects.last()
 
-        self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
+        self.assertEqual(created_camp_on.booker, self.user)
         self.assertEqual(created_camp_on.camped_on_booking, Booking.objects.get(id=1))
         self.assertEqual(created_camp_on.start_time, datetime.time(12, 30))
 
@@ -113,7 +108,7 @@ class CampOnAPITest(TestCase):
         # Verify the content of the created CampOn
         created_camp_on = CampOn.objects.last()
 
-        self.assertEqual(created_camp_on.booker, Booker.objects.get(booker_id='sol_ji'))
+        self.assertEqual(created_camp_on.booker, self.user)
         self.assertEqual(created_camp_on.camped_on_booking, Booking.objects.get(id=1))
         self.assertEqual(created_camp_on.start_time, datetime.time(12, 30))
 
@@ -124,7 +119,7 @@ class CampOnAPITest(TestCase):
 
         # Verify the content of the created Booking
         created_booking = Booking.objects.last()
-        self.assertEqual(created_booking.booker, Booker.objects.get(booker_id='sol_ji'))
+        self.assertEqual(created_booking.booker, self.user)
         self.assertEqual(created_booking.room, Room.objects.get(name="H800-1"))
         self.assertEqual(created_booking.date, datetime.datetime.now().date())
         self.assertEqual(created_booking.start_time, datetime.time(14, 00))

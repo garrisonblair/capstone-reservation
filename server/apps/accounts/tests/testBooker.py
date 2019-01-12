@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from apps.accounts.models.BookerProfile import Booker
+from apps.accounts.models.BookerProfile import BookerProfile
+from apps.accounts.models.User import User
 
 
 class TestBooker(TestCase):
@@ -11,22 +12,11 @@ class TestBooker(TestCase):
     def tearDown(self):
         pass
 
-    def testStudentCreation(self):
-        booker_id = '12345678'
+    def testBookerProfileCreation(self):
+        user = User.objects.create_user(username="f_daigl",
+                                        email="fred@email.com",
+                                        password="safePassword")
 
-        student = Booker(booker_id=booker_id)
-        student.user = None
-        student.save()
+        read_student = BookerProfile.objects.get(user=user)
 
-        read_student = Booker.objects.get(booker_id=booker_id)
-
-        self.assertEqual(read_student, student)
-
-    def testStudentToString(self):
-        booker_id = '12345678'
-
-        student = Booker(booker_id=booker_id)
-
-        student_string = student.__str__()
-
-        self.assertEqual(student_string, booker_id)
+        self.assertEqual(read_student.user, user)

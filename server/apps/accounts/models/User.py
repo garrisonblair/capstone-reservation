@@ -9,6 +9,10 @@ class User(DjangoUser, AbstractBooker):
     class Meta:
         proxy = True
 
+    @staticmethod
+    def cast_django_user(django_user):
+        return User.objects.get(id=django_user.id)
+
     def get_privileges(self):
 
         if self.bookerprofile.privilege_categories.all().count() is 0:

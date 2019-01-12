@@ -29,12 +29,24 @@ class BookerProfile(models.Model, AbstractBooker):
         return self.user.username + " profile"
 
 
-@receiver(post_save, sender=DjangoUser)
+@receiver(post_save, sender=User)
 def create_booker_profile(sender, instance, created, **kwargs):
+    if created:
+        BookerProfile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=DjangoUser)
+def create_booker_profile_alt(sender, instance, created, **kwargs):
     if created:
         BookerProfile.objects.create(user=instance)
 
 
 @receiver(post_save, sender=User)
 def save_booker_profile(sender, instance, **kwargs):
+    instance.bookerprofile.save()
+
+
+@receiver(post_save, sender=DjangoUser)
+def save_booker_profile(sender, instance, **kwargs):
+    instance = User.cast_django_user(instance)
     instance.bookerprofile.save()

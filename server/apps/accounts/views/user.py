@@ -91,7 +91,7 @@ class UserUpdate(APIView):
         booker.save()
         # Add Booker Privileges
         manager = PrivilegeCategoryManager()
-        manager.assign_booker_privileges(user.booker)
+        manager.assign_booker_privileges(user.bookerprofile)
 
         # Must be superuser to update those fields
         if username and request.user.is_superuser:

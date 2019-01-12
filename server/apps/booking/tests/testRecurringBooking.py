@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.Booking import Booking
-from apps.accounts.models.BookerProfile import Booker
+from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
 from datetime import datetime
@@ -13,22 +13,22 @@ from datetime import datetime
 class TestRecurringBooking(TestCase):
     def setUp(self):
         # Create 2 bookers
-        sid = '00000001'
-        booker1 = Booker(booker_id=sid)
-        booker1.user = None
-        booker1.save()
+        self.booker1 = User.objects.create_user(username="f_daigl",
+                                                email="fred@email.com",
+                                                password="safe_password")
+        self.booker1.save()
 
-        sid = '00000002'
-        booker2 = Booker(booker_id=sid)
-        booker2.user = None
-        booker2.save()
+        self.booker2 = User.objects.create_user(username="j_lenn",
+                                                email="john@email.com",
+                                                password="safe_password")
+        self.booker2.save()
 
         # Create student group
         name = "Students group"
-        self.group = Group(name=name, is_verified=True, owner=booker1)
+        self.group = Group(name=name, is_verified=True, owner=self.booker1)
         self.group.save()
-        self.group.members.add(booker1)
-        self.group.members.add(booker2)
+        self.group.members.add(self.booker1)
+        self.group.members.add(self.booker2)
 
         # Create room
         name = "1"
@@ -53,7 +53,7 @@ class TestRecurringBooking(TestCase):
             self.end_time,
             self.room,
             self.group,
-            self.group.members.get(booker_id='00000001'),
+            self.booker1,
             False
         )
         self.assertEqual(recurring_booking.booking_set.count(), 3)
@@ -65,7 +65,7 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking1.end_time, self.end_time)
         self.assertEqual(booking1.room, self.room)
         self.assertEqual(booking1.group, self.group)
-        self.assertEqual(booking1.booker, self.group.members.get(booker_id='00000001'))
+        self.assertEqual(booking1.booker, self.booker1)
 
         booking2 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=7))
 
@@ -73,7 +73,7 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking2.end_time, self.end_time)
         self.assertEqual(booking2.room, self.room)
         self.assertEqual(booking2.group, self.group)
-        self.assertEqual(booking2.booker, self.group.members.get(booker_id='00000001'))
+        self.assertEqual(booking2.booker, self.booker1)
 
         booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
 
@@ -81,7 +81,7 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking3.end_time, self.end_time)
         self.assertEqual(booking3.room, self.room)
         self.assertEqual(booking3.group, self.group)
-        self.assertEqual(booking3.booker, self.group.members.get(booker_id='00000001'))
+        self.assertEqual(booking3.booker, self.booker1)
 
     def testRecurringBookingCreationConflict(self):
         RecurringBooking.objects.create_recurring_booking(
@@ -91,7 +91,7 @@ class TestRecurringBooking(TestCase):
             self.end_time,
             self.room,
             self.group,
-            self.group.members.get(booker_id='00000001'),
+            self.booker1,
             False
         )
         with self.assertRaises(ValidationError):
@@ -102,7 +102,7 @@ class TestRecurringBooking(TestCase):
                 self.end_time,
                 self.room,
                 self.group,
-                self.group.members.get(booker_id='00000001'),
+                self.booker1,
                 False
             )
         self.assertEqual(RecurringBooking.objects.count(), 1)
@@ -116,7 +116,7 @@ class TestRecurringBooking(TestCase):
                 self.end_time,
                 self.room,
                 self.group,
-                self.group.members.get(booker_id='00000001'),
+                self.booker1,
                 False
             )
         self.assertEqual(RecurringBooking.objects.count(), 0)
@@ -130,7 +130,7 @@ class TestRecurringBooking(TestCase):
                 self.start_time,
                 self.room,
                 self.group,
-                self.group.members.get(booker_id='00000001'),
+                self.booker1,
                 False
             )
         self.assertEqual(RecurringBooking.objects.count(), 0)
@@ -145,14 +145,14 @@ class TestRecurringBooking(TestCase):
                 self.start_time,
                 self.room,
                 self.group,
-                self.group.members.get(booker_id='00000001'),
+                self.booker1,
                 False
             )
         self.assertEqual(RecurringBooking.objects.count(), 0)
 
     def testRecurringBookingSingleConflictFlagNotSet(self):
         Booking(
-            booker=self.group.members.get(booker_id='00000001'),
+            booker=self.booker1,
             room=self.room,
             date=self.start_date,
             start_time=self.start_time,
@@ -167,14 +167,14 @@ class TestRecurringBooking(TestCase):
                 self.end_time,
                 self.room,
                 self.group,
-                self.group.members.get(booker_id='00000001'),
+                self.booker1,
                 False
             )
         self.assertEqual(RecurringBooking.objects.count(), 0)
 
     def testRecurringBookingSingleConflictFlagSet(self):
         Booking(
-            booker=self.group.members.get(booker_id='00000001'),
+            booker=self.booker1,
             room=self.room,
             date=self.start_date,
             start_time=self.start_time,
@@ -188,7 +188,7 @@ class TestRecurringBooking(TestCase):
             self.end_time,
             self.room,
             self.group,
-            self.group.members.get(booker_id='00000001'),
+            self.booker1,
             True
         )
         self.assertEqual(RecurringBooking.objects.count(), 1)
@@ -203,7 +203,7 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking2.end_time, self.end_time)
         self.assertEqual(booking2.room, self.room)
         self.assertEqual(booking2.group, self.group)
-        self.assertEqual(booking2.booker, self.group.members.get(booker_id='00000001'))
+        self.assertEqual(booking2.booker, self.booker1)
 
         booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
 
@@ -211,4 +211,4 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking3.end_time, self.end_time)
         self.assertEqual(booking3.room, self.room)
         self.assertEqual(booking3.group, self.group)
-        self.assertEqual(booking3.booker, self.group.members.get(booker_id='00000001'))
+        self.assertEqual(booking3.booker, self.booker1)
