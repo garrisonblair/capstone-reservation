@@ -1,13 +1,18 @@
 from rest_framework import serializers
 from ..models.Group import Group
 
-from apps.accounts.serializers.user import BookerSerializer
+from apps.accounts.serializers.user import UserSerializer
 
 
 class WriteGroupSerializer(serializers.ModelSerializer):
 
-    owner = BookerSerializer()
-    members = BookerSerializer(many=True)
+    owner = UserSerializer()
+    members = UserSerializer(many=True)
+    group_invitations = serializers.SerializerMethodField()
+
+    def get_group_invitations(self, group):
+        from apps.groups.serializers.group_invitation import GroupContextInvitationSerializer
+        return GroupContextInvitationSerializer(group.invitations, many=True).data
 
     class Meta:
         model = Group

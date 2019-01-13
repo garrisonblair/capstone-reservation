@@ -3,12 +3,14 @@
     "model": "accounts.privilegecategory",
     "pk": 1,
     "fields": {
-      "name": "Base Privileges",
+      "name": "Base Privilege",
       "parent_category": null,
       "is_default": true,
+      "related_course": null,
       "max_days_until_booking": 2,
       "can_make_recurring_booking": false,
-      "max_bookings": 2,
+      "max_num_days_with_bookings": 2,
+      "max_num_bookings_for_date": 3,
       "max_recurring_bookings": 0,
       "booking_start_time": "09:00:00",
       "booking_end_time": "23:00:00"

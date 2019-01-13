@@ -4,17 +4,17 @@ from django.test.testcases import TestCase
 from apps.groups.models.PrivilegeRequest import PrivilegeRequest
 from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.User import User
 from apps.util.mock_datetime import mock_datetime
 
 
 class PrivilegeRequestTest(TestCase):
     def setUp(self):
-        self.owner = Booker.objects.create(booker_id=11111111)
+        self.owner = User.objects.create_user(username="f_daigl")
         self.owner.save()
 
         self.category = PrivilegeCategory(name="Category")
-        self.category.save()
+        self.category.save(bypass_validation=True)
 
         self.group = Group(name="Queen", is_verified=False, owner=self.owner)
         self.group.save()

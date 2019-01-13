@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import BookerProfile
 
 
 class IsBooker(BasePermission):
@@ -9,8 +9,8 @@ class IsBooker(BasePermission):
             return True
 
         try:
-            booker = Booker.objects.get(user=request.user)
-        except Booker.DoesNotExist:
+            booker = BookerProfile.objects.get(user=request.user)
+        except BookerProfile.DoesNotExist:
             return False
         return True
 
@@ -20,7 +20,7 @@ class IsBooker(BasePermission):
             return True
 
         try:
-            booker = Booker.objects.get(user=request.user)
-        except Booker.DoesNotExist:
+            booker = BookerProfile.objects.get(user=request.user)
+        except BookerProfile.DoesNotExist:
             return False
         return True

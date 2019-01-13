@@ -9,7 +9,7 @@ from django.core import mail
 from apps.groups.models.PrivilegeRequest import PrivilegeRequest
 from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.User import User
 from apps.util.mock_datetime import mock_datetime
 from apps.groups.views.group_privileges import ApprovePrivilegeRequest, PrivilegeRequestCreate, DenyPrivilegeRequest
 
@@ -18,17 +18,12 @@ class PrivilegeRequestTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
 
-        self.owner = Booker.objects.create(booker_id=11111111)
-        self.owner.save()
-        self.user = User.objects.create_user(username='john',
-                                             email='jlennon@test.com',
-                                             password='password')
-        self.user.save()
-        self.owner.user = self.user
+        self.owner = User.objects.create_user(username="john",
+                                              email="john@email.com")
         self.owner.save()
 
         self.category = PrivilegeCategory(name="Category")
-        self.category.save()
+        self.category.save(bypass_validation=True)
 
         self.group = Group(name="Queen", is_verified=False, owner=self.owner)
         self.group.save()

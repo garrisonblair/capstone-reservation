@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts.permissions.IsBooker import IsBooker
-from ..models.Booker import Booker
+from ..models.BookerProfile import BookerProfile
 from ..serializers.user import UserSerializer, BookerSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from ..permissions.IsSuperUser import IsSuperUser
@@ -16,11 +16,12 @@ from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
 class UserList(ListAPIView):
-    permission_classes = (IsAuthenticated, IsSuperUser)
+    permission_classes = (IsAuthenticated)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
     def get_queryset(self):
+
         search_term = self.request.query_params.get("search_text")
         users = User.objects.all()
 
@@ -34,7 +35,7 @@ class UserList(ListAPIView):
 
 class BookerList(ListAPIView):
     permission_classes = (IsAuthenticated, IsBooker)
-    queryset = Booker.objects.all()
+    queryset = BookerProfile.objects.all()
     serializer_class = BookerSerializer
 
     def get_queryset(self):
@@ -84,19 +85,13 @@ class UserUpdate(APIView):
         if password:
             user.password = make_password(password)  # Hash password
 
-        booker = None
-        if booker_id:
-            try:
-                booker = Booker.objects.get(user_id=user.id)
-                # Restrict student from changing its student ID once it's set
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
-            except Booker.DoesNotExist:
-                # Add booker ID only if it's a new user
-                booker = Booker(user=user, booker_id=booker_id)
-                booker.save()
-                # Add Booker Privileges
-                manager = PrivilegeCategoryManager()
-                manager.assign_booker_privileges(user.booker)
+        booker = BookerProfile.objects.get(user_id=user.id)
+        # Add booker ID only if it's a new user
+        booker.booker_id = booker_id
+        booker.save()
+        # Add Booker Privileges
+        manager = PrivilegeCategoryManager()
+        manager.assign_booker_privileges(user.bookerprofile)
 
         # Must be superuser to update those fields
         if username and request.user.is_superuser:
