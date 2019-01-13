@@ -15,7 +15,7 @@ class Bookers extends Component {
   }
 
   syncBookers = () => {
-    api.getBookers()
+    api.getUsers()
       .then((r) => {
         if (r.status === 200) {
           this.setState({ bookers: r.data });

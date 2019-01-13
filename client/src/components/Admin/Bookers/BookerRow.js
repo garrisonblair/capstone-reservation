@@ -26,10 +26,10 @@ class BookerRow extends Component {
     return (
       <Table.Row key={booker.username}>
         <Table.Cell textAlign="center">
-          {booker.user.username}
+          {booker.username}
         </Table.Cell>
         <Table.Cell textAlign="center">
-          {`${booker.user.first_name} ${booker.user.last_name}`}
+          {`${booker.first_name} ${booker.last_name}`}
         </Table.Cell>
         <Table.Cell>
           <Button icon="edit" className="edit-button" onClick={this.onClickEditButton} />

@@ -18,7 +18,7 @@ class BookerModal extends Component {
   componentDidMount() {
     const { booker } = this.props;
     const { dropdownOptions } = this.state;
-    this.setState({ myPrivileges: booker.privilege_categories });
+    this.setState({ myPrivileges: booker.booker_profile.privilege_categories });
     api.getPrivileges()
       .then((result) => {
         this.setState({ privileges: result.data });
@@ -49,7 +49,7 @@ class BookerModal extends Component {
       sweetAlert('Warning', 'You already have that privilege', 'warning');
       return;
     }
-    api.addPrivilege([booker.user.username], privilegeValue)
+    api.addPrivilege([booker.id], privilegeValue)
       .then((r) => {
         if (r.status === 200) {
           const privilege = privileges.find(p => p.id === privilegeValue);
@@ -79,15 +79,15 @@ class BookerModal extends Component {
       <Modal open={show} onClose={onClose} size="small" id="booker-modal">
         <Modal.Header>
           Booker details (
-          {booker.user.username}
+          {booker.username}
           )
         </Modal.Header>
         <Modal.Content>
           <Modal.Description>
             <h3>Full name:</h3>
-            {`${booker.user.last_name}, ${booker.user.first_name}`}
+            {`${booker.last_name}, ${booker.first_name}`}
             <h3>Email</h3>
-            {booker.user.email.length !== 0 ? booker.user.email : '[Empty]'}
+            {booker.email.length !== 0 ? booker.email : '[Empty]'}
             <h3>Privileges</h3>
             <div className="privilege-section">
               <List divided className="booker-list">
