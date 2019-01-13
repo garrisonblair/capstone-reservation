@@ -16,7 +16,7 @@ class PrivilegeCategoriesAssignSingleAutomatic(APIView):
     def patch(self, request, pk):
 
         try:
-            user = User.objects.get(id=request.user.id)
+            user = User.objects.get(id=pk)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
