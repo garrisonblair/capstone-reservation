@@ -28,7 +28,7 @@ class MyPrivilegeCategoryList(ListAPIView):
     serializer_class = PrivilegeCategorySerializer
 
     def get_queryset(self):
-        booker = self.request.user.booker
+        booker = self.request.user.bookerprofile
         qs = booker.privilege_categories
 
         return qs

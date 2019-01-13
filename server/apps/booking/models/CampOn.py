@@ -1,7 +1,7 @@
 import json
 
 from django.db import models
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.User import User
 from apps.booking.models.Booking import Booking
 from datetime import datetime
 from django.core.exceptions import ValidationError
@@ -12,7 +12,7 @@ from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 
 class CampOn(models.Model):
-    booker = models.ForeignKey(Booker, on_delete=models.CASCADE)
+    booker = models.ForeignKey(User, on_delete=models.CASCADE)
     camped_on_booking = models.ForeignKey(Booking,
                                           on_delete=models.SET_NULL,
                                           null=True,

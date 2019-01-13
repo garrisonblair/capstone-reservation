@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 import unittest
 
 from ..models.PrivilegeCategory import PrivilegeCategory
-from ..models.Booker import Booker
+from ..models.BookerProfile import BookerProfile
 
 
 class TestUserUpdate(TestCase):
@@ -47,7 +47,7 @@ class TestUserUpdate(TestCase):
         check_password(self.new_password, user.password) is True
         self.assertEqual(user.email, self.new_email)
 
-        booker = Booker.objects.get(user=user)
+        booker = BookerProfile.objects.get(user=user)
 
         self.assertEqual(self.privilege_category, booker.privilege_categories.all()[0])
 
