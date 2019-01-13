@@ -75,13 +75,21 @@ class BookingInfoModal extends Component {
       );
       i += 1;
     });
-    return <div>{camponsInfo}</div>;
+    return (
+      <div className="modal-description--campons">
+        <h3 className="header--inline">
+          Campons:
+        </h3>
+        <div>
+          {camponsInfo}
+        </div>
+      </div>
+    );
   }
 
   renderDescription() {
     const { booking, campons } = this.props;
     const booker = !!booking.booker;
-
     return (
       <Modal.Content>
         <Modal.Description>
@@ -108,12 +116,7 @@ class BookingInfoModal extends Component {
                 </h3>
               </div>
             </div>
-            <div className="modal-description--campons">
-              <h3 className="header--inline">
-                Campons:
-              </h3>
-              {campons == null ? null : this.renderCampons()}
-            </div>
+            {campons == null || campons.length === 0 ? null : this.renderCampons()}
           </div>
           <div className="ui divider" />
           {this.renderForm(booking)}
