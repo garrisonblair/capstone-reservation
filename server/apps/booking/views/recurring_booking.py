@@ -18,7 +18,7 @@ class RecurringBookingCreate(APIView):
     def post(self, request):
 
         recurring_booking_data = request.data
-        recurring_booking_data["booker"] = request.user.booker.id
+        recurring_booking_data["booker"] = request.user.id
 
         serializer = RecurringBookingSerializer(data=recurring_booking_data)
         if not serializer.is_valid():
@@ -28,13 +28,11 @@ class RecurringBookingCreate(APIView):
             recurring_booking, conflicts = serializer.create(validated_data=serializer.validated_data)
             utils.log_model_change(recurring_booking,
                                    utils.ADDITION,
-                                   request.user,
-                                   RecurringBookingSerializer(recurring_booking))
+                                   request.user)
             for booking in recurring_booking.booking_set.all():
                 utils.log_model_change(booking,
                                        utils.ADDITION,
-                                       request.user,
-                                       BookingSerializer(booking))
+                                       request.user)
 
             return Response(conflicts, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:

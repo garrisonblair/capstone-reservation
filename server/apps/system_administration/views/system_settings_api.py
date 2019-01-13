@@ -1,3 +1,6 @@
+from datetime import timedelta
+import datetime
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -27,7 +30,13 @@ class SystemSettingsAPI(APIView):
 
         settings = SystemSettings.get_settings()
 
+        print(settings_updates)
         for key in settings_updates:
+            if key == "booking_edit_lock_timeout":
+                duration_str = settings_updates[key]
+                time = datetime.datetime.strptime(duration_str, "%H:%M:%S")
+                settings_updates[key] = timedelta(hours=time.hour, minutes=time.minute, seconds=time.second)
+
             setattr(settings, key, settings_updates[key])
 
         try:

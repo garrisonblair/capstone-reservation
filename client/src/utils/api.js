@@ -26,6 +26,21 @@ function login(username, password) {
   });
 }
 
+async function logout() {
+  try {
+    const headers = getTokenHeader();
+    await axios({
+      method: 'GET',
+      url: `${settings.API_ROOT}/logout`,
+      headers,
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
+  localStorage.removeItem('CapstoneReservationUser');
+}
+
 function verify(token) {
   const data = {
     token,
@@ -338,6 +353,7 @@ function getBookers() {
 const api = {
   register,
   login,
+  logout,
   verify,
   getMyUser,
   updateUser,

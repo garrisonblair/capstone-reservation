@@ -1,6 +1,6 @@
 import datetime
 from django.core.exceptions import ValidationError
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -12,6 +12,7 @@ from apps.booking.models.Booking import Booking
 from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer
 from apps.accounts.exceptions import PrivilegeError
 from apps.util import utils
+from apps.system_administration.models.system_settings import SystemSettings
 
 
 class BookingList(ListAPIView):
@@ -46,7 +47,7 @@ class BookingCreate(APIView):
 
     def post(self, request):
         data = request.data
-        data["booker"] = request.user.booker.id
+        data["booker"] = request.user.id
 
         serializer = BookingSerializer(data=data)
 
@@ -57,8 +58,8 @@ class BookingCreate(APIView):
             booking = serializer.save()
             booking.merge_with_neighbouring_bookings()
             booking.save()
+            utils.log_model_change(booking, utils.ADDITION, request.user)
 
-            utils.log_model_change(booking, utils.ADDITION, request.user, BookingSerializer(booking))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
@@ -76,7 +77,16 @@ class BookingRetrieveUpdateDestroy(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         # Check user permissions
-        self.check_object_permissions(request, booking.booker.user)
+        self.check_object_permissions(request, booking.booker)
+
+        # Check if Booking started.
+        now = datetime.datetime.now()
+
+        settings = SystemSettings.get_settings()
+        timeout = (now + settings.booking_edit_lock_timeout).time()
+
+        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking.start_time):
+            return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
         data["booker"] = booking.booker.id
@@ -87,10 +97,14 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         try:
             update_booking = serializer.save()
+
+            utils.log_model_change(update_booking, utils.CHANGE, request.user)
+
             update_booking.merge_with_neighbouring_bookings()
             update_booking.save()
 
-            utils.log_model_change(update_booking, utils.CHANGE, request.user, BookingSerializer(update_booking))
+            utils.log_model_change(update_booking, utils.CHANGE, request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)

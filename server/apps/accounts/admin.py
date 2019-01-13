@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models.Booker import Booker
+from .models.BookerProfile import BookerProfile
 from .models.VerificationToken import VerificationToken
 from .models.PrivilegeCategory import PrivilegeCategory
 
@@ -36,13 +36,14 @@ class PrivilegeCategoryAdmin(admin.ModelAdmin):
                     'parent_category',
                     'max_days_until_booking',
                     'can_make_recurring_booking',
-                    'max_bookings',
+                    'max_num_days_with_bookings',
+                    'max_num_bookings_for_date',
                     'max_recurring_bookings',
                     'booking_start_time',
                     'booking_end_time'
                     )
 
 
-admin.site.register(Booker, BookerAdmin)
+admin.site.register(BookerProfile, BookerAdmin)
 admin.site.register(VerificationToken, VerificationTokenAdmin)
 admin.site.register(PrivilegeCategory, PrivilegeCategoryAdmin)

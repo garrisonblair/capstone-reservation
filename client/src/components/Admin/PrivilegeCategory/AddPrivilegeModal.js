@@ -36,7 +36,7 @@ class AddPrivilegeModal extends Component {
   handleSubmit = () => {
     const {
       name, parent, maxDaysUntilBooking,
-      maxBookings, maxRecurringBookings, recurringBookingPermission,
+      maxBookingsPerDay, maxDaysWithBookings, maxRecurringBookings, recurringBookingPermission,
       isDefault, bookingStartTime, bookingEndTime,
     } = this.state;
     const { onClose } = this.props;
@@ -52,8 +52,12 @@ class AddPrivilegeModal extends Component {
       data.max_days_until_booking = maxDaysUntilBooking;
     }
 
-    if (maxBookings) {
-      data.max_bookings = maxBookings;
+    if (maxBookingsPerDay) {
+      data.max_num_bookings_for_date = maxBookingsPerDay;
+    }
+
+    if (maxDaysWithBookings) {
+      data.max_num_days_with_bookings = maxDaysWithBookings;
     }
 
     if (maxRecurringBookings) {
@@ -91,7 +95,8 @@ class AddPrivilegeModal extends Component {
               name: '',
               parent: '',
               maxDaysUntilBooking: 0,
-              maxBookings: 0,
+              maxBookingsPerDay: 0,
+              maxDaysWithBookings: 0,
               maxRecurringBookings: 0,
               recurringBookingPermission: false,
               isDefault: false,
@@ -194,10 +199,22 @@ class AddPrivilegeModal extends Component {
             size="small"
             icon="sort"
             iconPosition="left"
-            placeholder="Max Bookings"
+            placeholder="Max Bookings per day"
             type="number"
             min="0"
-            onChange={e => this.handleInputChange('maxBookings', e)}
+            onChange={e => this.handleInputChange('maxBookingsPerDay', e)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Input
+            fluid
+            size="small"
+            icon="sort"
+            iconPosition="left"
+            placeholder="Max days with bookings"
+            type="number"
+            min="0"
+            onChange={e => this.handleInputChange('maxDaysWithBookings', e)}
           />
         </Form.Field>
         <FormField>

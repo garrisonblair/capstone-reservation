@@ -39,8 +39,12 @@ class PrivilegeDetailsModal extends Component {
             {privilege.max_days_until_booking}
           </p>
           <p>
-            <strong> Max Bookings: </strong>
-            {privilege.max_bookings}
+            <strong> Max Bookings per day: </strong>
+            {privilege.max_num_bookings_for_date}
+          </p>
+          <p>
+            <strong> Max days with bookings: </strong>
+            {privilege.max_num_days_with_bookings}
           </p>
           <p>
             <strong> Max Recurring Bookings: </strong>

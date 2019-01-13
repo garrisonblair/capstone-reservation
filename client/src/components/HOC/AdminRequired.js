@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import api from '../../utils/api';
 
 
@@ -30,7 +31,7 @@ function AdminRequired(InnerComponent) {
     }
   }
 
-  return HOC;
+  return withRouter(HOC);
 }
 
 export default AdminRequired;

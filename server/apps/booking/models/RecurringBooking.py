@@ -8,7 +8,7 @@ from rest_framework import serializers
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.rooms.models.Room import Room
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
 from apps.util.AbstractBooker import AbstractBooker
 from datetime import timedelta, datetime
@@ -60,7 +60,7 @@ class RecurringBooking(models.Model):
     booking_end_time = models.TimeField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
-    booker = models.ForeignKey(Booker, on_delete=models.CASCADE)
+    booker = models.ForeignKey(User, on_delete=models.CASCADE)
     skip_conflicts = models.BooleanField(default=False)
 
     objects = RecurringBookingManager()
@@ -143,3 +143,7 @@ class RecurringBooking(models.Model):
         # booking_end_time
         if self.booking_end_time > end_time:
             raise PrivilegeError(p_c.get_error_text("booking_end_time"))
+
+    def json_serialize(self):
+        from ..serializers.recurring_booking import RecurringBookingSerializer
+        return json.dumps(RecurringBookingSerializer(self).data)

@@ -1,10 +1,16 @@
 /* eslint camelcase: 0 */ // --> OFF
 import React, { Component } from 'react';
-import { Checkbox, Button, Input } from 'semantic-ui-react';
+import {
+  Checkbox,
+  Button,
+  Input,
+  Divider,
+} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import WebCalendarLogin from './WebCalendarLogin';
 import DisableBackupModal from './DisableBackupModal';
 import api from '../../../utils/api';
+import './Settings.scss';
 
 
 class Settings extends Component {
@@ -15,6 +21,7 @@ class Settings extends Component {
       is_webcalendar_backup_active: false,
       merge_adjacent_bookings: false,
       merge_threshold_minutes: 0,
+      booking_edit_lock_timeout: 0,
     },
   }
 
@@ -65,6 +72,15 @@ class Settings extends Component {
     });
   }
 
+  handleBookingEditLock = (e, data) => {
+    const { value } = data;
+    const { settings } = this.state;
+    settings.booking_edit_lock_timeout = value;
+    this.setState({
+      settings,
+    });
+  }
+
   handleCloseLoginModal = () => {
     this.setState({ showLoginModal: false });
     this.getSettings();
@@ -99,35 +115,52 @@ class Settings extends Component {
       is_webcalendar_backup_active,
       merge_adjacent_bookings,
       merge_threshold_minutes,
+      booking_edit_lock_timeout,
     } = settings;
 
     return (
       <div>
-        <form>
-          <div>
-            <Checkbox
-              className="settings_item"
-              label="Automatically export to Web Calendar"
-              checked={is_webcalendar_backup_active}
-              onChange={this.handleChangeWebcaledarExport}
-            />
-            <Checkbox
-              className="settings_item"
-              label="Merge adjacent bookings"
-              checked={merge_adjacent_bookings}
-              onChange={this.handleChangeMergeBooking}
-            />
-            <Input
-              className="settings_item"
-              label="Merge threshold in minutes"
-              value={merge_threshold_minutes}
-              onChange={this.handleChangeMergeThreshold}
-            />
-          </div>
+        <div className="admin--settings">
+          <h3>WebCalendar Backup</h3>
+          <Checkbox
+            className="settings_item"
+            label="Automatically export to Web Calendar"
+            checked={is_webcalendar_backup_active}
+            onChange={this.handleChangeWebcaledarExport}
+          />
+          <Divider />
+          <h3>Bookings</h3>
+          <Checkbox
+            className="settings_item"
+            label="Merge adjacent bookings"
+            checked={merge_adjacent_bookings}
+            onChange={this.handleChangeMergeBooking}
+          />
+          <br />
+          {merge_adjacent_bookings
+            ? (
+              <div>
+                <Input
+                  className="settings_item"
+                  label="Merge threshold in minutes"
+                  value={merge_threshold_minutes}
+                  onChange={this.handleChangeMergeThreshold}
+                />
+                <br />
+              </div>)
+            : null
+          }
+          <Input
+            className="settings_item"
+            label="Booking edit lock timeout"
+            value={booking_edit_lock_timeout}
+            onChange={this.handleBookingEditLock}
+          />
+          <Divider />
           <Button onClick={this.saveSettings}>
-            Save Changes
+          Save Changes
           </Button>
-        </form>
+        </div>
         <WebCalendarLogin
           show={showLoginModal}
           onClose={this.handleCloseLoginModal}

@@ -6,15 +6,17 @@ import {
 import sweetAlert from 'sweetalert2';
 import './ReservationDetailsModal.scss';
 import toDateInputValue from '../../utils/dateFormatter';
+import Login from '../Login';
 import api from '../../utils/api';
 
 class ReservationDetailsModal extends Component {
   state = {
     show: false,
+    showLogin: false,
     startHour: '8',
     startMinute: '00',
-    endHour: '-1',
-    endMinute: '-1',
+    endHour: '8',
+    endMinute: '30',
     hourOptions: [],
     reservedOptions: [],
     isRecurring: false,
@@ -69,6 +71,7 @@ class ReservationDetailsModal extends Component {
       startHour: hour,
       startMinute: minute,
     });
+    this.getDefaultEndTime(hour, minute);
   }
 
   generateHourOptions = (minHour, maxHour) => {
@@ -93,6 +96,22 @@ class ReservationDetailsModal extends Component {
     return result;
   }
 
+  getDefaultEndTime = (startHour, startMinute) => {
+    if (startHour !== '' && startMinute !== '') {
+      let hour = parseInt(startHour, 10);
+      let minute = parseInt(startMinute, 10);
+      if (minute >= 30) {
+        hour += 1;
+        minute -= 30;
+      } else {
+        minute += 30;
+      }
+      hour = hour.toString(10);
+      minute = minute.toString(10);
+      this.setState({ endHour: hour, endMinute: minute });
+    }
+  }
+
   // TODO: This method needs to be changed when accessing groups
   generateReservationProfilesOptions = r => r.map(profile => ({ text: profile, value: profile }))
 
@@ -115,6 +134,22 @@ class ReservationDetailsModal extends Component {
     this.setState({
       show: false,
     });
+  }
+
+  closeLogin = () => {
+    const { isRecurring } = this.state;
+    this.setState({ showLogin: false });
+    if (localStorage.getItem('CapstoneReservationUser') == null) {
+      sweetAlert(
+        'Reservation failed',
+        'Please Log in to make a reservation.',
+        'error',
+      );
+    } else if (isRecurring) {
+      this.sendPostRequestRecurringBooking(false);
+    } else {
+      this.sendPostRequestBooking();
+    }
   }
 
   handleOpen = () => this.setState({ show: true });
@@ -291,7 +326,9 @@ class ReservationDetailsModal extends Component {
       return;
     }
 
-    if (isRecurring) {
+    if (localStorage.getItem('CapstoneReservationUser') == null) {
+      this.setState({ showLogin: true });
+    } else if (isRecurring) {
       this.sendPostRequestRecurringBooking(false);
     } else {
       this.sendPostRequestBooking();
@@ -378,7 +415,14 @@ class ReservationDetailsModal extends Component {
 
   renderDescription() {
     const {
-      startHour, startMinute, hourOptions, minuteOptions, reservedOptions, isRecurring,
+      startHour,
+      startMinute,
+      hourOptions,
+      minuteOptions,
+      reservedOptions,
+      isRecurring,
+      endHour,
+      endMinute,
     } = this.state;
     const { selectedDate } = this.props;
     return (
@@ -423,6 +467,7 @@ class ReservationDetailsModal extends Component {
               className="dropdown--fixed-width"
               placeholder="hh"
               options={hourOptions}
+              defaultValue={endHour}
               onChange={this.handleEndHourChange}
             />
             <Dropdown
@@ -431,6 +476,7 @@ class ReservationDetailsModal extends Component {
               className="dropdown--fixed-width"
               placeholder="mm"
               options={minuteOptions}
+              defaultValue={endMinute}
               onChange={this.handleEndMinuteChange}
             />
           </div>
@@ -465,7 +511,7 @@ class ReservationDetailsModal extends Component {
   }
 
   render() {
-    const { show } = this.state;
+    const { show, showLogin } = this.state;
     const { selectedRoomName } = this.props;
     return (
       <div id="reservation-details-modal">
@@ -477,6 +523,7 @@ class ReservationDetailsModal extends Component {
           </Modal.Header>
           {this.renderDescription()}
         </Modal>
+        <Login show={showLogin} onClose={this.closeLogin} />
       </div>
     );
   }
