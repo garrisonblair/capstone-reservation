@@ -47,7 +47,7 @@ class BookingCreate(APIView):
 
     def post(self, request):
         data = request.data
-        data["booker"] = request.user.booker.id
+        data["booker"] = request.user.id
 
         serializer = BookingSerializer(data=data)
 
@@ -77,7 +77,7 @@ class BookingRetrieveUpdateDestroy(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         # Check user permissions
-        self.check_object_permissions(request, booking.booker.user)
+        self.check_object_permissions(request, booking.booker)
 
         # Check if Booking started.
         now = datetime.datetime.now()

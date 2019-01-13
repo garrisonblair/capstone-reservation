@@ -1,33 +1,22 @@
 from django.test import TestCase
 from apps.booking.models.Booking import Booking
-from apps.accounts.models.Booker import Booker
 from apps.rooms.models.Room import Room
 from datetime import datetime, time
-import re
+
 from django.core.exceptions import ValidationError
 
 from apps.system_administration.models.system_settings import SystemSettings
+from apps.accounts.models.User import User
 
 
 class TestBooking(TestCase):
     def setUp(self):
         # Setup one booker
-        sid = '12345678'
-        self.booker = Booker(booker_id=sid)
+        self.booker = User.objects.create_user(username="f_daigl",
+                                               email="fred@email.com",
+                                               password="safe_password")
         self.booker.user = None
         self.booker.save()
-
-        # Setup one booker2
-        sid2 = '23456789'
-        self.booker2 = Booker(booker_id=sid2)
-        self.booker2.user = None
-        self.booker2.save()
-
-        # Setup one campon_booker
-        sid3 = '87654321'
-        self.campon_booker = Booker(booker_id=sid3)
-        self.campon_booker.user = None
-        self.campon_booker.save()
 
         # Setup one Room
         name = "1"

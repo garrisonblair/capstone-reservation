@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from ..models.GroupInvitation import GroupInvitation
 from ..serializers.group import ReadGroupSerializer
-from apps.accounts.serializers.user import BookerSerializer
+from apps.accounts.serializers.user import UserSerializer
 
 
 class ReadGroupInvitationSerializer(serializers.ModelSerializer):
 
     group = ReadGroupSerializer()
-    invited_booker = BookerSerializer()
+    invited_booker = UserSerializer()
 
     class Meta:
         model = GroupInvitation
@@ -16,7 +16,7 @@ class ReadGroupInvitationSerializer(serializers.ModelSerializer):
 
 class GroupContextInvitationSerializer(serializers.ModelSerializer):
 
-    invited_booker = BookerSerializer()
+    invited_booker = UserSerializer()
 
     class Meta:
         model = GroupInvitation

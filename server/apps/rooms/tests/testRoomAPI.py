@@ -2,9 +2,9 @@ from django.test.testcases import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
-from django.contrib.auth.models import User
 
-from apps.accounts.models.Booker import Booker
+
+from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
 
@@ -23,10 +23,6 @@ class RoomAPITest(TestCase):
         self.user.is_superuser = True
         self.user.save()
 
-        self.booker = Booker(booker_id="j_lenn")
-        self.booker.user = self.user
-        self.booker.save()
-
         self.room1 = Room(id=1,
                           name="H833-17",
                           capacity=4,
@@ -40,7 +36,7 @@ class RoomAPITest(TestCase):
                           number_of_computers=2)
         self.room2.save()
 
-        self.booking = Booking(booker=self.booker,
+        self.booking = Booking(booker=self.user,
                                room=self.room1,
                                date="2018-10-22",
                                start_time="12:00",

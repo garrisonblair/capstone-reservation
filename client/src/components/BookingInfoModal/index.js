@@ -27,7 +27,7 @@ class BookingInfoModal extends Component {
 
   static checkSameUser(booking) {
     if (localStorage.getItem('CapstoneReservationUser') && !!booking.booker) {
-      return booking.booker.user.username === JSON.parse(localStorage.getItem('CapstoneReservationUser')).username;
+      return booking.booker.username === JSON.parse(localStorage.getItem('CapstoneReservationUser')).username;
     }
     return false;
   }
