@@ -59,10 +59,10 @@ class BookerModal extends Component {
       });
   }
 
-  renderPrivilegeRow = (privilege, removePrivilegeAction) => (
+  renderPrivilegeRow = privilege => (
     <List.Item key={privilege.id}>
       <List.Content floated="right">
-        <Button onClick={removePrivilegeAction}>Remove</Button>
+        <Button onClick={() => this.handleRemovePrivilege(privilege)}>Remove</Button>
       </List.Content>
       <List.Content className="privilege-name">
         <Icon name="circle" />
@@ -74,7 +74,6 @@ class BookerModal extends Component {
   render() {
     const { show, booker, onClose } = this.props;
     const { dropdownOptions, myPrivileges } = this.state;
-    console.log(booker);
     return (
       <Modal open={show} onClose={onClose} size="small" id="booker-modal">
         <Modal.Header>
@@ -92,7 +91,7 @@ class BookerModal extends Component {
             <div className="privilege-section">
               <List divided className="booker-list">
                 {myPrivileges.map(
-                  p => this.renderPrivilegeRow(p, this.handleRemovePrivilege),
+                  p => this.renderPrivilegeRow(p),
                 )}
               </List>
               <Dropdown
