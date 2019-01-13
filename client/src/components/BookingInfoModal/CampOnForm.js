@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Button, Dropdown, Icon } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
+import Login from '../Login';
 import api from '../../utils/api';
 import './BookingInfoModal.scss';
 
@@ -29,6 +30,7 @@ class CampOnForm extends Component {
     hourOptions: [],
     minuteOptions: [],
     reservedOptions: [{ text: 'me', value: 'me' }],
+    showLogin: false,
   }
 
   /*
@@ -68,7 +70,24 @@ class CampOnForm extends Component {
       sweetAlert('Camp on blocked', err.message, 'warning');
       return;
     }
-    this.sendPostRequestCampOn();
+    if (localStorage.getItem('CapstoneReservationUser') == null) {
+      this.setState({ showLogin: true });
+    } else {
+      this.sendPostRequestCampOn();
+    }
+  }
+
+  closeLogin = () => {
+    this.setState({ showLogin: false });
+    if (localStorage.getItem('CapstoneReservationUser') == null) {
+      sweetAlert(
+        'Campon failed',
+        'Please Log in to make camp on the reservation.',
+        'error',
+      );
+    } else {
+      this.sendPostRequestCampOn();
+    }
   }
 
   sendPostRequestCampOn = () => {
@@ -133,6 +152,7 @@ class CampOnForm extends Component {
       reservedOptions,
       endHour,
       endMinute,
+      showLogin,
     } = this.state;
     return (
       <div>
@@ -176,6 +196,7 @@ class CampOnForm extends Component {
         </div>
         <Button content="Camp on" primary onClick={this.handleSubmit} />
         <div className="ui divider" />
+        <Login show={showLogin} onClose={this.closeLogin} />
       </div>
     );
   }
