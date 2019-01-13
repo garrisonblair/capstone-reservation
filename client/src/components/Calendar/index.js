@@ -1,11 +1,12 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import './Calendar.scss';
-import SelectedDate from './SelectedDate';
+import PropTypes from 'prop-types';
+// import SelectedDate from './SelectedDate';
 import Rooms from './Rooms';
 import Hours from './Hours';
 import Cells from './Cells';
+import Navigation from '../Navigation';
 import api from '../../utils/api';
+import './Calendar.scss';
 
 
 class Calendar extends Component {
@@ -17,6 +18,17 @@ class Calendar extends Component {
     };
     return timeInt;
   }
+
+  static onOpenDatePicker() {
+    document.documentElement.style.setProperty('--opacity', 0.2);
+    document.documentElement.style.setProperty('--pointerEvents', 'none');
+  }
+
+  static onCloseDatePicker() {
+    document.documentElement.style.setProperty('--opacity', 1);
+    document.documentElement.style.setProperty('--pointerEvents', 'auto');
+  }
+
 
   state = {
     roomsList: [],
@@ -187,11 +199,17 @@ class Calendar extends Component {
       campOns,
       selectedDate,
     } = this.state;
-    return (
-      <div className="calendar__container">
-        <SelectedDate changeDate={this.changeDate} />
+    return [
+      <Navigation
+        key={0}
+        showDate
+        changeDate={this.changeDate}
+        onOpenDatePicker={Calendar.onOpenDatePicker}
+        onCloseDatePicker={Calendar.onCloseDatePicker}
+      />,
+      <div className="calendar__container" key={1}>
         <div className="calendar__wrapper">
-          <Rooms roomsList={roomsList} />
+          <Rooms roomsList={roomsList} changeDate={this.changeDate} />
           <Hours hoursList={hoursList} />
           <Cells
             hoursSettings={hoursSettings}
@@ -203,8 +221,8 @@ class Calendar extends Component {
             onCloseModalWithAction={this.onCloseModalWithAction}
           />
         </div>
-      </div>
-    );
+      </div>,
+    ];
   }
 }
 
