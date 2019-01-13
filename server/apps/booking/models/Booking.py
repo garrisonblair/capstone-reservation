@@ -2,7 +2,7 @@ import json
 import datetime
 
 from django.db import models
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
 from ..models.RecurringBooking import RecurringBooking
@@ -34,8 +34,8 @@ class BookingManager(models.Manager):
 
 
 class Booking(models.Model, SubjectModel):
-    booker = models.ForeignKey(Booker,
-                               on_delete=models.CASCADE)  # type: Booker
+    booker = models.ForeignKey(User,
+                               on_delete=models.CASCADE)  # type: User
     group = models.ForeignKey(Group,
                               on_delete=models.CASCADE,
                               blank=True, null=True)  # type: Group

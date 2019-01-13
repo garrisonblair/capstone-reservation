@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIRequestFactory, APIClient, force_authenticate
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.views.privilege_categories import MyPrivilegeCategoryList
 from apps.accounts.views.privilege_categories import PrivilegeCategoryList
@@ -254,7 +254,7 @@ class TestPrivilegeCategoryAPI(TestCase):
         self.assertTrue(response.status_code in [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED])
 
     def testViewBookerPrivileges(self):
-        booker = Booker.objects.create(booker_id=11111111, user=self.user)
+        booker = self.user.bookerprofile
         self.user.is_superuser = False
         self.user.save()
         self.user.refresh_from_db()

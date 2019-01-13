@@ -1,11 +1,9 @@
 from django.test import TestCase
 
-from django.contrib.auth.models import User
-
 from rest_framework.test import force_authenticate, APIRequestFactory
 from rest_framework import status
 
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.User import User
 from ..models.GroupInvitation import GroupInvitation
 from ..models.Group import Group
 from ..views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation, RevokeInvitation
@@ -27,23 +25,13 @@ class TestGroupInvitationAPI(TestCase):
                                               password="anotherPassword")
         self.user2.save()
 
-        self.booker1 = Booker(booker_id="11111111")
-        self.booker1.save()
-        self.booker1.user = self.user1
-        self.booker1.save()
-
-        self.booker2 = Booker(booker_id="22222222")
-        self.booker2.save()
-        self.booker2.user = self.user2
-        self.booker2.save()
-
-        self.group = Group(name="My Group", owner=self.booker1)
+        self.group = Group(name="My Group", owner=self.user1)
         self.group.save()
 
-        self.invitation1 = GroupInvitation(group=self.group, invited_booker=self.booker2)
+        self.invitation1 = GroupInvitation(group=self.group, invited_booker=self.user2)
         self.invitation1.save()
 
-        self.invitation2 = GroupInvitation(group=self.group, invited_booker=self.booker1)
+        self.invitation2 = GroupInvitation(group=self.group, invited_booker=self.user1)
         self.invitation2.save()
 
     def testAcceptInvitationSuccess(self):
@@ -54,7 +42,7 @@ class TestGroupInvitationAPI(TestCase):
         response = AcceptInvitation.as_view()(request, self.invitation1.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(self.booker2 in self.group.members.all())
+        self.assertTrue(self.user2 in self.group.members.all())
 
         #  Check invitation was deleted
         try:
@@ -87,7 +75,7 @@ class TestGroupInvitationAPI(TestCase):
         response = RejectInvitation.as_view()(request, self.invitation1.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(self.booker2 not in self.group.members.all())
+        self.assertTrue(self.user2 not in self.group.members.all())
 
         #  Check invitation was deleted
         try:
@@ -108,7 +96,7 @@ class TestGroupInvitationAPI(TestCase):
 
         invitation = response.data[0]
         self.assertEqual(invitation["group"]["id"], self.group.id)
-        self.assertEqual(invitation["invited_booker"]["id"], self.booker2.id)
+        self.assertEqual(invitation["invited_booker"]["id"], self.user2.id)
 
     def testGetInvitationsAuthenticatedAdmin(self):
         request = self.factory.get("/group_invitations")
@@ -131,7 +119,7 @@ class TestGroupInvitationAPI(TestCase):
         response = RevokeInvitation.as_view()(request, self.invitation1.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(self.booker2 not in self.group.members.all())
+        self.assertTrue(self.user2 not in self.group.members.all())
 
         #  Check invitation was deleted
         try:
@@ -148,7 +136,7 @@ class TestGroupInvitationAPI(TestCase):
         response = RevokeInvitation.as_view()(request, self.invitation1.id)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertTrue(self.booker2 not in self.group.members.all())
+        self.assertTrue(self.user2 not in self.group.members.all())
 
         #  Check invitation was deleted
         try:

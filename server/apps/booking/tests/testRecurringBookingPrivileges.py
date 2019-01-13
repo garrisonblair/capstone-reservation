@@ -3,7 +3,8 @@ from datetime import date, time, timedelta
 import datetime
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.models.Booker import Booker
+from apps.accounts.models.BookerProfile import BookerProfile
+from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 from ..models.Booking import RecurringBooking
 from apps.groups.models.Group import Group
@@ -22,9 +23,11 @@ class TestBookingPrivileges(TestCase):
         self.p_c_booker.booking_end_time = time(22, 0, 0)
         self.p_c_booker.save(bypass_validation=True)
 
-        self.booker = Booker(booker_id="11111111")
+        self.booker = User.objects.create_user(username="f_daigl",
+                                               email="fred@email.com",
+                                               password="safe_password")
         self.booker.save()
-        self.booker.privilege_categories.add(self.p_c_booker)
+        self.booker.bookerprofile.privilege_categories.add(self.p_c_booker)
         self.booker.save()
 
         self.p_c_group = PrivilegeCategory(name="Group Category")

@@ -2,12 +2,12 @@ from rest_framework import serializers
 
 from ..models.CampOn import CampOn
 from ..models.Booking import Booking
-from apps.accounts.models.Booker import Booker
-from apps.accounts.serializers.user import BookerSerializer
+from apps.accounts.models.User import User
+from apps.accounts.serializers.user import UserSerializer
 
 
 class CampOnSerializer(serializers.ModelSerializer):
-    booker = serializers.PrimaryKeyRelatedField(queryset=Booker.objects.all())
+    booker = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     camped_on_booking = serializers.PrimaryKeyRelatedField(queryset=Booking.objects.all())
     generated_booking = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -18,7 +18,7 @@ class CampOnSerializer(serializers.ModelSerializer):
 
 
 class ReadCampOnSerializer(serializers.ModelSerializer):
-    booker = BookerSerializer(required=False)
+    booker = UserSerializer(required=False)
     camped_on_booking = serializers.PrimaryKeyRelatedField(queryset=Booking.objects.all())
     generated_booking = serializers.PrimaryKeyRelatedField(read_only=True)
 
