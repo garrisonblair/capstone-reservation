@@ -258,6 +258,21 @@ function addPrivilege(username, privilegeID) {
   });
 }
 
+function removePrivilege(username, privilegeID) {
+  const headers = getTokenHeader();
+  const data = {
+    users: username,
+    privilege_category: privilegeID,
+  };
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/remove_privilege`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 function getBookers() {
   const headers = getTokenHeader();
   return axios({
@@ -292,6 +307,7 @@ const api = {
   getContentTypes,
   getUsers,
   addPrivilege,
+  removePrivilege,
   getBookers,
 };
 

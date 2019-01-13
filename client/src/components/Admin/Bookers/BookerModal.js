@@ -38,8 +38,14 @@ class BookerModal extends Component {
 
   handleRemovePrivilege = (privilege) => {
     const { myPrivileges } = this.state;
-    console.log(myPrivileges);
-    console.log(privilege);
+    const { booker } = this.props;
+    api.removePrivilege([booker.id], privilege.id)
+      .then(() => {
+        // sweetAlert('Completed',
+        //   'Privilege was removed.',
+        //   'success');
+      });
+    this.setState({ myPrivileges: myPrivileges.filter(p => p !== privilege) });
   }
 
   handleAddPrivilegeClick = () => {
