@@ -70,7 +70,7 @@ class BookingInfoModal extends Component {
     campons.forEach((campon) => {
       camponsInfo.push(
         <h3 className="header--inline" key={i}>
-          {`${i}. ${campon.booker}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
+          {`${i}. ${campon.booker.username}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
         </h3>,
       );
       i += 1;
@@ -104,7 +104,7 @@ class BookingInfoModal extends Component {
                 <h3 className="header--inline">
                   <Icon name="user" />
                   {' '}
-                  {booker ? `by ${booking.booker.user.username}` : ''}
+                  {booker ? `by ${booking.booker.username}` : ''}
                 </h3>
               </div>
             </div>

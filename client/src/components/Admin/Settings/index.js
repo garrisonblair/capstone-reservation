@@ -141,7 +141,6 @@ class Settings extends Component {
             ? (
               <div>
                 <Input
-                  show={merge_adjacent_bookings}
                   className="settings_item"
                   label="Merge threshold in minutes"
                   value={merge_threshold_minutes}

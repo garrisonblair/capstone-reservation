@@ -48,7 +48,7 @@ class Cells extends Component {
     const { hoursSettings } = this.props;
     const rowStart = (hourRow * hoursSettings.increment / 10) + 1;
     const rowEnd = rowStart + hoursSettings.increment / 10;
-    // const height = '75px';
+    // const height = '65px';
 
     const style = {
       cell_style: {
@@ -280,7 +280,7 @@ class Cells extends Component {
           -
           {campOn.end_time.substring(0, campOn.end_time.length - 3)}
           &nbsp;:&nbsp;
-          {campOn.booker.user.username}
+          {campOn.booker.username}
           <br />
         </span>,
       );
