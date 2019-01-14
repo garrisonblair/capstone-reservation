@@ -15,7 +15,7 @@ class InvitedRowItem extends Component {
         <List.Content floated="left">
           <h3>
             <Icon name="envelope" />
-            {selectedInvitation.invited_booker.user.username}
+            {selectedInvitation.invited_booker.username}
           </h3>
         </List.Content>
         <List.Content floated="right">

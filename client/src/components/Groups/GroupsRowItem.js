@@ -22,7 +22,7 @@ class GroupsRowItem extends Component {
   renderPrivilege = () => {
     const { group, myUserId } = this.props;
     let label = <Label color="grey">MEMBER</Label>;
-    if (myUserId === group.owner.user.id) {
+    if (myUserId === group.owner.id) {
       label = <Label color="yellow">OWNER</Label>;
     }
     return label;
@@ -47,7 +47,7 @@ class GroupsRowItem extends Component {
               selectedGroup={group}
               onClose={this.closeModal}
               syncGroupsList={syncGroupsList}
-              isAdmin={myUserId === group.owner.user.id}
+              isAdmin={myUserId === group.owner.id}
             />
           ) : ''}
         </Table.Cell>

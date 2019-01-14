@@ -16,7 +16,7 @@ class MemberRowItem extends Component {
         <List.Content floated="left">
           <h3>
             <Icon name="user" />
-            {member.user.username}
+            {member.username}
           </h3>
         </List.Content>
         <List.Content floated="right">

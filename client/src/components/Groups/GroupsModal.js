@@ -26,7 +26,7 @@ class GroupsModal extends Component {
     if (selectedGroup !== null) {
       this.setState({
         groupId: selectedGroup.id,
-        groupOwner: selectedGroup.owner.user,
+        groupOwner: selectedGroup.owner,
         groupMembers: selectedGroup.members,
         groupName: selectedGroup.name,
         groupInvitations: selectedGroup.group_invitations,
@@ -39,10 +39,10 @@ class GroupsModal extends Component {
     }
 
     // get all users and add them to the dropbox
-    api.getBookers()
+    api.getUsers()
       .then((r2) => {
         r2.data.map(b => stateOptions.push({
-          key: b.user.id, value: b.user.id, text: b.user.username,
+          key: b.id, value: b.id, text: b.username,
         }));
         this.setState({
           stateOptions,
@@ -68,11 +68,11 @@ class GroupsModal extends Component {
     const {
       newInvitation, groupId, groupInvitations, groupOwner, groupMembers,
     } = this.state;
-    if (groupInvitations.some(i => i.invited_booker.user.id === newInvitation)) {
+    if (groupInvitations.some(i => i.invited_booker.id === newInvitation)) {
       sweetAlert('Warning', 'You already invited that user.', 'warning');
       return;
     }
-    if (groupMembers.some(m => m.user.id === newInvitation)) {
+    if (groupMembers.some(m => m.id === newInvitation)) {
       sweetAlert('Warning', 'User is already a member.', 'warning');
       return;
     }
@@ -102,7 +102,19 @@ class GroupsModal extends Component {
       .then((r) => {
         if (r.status === 202) {
           onClose();
-          sweetAlert('Completed', 'You left the group.', 'success');
+          sweetAlert('Completed', 'You have left the group.', 'success');
+        }
+      });
+  }
+
+  handleDeleteGroup = () => {
+    const { groupId } = this.state;
+    const { onClose } = this.props;
+    api.leaveGroup(groupId)
+      .then((r) => {
+        if (r.status === 202) {
+          onClose();
+          sweetAlert('Completed', 'You have deleted the group.', 'success');
         }
       });
   }
@@ -122,7 +134,7 @@ class GroupsModal extends Component {
     api.removeMembersFromGroup(groupId, [memberId])
       .then((r) => {
         if (r.status === 202) {
-          this.setState({ groupMembers: groupMembers.filter(m => m.user.id !== memberId) });
+          this.setState({ groupMembers: groupMembers.filter(m => m.id !== memberId) });
         }
       });
   }
@@ -193,7 +205,7 @@ class GroupsModal extends Component {
     let content = (
       <List divided>
         {
-          groupMembers.filter(m => m.user.id !== groupOwner.id).map(
+          groupMembers.filter(m => m.id !== groupOwner.id).map(
             m => (
               <MemberRowItem
                 member={m}

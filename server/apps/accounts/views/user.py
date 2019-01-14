@@ -16,7 +16,7 @@ from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
 class UserList(ListAPIView):
-    permission_classes = (IsAuthenticated)
+    permission_class = IsAuthenticated
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
