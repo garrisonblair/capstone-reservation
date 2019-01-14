@@ -226,6 +226,88 @@ function createPrivilege(data) {
   });
 }
 
+function getMyGroups() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/groups`,
+    headers,
+  });
+}
+
+function createGroup(name) {
+  const headers = getTokenHeader();
+  const data = {
+    name,
+  };
+
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group`,
+    headers,
+    data,
+  });
+}
+
+function addMembersToGroup(id, members) {
+  const headers = getTokenHeader();
+  const data = {
+    members,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group/${id}/add_members`,
+    headers,
+    data,
+  });
+}
+
+function leaveGroup(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group/${id}/leave_group`,
+    headers,
+  });
+}
+
+function inviteMembers(groupId, members) {
+  const headers = getTokenHeader();
+  const data = {
+    invited_bookers: members,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group/${groupId}/invite_members`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function revokeInvitation(invitationId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group_invitation/${invitationId}/revoke`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function removeMembersFromGroup(groupId, members) {
+  const headers = getTokenHeader();
+  const data = {
+    members,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group/${groupId}/remove_members`,
+    headers,
+    data,
+  });
+}
+
 function getLogEntries(params) {
   const headers = getTokenHeader();
   return axios({
@@ -319,6 +401,13 @@ const api = {
   updateAdminSettings,
   getPrivileges,
   createPrivilege,
+  getMyGroups,
+  createGroup,
+  addMembersToGroup,
+  leaveGroup,
+  inviteMembers,
+  revokeInvitation,
+  removeMembersFromGroup,
   getLogEntries,
   getContentTypes,
   getUsers,
