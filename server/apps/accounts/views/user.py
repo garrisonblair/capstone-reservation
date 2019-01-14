@@ -11,7 +11,6 @@ from apps.accounts.permissions.IsBooker import IsBooker
 from ..models.BookerProfile import BookerProfile
 from ..serializers.user import UserSerializer, BookerSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
-from ..permissions.IsSuperUser import IsSuperUser
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
@@ -21,9 +20,8 @@ class UserList(ListAPIView):
     serializer_class = UserSerializer
 
     def get_queryset(self):
-
         search_term = self.request.query_params.get("search_text")
-        users = User.objects.all()
+        users = super(UserList, self).get_queryset()
 
         if search_term is not None:
             users = users.filter(Q(username__contains=search_term) |
@@ -39,7 +37,7 @@ class BookerList(ListAPIView):
     serializer_class = BookerSerializer
 
     def get_queryset(self):
-        search_term = self.request.GET.get("search_text")
+        search_term = self.request.query_params.get("search_text")
         qs = super(BookerList, self).get_queryset()
 
         if search_term is not None:
