@@ -1,68 +1,97 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import './Calendar.scss';
-import { Button, Icon } from 'semantic-ui-react';
+import { Icon, Menu } from 'semantic-ui-react';
+import { SingleDatePicker } from 'react-dates';
+import * as moment from 'moment';
 
 
 class SelectedDate extends Component {
   state = {
-    selectedDate: new Date(),
+    focusDate: false,
+    date: moment(),
   }
 
   handleClickNextDate = () => {
-    const { selectedDate } = this.state;
-    selectedDate.setDate(selectedDate.getDate() + 1);
-    this.setState({ selectedDate });
-    this.changeDate(selectedDate);
+    const { date } = this.state;
+    this.setState({ date: date.add(1, 'days').calendar() });
+    this.handleChangeDate(date);
   }
 
   handleClickPreviousDate = () => {
-    const { selectedDate } = this.state;
-    selectedDate.setDate(selectedDate.getDate() - 1);
-    this.setState({ selectedDate });
-    this.changeDate(selectedDate);
+    const { date } = this.state;
+    this.setState({ date: date.subtract(1, 'days').calendar() });
+    this.handleChangeDate(date);
   }
 
-  changeDate = (day) => {
+  handleChangeDate = (date) => {
     const { changeDate } = this.props;
-    changeDate(day);
+    this.setState({ date });
+    const d = date.format('YYYY-MM-DD').split('-');
+    const selectedDate = new Date();
+    selectedDate.setFullYear(parseInt(d[0], 10));
+    selectedDate.setMonth(parseInt(d[1], 10) - 1);
+    selectedDate.setDate(parseInt(d[2], 10));
+    changeDate(selectedDate);
+  }
+
+  focusDate = () => {
+    const { onOpenDatePicker } = this.props;
+    this.setState({ focusDate: true });
+    onOpenDatePicker();
+  }
+
+  focusOutDate = (f) => {
+    const { onCloseDatePicker } = this.props;
+    this.setState({ focusDate: f });
+    onCloseDatePicker();
   }
 
   render() {
-    const { selectedDate } = this.state;
+    const { date, focusDate } = this.state;
     return (
-      <div className="calendar__date">
-        <Button
-          basic
+      <Menu.Item position="right" className="menu--date">
+        <Icon
           circular
           color="olive"
-          icon="chevron left"
-          size="tiny"
+          name="angle left"
           onClick={this.handleClickPreviousDate}
         />
-        <h3 className="calendar__date__header">
-          <Icon name="calendar alternate outline" />
-          {selectedDate.toDateString()}
-        </h3>
-        <Button
-          basic
+        <Icon name="calendar alternate outline" onClick={this.focusDate} />
+        <div className="datepicker">
+          <SingleDatePicker
+            isOutsideRange={() => false}
+            numberOfMonths={1}
+            date={date}
+            onDateChange={d => this.handleChangeDate(d)}
+            focused={focusDate}
+            onFocusChange={({ f }) => this.focusOutDate(f)}
+            hideKeyboardShortcutsPanel
+            id="datepicker"
+          />
+        </div>
+        <span onClick={this.focusDate} role="presentation" onKeyDown={() => {}}>{date.format('ddd MMM Do YYYY')}</span>
+        <Icon
           circular
           color="olive"
-          icon="chevron right"
-          size="tiny"
+          name="angle right"
           onClick={this.handleClickNextDate}
         />
-      </div>
+      </Menu.Item>
     );
   }
 }
 
 SelectedDate.propTypes = {
   changeDate: PropTypes.func,
+  onOpenDatePicker: PropTypes.func,
+  onCloseDatePicker: PropTypes.func,
 };
 
 SelectedDate.defaultProps = {
   changeDate: () => {},
+  onOpenDatePicker: () => {},
+  onCloseDatePicker: () => {},
 };
 
 export default SelectedDate;

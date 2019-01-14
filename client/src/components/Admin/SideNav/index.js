@@ -40,6 +40,7 @@ SideNav.propTypes = {
 
 SideNav.defaultProps = {
   navConfig: [
+    { text: 'Calendar', menu: 'calendar', path: '/' },
     { text: 'Settings', menu: 'settings', path: '/admin/settings' },
     { text: 'Privileges', menu: 'privileges', path: '/admin/privileges' },
     { text: 'Rooms', menu: 'rooms', path: '/admin/rooms' },
