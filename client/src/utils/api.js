@@ -258,6 +258,46 @@ function getUsers(params) {
   });
 }
 
+function addPrivilege(username, privilegeID) {
+  const headers = getTokenHeader();
+  const data = {
+    users: username,
+    privilege_category: privilegeID,
+  };
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/assign_privilege`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function removePrivilege(username, privilegeID) {
+  const headers = getTokenHeader();
+  const data = {
+    users: username,
+    privilege_category: privilegeID,
+  };
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/remove_privilege`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function getBookers() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/bookers`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -282,6 +322,9 @@ const api = {
   getLogEntries,
   getContentTypes,
   getUsers,
+  addPrivilege,
+  removePrivilege,
+  getBookers,
 };
 
 export default api;

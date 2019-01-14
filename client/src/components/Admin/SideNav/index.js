@@ -45,6 +45,7 @@ SideNav.defaultProps = {
     { text: 'Privileges', menu: 'privileges', path: '/admin/privileges' },
     { text: 'Rooms', menu: 'rooms', path: '/admin/rooms' },
     { text: 'Stats', menu: 'stats', path: '/admin/stats' },
+    { text: 'Bookers', menu: 'bookers', path: '/admin/bookers' },
   ],
 };
 

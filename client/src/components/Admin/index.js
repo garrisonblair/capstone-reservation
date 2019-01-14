@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import AdminRequired from '../HOC/AdminRequired';
-import SideNav from '../SideNav';
+import SideNav from './SideNav';
 import './Admin.scss';
 
 

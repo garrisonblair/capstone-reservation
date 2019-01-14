@@ -12,6 +12,7 @@ from apps.accounts.views.privilege_categories import PrivilegeCategoryRetrieveUp
 from apps.accounts.views.assign_privileges import PrivilegeCategoriesAssignSingleAutomatic
 from apps.accounts.views.assign_privileges import PrivilegeCategoriesAssignAllAutomatic
 from apps.accounts.views.assign_privileges import PrivilegeCategoriesAssignManual
+from apps.accounts.views.assign_privileges import PrivilegeCategoriesRemoveManual
 
 urlpatterns = [
     path(r'register', RegisterView.as_view()),
@@ -31,5 +32,6 @@ urlpatterns = [
 
     path(r'assign_privileges', PrivilegeCategoriesAssignAllAutomatic.as_view()),
     path(r'assign_privileges/<int:pk>', PrivilegeCategoriesAssignSingleAutomatic.as_view()),
-    path(r'assign_privilege', PrivilegeCategoriesAssignManual.as_view())
+    path(r'assign_privilege', PrivilegeCategoriesAssignManual.as_view()),
+    path(r'remove_privilege', PrivilegeCategoriesRemoveManual.as_view())
 ]
