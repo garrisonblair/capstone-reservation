@@ -7,6 +7,7 @@ import {
 import api from '../../utils/api';
 import InvitedRowItem from './InvitedRowItem';
 import MemberRowItem from './MemberRowItem';
+import RequestPrivilege from './RequestPrivilege';
 
 class GroupsModal extends Component {
   state = {
@@ -236,7 +237,10 @@ class GroupsModal extends Component {
             Group Owner:
             {groupOwner.username}
           </h3>
+
           <FormField>
+            <RequestPrivilege />
+            <h3>Members:</h3>
             {isAdmin ? (
               <div>
                 <Dropdown
@@ -251,8 +255,6 @@ class GroupsModal extends Component {
             }
 
           </FormField>
-          <br />
-          <h3>Members:</h3>
           {this.renderMembersList()}
           <br />
           {this.renderInvitedList()}

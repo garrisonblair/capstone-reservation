@@ -380,6 +380,21 @@ function getBookers() {
   });
 }
 
+function requestPrivilege(groupId, privilegeId) {
+  const headers = getTokenHeader();
+  const data = {
+    group: groupId,
+    privilege_category: privilegeId,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/request_privilege`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -414,6 +429,7 @@ const api = {
   addPrivilege,
   removePrivilege,
   getBookers,
+  requestPrivilege,
 };
 
 export default api;
