@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from rest_framework.views import APIView
@@ -60,7 +60,7 @@ class PrivilegeRequestCreate(APIView):
             old_request = group.privilegerequest
             group.privilegerequest.delete()
         except PrivilegeRequest.DoesNotExist:
-            print("")
+            pass
 
         if not serializer.is_valid():
             group.privilegerequest = old_request
@@ -74,6 +74,23 @@ class PrivilegeRequestCreate(APIView):
         except ValidationError as error:
             group.privilegerequest = old_request
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PrivilegeRequestDelete(DestroyAPIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def delete(self, request, pk, *args, **kwargs):
+        user = User.cast_django_user(request.user)
+        try:
+            request = PrivilegeRequest.objects.get(id=pk)
+        except PrivilegeRequest.DoesNotExist:
+            return Response("Request does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        if not request.group.owner_id == user.id:
+            return Response("You do not have authorization to delete this request", status=status.HTTP_401_UNAUTHORIZED)
+
+        request.delete()
+        return Response("Request deleted", status=status.HTTP_200_OK)
 
 
 class ApprovePrivilegeRequest(APIView):
