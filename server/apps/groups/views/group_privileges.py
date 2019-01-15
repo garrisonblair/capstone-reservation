@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from apps.accounts.permissions.IsBooker import IsBooker
-from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.User import User
 from apps.groups.serializers.privilege_request import WritePrivilegeRequestSerializer, ReadPrivilegeRequestSerializer
 from apps.groups.models.PrivilegeRequest import PrivilegeRequest
