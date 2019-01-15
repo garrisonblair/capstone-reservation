@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Dropdown, Label } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
 import './RequestPrivilege.scss';
@@ -12,13 +13,13 @@ class RequestPrivilege extends Component {
     labelColor: 'grey',
     buttonText: 'Request Privilege',
     currentStatus: 'new',
+    disableDropdown: false,
   }
 
   componentDidMount() {
     api.getPrivileges()
       .then((r) => {
         if (r.status === 200) {
-          console.log(r.data);
           const { options } = this.state;
           r.data.filter(p => p.is_default === false)
             .map(p => options.push({ value: p.id, text: p.name, key: p.id }));
@@ -29,24 +30,29 @@ class RequestPrivilege extends Component {
 
   handleRequestPrivilege = () => {
     const { dropdownValue } = this.state;
+    const { groupId } = this.props;
     if (dropdownValue.length === 0) {
       sweetAlert('Empty field', 'Please choose a privilege', 'warning');
       return;
     }
-    api.requestPrivilege()
+    api.requestPrivilege(groupId, dropdownValue)
       .then((r) => {
-        console.log(r);
+        if (r.status === 201) {
+          this.changeToPending();
+        }
       });
   }
 
   handlePrivilegeChange = (e, v) => {
-    console.log(v);
+    this.setState({ dropdownValue: v.value });
   }
 
   changeToPending = () => {
     this.setState({
       labelColor: 'yellow',
       buttonText: 'Edit',
+      labelText: 'pending',
+      disableDropdown: true,
     });
   }
 
@@ -63,7 +69,7 @@ class RequestPrivilege extends Component {
 
   render() {
     const {
-      options, dropdownValue, labelText, labelColor, buttonText,
+      options, labelText, labelColor, buttonText, disableDropdown,
     } = this.state;
     return (
       <div id="groups-request-privilege">
@@ -73,10 +79,10 @@ class RequestPrivilege extends Component {
         </div>
         <br />
         <Dropdown
+          disabled={disableDropdown}
           placeholder="Privileges"
           options={options}
           selection
-          value={dropdownValue}
           onChange={this.handlePrivilegeChange}
         />
         <Button color="blue" onClick={this.buttonOnClick}>{buttonText}</Button>
@@ -84,5 +90,9 @@ class RequestPrivilege extends Component {
     );
   }
 }
+
+RequestPrivilege.propTypes = {
+  groupId: PropTypes.number.isRequired,
+};
 
 export default RequestPrivilege;
