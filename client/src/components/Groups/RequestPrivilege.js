@@ -9,7 +9,7 @@ class RequestPrivilege extends Component {
   state = {
     options: [],
     dropdownValue: '',
-    labelText: 'optional',
+    labelText: 'none',
     labelColor: 'grey',
     buttonText: 'Request Privilege',
     currentStatus: 'new',
@@ -43,16 +43,32 @@ class RequestPrivilege extends Component {
       });
   }
 
+  handleCancelRequest = () => {
+    console.log('cancel request.');
+    this.changeToRequest();
+  }
+
   handlePrivilegeChange = (e, v) => {
     this.setState({ dropdownValue: v.value });
+  }
+
+  changeToRequest = () => {
+    this.setState({
+      labelColor: 'grey',
+      buttonText: 'Request Privilege',
+      labelText: 'none',
+      disableDropdown: false,
+      currentStatus: 'new',
+    });
   }
 
   changeToPending = () => {
     this.setState({
       labelColor: 'yellow',
-      buttonText: 'Edit',
+      buttonText: 'Cancel Request',
       labelText: 'pending',
       disableDropdown: true,
+      currentStatus: 'pending',
     });
   }
 
@@ -64,6 +80,8 @@ class RequestPrivilege extends Component {
     const { currentStatus } = this.state;
     if (currentStatus === 'new') {
       this.handleRequestPrivilege();
+    } else if (currentStatus === 'pending') {
+      this.handleCancelRequest();
     }
   }
 
