@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types,no-bitwise */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -22,8 +22,8 @@ class Verification extends Component {
     errorMessagePassword: '',
     errorMessageConfirmPassword: '',
     errorMessageBookerID: '',
+    errorMessageEmail: '',
     isLoading: true,
-    preventSubmit: true,
     firstName: '',
     userId: 0,
   }
@@ -62,14 +62,16 @@ class Verification extends Component {
     let preventSubmit = false;
     let errorMessageEmail = '';
 
-    if (!secondaryEmail.match(getEmailRegex())) {
+    if (secondaryEmail !== '' && !secondaryEmail.match(getEmailRegex())) {
       preventSubmit = true;
       errorMessageEmail = 'Please enter a valid email.';
     }
+
     this.setState({
-      preventSubmit,
       errorMessageEmail,
     });
+
+    return preventSubmit;
   }
 
   verifyBookerID = () => {
@@ -89,10 +91,11 @@ class Verification extends Component {
     }
 
     this.setState({
-      preventSubmit,
       bookerID,
       errorMessageBookerID,
     });
+
+    return preventSubmit;
   }
 
   verifyPasswords = () => {
@@ -118,10 +121,11 @@ class Verification extends Component {
     }
 
     this.setState({
-      preventSubmit,
       errorMessagePassword,
       errorMessageConfirmPassword,
     });
+
+    return preventSubmit;
   }
 
   handleChangePassword = (event) => {
@@ -153,15 +157,15 @@ class Verification extends Component {
   }
 
   handleSubmit = () => {
+    // Verify form before continuing transaction.
     const {
-      bookerID, userId, password, secondaryEmail, preventSubmit,
+      bookerID, userId, password, secondaryEmail,
     } = this.state;
     const { history } = this.props;
 
-    // Verify form before continuing transaction.
-    this.verifyPasswords();
-    this.verifyBookerID();
-    this.verifyEmail();
+    const preventSubmit = this.verifyPasswords()
+                          | this.verifyBookerID()
+                          | this.verifyEmail();
 
     if (preventSubmit) {
       return;
