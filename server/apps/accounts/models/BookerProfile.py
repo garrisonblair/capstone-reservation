@@ -14,6 +14,7 @@ class BookerProfile(models.Model, AbstractBooker):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, default=None, null=True)
     booker_id = models.CharField(max_length=8, blank=True, unique=True, null=True)
     privilege_categories = models.ManyToManyField(PrivilegeCategory)
+    secondary_email = models.EmailField(blank=True, default=None)
 
     def get_privileges(self):
 
