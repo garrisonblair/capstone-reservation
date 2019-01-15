@@ -10,21 +10,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-class BookerProfile(models.Model, AbstractBooker):
+class BookerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, default=None, null=True)
     booker_id = models.CharField(max_length=8, blank=True, unique=True, null=True)
     privilege_categories = models.ManyToManyField(PrivilegeCategory)
-    secondary_email = models.EmailField(blank=True, default=None)
-
-    def get_privileges(self):
-
-        if self.privilege_categories.all().count() is 0:
-            return None
-
-        return PrivilegeMerger(list(self.privilege_categories.all()))
-
-    def get_bookings(self):
-        return self.booking_set
+    secondary_email = models.EmailField(blank=True, default=None, null=True)
 
     def __str__(self):
         return self.user.username + " profile"
