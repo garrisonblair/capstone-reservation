@@ -9,6 +9,8 @@ import api from '../../utils/api';
 import CustomFormInput from './CustomFormInput';
 import './Verification.scss';
 
+import getEmailRegex from '../../utils/emailRegex';
+
 
 // TODO: Check if user already set its booker ID
 class Verification extends Component {
@@ -16,6 +18,7 @@ class Verification extends Component {
     password: '',
     confirmPassword: '',
     bookerID: '',
+    secondaryEmail: '',
     errorMessagePassword: '',
     errorMessageConfirmPassword: '',
     errorMessageBookerID: '',
@@ -52,6 +55,21 @@ class Verification extends Component {
           );
         });
     }
+  }
+
+  verifyEmail = () => {
+    const { secondaryEmail } = this.state;
+    let preventSubmit = false;
+    let errorMessageEmail = '';
+
+    if (!secondaryEmail.match(getEmailRegex())) {
+      preventSubmit = true;
+      errorMessageEmail = 'Please enter a valid email.';
+    }
+    this.setState({
+      preventSubmit,
+      errorMessageEmail,
+    });
   }
 
   verifyBookerID = () => {
@@ -127,23 +145,32 @@ class Verification extends Component {
     });
   }
 
+  handleChangeEmail = (event) => {
+    this.setState({
+      secondaryEmail: event.target.value,
+      errorMessageEmail: '',
+    });
+  }
+
   handleSubmit = () => {
     const {
-      bookerID, userId, password, preventSubmit,
+      bookerID, userId, password, secondaryEmail, preventSubmit,
     } = this.state;
     const { history } = this.props;
 
     // Verify form before continuing transaction.
     this.verifyPasswords();
     this.verifyBookerID();
+    this.verifyEmail();
 
     if (preventSubmit) {
       return;
     }
 
     const data = {
-      booker_id: `${bookerID}`,
+      booker_id: bookerID,
       password,
+      secondary_email: secondaryEmail,
     };
 
     api.updateUser(userId, data)
@@ -174,7 +201,11 @@ class Verification extends Component {
 
   renderMainForm() {
     const {
-      errorMessagePassword, errorMessageConfirmPassword, errorMessageBookerID, firstName,
+      errorMessagePassword,
+      errorMessageConfirmPassword,
+      errorMessageBookerID,
+      errorMessageEmail,
+      firstName,
     } = this.state;
     return (
       <div>
@@ -230,8 +261,19 @@ class Verification extends Component {
             iconPosition="left"
             placeholder="12345678"
             onChange={this.handleChangeBookerId}
-            title="booker ID:"
+            title="Concordia Student ID:"
             errormessage={errorMessageBookerID}
+          />
+
+          <CustomFormInput
+            fluid
+            size="medium"
+            icon="envelope"
+            iconPosition="left"
+            placeholder="youremail@example.com"
+            title="Secondary email (optional):"
+            onChange={this.handleChangeEmail}
+            errormessage={errorMessageEmail}
           />
         </Form>
         <Form.Field>
