@@ -11,6 +11,7 @@ from rest_framework import status
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.User import User
+from apps.groups.models.Group import Group
 from apps.groups.serializers.privilege_request import WritePrivilegeRequestSerializer, ReadPrivilegeRequestSerializer
 from apps.groups.models.PrivilegeRequest import PrivilegeRequest
 
@@ -54,7 +55,15 @@ class PrivilegeRequestCreate(APIView):
 
         serializer = ReadPrivilegeRequestSerializer(data=data)
 
+        group = Group.objects.get(id=group_id)
+        try:
+            old_request = group.privilegerequest
+            group.privilegerequest.delete()
+        except PrivilegeRequest.DoesNotExist:
+            print("")
+
         if not serializer.is_valid():
+            group.privilegerequest = old_request
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -63,6 +72,7 @@ class PrivilegeRequestCreate(APIView):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as error:
+            group.privilegerequest = old_request
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
 
 
