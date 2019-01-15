@@ -1,6 +1,4 @@
-from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
@@ -92,12 +90,7 @@ class ApprovePrivilegeRequest(APIView):
                   "\n" \
                   "You can view your booking privileges on your account".format(group.name, category.name)
 
-        send_mail(
-            subject,
-            message,
-            settings.EMAIL_HOST_USER,
-            [group.owner.email]
-        )
+        group.owner.send_email(subject, message)
 
         return Response("Request Approved", status=status.HTTP_200_OK)
 
@@ -128,11 +121,6 @@ class DenyPrivilegeRequest(APIView):
                   "\n" \
                   "Reason Provided: {}".format(group.name, category.name, denial_reason)
 
-        send_mail(
-            subject,
-            message,
-            settings.EMAIL_HOST_USER,
-            [group.owner.email]
-        )
+        group.owner.send_email(subject, message)
 
         return Response("Request Denied", status=status.HTTP_200_OK)
