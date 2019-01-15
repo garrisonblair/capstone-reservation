@@ -227,7 +227,7 @@ class GroupsModal extends Component {
 
   renderModalContent = () => {
     const {
-      groupOwner, stateOptions, newInvitation,
+      groupOwner, stateOptions, newInvitation, groupId,
     } = this.state;
     const { isAdmin } = this.props;
     return (
@@ -239,7 +239,7 @@ class GroupsModal extends Component {
           </h3>
 
           <FormField>
-            <RequestPrivilege />
+            <RequestPrivilege groupId={groupId} />
             <h3>Members:</h3>
             {isAdmin ? (
               <div>
