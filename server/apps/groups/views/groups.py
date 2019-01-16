@@ -4,13 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from django.conf import settings
-from django.core import mail
 from django.core.exceptions import ValidationError
 
 from apps.accounts.models.User import User
 from apps.accounts.permissions.IsBooker import IsBooker
-from apps.accounts.models.BookerProfile import BookerProfile
 from apps.groups.serializers.group import WriteGroupSerializer, ReadGroupSerializer
 from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
@@ -100,13 +97,29 @@ class InviteMembers(APIView):
                                                                                  group.name,
                                                                                  group.owner.username)
 
-            mail.send_mail(subject,
-                           message,
-                           settings.EMAIL_HOST_USER,
-                           [user.email])
+            user.send_email(subject, message)
 
         serializer = ReadGroupInvitationSerializer(created_invitations, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AddMembers(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def post(self, request, pk):
+        group = Group.objects.get(id=pk)
+        if group.owner.id != request.user.id:
+            return Response("Can't modify this Group", status=status.HTTP_401_UNAUTHORIZED)
+        members_to_add = request.data["members"]
+        for member_user_id in members_to_add:
+            if not group.members.filter(id=member_user_id).exists():
+                booker_to_add = User.objects.get(id=member_user_id)
+                group.members.add(booker_to_add)
+            else:
+                print("User {} is already in group".format(member_user_id))
+        group.save()
+
+        return Response(WriteGroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
 
 
 class RemoveMembers(APIView):

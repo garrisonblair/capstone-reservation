@@ -32,7 +32,8 @@ class TestUserUpdate(TestCase):
         data = dict(
             password=self.new_password,
             email=self.new_email,
-            booker_id="11111111"
+            booker_id="11111111",
+            secondary_email=self.new_email
         )
 
         response = self.client.patch('/user/{}'.format(self.user.id), data, HTTP_AUTHORIZATION=authorization)
