@@ -30,9 +30,13 @@ class RequestPrivilege extends Component {
           this.setState({ options });
         }
       });
-    if (groupPrivilege !== null && groupPrivilege.status === 'Pending') {
-      this.changeToPending();
+    if (groupPrivilege !== null) {
       this.setState({ dropdownValue: groupPrivilege.privilege_category });
+      if (groupPrivilege.status === 'Pending') {
+        this.changeToPending();
+      } else if (groupPrivilege.status === 'Denied') {
+        this.changeToDenied();
+      }
     }
   }
 
@@ -86,6 +90,13 @@ class RequestPrivilege extends Component {
   }
 
   changeToDenied = () => {
+    this.setState({
+      labelColor: 'red',
+      buttonText: 'Make new Request',
+      labelText: 'denied',
+      disableDropdown: true,
+      currentStatus: 'denied',
+    });
   }
 
   buttonOnClick = () => {
@@ -94,6 +105,8 @@ class RequestPrivilege extends Component {
       this.handleRequestPrivilege();
     } else if (currentStatus === 'pending') {
       this.handleCancelRequest();
+    } else if (currentStatus === 'denied') {
+      this.changeToRequest();
     }
   }
 
