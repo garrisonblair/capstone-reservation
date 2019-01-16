@@ -9,7 +9,7 @@ from apps.accounts.models.User import User
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from ..models.Group import Group
 from ..models.GroupInvitation import GroupInvitation
-from ..views.groups import GroupList, GroupCreate, AddMembers, RemoveMembers, InviteMembers, LeaveGroup
+from ..views.groups import GroupList, GroupCreate, RemoveMembers, InviteMembers, LeaveGroup
 
 
 class GroupAPITest(TestCase):
@@ -77,20 +77,6 @@ class GroupAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(self.user in group.members.all())
         self.assertEqual(group.owner, self.user)
-
-    def testAddMember(self):
-        request = self.factory.post("/group/1/add_members",
-                                    {
-                                        "members": [self.user_2.id]
-                                    }, format="json")
-        force_authenticate(request, user=self.user)
-
-        AddMembers.as_view()(request, 1)
-
-        group = Group.objects.get(id=1)
-
-        self.assertEqual(len(group.members.all()), 2)
-        self.assertTrue(self.user_2 in group.members.all())
 
     def testRemoveMember(self):
         self.group1.members.add(self.user2)
