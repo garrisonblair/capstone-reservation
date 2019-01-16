@@ -31,7 +31,6 @@ class PrivilegeRequestList(ListAPIView):
         request_status = self.request.GET.get('status')
         if request_status is not None:
             qs = qs.filter(status=request_status)
-
         return qs
 
 
