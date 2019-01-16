@@ -99,7 +99,7 @@ class Navigation extends Component {
     return (
       <div className="navigation">
         <Menu inverted fixed="top">
-          <Menu.Item>
+          <Menu.Item onClick={() => window.location.reload()}>
             Capstone
           </Menu.Item>
           { showDate
