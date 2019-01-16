@@ -20,19 +20,7 @@ class RequestPrivilege extends Component {
 
   componentDidMount() {
     const { groupId, groupPrivilege } = this.props;
-    if (groupId !== null) {
-      this.setState({ groupId, groupPrivilege });
-      console.log(groupPrivilege);
-    }
-
-    // console.log(groupId);
-    // if (group !== null && group.privilege_request !== null) {
-    //   this.setState({ requestId: group.privilege_request.id });
-    //   if (group.privilege_request.status === 'Pending') {
-    //     this.changeToPending();
-    //     this.setState({ dropdownValue: group.privilege_request.privilege_category });
-    //   }
-    // }
+    this.setState({ groupId, groupPrivilege });
     api.getPrivileges()
       .then((r) => {
         if (r.status === 200) {
@@ -42,6 +30,10 @@ class RequestPrivilege extends Component {
           this.setState({ options });
         }
       });
+    if (groupPrivilege !== null && groupPrivilege.status === 'Pending') {
+      this.changeToPending();
+      this.setState({ dropdownValue: groupPrivilege.privilege_category });
+    }
   }
 
   handleRequestPrivilege = () => {
@@ -63,9 +55,10 @@ class RequestPrivilege extends Component {
     const { groupPrivilege } = this.state;
     api.cancelPrivilegeRequest(groupPrivilege.id)
       .then((r) => {
-        console.log(r);
+        if (r.status === 200) {
+          this.changeToRequest();
+        }
       });
-    this.changeToRequest();
   }
 
   handlePrivilegeChange = (e, v) => {
@@ -93,7 +86,6 @@ class RequestPrivilege extends Component {
   }
 
   changeToDenied = () => {
-
   }
 
   buttonOnClick = () => {
@@ -109,6 +101,10 @@ class RequestPrivilege extends Component {
     const {
       options, labelText, labelColor, buttonText, disableDropdown, dropdownValue,
     } = this.state;
+    // if there is no privilege show nothing.
+    if (options.length === 0) {
+      return ('');
+    }
     return (
       <div id="groups-request-privilege">
         <div>

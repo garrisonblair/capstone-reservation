@@ -26,7 +26,6 @@ class GroupsModal extends Component {
     const { selectedGroup } = this.props;
     const { stateOptions } = this.state;
     if (selectedGroup !== null) {
-      console.log(selectedGroup);
       this.setState({
         groupId: selectedGroup.id,
         groupOwner: selectedGroup.owner,
