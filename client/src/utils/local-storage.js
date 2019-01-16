@@ -12,6 +12,6 @@ function saveUser(data) {
 const storage = {
   getUser,
   saveUser,
-}
+};
 
 export default storage;
