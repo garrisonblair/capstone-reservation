@@ -1,30 +1,34 @@
 import React, {Component} from 'react';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 
 
 function AuthenticationRequired(InnerComponent) {
   class HOC extends Component {
     componentDidMount() {
-      const {history} = this.props;
+      const { history } = this.props;
 
-      if (!localStorage.CapstoneReservationUser) {
+      if (!storage.getUser()) {
         history.push('/');
         return;
       }
 
       api.getMyUser()
-      .then((response) => {
-        let {data} = response;
-        // console.log(data);
-      })
-      .catch((error) => {
-        console.log(error);
-        history.push('/');
-      })
+        .then((response) => {
+          const { data } = response;
+          if (!data) {
+            history.push('/404');
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log(error);
+          history.push('/');
+        })
     }
 
     render() {
-      return <InnerComponent {...this.props}/>
+      return <InnerComponent {...this.props} />;
     }
   }
 
