@@ -25,7 +25,7 @@ $cellsMinHeight: auto;
 /* Calendar */
 
 body {
-  overflow: scroll; 
+  overflow: scroll;
 }
 
 .calendar__container {
@@ -41,6 +41,7 @@ body {
   overflow-x: visible;
   background-color: $backgroundColorContainer;
   grid-template-rows: max-content auto;
+  padding-bottom: 100px;
 }
 
 .calendar__wrapper {
@@ -167,6 +168,6 @@ body {
   cursor: pointer;
 }
 
-.menu--date:before{
+.menu--date:before {
   content: none !important;
 }
