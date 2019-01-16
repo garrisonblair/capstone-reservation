@@ -68,7 +68,7 @@ class Navigation extends Component {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
     const component = (
-      <Menu.Item onClick={() => { history.push('admin'); }}>
+      <Menu.Item onClick={() => { history.push('admin'); }} className="navigation__admin">
         <Icon name="university" />
         Admin
       </Menu.Item>
@@ -84,7 +84,7 @@ class Navigation extends Component {
 
     const user = JSON.parse(localStorage.CapstoneReservationUser);
     const component = (
-      <Menu.Item>
+      <Menu.Item className="navigation__user">
         <Icon name="user" />
         {`Logged in as ${user.username}`}
       </Menu.Item>
@@ -98,8 +98,8 @@ class Navigation extends Component {
 
     return (
       <div className="navigation">
-        <Menu inverted fixed="top">
-          <Menu.Item>
+        <Menu inverted fixed="top" className="navigation__bar">
+          <Menu.Item className="navigation__title">
             Capstone
           </Menu.Item>
           { showDate
@@ -111,7 +111,7 @@ class Navigation extends Component {
               />
             )
             : null}
-          <Menu.Menu position="right" inverted="true">
+          <Menu.Menu position="right" inverted="true" className="navigation__container">
             {this.renderLoggedInInfo()}
             {this.renderAdminSettings()}
             <Dropdown item text="Account">
@@ -120,9 +120,7 @@ class Navigation extends Component {
                 <Dropdown.Item icon="cog" text="Settings" />
               </Dropdown.Menu>
             </Dropdown>
-            <Menu.Item
-              onClick={this.handleLogin}
-            >
+            <Menu.Item onClick={this.handleLogin} className="navigation__login">
               {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
             </Menu.Item>
           </Menu.Menu>

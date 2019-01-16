@@ -1,3 +1,23 @@
 body {
   overflow: scroll;
 }
+
+// Themes
+
+themeLight {
+	$textColor: black;
+	$textColorHeader: white;
+	$borderColor: #F2D692;
+	$eventBackgroundColor: aqua;
+	$backgroundColorContainer: #F2D692;
+	$backgroundColorCells: #C9A859;
+	$backgroundColorRooms: #A17F2E;
+	$backgroundColorHours: #A17F2E;
+	$navigationTitleColor: #932439;
+	$bookingColor: #A1692E;
+	$camponColor: #A1922E;
+	$expiredBookingColor: #7F7F7F
+	$navigationUserColor: #4D4D4D;
+	$navigationBarColor: #2D2D2D;
+}
+
