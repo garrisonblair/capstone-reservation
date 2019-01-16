@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
     booker_profile = serializers.SerializerMethodField()
 
     def get_booker_profile(self, user):
-        return BookerSerializer(user.bookerprofile).data
+        return BookerProfileSerializer(user.bookerprofile).data
 
     class Meta:
         model = User
@@ -51,9 +51,9 @@ class UserSerializerLogin(UserSerializer):
         return token.key
 
 
-class BookerSerializer(serializers.ModelSerializer):
+class BookerProfileSerializer(serializers.ModelSerializer):
     privilege_categories = PrivilegeCategorySerializer(many=True)
 
     class Meta:
         model = BookerProfile
-        fields = ('id', 'booker_id', 'user', 'privilege_categories')
+        fields = ('id', 'booker_id', 'secondary_email', 'privilege_categories')

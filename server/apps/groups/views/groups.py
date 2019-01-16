@@ -4,13 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from django.conf import settings
-from django.core import mail
 from django.core.exceptions import ValidationError
 
 from apps.accounts.models.User import User
 from apps.accounts.permissions.IsBooker import IsBooker
-from apps.accounts.models.BookerProfile import BookerProfile
 from apps.groups.serializers.group import WriteGroupSerializer, ReadGroupSerializer
 from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
@@ -100,10 +97,7 @@ class InviteMembers(APIView):
                                                                                  group.name,
                                                                                  group.owner.username)
 
-            mail.send_mail(subject,
-                           message,
-                           settings.EMAIL_HOST_USER,
-                           [user.email])
+            user.send_email(subject, message)
 
         serializer = ReadGroupInvitationSerializer(created_invitations, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

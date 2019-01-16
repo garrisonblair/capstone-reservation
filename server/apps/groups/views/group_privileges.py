@@ -1,6 +1,4 @@
-from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
@@ -9,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from apps.accounts.permissions.IsBooker import IsBooker
-from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.User import User
 from apps.groups.serializers.privilege_request import WritePrivilegeRequestSerializer, ReadPrivilegeRequestSerializer
 from apps.groups.models.PrivilegeRequest import PrivilegeRequest
@@ -34,7 +31,6 @@ class PrivilegeRequestList(ListAPIView):
         request_status = self.request.GET.get('status')
         if request_status is not None:
             qs = qs.filter(status=request_status)
-
         return qs
 
 
@@ -92,12 +88,7 @@ class ApprovePrivilegeRequest(APIView):
                   "\n" \
                   "You can view your booking privileges on your account".format(group.name, category.name)
 
-        send_mail(
-            subject,
-            message,
-            settings.EMAIL_HOST_USER,
-            [group.owner.email]
-        )
+        group.owner.send_email(subject, message)
 
         return Response("Request Approved", status=status.HTTP_200_OK)
 
@@ -128,11 +119,6 @@ class DenyPrivilegeRequest(APIView):
                   "\n" \
                   "Reason Provided: {}".format(group.name, category.name, denial_reason)
 
-        send_mail(
-            subject,
-            message,
-            settings.EMAIL_HOST_USER,
-            [group.owner.email]
-        )
+        group.owner.send_email(subject, message)
 
         return Response("Request Denied", status=status.HTTP_200_OK)
