@@ -515,7 +515,7 @@ class ReservationDetailsModal extends Component {
     const { selectedRoomName } = this.props;
     return (
       <div id="reservation-details-modal">
-        <Modal centered={false} size="tiny" open={show}>
+        <Modal centered={false} size="tiny" open={show} onClose={this.closeModal}>
           <Modal.Header>
             <Icon name="map marker alternate" />
             Room
