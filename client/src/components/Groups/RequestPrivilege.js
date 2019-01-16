@@ -54,6 +54,7 @@ class RequestPrivilege extends Component {
       .then((r) => {
         if (r.status === 201) {
           this.changeToPending();
+          this.setState({ groupPrivilege: r.data });
         }
       });
   }
