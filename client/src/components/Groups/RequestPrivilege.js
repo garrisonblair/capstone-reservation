@@ -19,7 +19,13 @@ class RequestPrivilege extends Component {
   }
 
   componentDidMount() {
-    const { groupId, groupPrivilege } = this.props;
+    const { groupId, groupPrivilege, justForTesting } = this.props;
+    // This is just for testing.
+    if (justForTesting) {
+      const { options } = this.state;
+      options.push({ value: 1, text: 'option 1', key: 1 });
+    }
+
     this.setState({ groupId, groupPrivilege });
     api.getPrivileges()
       .then((r) => {
@@ -28,7 +34,13 @@ class RequestPrivilege extends Component {
           r.data.filter(p => p.is_default === false)
             .map(p => options.push({ value: p.id, text: p.name, key: p.id }));
           this.setState({ options });
+        } else {
+          sweetAlert(`${r.status} error`, r.text, 'error');
         }
+      })
+      .catch((r) => {
+        console.log(r);
+        sweetAlert('Something went wrong', r.text, 'error');
       });
     if (groupPrivilege !== null) {
       this.setState({ dropdownValue: groupPrivilege.privilege_category });
@@ -51,7 +63,13 @@ class RequestPrivilege extends Component {
         if (r.status === 201) {
           this.changeToPending();
           this.setState({ groupPrivilege: r.data });
+        } else {
+          sweetAlert(`${r.status} error`, r.text, 'error');
         }
+      })
+      .catch((r) => {
+        console.log(r);
+        sweetAlert('Something went wrong', r.text, 'error');
       });
   }
 
@@ -61,7 +79,13 @@ class RequestPrivilege extends Component {
       .then((r) => {
         if (r.status === 200) {
           this.changeToRequest();
+        } else {
+          sweetAlert(`${r.status} error`, r.text, 'error');
         }
+      })
+      .catch((r) => {
+        console.log(r);
+        sweetAlert('Something went wrong', r.text, 'error');
       });
   }
 
@@ -143,10 +167,12 @@ RequestPrivilege.propTypes = {
   groupId: PropTypes.number.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   groupPrivilege: PropTypes.object,
+  justForTesting: PropTypes.bool,
 };
 
 RequestPrivilege.defaultProps = {
   groupPrivilege: null,
+  justForTesting: false,
 };
 
 export default RequestPrivilege;
