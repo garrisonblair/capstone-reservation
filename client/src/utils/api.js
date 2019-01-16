@@ -395,6 +395,16 @@ function requestPrivilege(groupId, privilegeId) {
   });
 }
 
+function cancelPrivilegeRequest(requestId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'DELETE',
+    url: `${settings.API_ROOT}/cancel_request/${requestId}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -430,6 +440,7 @@ const api = {
   removePrivilege,
   getBookers,
   requestPrivilege,
+  cancelPrivilegeRequest,
 };
 
 export default api;

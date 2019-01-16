@@ -19,18 +19,21 @@ class GroupsModal extends Component {
     newInvitations: [],
     newInvitation: '',
     stateOptions: [],
+    groupPrivilegeRequest: null,
   }
 
   componentDidMount() {
     const { selectedGroup } = this.props;
     const { stateOptions } = this.state;
     if (selectedGroup !== null) {
+      console.log(selectedGroup);
       this.setState({
         groupId: selectedGroup.id,
         groupOwner: selectedGroup.owner,
         groupMembers: selectedGroup.members,
         groupName: selectedGroup.name,
         groupInvitations: selectedGroup.group_invitations,
+        groupPrivilegeRequest: selectedGroup.privilege_request,
       });
     } else {
       api.getMyUser()
@@ -227,7 +230,7 @@ class GroupsModal extends Component {
 
   renderModalContent = () => {
     const {
-      groupOwner, stateOptions, newInvitation, groupId,
+      groupOwner, stateOptions, newInvitation, groupId, groupPrivilegeRequest,
     } = this.state;
     const { isAdmin } = this.props;
     return (
@@ -237,9 +240,8 @@ class GroupsModal extends Component {
             Group Owner:
             {groupOwner.username}
           </h3>
-
           <FormField>
-            <RequestPrivilege groupId={groupId} />
+            <RequestPrivilege groupId={groupId} groupPrivilege={groupPrivilegeRequest} />
             <h3>Members:</h3>
             {isAdmin ? (
               <div>

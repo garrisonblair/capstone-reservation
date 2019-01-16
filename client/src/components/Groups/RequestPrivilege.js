@@ -14,9 +14,25 @@ class RequestPrivilege extends Component {
     buttonText: 'Request Privilege',
     currentStatus: 'new',
     disableDropdown: false,
+    groupId: null,
+    groupPrivilege: null,
   }
 
   componentDidMount() {
+    const { groupId, groupPrivilege } = this.props;
+    if (groupId !== null) {
+      this.setState({ groupId, groupPrivilege });
+      console.log(groupPrivilege);
+    }
+
+    // console.log(groupId);
+    // if (group !== null && group.privilege_request !== null) {
+    //   this.setState({ requestId: group.privilege_request.id });
+    //   if (group.privilege_request.status === 'Pending') {
+    //     this.changeToPending();
+    //     this.setState({ dropdownValue: group.privilege_request.privilege_category });
+    //   }
+    // }
     api.getPrivileges()
       .then((r) => {
         if (r.status === 200) {
@@ -29,8 +45,7 @@ class RequestPrivilege extends Component {
   }
 
   handleRequestPrivilege = () => {
-    const { dropdownValue } = this.state;
-    const { groupId } = this.props;
+    const { dropdownValue, groupId } = this.state;
     if (dropdownValue.length === 0) {
       sweetAlert('Empty field', 'Please choose a privilege', 'warning');
       return;
@@ -44,7 +59,11 @@ class RequestPrivilege extends Component {
   }
 
   handleCancelRequest = () => {
-    console.log('cancel request.');
+    const { groupPrivilege } = this.state;
+    api.cancelPrivilegeRequest(groupPrivilege.id)
+      .then((r) => {
+        console.log(r);
+      });
     this.changeToRequest();
   }
 
@@ -87,7 +106,7 @@ class RequestPrivilege extends Component {
 
   render() {
     const {
-      options, labelText, labelColor, buttonText, disableDropdown,
+      options, labelText, labelColor, buttonText, disableDropdown, dropdownValue,
     } = this.state;
     return (
       <div id="groups-request-privilege">
@@ -102,6 +121,7 @@ class RequestPrivilege extends Component {
           options={options}
           selection
           onChange={this.handlePrivilegeChange}
+          value={dropdownValue}
         />
         <Button color="blue" onClick={this.buttonOnClick}>{buttonText}</Button>
       </div>
@@ -111,6 +131,12 @@ class RequestPrivilege extends Component {
 
 RequestPrivilege.propTypes = {
   groupId: PropTypes.number.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  groupPrivilege: PropTypes.object,
+};
+
+RequestPrivilege.defaultProps = {
+  groupPrivilege: null,
 };
 
 export default RequestPrivilege;
