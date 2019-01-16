@@ -10,6 +10,7 @@ import sweetAlert from 'sweetalert2';
 import SelectedDate from '../Calendar/SelectedDate';
 import Login from '../Login';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import './Navigation.scss';
 
 
@@ -19,7 +20,7 @@ class Navigation extends Component {
   }
 
   handleLogin = () => {
-    if (localStorage.CapstoneReservationUser) {
+    if (storage.getUser()) {
       api.logout()
         .then(() => {
           sweetAlert(
@@ -56,11 +57,11 @@ class Navigation extends Component {
   // handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
   renderAdminSettings = () => {
-    if (!localStorage.CapstoneReservationUser) {
+    if (!storage.getUser()) {
       return '';
     }
 
-    const user = JSON.parse(localStorage.CapstoneReservationUser);
+    const user = storage.getUser();
     if (!user.is_superuser) {
       return '';
     }
@@ -78,11 +79,11 @@ class Navigation extends Component {
   }
 
   renderLoggedInInfo = () => {
-    if (!localStorage.CapstoneReservationUser) {
+    if (!storage.getUser()) {
       return '';
     }
 
-    const user = JSON.parse(localStorage.CapstoneReservationUser);
+    const user = storage.getUser();
     const component = (
       <Menu.Item>
         <Icon name="user" />
@@ -123,7 +124,7 @@ class Navigation extends Component {
             <Menu.Item
               onClick={this.handleLogin}
             >
-              {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
+              {storage.getUser() ? 'Logout' : 'Login'}
             </Menu.Item>
           </Menu.Menu>
           <Login
