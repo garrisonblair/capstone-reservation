@@ -53,7 +53,8 @@ class SelectedDate extends Component {
     const { date, focusDate } = this.state;
     return (
       <Menu.Item position="right" className="menu--date">
-        <Icon className="arrow"
+        <Icon
+          className="arrow"
           circular
           name="angle left"
           onClick={this.handleClickPreviousDate}
@@ -72,7 +73,8 @@ class SelectedDate extends Component {
           />
         </div>
         <span onClick={this.focusDate} role="presentation" onKeyDown={() => {}}>{date.format('ddd MMM Do YYYY')}</span>
-        <Icon className="arrow"
+        <Icon
+          className="arrow"
           circular
           name="angle right"
           onClick={this.handleClickNextDate}
