@@ -185,3 +185,9 @@ class Booking(models.Model, SubjectModel):
     def get_duration(self):
         return (datetime.datetime.combine(date=datetime.date.today(), time=self.end_time)
                 - datetime.datetime.combine(date=datetime.date.today(), time=self.start_time))
+
+    @staticmethod
+    def get_first_booking_date():
+        if Booking.objects.count() == 0:
+            return datetime.datetime.now().date()
+        return Booking.objects.order_by("date").first().date

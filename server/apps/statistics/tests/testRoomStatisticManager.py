@@ -1,9 +1,12 @@
 from django.test import TestCase
 from apps.booking.models.Booking import Booking
 from apps.rooms.models.Room import Room
-from datetime import datetime, timedelta
+from datetime import timedelta
 from apps.accounts.models.User import User
 from apps.statistics.util.RoomStatisticManager import RoomStatisticManager
+from apps.util import mock_datetime
+import datetime
+import unittest
 
 
 class TestRoomStatisticManager(TestCase):
@@ -20,12 +23,12 @@ class TestRoomStatisticManager(TestCase):
         self.room = Room(name=name, capacity=capacity, number_of_computers=number_of_computers)
         self.room.save()
 
-        self.start_time = datetime(2019, 1, 1, 12, 00).time()
-        self.end_time = datetime(2019, 1, 1, 14, 00).time()
+        self.start_time = datetime.datetime(2019, 1, 1, 12, 00).time()
+        self.end_time = datetime.datetime(2019, 1, 1, 14, 00).time()
 
-        self.date1 = datetime(2019, 1, 1).date()
-        self.date2 = datetime(2019, 1, 2).date()
-        self.date3 = datetime(2019, 1, 3).date()
+        self.date1 = datetime.datetime(2019, 1, 1).date()
+        self.date2 = datetime.datetime(2019, 1, 2).date()
+        self.date3 = datetime.datetime(2019, 1, 3).date()
 
         booking1 = Booking(booker=self.booker,
                            room=self.room,
@@ -65,3 +68,24 @@ class TestRoomStatisticManager(TestCase):
         self.assertEqual(
             self.stats.get_time_booked(room=self.room, start_date=self.date2, end_date=self.date2),
             timedelta(hours=2))
+        self.stats.get_average_bookings_per_day(self.room)
+
+    @unittest.skip("static method bug")
+    def testGetAverageBookingsPerDay(self):
+        date4 = datetime.datetime(2018, 12, 24).date()
+        booking4 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=date4,
+                           start_time=self.start_time,
+                           end_time=self.end_time)
+        booking4.save()
+
+        date5 = datetime.datetime(2019, 1, 10).date()
+        booking5 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=date5,
+                           start_time=self.start_time,
+                           end_time=self.end_time)
+        booking5.save()
+
+        self.assertEqual(self.stats.get_average_bookings_per_day(room=self.room), 0.2)
