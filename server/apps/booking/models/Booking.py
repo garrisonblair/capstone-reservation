@@ -181,3 +181,7 @@ class Booking(models.Model, SubjectModel):
     def json_serialize(self):
         from ..serializers.booking import BookingSerializer
         return json.dumps(BookingSerializer(self).data)
+
+    def get_duration(self):
+        return (datetime.datetime.combine(date=datetime.date.today(), time=self.end_time)
+                - datetime.datetime.combine(date=datetime.date.today(), time=self.start_time))

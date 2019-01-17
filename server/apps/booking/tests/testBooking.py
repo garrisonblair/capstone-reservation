@@ -1,7 +1,7 @@
 from django.test import TestCase
 from apps.booking.models.Booking import Booking
 from apps.rooms.models.Room import Room
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from django.core.exceptions import ValidationError
 
@@ -325,3 +325,12 @@ class TestBooking(TestCase):
         settings.merge_threshold_minutes = threshold
 
         settings.save()
+
+    def testGetBookingDuration(self):
+        booking = Booking(booker=self.booker,
+                          room=self.room,
+                          date=self.date,
+                          start_time=time(13, 0),
+                          end_time=time(15, 0))
+
+        self.assertEqual(booking.get_duration(), timedelta(hours=2))
