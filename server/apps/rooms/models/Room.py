@@ -67,7 +67,7 @@ class Room(models.Model):
     def get_bookings(self, start_date=None, end_date=None):
         bookings = self.booking_set
         if start_date is not None:
-            bookings.filter(start_date__gte=start_date)
+            bookings = bookings.filter(date__gte=start_date)
         if end_date is not None:
-            bookings.filter(end_date_lte=end_date)
+            bookings = bookings.filter(date__lte=end_date)
         return bookings
