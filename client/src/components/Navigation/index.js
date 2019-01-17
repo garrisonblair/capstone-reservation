@@ -121,15 +121,11 @@ class Navigation extends Component {
                 <Dropdown.Item icon="cog" text="Settings" />
               </Dropdown.Menu>
             </Dropdown>
-<<<<<<< HEAD
             <Menu.Item
               onClick={this.handleLogin}
+              className="navigation__login"
             >
               {storage.getUser() ? 'Logout' : 'Login'}
-=======
-            <Menu.Item onClick={this.handleLogin} className="navigation__login">
-              {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
->>>>>>> d3670e27caf5acb5da082d7d8b59ee825eacce5c
             </Menu.Item>
           </Menu.Menu>
           <Login
