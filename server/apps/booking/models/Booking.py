@@ -49,6 +49,8 @@ class Booking(models.Model, SubjectModel):
                                           blank=True,
                                           null=True)
 
+    bypass_privileges = models.BooleanField(default=False)
+
     objects = BookingManager()
 
     observers = list()
@@ -60,7 +62,9 @@ class Booking(models.Model, SubjectModel):
         if self.id is None:
             is_create = True
 
-        self.evaluate_privilege(is_create)
+        if not self.bypass_privileges:
+            self.evaluate_privilege(is_create)
+
         this = super(Booking, self).save(*args, **kwargs)
 
         if is_create:

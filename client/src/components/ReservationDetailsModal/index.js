@@ -8,6 +8,7 @@ import './ReservationDetailsModal.scss';
 import toDateInputValue from '../../utils/dateFormatter';
 import Login from '../Login';
 import api from '../../utils/api';
+import UserSearch from '../ReusableComponents/UserSearch';
 
 class ReservationDetailsModal extends Component {
   state = {
@@ -413,6 +414,19 @@ class ReservationDetailsModal extends Component {
     );
   }
 
+  static renderAdminBookingForm() {
+    return (
+      <div className="modal-description">
+        <Form.Field>
+          <Checkbox label="Bypass Privileges" />
+        </Form.Field>
+        <Form.Field>
+          <UserSearch maxUsers={2} />
+        </Form.Field>
+      </div>
+    );
+  }
+
   renderDescription() {
     const {
       startHour,
@@ -425,6 +439,8 @@ class ReservationDetailsModal extends Component {
       endMinute,
     } = this.state;
     const { selectedDate } = this.props;
+    const user = JSON.parse(localStorage.CapstoneReservationUser);
+
     return (
       <Modal.Content>
         <Modal.Description>
@@ -494,7 +510,7 @@ class ReservationDetailsModal extends Component {
               options={reservedOptions}
               defaultValue={reservedOptions[0].value}
             />
-
+            {user.is_superuser ? ReservationDetailsModal.renderAdminBookingForm() : null}
           </div>
           <div className="modal-description">
             <Checkbox label="Request a recurring booking" onClick={this.handleCheckboxClick} />
