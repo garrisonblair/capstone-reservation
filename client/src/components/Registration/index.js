@@ -42,17 +42,15 @@ class Registration extends Component {
     this.setState({ showLoader: true });
 
     api.register(encsUsername)
-      .then((response) => {
-        if (response.status === 201) {
-          this.setState({
-            showLoader: false,
-          });
-          sweetAlert(
-            'A verification link has been sent to your ENCS email account.',
-            'Please click on the link to continue the registration process.',
-            'success',
-          );
-        }
+      .then(() => {
+        this.setState({
+          showLoader: false,
+        });
+        sweetAlert(
+          'A verification link has been sent to your ENCS email account.',
+          'Please click on the link to continue the registration process.',
+          'success',
+        );
       })
       .catch((error) => {
         this.setState({ showLoader: false });
