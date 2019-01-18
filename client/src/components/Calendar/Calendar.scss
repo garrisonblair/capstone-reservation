@@ -12,12 +12,12 @@
 
 $textColor: black;
 $textColorHeader: white;
-$borderColor: #3d3d3e;
+$borderColor: #F2D692;
 $eventBackgroundColor: aqua;
-$backgroundColorContainer: #3d3d3e;
-$backgroundColorCells: #333333;
-$backgroundColorRooms: #292929;
-$backgroundColorHours: #292929;
+$backgroundColorContainer: #F2D692;
+$backgroundColorCells: #C9A859;
+$backgroundColorRooms: #A17F2E;
+$backgroundColorHours: #A17F2E;
 $borderWidth: 1px;
 $cellsWidth: 120px;
 $cellsMinHeight: auto;
@@ -78,7 +78,6 @@ body {
   top: 0;
   // height: 50px;
   grid-template-columns: repeat(var(--colNum), 1fr);
-  background-color: $backgroundColorRooms;
   color: $textColorHeader;
 }
 
@@ -88,7 +87,6 @@ body {
   position: sticky;
   left: 0;
   grid-template-rows: repeat(var(--rowNum), 1fr);
-  background-color: $backgroundColorHours;
   color: $textColorHeader;
 }
 
@@ -110,21 +108,24 @@ body {
   &--campon {
     font-size: 9;
   }
+  border-radius: 5px;
 }
 
 .calendar__cells__cell:hover {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px #A17F2E;
   cursor: pointer;
 }
 
 .calendar__booking {
-  border-top: 1px solid #3194EA;
+  border-top: 1px solid white;
   padding: 1px;
   font-size: 11px;
   // display: grid;
   // grid-template-rows: repeat(1, 1fr);
   color: white;
   font-weight: 100;
+  border-radius: 5px;
+  width: 99.1%;
 }
 
 .calendar__booking:hover {
@@ -145,6 +146,8 @@ body {
   padding: 5px 10px;
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
+  border-radius: 5px;
+  background-color: $backgroundColorRooms;
 }
 
 .calendar__hours__hour {
@@ -152,11 +155,13 @@ body {
   justify-content: center;
   align-items: center;
   border: $borderWidth solid $borderColor;
-  border-left: 4px solid #3194EA;
+  border-left: 2px solid #932439;
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
   padding: 0 1px;
   width: 100px;
+  border-radius: 5px;
+  background-color: $backgroundColorHours;
 }
 
 .modals {
@@ -169,4 +174,10 @@ body {
 
 .menu--date:before{
   content: none !important;
+}
+
+.arrow {
+  color: #932439 !important;
+  // background-color: #4D4D4D !important; 
+  margin-left: 5px !important;
 }

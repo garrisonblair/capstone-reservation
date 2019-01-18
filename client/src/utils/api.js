@@ -215,6 +215,16 @@ function getPrivileges() {
   });
 }
 
+function getMyPrivileges() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/my_privileges`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function createPrivilege(data) {
   const headers = getTokenHeader();
   return axios({
@@ -425,6 +435,7 @@ const api = {
   getAdminSettings,
   updateAdminSettings,
   getPrivileges,
+  getMyPrivileges,
   createPrivilege,
   getMyGroups,
   createGroup,
