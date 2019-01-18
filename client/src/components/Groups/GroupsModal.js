@@ -8,6 +8,7 @@ import api from '../../utils/api';
 import InvitedRowItem from './InvitedRowItem';
 import MemberRowItem from './MemberRowItem';
 import RequestPrivilege from './RequestPrivilege';
+import './GroupsModal.scss';
 
 class GroupsModal extends Component {
   state = {
@@ -251,10 +252,9 @@ class GroupsModal extends Component {
                   onChange={this.handleDropboxChange}
                   value={newInvitation}
                 />
-                <Button onClick={this.addMemberToList}>Invite</Button>
+                <Button onClick={this.addMemberToList} className="button-right">Invite</Button>
               </div>) : ''
             }
-
           </FormField>
           {this.renderMembersList()}
           <br />
@@ -268,7 +268,7 @@ class GroupsModal extends Component {
     const { onClose, show, selectedGroup } = this.props;
     const { groupId, groupName } = this.state;
     return (
-      <Modal centered={false} size="tiny" open={show} id="group-modal" onClose={onClose}>
+      <Modal centered={false} size="tiny" open={show} id="groups-modal" onClose={onClose}>
         <Modal.Header>
           <Input
             size="small"

@@ -48,6 +48,8 @@ class RequestPrivilege extends Component {
         this.changeToPending();
       } else if (groupPrivilege.status === 'Denied') {
         this.changeToDenied();
+      } else if (groupPrivilege.status === 'Approved') {
+        this.changeToApproved();
       }
     }
   }
@@ -113,6 +115,16 @@ class RequestPrivilege extends Component {
     });
   }
 
+  changeToApproved = () => {
+    this.setState({
+      labelColor: 'green',
+      buttonText: '',
+      labelText: 'approved',
+      disableDropdown: true,
+      currentStatus: 'approved',
+    });
+  }
+
   changeToDenied = () => {
     this.setState({
       labelColor: 'red',
@@ -136,7 +148,7 @@ class RequestPrivilege extends Component {
 
   render() {
     const {
-      options, labelText, labelColor, buttonText, disableDropdown, dropdownValue,
+      options, labelText, labelColor, buttonText, disableDropdown, dropdownValue, currentStatus,
     } = this.state;
     // if there is no privilege show nothing.
     if (options.length === 0) {
@@ -157,7 +169,15 @@ class RequestPrivilege extends Component {
           onChange={this.handlePrivilegeChange}
           value={dropdownValue}
         />
-        <Button color="blue" onClick={this.buttonOnClick}>{buttonText}</Button>
+        {currentStatus !== 'approved' ? (
+          <Button
+            color="blue"
+            onClick={this.buttonOnClick}
+            className="button-right"
+          >
+            {buttonText}
+          </Button>
+        ) : null}
       </div>
     );
   }
