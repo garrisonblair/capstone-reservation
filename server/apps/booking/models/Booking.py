@@ -76,7 +76,7 @@ class Booking(models.Model, SubjectModel):
 
     def __str__(self):
         return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}'.format(
-            self.id, self.booker.booker_id, self.room.name, self.date, self.start_time, self.end_time
+            self.id, self.booker.username, self.room.name, self.date, self.start_time, self.end_time
         )
 
     def validate_model(self):

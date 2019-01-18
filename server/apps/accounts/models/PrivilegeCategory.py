@@ -110,6 +110,10 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
         return value
 
 
+def get_parameter_names():
+    return PrivilegeCategory.field_metadata.keys()
+
+
 class PrivilegeMerger(AbstractPrivilege):
 
     def __init__(self, privilege_set):
