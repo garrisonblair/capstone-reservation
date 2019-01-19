@@ -9,6 +9,8 @@ from rest_framework import status
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
+from apps.booking.models.Booking import BookingManager
+from apps.booking.models.CampOn import CampOn
 from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer
 from apps.accounts.exceptions import PrivilegeError
 from apps.util import utils
@@ -71,10 +73,71 @@ class BookingCancel(APIView):
 
     def post(self, request, pk):
 
+        # Ensure that booking to be canceled exists
         try:
             booking = Booking.objects.get(id=pk)
         except Booking.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Check user permissions
+        self.check_object_permissions(request, booking.booker)
+
+        # Check if Booking has ended and if it has, disable booking from being canceled
+        now = datetime.datetime.now()
+        booking_end = booking.end_time
+        timeout = now.time()
+        print('now: ', now)
+        print('booking_end', booking_end)
+        print('timeout', timeout)
+        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
+            return Response("Can't cancel booking anymore.", status=status.HTTP_403_FORBIDDEN)
+
+        # Get all campons for this booking
+        booking_id = booking.id
+        booking_campons = CampOn.objects.filter(camped_on_booking__id=booking_id)
+
+        # Remove any campons that have endtimes before current time
+        for campon in booking_campons:
+            if campon.end_time < timeout:
+                booking_campons.remove(campon)
+
+        # Checks to see if booking to cancel has any campons
+        if len(booking_campons) > 0:
+
+            # Sort list of campons by campon.id
+            booking_campons = booking_campons.sort(booking_campons, reverse=False)
+            # Set first campon in list to first campon created
+            first_campon = booking_campons[0]
+
+            # Turn first campon (which should be first created) into a booking
+            new_booking = BookingManager.create_booking(self=first_campon.id,
+                                                        booker=first_campon.booker.booker_id,
+                                                        group=None,
+                                                        room=booking.room,
+                                                        date=now.date(),
+                                                        start_time=campon.start_time,
+                                                        end_time=campon.end_time,
+                                                        recurring_booking=False)
+
+            booking.delete()
+            new_booking.save()
+            previous_campon = first_campon
+
+            # Change associated booking of all other campons to booking id of new booking
+            for campon in range(1,len(booking_campons)):
+                campon.camped_on_booking = new_booking.id
+                campon.save()
+
+        # 1. Cancel booking
+            # 1.0 Check that booking exists and validation for the ability to be able to cancel
+            # 1.1 Get campons for booking
+            # 1.2 Get first camp on and turn to booking (temp)
+            # 1.3 Get all other campons and attach as campons to booking above (temp)
+            # 1.4 Cancel original booking
+            # 1.4 Verify if other bookings need to be turned into part campon and part actual booking
+        # 2. Add validation conditions
+
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class BookingRetrieveUpdateDestroy(APIView):
