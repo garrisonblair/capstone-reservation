@@ -65,6 +65,18 @@ class BookingCreate(APIView):
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
 
 
+class BookingCancel(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+    serializer_class = BookingSerializer
+
+    def post(self, request, pk):
+
+        try:
+            booking = Booking.objects.get(id=pk)
+        except Booking.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
 class BookingRetrieveUpdateDestroy(APIView):
     permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
     serializer_class = BookingSerializer
