@@ -30,6 +30,7 @@ class Hours extends Component {
     } else {
       style = {
         gridTemplateColumns: `repeat(${hoursNum}, 1fr)`,
+        gridColumnStart: 2,
       };
     }
     return style;

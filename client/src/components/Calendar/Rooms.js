@@ -26,6 +26,7 @@ class Rooms extends Component {
     if (orientation === 0) {
       style = {
         gridTemplateColumns: `repeat(${roomsNum}, 1fr)`,
+        gridColumnStart: 2,
       };
     } else {
       style = {

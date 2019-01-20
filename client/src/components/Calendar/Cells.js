@@ -55,17 +55,30 @@ class Cells extends Component {
   // Style for .calendar__cells__cell
   setCellStyle(hourRow) {
     const { hoursSettings } = this.props;
-    const rowStart = (hourRow * hoursSettings.increment / 10) + 1;
-    const rowEnd = rowStart + hoursSettings.increment / 10;
+    const { orientation } = this.state;
+    const start = (hourRow * hoursSettings.increment / 10) + 1;
+    const end = start + hoursSettings.increment / 10;
     // const height = '65px';
-
-    const style = {
-      cell_style: {
-        gridRowStart: rowStart,
-        gridRowEnd: rowEnd,
-        // height,
-      },
-    };
+    let style;
+    if (orientation === 0) {
+      style = {
+        cell_style: {
+          gridRowStart: start,
+          gridRowEnd: end,
+          gridColumn: 1,
+          // height,
+        },
+      };
+    } else {
+      style = {
+        cell_style: {
+          gridColumnStart: start,
+          gridColumnEnd: end,
+          gridRow: 1,
+          // height,
+        },
+      };
+    }
     return style;
   }
 
@@ -98,6 +111,7 @@ class Cells extends Component {
   // Style for .calendar__booking
   setBookingStyle(booking, campOnsNumber) {
     const { hoursSettings } = this.props;
+    const { orientation } = this.state;
     const bookingStart = Cells.timeStringToInt(booking.start_time);
     const bookingEnd = Cells.timeStringToInt(booking.end_time);
     const calendarStart = Cells.timeStringToInt(hoursSettings.start);
@@ -130,19 +144,30 @@ class Cells extends Component {
 
     // Find the rows in the grid the booking corresponds to.
     // Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
-    const rowStart = ((bookingStart.hour * 60 + bookingStart.minutes)
+    const start = ((bookingStart.hour * 60 + bookingStart.minutes)
                       - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
-    const rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes)
+    const end = ((bookingEnd.hour * 60 + bookingEnd.minutes)
                     - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
-
-    const style = {
-      booking_style: {
-        gridRowStart: rowStart,
-        gridRowEnd: rowEnd,
-        gridColumn: 1,
-        backgroundColor: color,
-      },
-    };
+    let style;
+    if (orientation === 0) {
+      style = {
+        booking_style: {
+          gridRowStart: start,
+          gridRowEnd: end,
+          gridColumn: 1,
+          backgroundColor: color,
+        },
+      };
+    } else {
+      style = {
+        booking_style: {
+          gridColumnStart: start,
+          gridColumnEnd: end,
+          gridRow: 1,
+          backgroundColor: color,
+        },
+      };
+    }
     return style;
   }
 

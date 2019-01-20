@@ -36,7 +36,7 @@ class Calendar extends Component {
     roomsNum: 0,
     hoursNum: 0,
     hoursDivisionNum: 0,
-    orientation: 0,
+    orientation: 1,
   };
 
   /*
@@ -218,13 +218,13 @@ class Calendar extends Component {
       />,
       <div className="calendar__container" key={1}>
         <div className="calendar__wrapper">
+          <Hours hoursList={hoursList} hoursNum={hoursNum} orientation={orientation} />
           <Rooms
             roomsList={roomsList}
             changeDate={this.changeDate}
             roomsNum={roomsNum}
             orientation={orientation}
           />
-          <Hours hoursList={hoursList} hoursNum={hoursNum} orientation={orientation} />
           <Cells
             hoursSettings={hoursSettings}
             bookings={bookings}

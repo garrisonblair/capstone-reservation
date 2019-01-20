@@ -73,7 +73,7 @@ body {
 
 .calendar__rooms__wrapper {
   display: inline-grid;
-  grid-column-start: 2;
+  // grid-column-start: 2;
   position: -webkit-sticky;
   position: sticky;
   top: 0;
@@ -103,7 +103,7 @@ body {
   margin-left: -$borderWidth;
   width: $cellsWidth;
   min-height: $cellsMinHeight;
-  grid-column: 1;
+  // grid-column: 1;
   // height: 50px;
   background-color: $backgroundColorCells;
   &--campon {
