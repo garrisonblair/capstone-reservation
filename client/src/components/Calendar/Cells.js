@@ -24,6 +24,9 @@ class Cells extends Component {
     selectedBookingCampons: null,
     bookingModal: false,
     bookingInfoModal: false,
+    orientation: 0,
+    hoursDivisionNum: 0,
+    roomsNum: 0,
   };
 
   /*
@@ -31,11 +34,17 @@ class Cells extends Component {
    */
 
   static getDerivedStateFromProps(props, state) {
-    if (props.bookings === state.bookings) {
+    if (
+      props.bookings === state.bookings
+      && props.orientation === state.orientation
+      && props.roomsNum === state.roomsNum) {
       return null;
     }
     return {
       bookings: props.bookings,
+      orientation: props.orientation,
+      roomsNum: props.roomsNum,
+      hoursDivisionNum: props.hoursDivisionNum,
     };
   }
 
@@ -59,6 +68,32 @@ class Cells extends Component {
     };
     return style;
   }
+
+  setStyle() {
+    const { roomsNum, orientation, hoursDivisionNum } = this.state;
+    let style;
+    if (orientation === 0) {
+      style = {
+        wrapper: {
+          gridTemplateColumns: `repeat(${roomsNum}, 1fr)`,
+        },
+        division: {
+          gridTemplateRows: `repeat(${hoursDivisionNum}, 1fr)`,
+        },
+      };
+    } else {
+      style = {
+        wrapper: {
+          gridTemplateRows: `repeat(${roomsNum}, 1fr)`,
+        },
+        division: {
+          gridTemplateColumns: `repeat(${hoursDivisionNum}, 1fr)`,
+        },
+      };
+    }
+    return style;
+  }
+
 
   // Style for .calendar__booking
   setBookingStyle(booking, campOnsNumber) {
@@ -319,7 +354,7 @@ class Cells extends Component {
       }
 
       cells.push(
-        <div className="calendar__rooms__cells" key={i}>
+        <div className="calendar__rooms__cells" key={i} style={this.setStyle().division}>
           {roomsCells}
           {bookedCells}
         </div>,
@@ -328,7 +363,7 @@ class Cells extends Component {
       roomsCells = [];
     }
     return (
-      <div className="calendar__cells__wrapper">
+      <div className="calendar__cells__wrapper" style={this.setStyle().wrapper}>
         {cells}
         {this.renderModals()}
       </div>

@@ -29,11 +29,14 @@ class Calendar extends Component {
     document.documentElement.style.setProperty('--pointerEvents', 'auto');
   }
 
-
   state = {
     roomsList: [],
     hoursList: [],
     selectedDate: new Date(),
+    roomsNum: 0,
+    hoursNum: 0,
+    hoursDivisionNum: 0,
+    orientation: 0,
   };
 
   /*
@@ -45,37 +48,7 @@ class Calendar extends Component {
 
     this.getBookings();
     this.getRooms();
-
-    // Set up hours
-    const hoursSettings = {
-      start: '08:00',
-      end: '23:00',
-      increment: 60,
-    };
-    const hourStart = Calendar.timeStringToInt(hoursSettings.start);
-    const hourEnd = Calendar.timeStringToInt(hoursSettings.end);
-
-    const minutesIncrement = hoursSettings.increment;
-    const hours = [];
-    const time = new Date();
-    time.setHours(hourStart.hour, hourStart.minutes, 0);
-
-    // Format time for display in table
-    let currentTime = hourStart.hour * 60 + hourStart.minutes;
-    const endTime = hourEnd.hour * 60 + hourEnd.minutes;
-
-    while (currentTime <= endTime) {
-      hours.push(time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-      time.setMinutes(time.getMinutes() + minutesIncrement);
-      currentTime += minutesIncrement;
-    }
-    this.setState({ hoursSettings, hoursList: hours });
-
-    // Set up variables in scss
-    const gridRowNum = minutesIncrement * hours.length / 10;
-
-    document.documentElement.style.setProperty('--rowNum', hours.length);
-    document.documentElement.style.setProperty('--cellsDivisionNum', gridRowNum);
+    this.setHours();
   }
 
   componentWillUnmount() {
@@ -131,11 +104,43 @@ class Calendar extends Component {
     } else {
       api.getRooms()
         .then((response) => {
-          this.setState({ roomsList: response.data });
-          const colNumber = response.data.length;
-          document.documentElement.style.setProperty('--colNum', colNumber);
+          this.setState({ roomsList: response.data, roomsNum: response.data.length });
         });
     }
+  }
+
+  setHours = () => {
+    const hoursSettings = {
+      start: '08:00',
+      end: '23:00',
+      increment: 60,
+    };
+    const hourStart = Calendar.timeStringToInt(hoursSettings.start);
+    const hourEnd = Calendar.timeStringToInt(hoursSettings.end);
+
+    const minutesIncrement = hoursSettings.increment;
+    const hours = [];
+    const time = new Date();
+    time.setHours(hourStart.hour, hourStart.minutes, 0);
+
+    // Format time for display in table
+    let currentTime = hourStart.hour * 60 + hourStart.minutes;
+    const endTime = hourEnd.hour * 60 + hourEnd.minutes;
+
+    while (currentTime <= endTime) {
+      hours.push(time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      time.setMinutes(time.getMinutes() + minutesIncrement);
+      currentTime += minutesIncrement;
+    }
+    const hoursDivisionNum = minutesIncrement * hours.length / 10;
+
+    this.setState({
+      hoursSettings,
+      hoursList: hours,
+      hoursNum:
+      hours.length,
+      hoursDivisionNum,
+    });
   }
 
   /*
@@ -198,6 +203,10 @@ class Calendar extends Component {
       bookings,
       campOns,
       selectedDate,
+      orientation,
+      hoursNum,
+      roomsNum,
+      hoursDivisionNum,
     } = this.state;
     return [
       <Navigation
@@ -209,8 +218,13 @@ class Calendar extends Component {
       />,
       <div className="calendar__container" key={1}>
         <div className="calendar__wrapper">
-          <Rooms roomsList={roomsList} changeDate={this.changeDate} />
-          <Hours hoursList={hoursList} />
+          <Rooms
+            roomsList={roomsList}
+            changeDate={this.changeDate}
+            roomsNum={roomsNum}
+            orientation={orientation}
+          />
+          <Hours hoursList={hoursList} hoursNum={hoursNum} orientation={orientation} />
           <Cells
             hoursSettings={hoursSettings}
             bookings={bookings}
@@ -219,6 +233,9 @@ class Calendar extends Component {
             campOns={campOns}
             selectedDate={selectedDate}
             onCloseModalWithAction={this.onCloseModalWithAction}
+            orientation={orientation}
+            roomsNum={roomsNum}
+            hoursDivisionNum={hoursDivisionNum}
           />
         </div>
       </div>,
