@@ -19,7 +19,6 @@ $backgroundColorCells: #C9A859;
 $backgroundColorRooms: #A17F2E;
 $backgroundColorHours: #A17F2E;
 $borderWidth: 1px;
-$cellsWidth: 120px;
 $cellsMinHeight: auto;
 
 /* Calendar */
@@ -95,7 +94,6 @@ body {
   border: $borderWidth solid $borderColor;
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
-  width: $cellsWidth;
   min-height: $cellsMinHeight;
   // height: 50px;
   background-color: $backgroundColorCells;

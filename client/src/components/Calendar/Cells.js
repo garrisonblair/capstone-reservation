@@ -62,6 +62,7 @@ class Cells extends Component {
           gridRowStart: start,
           gridRowEnd: end,
           gridColumn: 1,
+          width: '120px',
           // height,
         },
       };
@@ -71,7 +72,6 @@ class Cells extends Component {
           gridColumnStart: start,
           gridColumnEnd: end,
           gridRow: 1,
-          // height,
         },
       };
     }
