@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 // import SelectedDate from './SelectedDate';
-import Rooms from './Rooms';
-import Hours from './Hours';
+// import Rooms from './Rooms';
+// import Hours from './Hours';
 import Cells from './Cells';
+import Header from './Header';
 import Navigation from '../Navigation';
 import api from '../../utils/api';
 import './Calendar.scss';
@@ -34,7 +35,6 @@ class Calendar extends Component {
     hoursList: [],
     selectedDate: new Date(),
     roomsNum: 0,
-    hoursNum: 0,
     hoursDivisionNum: 0,
     orientation: 1,
   };
@@ -137,8 +137,6 @@ class Calendar extends Component {
     this.setState({
       hoursSettings,
       hoursList: hours,
-      hoursNum:
-      hours.length,
       hoursDivisionNum,
     });
   }
@@ -204,10 +202,19 @@ class Calendar extends Component {
       campOns,
       selectedDate,
       orientation,
-      hoursNum,
       roomsNum,
       hoursDivisionNum,
     } = this.state;
+    let colList = roomsList;
+    let colName = 'room';
+    let rowList = hoursList;
+    let rowName = 'hour';
+    if (orientation === 1) {
+      rowList = roomsList;
+      rowName = 'room';
+      colList = hoursList;
+      colName = 'hour';
+    }
     return [
       <Navigation
         key={0}
@@ -218,13 +225,8 @@ class Calendar extends Component {
       />,
       <div className="calendar__container" key={1}>
         <div className="calendar__wrapper">
-          <Hours hoursList={hoursList} hoursNum={hoursNum} orientation={orientation} />
-          <Rooms
-            roomsList={roomsList}
-            changeDate={this.changeDate}
-            roomsNum={roomsNum}
-            orientation={orientation}
-          />
+          <Header headerList={colList} type="column" name={colName} />
+          <Header headerList={rowList} type="row" name={rowName} />
           <Cells
             hoursSettings={hoursSettings}
             bookings={bookings}
