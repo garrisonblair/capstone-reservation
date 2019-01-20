@@ -86,9 +86,7 @@ class BookingCancel(APIView):
         now = datetime.datetime.now()
         booking_end = booking.end_time
         timeout = now.time()
-        print('now: ', now)
-        print('booking_end', booking_end)
-        print('timeout', timeout)
+
         if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
             return Response("Can't cancel booking anymore.", status=status.HTTP_403_FORBIDDEN)
 
@@ -110,55 +108,44 @@ class BookingCancel(APIView):
             first_campon = booking_campons[0]
 
             # Turn first campon (which should be first created) into a booking
-
             new_booking = Booking(booker=first_campon.booker,
                                   group=None,
                                   room=booking.room,
                                   date=now.date(),
-                                  start_time=campon.start_time,
-                                  end_time=campon.end_time)
+                                  start_time=first_campon.start_time,
+                                  end_time=first_campon.end_time)
 
             # Delete previous booking in order to then save new_booking derived from first campon,
             # then delete first campon
             booking.delete()
             new_booking.save()
-            first_campon.delete()
             previous_campon = first_campon
 
-            # Change associated booking of all other campons to booking id of new booking
-            for campon in range(1, len(booking_campons)):
-                end_time_difference = campon.end_time - previous_campon.end_time
+            for campon in booking_campons:
+                # Change associated booking of all other campons to booking id of new booking
+                if first_campon.id != campon.id:
+                    campon.camped_on_booking = new_booking
+                    # Creates booking for difference (Assuming current campon does not go into another booking)
+                    if (campon.end_time.hour > previous_campon.end_time.hour) \
+                            or (campon.end_time.hour == previous_campon.end_time.hour and
+                                (campon.end_time.minute - previous_campon.end_time.minute) > 10):
+                        difference_booking = Booking(
+                            booker=campon.booker,
+                            group=None,
+                            room=booking.room,
+                            date=now.date(),
+                            start_time=previous_campon.end_time,
+                            end_time=campon.end_time)
+                        difference_booking.save()
+                        campon.end_time = difference_booking.start_time
+                    campon.save()
 
-                # Creates booking for difference (Assuming current campon does not go into another booking)
-                if end_time_difference >= 10:
-                    difference_booking = Booking(
-                        booker=campon.booker,
-                        group=None,
-                        room=booking.room,
-                        date=now.date(),
-                        start_time=previous_campon.end_time,
-                        end_time=campon.end_time)
-                    difference_booking.save()
-                    campon.end_time = previous_campon.end_time
-
-                # Attaches current campon to new_booking derived from first campon
-                campon.camped_on_booking = new_booking.id
-                campon.save()
                 previous_campon = campon
+
+            first_campon.delete()
 
         else:
             booking.delete()
-
-        # 1. Cancel booking
-            # 1.0 Check that booking exists and validation for the ability to be able to cancel
-            # (DONE)
-            # 1.1 Get campons for booking
-
-            # 1.2 Get first camp on and turn to booking (temp)
-            # 1.3 Get all other campons and attach as campons to booking above (temp)
-            # 1.4 Cancel original booking
-            # 1.4 Verify if other bookings need to be turned into part campon and part actual booking
-        # 2. Add validation conditions
 
         return Response(status=status.HTTP_202_ACCEPTED)
 
