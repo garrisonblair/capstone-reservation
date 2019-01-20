@@ -455,7 +455,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
 
-    def testCancelBookingAfterBookingStarted(self):
+    def testCancelBookingAfterBookingEnded(self):
         booking = Booking(booker=self.booker, room=self.room, date="2018-10-7", start_time="13:00", end_time="15:00")
         booking.save()
 
@@ -486,3 +486,127 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel+1)
+
+    def testCancelBookingOneCamponSuccess(self):
+
+        today = datetime.datetime.now().date()
+
+        booking = Booking(booker=self.booker, room=self.room, date=today, start_time="10:00", end_time="23:00")
+        booking.save()
+
+        campon = CampOn(booker=self.booker_2,
+                        camped_on_booking=booking,
+                        start_time=booking.start_time,
+                        end_time=booking.end_time)
+        campon.save()
+
+        bookings_before_cancel = len(Booking.objects.all())
+        campons_before_cancel = len(CampOn.objects.all())
+
+        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                    }, format="json")
+        force_authenticate(request, user=self.booker)
+        response = BookingCancel.as_view()(request, booking.id)
+
+        bookings_after_cancel = len(Booking.objects.all())
+        campons_after_cancel = len(CampOn.objects.all())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(bookings_before_cancel, bookings_after_cancel)
+        self.assertEqual(campons_before_cancel, campons_after_cancel+1)
+
+    def testCancelBookingMultipleCamponsSameEndTimeSuccess(self):
+
+        today = datetime.datetime.now().date()
+
+        booking = Booking(booker=self.booker, room=self.room, date=today, start_time="10:00", end_time="23:00")
+        booking.save()
+
+        campon = CampOn(booker=self.booker_2,
+                        camped_on_booking=booking,
+                        start_time=booking.start_time,
+                        end_time=booking.end_time)
+        campon.save()
+
+        campon2 = CampOn(booker=self.booker_3,
+                         camped_on_booking=booking,
+                         start_time=booking.start_time,
+                         end_time=booking.end_time)
+        campon2.save()
+
+        bookings_before_cancel = len(Booking.objects.all())
+        campons_before_cancel = len(CampOn.objects.all())
+
+        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                    }, format="json")
+        force_authenticate(request, user=self.booker)
+        response = BookingCancel.as_view()(request, booking.id)
+
+        bookings_after_cancel = len(Booking.objects.all())
+        campons_after_cancel = len(CampOn.objects.all())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(bookings_before_cancel, bookings_after_cancel)
+        self.assertEqual(campons_before_cancel, campons_after_cancel+1)
+
+    def testCancelBookingMultipleCamponsFirstEndsBeforeSecondSuccess(self):
+
+        today = datetime.datetime.now().date()
+
+        booking = Booking(booker=self.booker, room=self.room, date=today, start_time="10:00", end_time="22:00")
+        booking.save()
+
+        campon = CampOn(booker=self.booker_2,
+                        camped_on_booking=booking,
+                        start_time=datetime.time(10, 0),
+                        end_time=datetime.time(20, 0))
+        campon.save()
+
+        campon2 = CampOn(booker=self.booker_3,
+                         camped_on_booking=booking,
+                         start_time=datetime.time(10, 0),
+                         end_time=datetime.time(22, 0))
+        campon2.save()
+
+        bookings_before_cancel = len(Booking.objects.all())
+
+        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                    }, format="json")
+        force_authenticate(request, user=self.booker)
+        response = BookingCancel.as_view()(request, booking.id)
+
+        bookings_after_cancel = len(Booking.objects.all())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(bookings_after_cancel, bookings_before_cancel+1)
+
+    def testCancelBookingMultipleCamponsSecondEndsBeforeFirstSuccess(self):
+
+        today = datetime.datetime.now().date()
+
+        booking = Booking(booker=self.booker, room=self.room, date=today, start_time="10:00", end_time="22:00")
+        booking.save()
+
+        campon = CampOn(booker=self.booker_2,
+                        camped_on_booking=booking,
+                        start_time=datetime.time(10, 0),
+                        end_time=datetime.time(22, 0))
+        campon.save()
+
+        campon2 = CampOn(booker=self.booker_3,
+                         camped_on_booking=booking,
+                         start_time=datetime.time(10, 0),
+                         end_time=datetime.time(20, 0))
+        campon2.save()
+
+        bookings_before_cancel = len(Booking.objects.all())
+
+        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                    }, format="json")
+        force_authenticate(request, user=self.booker)
+        response = BookingCancel.as_view()(request, booking.id)
+
+        bookings_after_cancel = len(Booking.objects.all())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(bookings_before_cancel, bookings_after_cancel)
