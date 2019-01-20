@@ -153,6 +153,8 @@ class Cells extends Component {
           gridRowEnd: end,
           gridColumn: 1,
           backgroundColor: color,
+          borderTop: '1px solid white',
+          borderBottom: '1px solid white',
         },
       };
     } else {
@@ -162,6 +164,8 @@ class Cells extends Component {
           gridColumnEnd: end,
           gridRow: 1,
           backgroundColor: color,
+          borderLeft: '1px solid white',
+          borderRight: '1px solid white',
         },
       };
     }
