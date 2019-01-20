@@ -106,7 +106,7 @@ class Cells extends Component {
 
 
   // Style for .calendar__booking
-  setBookingStyle(booking, campOnsNumber) {
+  setBookingStyle(booking) {
     const { hoursSettings } = this.props;
     const { orientation } = this.state;
     const bookingStart = Cells.timeStringToInt(booking.start_time);
@@ -135,7 +135,7 @@ class Cells extends Component {
     }
     if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10))) {
       color = '#7F7F7F';
-    } else if (campOnsNumber > 0) {
+    } else if (booking.isCampOn) {
       color = '#A1922E';
     }
 
@@ -304,20 +304,26 @@ class Cells extends Component {
   }
 
   renderCurrentBookings(bookings) {
+    const { orientation } = this.props;
     const bookingsDiv = [];
 
     bookings.forEach((booking) => {
-      const campOns = this.getCamponsForBooking(booking);
       bookingsDiv.push(
-        <div className="calendar__booking" style={this.setBookingStyle(booking, campOns.length).booking_style} role="button" tabIndex="0" key={booking.id} onClick={() => this.handleClickBooking(booking)} onKeyDown={() => {}}>
+        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} role="button" tabIndex="0" key={booking.id} onClick={() => this.handleClickBooking(booking)} onKeyDown={() => {}}>
           {booking.start_time.length > 5
             ? booking.start_time.substring(0, booking.start_time.length - 3) : booking.start_time}
           {' - '}
           {booking.end_time.length > 5
             ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time}
           <br />
-          {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 ? null : <span>{booking.booker.username}</span>}
-          {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''}
+          {booking.isCampOn
+            ? (
+              <span>
+                [CAMPON]
+                <br />
+              </span>) : null}
+          {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 && orientation === 0 ? null : <span>{booking.booker.username}</span>}
+          {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
         </div>,
       );
     });
@@ -351,8 +357,11 @@ class Cells extends Component {
   }
 
   render() {
-    const { roomsList, hoursList, bookings } = this.props;
-
+    const {
+      roomsList,
+      hoursList,
+      bookings,
+    } = this.props;
     const cells = [];
     let roomsCells = [];
     let cell = 0;
@@ -401,6 +410,7 @@ Cells.propTypes = {
   selectedDate: PropTypes.instanceOf(Object),
   onCloseModalWithAction: PropTypes.func,
   campOns: PropTypes.instanceOf(Array),
+  orientation: PropTypes.number,
 };
 
 Cells.defaultProps = {
@@ -414,6 +424,7 @@ Cells.defaultProps = {
   bookings: [],
   campOns: null,
   selectedDate: new Date(),
+  orientation: 0,
   onCloseModalWithAction: () => {},
 };
 
