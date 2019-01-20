@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Dropdown,
+  Dropdown, Button, Icon,
 } from 'semantic-ui-react';
 
 import api from '../../utils/api';
@@ -11,6 +11,7 @@ class UserSearch extends Component {
   state = {
     dropdownUsers: [],
     users: [],
+    selectedUser: null,
   }
 
   handleSearchChange = (event) => {
@@ -24,7 +25,7 @@ class UserSearch extends Component {
       const dropdownUsers = users.map(user => ({
         key: user.id,
         value: user.id,
-        text: user.username,
+        text: `${user.first_name} ${user.last_name} (${user.username})`,
       }));
       this.setState({ users, dropdownUsers });
     });
@@ -40,24 +41,34 @@ class UserSearch extends Component {
       }
       return false;
     });
+
+    this.setState({ selectedUser: data.value });
     onSelect(selectedUser[0]);
   }
 
+  handleClickClear = () => {
+    const { onSelect } = this.props;
+    this.setState({ selectedUser: null });
+    onSelect(null);
+  }
+
   render() {
-    const { dropdownUsers } = this.state;
+    const { dropdownUsers, selectedUser } = this.state;
     return (
-      <div>
+      <div className="modal-description">
         <Dropdown
           placeholder="Booker"
-          fluid
           search
           selection
           options={dropdownUsers}
           onSearchChange={this.handleSearchChange}
           onChange={this.handleSearchConfirm}
+          value={selectedUser}
         />
+        <Button icon onClick={this.handleClickClear}>
+          <Icon name="close" />
+        </Button>
       </div>
-
     );
   }
 }

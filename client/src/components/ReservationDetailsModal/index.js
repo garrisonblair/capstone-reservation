@@ -417,12 +417,14 @@ class ReservationDetailsModal extends Component {
   static renderAdminBookingForm() {
     return (
       <div className="modal-description">
-        <Form.Field>
-          <Checkbox label="Bypass Privileges" />
-        </Form.Field>
-        <Form.Field>
-          <UserSearch maxUsers={2} />
-        </Form.Field>
+        <Checkbox label="Bypass Privileges" />
+
+        <div className="modal-description">
+          <h3 className="header--inline">
+            Book for:
+          </h3>
+        </div>
+        <UserSearch maxUsers={2} />
       </div>
     );
   }
