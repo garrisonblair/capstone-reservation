@@ -32,6 +32,11 @@ class BookingAPITest(TestCase):
                                                password='glass onion')
         self.booker.save()
 
+        self.booker_2 = User.objects.create_user(username="f_daigl",
+                                               email="fred@email.com",
+                                               password="passw0rd")
+        self.booker_2.save()
+
         self.room = Room(name="H833-17", capacity=4, number_of_computers=1)
         self.room.save()
 
