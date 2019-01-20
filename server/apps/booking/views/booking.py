@@ -94,7 +94,7 @@ class BookingCancel(APIView):
 
         # Get all campons for this booking
         booking_id = booking.id
-        booking_campons = CampOn.objects.filter(camped_on_booking__id=booking_id)
+        booking_campons = list(CampOn.objects.filter(camped_on_booking__id=booking_id))
 
         # Remove any campons that have endtimes before current time
         for campon in booking_campons:
@@ -105,32 +105,55 @@ class BookingCancel(APIView):
         if len(booking_campons) > 0:
 
             # Sort list of campons by campon.id
-            booking_campons = booking_campons.sort(booking_campons, reverse=False)
+            booking_campons.sort(key=id, reverse=False)
             # Set first campon in list to first campon created
             first_campon = booking_campons[0]
 
             # Turn first campon (which should be first created) into a booking
-            new_booking = BookingManager.create_booking(self=first_campon.id,
-                                                        booker=first_campon.booker.booker_id,
-                                                        group=None,
-                                                        room=booking.room,
-                                                        date=now.date(),
-                                                        start_time=campon.start_time,
-                                                        end_time=campon.end_time,
-                                                        recurring_booking=False)
 
+            new_booking = Booking(booker=first_campon.booker,
+                                  group=None,
+                                  room=booking.room,
+                                  date=now.date(),
+                                  start_time=campon.start_time,
+                                  end_time=campon.end_time)
+
+            # Delete previous booking in order to then save new_booking derived from first campon,
+            # then delete first campon
             booking.delete()
             new_booking.save()
+            first_campon.delete()
             previous_campon = first_campon
 
             # Change associated booking of all other campons to booking id of new booking
-            for campon in range(1,len(booking_campons)):
+            for campon in range(1, len(booking_campons)):
+                end_time_difference = campon.end_time - previous_campon.end_time
+
+                # Creates booking for difference (Assuming current campon does not go into another booking)
+                if end_time_difference >= 10:
+                    difference_booking = Booking(
+                        booker=campon.booker,
+                        group=None,
+                        room=booking.room,
+                        date=now.date(),
+                        start_time=previous_campon.end_time,
+                        end_time=campon.end_time)
+                    difference_booking.save()
+                    campon.end_time = previous_campon.end_time
+
+                # Attaches current campon to new_booking derived from first campon
                 campon.camped_on_booking = new_booking.id
                 campon.save()
+                previous_campon = campon
+
+        else:
+            booking.delete()
 
         # 1. Cancel booking
             # 1.0 Check that booking exists and validation for the ability to be able to cancel
+            # (DONE)
             # 1.1 Get campons for booking
+
             # 1.2 Get first camp on and turn to booking (temp)
             # 1.3 Get all other campons and attach as campons to booking above (temp)
             # 1.4 Cancel original booking
