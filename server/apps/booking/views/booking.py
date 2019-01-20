@@ -137,7 +137,8 @@ class BookingCancel(APIView):
                             start_time=previous_campon.end_time,
                             end_time=campon.end_time)
                         difference_booking.save()
-                        campon.end_time = difference_booking.start_time
+                        #campon.end_time = difference_booking.start_time
+                    campon.end_time = previous_campon.end_time
                     campon.save()
 
                 previous_campon = campon
