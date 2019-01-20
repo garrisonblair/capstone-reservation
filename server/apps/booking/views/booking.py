@@ -72,7 +72,6 @@ class BookingCancel(APIView):
     serializer_class = BookingSerializer
 
     def post(self, request, pk):
-
         # Ensure that booking to be canceled exists
         try:
             booking = Booking.objects.get(id=pk)
@@ -141,13 +140,12 @@ class BookingCancel(APIView):
                     campon.save()
 
                 previous_campon = campon
-
             first_campon.delete()
 
         else:
             booking.delete()
 
-        return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_200_OK)
 
 
 class BookingRetrieveUpdateDestroy(APIView):

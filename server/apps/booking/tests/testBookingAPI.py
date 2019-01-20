@@ -13,7 +13,7 @@ from apps.booking.models.CampOn import CampOn
 from apps.rooms.models.Room import Room
 from ..models.Booking import Booking
 
-from ..views.booking import BookingList
+from ..views.booking import BookingList, BookingCancel
 from ..views.booking import BookingCreate
 from ..views.booking import BookingRetrieveUpdateDestroy
 
@@ -33,9 +33,14 @@ class BookingAPITest(TestCase):
         self.booker.save()
 
         self.booker_2 = User.objects.create_user(username="f_daigl",
-                                               email="fred@email.com",
-                                               password="passw0rd")
+                                                 email="fred@email.com",
+                                                 password="passw0rd")
         self.booker_2.save()
+
+        self.booker_3 = User.objects.create_user(username="s_loc",
+                                                 email="steve@email.com",
+                                                 password="passw0rd")
+        self.booker_3.save()
 
         self.room = Room(name="H833-17", capacity=4, number_of_computers=1)
         self.room.save()
@@ -418,3 +423,66 @@ class BookingAPITest(TestCase):
             response = BookingRetrieveUpdateDestroy.as_view()(request, booking.id)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def testCancelBookingNotAuthenticated(self):
+        booking = Booking(booker=self.booker, room=self.room, date="2018-10-7", start_time="13:00", end_time="15:00")
+        booking.save()
+
+        bookings_before_cancel = len(Booking.objects.all())
+
+        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+        }, format="json")
+        response = BookingCancel.as_view()(request, booking.id)
+
+        bookings_after_cancel = len(Booking.objects.all())
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(bookings_before_cancel, bookings_after_cancel)
+
+    def testCancelBookingNonExistentBooking(self):
+        booking = Booking(booker=self.booker, room=self.room, date="2019-10-7", start_time="13:00", end_time="15:00")
+        booking.save()
+
+        bookings_before_cancel = len(Booking.objects.all())
+
+        request = self.factory.post("/booking/" + str(-99999) + "/cancel_booking", {
+        }, format="json")
+        force_authenticate(request, user=self.booker)
+        response = BookingCancel.as_view()(request, -99999)
+
+        bookings_after_cancel = len(Booking.objects.all())
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(bookings_before_cancel, bookings_after_cancel)
+
+    def testCancelBookingAfterBookingStarted(self):
+        booking = Booking(booker=self.booker, room=self.room, date="2018-10-7", start_time="13:00", end_time="15:00")
+        booking.save()
+
+        bookings_before_cancel = len(Booking.objects.all())
+
+        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                    }, format="json")
+        force_authenticate(request, user=self.booker)
+        response = BookingCancel.as_view()(request, booking.id)
+
+        bookings_after_cancel = len(Booking.objects.all())
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(bookings_before_cancel, bookings_after_cancel)
+
+    def testCancelBookingNoCamponsSuccess(self):
+        booking = Booking(booker=self.booker, room=self.room, date="2019-10-7", start_time="13:00", end_time="15:00")
+        booking.save()
+
+        bookings_before_cancel = len(Booking.objects.all())
+
+        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                    }, format="json")
+        force_authenticate(request, user=self.booker)
+        response = BookingCancel.as_view()(request, booking.id)
+
+        bookings_after_cancel = len(Booking.objects.all())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(bookings_before_cancel, bookings_after_cancel+1)
