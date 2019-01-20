@@ -29,10 +29,6 @@ class Cells extends Component {
     roomsNum: 0,
   };
 
-  /*
-   *COMPONENT LIFE CYCLE
-   */
-
   static getDerivedStateFromProps(props, state) {
     if (
       props.bookings === state.bookings
@@ -82,6 +78,7 @@ class Cells extends Component {
     return style;
   }
 
+  // Style for .calendar__rooms__cells and .calendar__cells__wrapper
   setStyle() {
     const { roomsNum, orientation, hoursDivisionNum } = this.state;
     let style;
@@ -330,7 +327,7 @@ class Cells extends Component {
   static renderCampOns(campOns) {
     const text = [
       <span key="-1">
-        [CAMP]
+        [CAMPON]
         <br />
       </span>];
     campOns.forEach((campOn) => {

@@ -141,6 +141,25 @@ class Calendar extends Component {
     });
   }
 
+  setStyle() {
+    const { orientation } = this.state;
+    let style;
+    if (orientation === 0) {
+      style = {
+        wrapper: {
+          gridTemplateRows: 'max-content auto',
+        },
+      };
+    } else {
+      style = {
+        wrapper: {
+          gridTemplateColumns: 'max-content auto',
+        },
+      };
+    }
+    return style;
+  }
+
   /*
    * HELPER METHOD
    */
@@ -224,7 +243,7 @@ class Calendar extends Component {
         onCloseDatePicker={Calendar.onCloseDatePicker}
       />,
       <div className="calendar__container" key={1}>
-        <div className="calendar__wrapper">
+        <div className="calendar__wrapper" style={this.setStyle().wrapper}>
           <Header headerList={colList} type="column" name={colName} />
           <Header headerList={rowList} type="row" name={rowName} />
           <Cells

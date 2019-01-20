@@ -29,10 +29,12 @@ class Header extends Component {
       style = {
         gridTemplateColumns: `repeat(${headerNum}, 1fr)`,
         gridColumnStart: 2,
+        top: 0,
       };
     } else {
       style = {
         gridTemplateRows: `repeat(${headerNum}, 1fr)`,
+        left: 0,
       };
     }
     return style;
