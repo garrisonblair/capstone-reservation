@@ -601,18 +601,12 @@ class BookingAPITest(TestCase):
 
         bookings_before_cancel = len(Booking.objects.all())
 
-        print("\nAll bookings before: ", Booking.objects.all())
-        print("\n# bookings: ", bookings_before_cancel)
-
         request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
                                     }, format="json")
         force_authenticate(request, user=self.booker)
         response = BookingCancel.as_view()(request, booking.id)
 
         bookings_after_cancel = len(Booking.objects.all())
-
-        print("\nAll bookings after: ", Booking.objects.all())
-        print("\n# bookings: ", bookings_after_cancel)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
