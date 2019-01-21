@@ -108,3 +108,11 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BookingViewMyBookings(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+    serializer_class = BookingSerializer
+
+    def patch(self, request, pk):
+        pass
