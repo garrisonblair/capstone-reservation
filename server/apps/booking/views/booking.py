@@ -102,7 +102,7 @@ class BookingCancel(APIView):
         if len(booking_campons) > 0:
 
             # Sort list of campons by campon.id
-            booking_campons.sort(key=id, reverse=False)
+            booking_campons.sort(key=booking_key, reverse=False)
             # Set first campon in list to first campon created
             first_campon = booking_campons[0]
 
@@ -193,3 +193,7 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+def booking_key(val):
+    return val.id
