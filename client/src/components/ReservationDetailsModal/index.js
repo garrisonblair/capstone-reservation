@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
-  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab,
+  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab, Divider
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import './ReservationDetailsModal.scss';
@@ -437,14 +437,14 @@ class ReservationDetailsModal extends Component {
   renderAdminBookingForm() {
     return (
       <div className="modal-description">
-        <Checkbox label="Bypass Privileges" onChange={this.handleBypassPrivilegesChange} />
-
         <div className="modal-description">
           <h3 className="header--inline">
             Book for:
           </h3>
         </div>
         <UserSearch maxUsers={2} onSelect={this.handleAdminUserSelect} />
+        <Checkbox label="Bypass Privileges" onChange={this.handleBypassPrivilegesChange} />
+        <Divider />
       </div>
     );
   }
