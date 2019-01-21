@@ -3,7 +3,7 @@ import json
 from django.db import models
 from apps.accounts.models.User import User
 from apps.booking.models.Booking import Booking
-from datetime import datetime
+import datetime
 from django.core.exceptions import ValidationError
 
 
@@ -39,7 +39,7 @@ class CampOn(models.Model):
                                                                                             self.end_time)
 
     def validate_model(self):
-        today = datetime.now().today().date()
+        today = datetime.datetime.now().date()
 
         if self.camped_on_booking.date != today:
             raise ValidationError("Camp-on can only be done for today.")
