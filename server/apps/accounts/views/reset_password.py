@@ -41,12 +41,12 @@ class ResetPasswordView(APIView):
 
             # Send email
             subject = 'Capstone Reservation - Reset your password'
-            verify_url = "{}://{}/#/verify/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
+            verify_url = "{}://{}/#/verify_reset/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
             context = {
                 'verify_url': verify_url,
                 'expiration': token.expiration - datetime.timedelta(hours=4)
             }
-            html_message = render_to_string('email.html', context)
+            html_message = render_to_string('password_reset_email.html', context)
             plain_message = strip_tags(html_message)
 
             send_mail(
