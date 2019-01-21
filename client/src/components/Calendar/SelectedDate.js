@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import './Calendar.scss';
 import { Icon, Menu } from 'semantic-ui-react';
 import { SingleDatePicker } from 'react-dates';
 import * as moment from 'moment';
+import './Calendar.scss';
+import 'react-dates/lib/css/_datepicker.css';
+import './react_dates_overrides.css';
 
 
 class SelectedDate extends Component {
@@ -51,7 +53,8 @@ class SelectedDate extends Component {
     const { date, focusDate } = this.state;
     return (
       <Menu.Item position="right" className="menu--date">
-        <Icon className="arrow"
+        <Icon
+          className="arrow"
           circular
           name="angle left"
           onClick={this.handleClickPreviousDate}
@@ -70,7 +73,8 @@ class SelectedDate extends Component {
           />
         </div>
         <span onClick={this.focusDate} role="presentation" onKeyDown={() => {}}>{date.format('ddd MMM Do YYYY')}</span>
-        <Icon className="arrow"
+        <Icon
+          className="arrow"
           circular
           name="angle right"
           onClick={this.handleClickNextDate}
