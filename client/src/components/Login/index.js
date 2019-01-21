@@ -110,8 +110,6 @@ class Login extends Component {
             <span>
               First time?&nbsp;
               <Link to="/registration">Register!</Link>
-            </span>
-            <span>
               &nbsp;Forget Password?&nbsp;
               <Link to="/resetPassword">Reset Password!</Link>
             </span>

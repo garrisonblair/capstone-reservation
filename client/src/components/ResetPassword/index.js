@@ -41,7 +41,7 @@ class ResetPassword extends Component {
 
     this.setState({ showLoader: true });
 
-    api.reset_password(username)
+    api.resetPassword(username)
       .then((response) => {
         if (response.status === 201) {
           this.setState({
@@ -69,7 +69,7 @@ class ResetPassword extends Component {
   renderMainForm() {
     return (
       <div>
-        <h1>Registration</h1>
+        <h1>Reset Password</h1>
         <Step.Group size="mini" widths={2}>
           <Step active>
             <Icon name="envelope" />

@@ -14,6 +14,17 @@ function register(username) {
   });
 }
 
+function resetPassword(username) {
+  const data = {
+    username,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/reset_password`,
+    data,
+  });
+}
+
 function login(username, password) {
   const data = {
     username,
@@ -392,6 +403,7 @@ function getBookers() {
 
 const api = {
   register,
+  resetPassword,
   login,
   logout,
   verify,
