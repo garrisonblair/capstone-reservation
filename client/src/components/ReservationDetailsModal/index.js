@@ -27,6 +27,9 @@ class ReservationDetailsModal extends Component {
       endDate: '',
     },
     reservationProfiles: ['me'],
+
+    bypassPrivileges: false,
+    adminSelectedUser: undefined,
   }
 
   componentWillMount() {
@@ -214,7 +217,7 @@ class ReservationDetailsModal extends Component {
   sendPostRequestBooking = () => {
     const { selectedDate, selectedRoomId, selectedRoomName } = this.props;
     const {
-      startHour, startMinute, endHour, endMinute,
+      startHour, startMinute, endHour, endMinute, bypassPrivileges, adminSelectedUser,
     } = this.state;
     // Handle time zone
     const tzoffset = (selectedDate).getTimezoneOffset() * 60000;
@@ -227,6 +230,15 @@ class ReservationDetailsModal extends Component {
       start_time: `${startHour}:${startMinute}:00`,
       end_time: `${endHour}:${endMinute}:00`,
     };
+
+    if (bypassPrivileges) {
+      data.bypass_privileges = true;
+    }
+
+    if (adminSelectedUser) {
+      data.admin_selected_user = adminSelectedUser.id;
+    }
+
     api.createBooking(data)
       .then(() => {
         sweetAlert('Completed',
@@ -401,6 +413,14 @@ class ReservationDetailsModal extends Component {
     );
   }
 
+  handleAdminUserSelect = (user) => {
+    this.setState({ adminSelectedUser: user });
+  }
+
+  handleBypassPrivilegesChange = (event, data) => {
+    this.setState({ bypassPrivileges: data.checked });
+  }
+
   renderRecurringForm() {
     const panes = [
       { menuItem: 'Option 1', render: () => <Tab.Pane attached={false}>{this.renderRecurringBookingOption0()}</Tab.Pane> },
@@ -414,17 +434,17 @@ class ReservationDetailsModal extends Component {
     );
   }
 
-  static renderAdminBookingForm() {
+  renderAdminBookingForm() {
     return (
       <div className="modal-description">
-        <Checkbox label="Bypass Privileges" />
+        <Checkbox label="Bypass Privileges" onChange={this.handleBypassPrivilegesChange} />
 
         <div className="modal-description">
           <h3 className="header--inline">
             Book for:
           </h3>
         </div>
-        <UserSearch maxUsers={2} />
+        <UserSearch maxUsers={2} onSelect={this.handleAdminUserSelect} />
       </div>
     );
   }
@@ -441,7 +461,10 @@ class ReservationDetailsModal extends Component {
       endMinute,
     } = this.state;
     const { selectedDate } = this.props;
-    const user = JSON.parse(localStorage.CapstoneReservationUser);
+    let user;
+    if (localStorage.CapstoneReservationUser) {
+      user = JSON.parse(localStorage.CapstoneReservationUser);
+    }
 
     return (
       <Modal.Content>
@@ -512,7 +535,7 @@ class ReservationDetailsModal extends Component {
               options={reservedOptions}
               defaultValue={reservedOptions[0].value}
             />
-            {user.is_superuser ? ReservationDetailsModal.renderAdminBookingForm() : null}
+            {user && user.is_superuser ? this.renderAdminBookingForm() : null}
           </div>
           <div className="modal-description">
             <Checkbox label="Request a recurring booking" onClick={this.handleCheckboxClick} />

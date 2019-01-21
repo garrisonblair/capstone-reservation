@@ -47,7 +47,12 @@ class BookingCreate(APIView):
 
     def post(self, request):
         data = request.data
-        data["booker"] = request.user.id
+
+        if request.user.is_superuser and data["admin_selected_user"]:
+            data["booker"] = data["admin_selected_user"]
+            del data["admin_selected_user"]
+        else:
+            data["booker"] = request.user.id
 
         if not request.user.is_superuser:
             data["bypass_privileges"] = False
