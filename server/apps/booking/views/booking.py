@@ -98,9 +98,11 @@ class BookingCancel(APIView):
             if campon.end_time < timeout:
                 booking_campons.remove(campon)
 
-        # Checks to see if booking to cancel has any campons
-        if len(booking_campons) > 0:
-
+        # Checks to see if booking to cancel has any campons otherwise simply deletes the booking
+        if len(booking_campons) <= 0:
+            booking.delete()
+        # Otherwise handles turning campons of original booking into campons for new booking and bookings if required
+        else:
             # Sort list of campons by campon.id
             booking_campons.sort(key=booking_key, reverse=False)
             # Set first campon in list to first campon created
@@ -120,32 +122,31 @@ class BookingCancel(APIView):
             new_booking.save()
             previous_campon = first_campon
 
+            # Adding to see if I can iterate over all the rest without checking condition
+            booking_campons.remove(first_campon)
+
             for campon in booking_campons:
                 # Change associated booking of all other campons to booking id of new booking
-                if first_campon.id != campon.id:
-                    campon.camped_on_booking = new_booking
-                    # Creates booking for difference (Assuming current campon does not go into another booking)
-                    if (campon.end_time.hour > previous_campon.end_time.hour) \
-                            or (campon.end_time.hour == previous_campon.end_time.hour and
-                                (campon.end_time.minute - previous_campon.end_time.minute) > 10):
-                        difference_booking = Booking(
-                            booker=campon.booker,
-                            group=None,
-                            room=booking.room,
-                            date=now.date(),
-                            start_time=previous_campon.end_time,
-                            end_time=campon.end_time)
-                        difference_booking.save()
-                        campon.end_time = difference_booking.start_time
-                    else:
-                        campon.end_time = previous_campon.end_time
-                    campon.save()
-
+                campon.camped_on_booking = new_booking
+                # Creates booking for difference (Assuming current campon does not go into another booking)
+                if (campon.end_time.hour > previous_campon.end_time.hour) \
+                        or (campon.end_time.hour == previous_campon.end_time.hour and
+                            (campon.end_time.minute - previous_campon.end_time.minute) > 10):
+                    difference_booking = Booking(
+                        booker=campon.booker,
+                        group=None,
+                        room=booking.room,
+                        date=new_booking.date,
+                        start_time=previous_campon.end_time,
+                        end_time=campon.end_time)
+                    difference_booking.save()
+                    campon.end_time = difference_booking.start_time
+                else:
+                    campon.end_time = previous_campon.end_time
+                campon.save()
                 previous_campon = campon
+            # Finally delete the first campon as it is now a new booking
             first_campon.delete()
-
-        else:
-            booking.delete()
 
         return Response(status=status.HTTP_200_OK)
 
