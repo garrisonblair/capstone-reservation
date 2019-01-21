@@ -390,6 +390,31 @@ function getBookers() {
   });
 }
 
+function requestPrivilege(groupId, privilegeId) {
+  const headers = getTokenHeader();
+  const data = {
+    group: groupId,
+    privilege_category: privilegeId,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/request_privilege`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function cancelPrivilegeRequest(requestId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'DELETE',
+    url: `${settings.API_ROOT}/cancel_request/${requestId}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -425,6 +450,8 @@ const api = {
   addPrivilege,
   removePrivilege,
   getBookers,
+  requestPrivilege,
+  cancelPrivilegeRequest,
 };
 
 export default api;

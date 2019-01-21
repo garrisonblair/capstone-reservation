@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
-from rest_framework.generics import ListAPIView
+from django.core.mail import send_mail
+from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from rest_framework.views import APIView
@@ -8,6 +9,7 @@ from rest_framework import status
 
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.models.User import User
+from apps.groups.models.Group import Group
 from apps.groups.serializers.privilege_request import WritePrivilegeRequestSerializer, ReadPrivilegeRequestSerializer
 from apps.groups.models.PrivilegeRequest import PrivilegeRequest
 
@@ -50,7 +52,15 @@ class PrivilegeRequestCreate(APIView):
 
         serializer = ReadPrivilegeRequestSerializer(data=data)
 
+        group = Group.objects.get(id=group_id)
+        try:
+            old_request = group.privilegerequest
+            group.privilegerequest.delete()
+        except PrivilegeRequest.DoesNotExist:
+            pass
+
         if not serializer.is_valid():
+            group.privilegerequest = old_request
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -59,7 +69,25 @@ class PrivilegeRequestCreate(APIView):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as error:
+            group.privilegerequest = old_request
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PrivilegeRequestDelete(DestroyAPIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def delete(self, request, pk, *args, **kwargs):
+        user = User.cast_django_user(request.user)
+        try:
+            request = PrivilegeRequest.objects.get(id=pk)
+        except PrivilegeRequest.DoesNotExist:
+            return Response("Request does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        if not request.group.owner_id == user.id:
+            return Response("You do not have authorization to delete this request", status=status.HTTP_401_UNAUTHORIZED)
+
+        request.delete()
+        return Response("Request deleted", status=status.HTTP_200_OK)
 
 
 class ApprovePrivilegeRequest(APIView):
