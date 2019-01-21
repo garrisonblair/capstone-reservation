@@ -109,3 +109,28 @@ class TestRoomStatisticManager(TestCase):
 
         self.assertEqual(self.stats.get_average_time_booked_per_day(room=self.room, start_date=date4, end_date=date5),
                          0.556)
+
+    def testGetRoomStatistics(self):
+        date4 = datetime.datetime(2018, 12, 24).date()
+        booking4 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=date4,
+                           start_time=self.start_time,
+                           end_time=self.end_time)
+        booking4.save()
+
+        date5 = datetime.datetime(2019, 1, 10).date()
+        booking5 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=date5,
+                           start_time=self.start_time,
+                           end_time=self.end_time)
+        booking5.save()
+
+        stats = {'average_bookings_per_day': 0.278,
+                 'average_time_booked_per_day': 0.556,
+                 'hours_booked': 10.0,
+                 'num_room_bookings': 5,
+                 'room': {'number_of_computers': 2, 'capacity': 7, 'name': '1', 'id': 1}}
+
+        self.assertEqual(self.stats.get_serialized_statistics(room=self.room, start_date=date4, end_date=date5), stats)
