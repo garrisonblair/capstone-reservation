@@ -6,11 +6,6 @@ from apps.rooms.serializers.room import RoomSerializer
 
 
 class RoomStatisticManager:
-    def get_first_booking_date(self):
-        if Booking.objects.count() == 0:
-            return datetime.datetime.now().date()
-        return Booking.objects.order_by("date").first().date
-
     def get_num_room_bookings(self, room, start_date=None, end_date=None):
         return room.get_bookings(start_date, end_date).count()
 
@@ -24,7 +19,7 @@ class RoomStatisticManager:
                                      start_date=None,
                                      end_date=datetime.datetime.now().date()):
         if start_date is None:
-            start_date = self.get_first_booking_date()
+            start_date = Booking.objects.get_first_booking_date()
 
         total_days = end_date - start_date
         total_days = total_days.days + 1
@@ -36,7 +31,7 @@ class RoomStatisticManager:
                                         start_date=None,
                                         end_date=datetime.datetime.now().date()):
         if start_date is None:
-            start_date = self.get_first_booking_date()
+            start_date = Booking.objects.get_first_booking_date()
 
         total_days = end_date - start_date
         total_days = total_days.days + 1

@@ -32,6 +32,11 @@ class BookingManager(models.Manager):
 
         return booking
 
+    def get_first_booking_date(self):
+        if self.count() == 0:
+            return datetime.datetime.now().date()
+        return self.order_by("date").first().date
+
 
 class Booking(models.Model, SubjectModel):
     booker = models.ForeignKey(User,
