@@ -570,10 +570,11 @@ class BookingAPITest(TestCase):
 
         bookings_before_cancel = len(Booking.objects.all())
 
-        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
-                                    }, format="json")
-        force_authenticate(request, user=self.booker)
-        response = BookingCancel.as_view()(request, booking.id)
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
+            request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                        }, format="json")
+            force_authenticate(request, user=self.booker)
+            response = BookingCancel.as_view()(request, booking.id)
 
         bookings_after_cancel = len(Booking.objects.all())
 
@@ -600,19 +601,14 @@ class BookingAPITest(TestCase):
         campon2.save()
 
         bookings_before_cancel = len(Booking.objects.all())
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
+            request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                        }, format="json")
 
-        print("\nAll bookings before: ", Booking.objects.all())
-        print("\n# bookings: ", bookings_before_cancel)
-
-        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
-                                    }, format="json")
-        force_authenticate(request, user=self.booker)
-        response = BookingCancel.as_view()(request, booking.id)
+            force_authenticate(request, user=self.booker)
+            response = BookingCancel.as_view()(request, booking.id)
 
         bookings_after_cancel = len(Booking.objects.all())
-
-        print("\nAll bookings after: ", Booking.objects.all())
-        print("\n# bookings: ", bookings_after_cancel)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
