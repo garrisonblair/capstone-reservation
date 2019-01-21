@@ -22,3 +22,12 @@ class RoomStatisticManager:
         decimal.getcontext().prec = 3
         num_room_bookings = self.get_num_room_bookings(room=room, start_date=start_date, end_date=end_date)
         return float(decimal.Decimal(num_room_bookings) / decimal.Decimal(total_days))
+
+    def get_average_time_booked_per_day(self, room,
+                                        start_date=Booking.get_first_booking_date(),
+                                        end_date=datetime.datetime.now().date()):
+        total_days = end_date - start_date
+        total_days = total_days.days + 1
+        decimal.getcontext().prec = 3
+        time_booked = self.get_time_booked(room=room, start_date=start_date, end_date=end_date).total_seconds() / 3600
+        return float(decimal.Decimal(time_booked) / decimal.Decimal(total_days))
