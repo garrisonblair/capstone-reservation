@@ -11,7 +11,8 @@ from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.models.User import User
 from apps.util.mock_datetime import mock_datetime
-from apps.groups.views.group_privileges import ApprovePrivilegeRequest, PrivilegeRequestCreate, DenyPrivilegeRequest
+from apps.groups.views.group_privileges import ApprovePrivilegeRequest, PrivilegeRequestCreate, DenyPrivilegeRequest, \
+    PrivilegeRequestDelete
 
 
 class PrivilegeRequestTest(TestCase):
@@ -178,3 +179,39 @@ class PrivilegeRequestTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(len(mail.outbox), 0)
+
+    def testCancelPrivilegeRequestSuccess(self):
+        privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
+        privilege_request.save()
+        self.assertEqual(PrivilegeRequest.objects.count(), 1)
+
+        request = self.factory.delete("/cancel_request/{}".format(privilege_request.id), format="json")
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = PrivilegeRequestDelete.as_view()(request, privilege_request.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(PrivilegeRequest.objects.count(), 0)
+
+    def testCancelPrivilegeRequestUnauthorized(self):
+        privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
+        privilege_request.save()
+        self.assertEqual(PrivilegeRequest.objects.count(), 1)
+
+        request = self.factory.delete("/cancel_request/{}".format(privilege_request.id), format="json")
+        force_authenticate(request, user=User.objects.get(username="admin"))
+        response = PrivilegeRequestDelete.as_view()(request, privilege_request.id)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(PrivilegeRequest.objects.count(), 1)
+
+    def testCancelPrivilegeRequestBadRequest(self):
+        privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
+        privilege_request.save()
+        self.assertEqual(PrivilegeRequest.objects.count(), 1)
+
+        request = self.factory.delete("/cancel_request/{}".format(1000), format="json")
+        force_authenticate(request, user=User.objects.get(username="admin"))
+        response = PrivilegeRequestDelete.as_view()(request, 1000)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(PrivilegeRequest.objects.count(), 1)
