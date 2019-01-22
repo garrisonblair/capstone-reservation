@@ -14,6 +14,7 @@ import BookingActivity from './components/Admin/Stats/BookingActivity';
 import Settings from './components/Admin/Settings';
 import Groups from './components/Groups';
 import Bookers from './components/Admin/Bookers';
+import Privileges from './components/Privileges';
 
 
 ReactDOM.render(
@@ -32,6 +33,7 @@ ReactDOM.render(
         <Route exact path="/admin/logs" render={() => <Admin menuType="logs" content={<BookingActivity />} />} />
         <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<Stats />} />} />
         <Route exact path="/admin/bookers" render={() => <Admin menuType="bookers" content={<Bookers />} />} />
+        <Route exact path="/privileges" component={Privileges} />
         <Route component={NotFound} />
       </Switch>
     </div>

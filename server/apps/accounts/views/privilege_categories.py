@@ -8,7 +8,7 @@ from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 
 class PrivilegeCategoryList(ListAPIView):
-    permission_classes = (IsAuthenticated, IsSuperUser)
+    permission_classes = (IsAuthenticated, IsBooker)
     serializer_class = PrivilegeCategorySerializer
     queryset = PrivilegeCategory.objects.all()
 
