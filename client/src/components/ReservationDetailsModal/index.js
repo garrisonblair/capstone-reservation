@@ -47,9 +47,11 @@ class ReservationDetailsModal extends Component {
   componentWillReceiveProps(nextProps) {
     const { show } = nextProps;
     if (nextProps.show) {
-      this.setState({
-        show,
-      });
+      if (localStorage.getItem('CapstoneReservationUser') == null) {
+        this.setState({ showLogin: true });
+      } else {
+        this.setState({ show });
+      }
     }
 
     let hour = '';
@@ -137,18 +139,17 @@ class ReservationDetailsModal extends Component {
   }
 
   closeLogin = () => {
-    const { isRecurring } = this.state;
+    const { show } = this.props;
     this.setState({ showLogin: false });
     if (localStorage.getItem('CapstoneReservationUser') == null) {
       sweetAlert(
-        'Reservation failed',
+        'Error',
         'Please Log in to make a reservation.',
         'error',
       );
-    } else if (isRecurring) {
-      this.sendPostRequestRecurringBooking(false);
+      this.closeModal();
     } else {
-      this.sendPostRequestBooking();
+      this.setState({ show });
     }
   }
 
@@ -326,9 +327,7 @@ class ReservationDetailsModal extends Component {
       return;
     }
 
-    if (localStorage.getItem('CapstoneReservationUser') == null) {
-      this.setState({ showLogin: true });
-    } else if (isRecurring) {
+    if (isRecurring) {
       this.sendPostRequestRecurringBooking(false);
     } else {
       this.sendPostRequestBooking();
@@ -515,7 +514,7 @@ class ReservationDetailsModal extends Component {
     const { selectedRoomName } = this.props;
     return (
       <div id="reservation-details-modal">
-        <Modal centered={false} size="tiny" open={show}>
+        <Modal centered={false} size="tiny" open={show} onClose={this.closeModal}>
           <Modal.Header>
             <Icon name="map marker alternate" />
             Room

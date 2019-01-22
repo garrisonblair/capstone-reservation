@@ -19,13 +19,12 @@ $backgroundColorCells: #C9A859;
 $backgroundColorRooms: #A17F2E;
 $backgroundColorHours: #A17F2E;
 $borderWidth: 1px;
-$cellsWidth: 120px;
 $cellsMinHeight: auto;
 
 /* Calendar */
 
 body {
-  overflow: scroll; 
+  overflow: scroll;
 }
 
 .calendar__container {
@@ -41,6 +40,7 @@ body {
   overflow-x: visible;
   background-color: $backgroundColorContainer;
   grid-template-rows: max-content auto;
+  padding-bottom: 100px;
 }
 
 .calendar__wrapper {
@@ -72,12 +72,9 @@ body {
 
 .calendar__rooms__wrapper {
   display: inline-grid;
-  grid-column-start: 2;
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
   // height: 50px;
-  grid-template-columns: repeat(var(--colNum), 1fr);
   color: $textColorHeader;
 }
 
@@ -85,14 +82,11 @@ body {
   display: inline-grid;
   position: -webkit-sticky;
   position: sticky;
-  left: 0;
-  grid-template-rows: repeat(var(--rowNum), 1fr);
   color: $textColorHeader;
 }
 
 .calendar__cells__wrapper {
   display: inline-grid;
-  grid-template-columns: repeat(var(--colNum), 1fr);
   height: 100%;
 }
 
@@ -100,9 +94,7 @@ body {
   border: $borderWidth solid $borderColor;
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
-  width: $cellsWidth;
   min-height: $cellsMinHeight;
-  grid-column: 1;
   // height: 50px;
   background-color: $backgroundColorCells;
   &--campon {
@@ -117,15 +109,15 @@ body {
 }
 
 .calendar__booking {
-  border-top: 1px solid white;
   padding: 1px;
-  font-size: 11px;
+  font-size: 10px;
   // display: grid;
   // grid-template-rows: repeat(1, 1fr);
   color: white;
   font-weight: 100;
   border-radius: 5px;
-  width: 99.1%;
+  min-width: max-content;
+  // min-height: max-content;
 }
 
 .calendar__booking:hover {
@@ -135,7 +127,6 @@ body {
 
 .calendar__rooms__cells {
   display: inline-grid;
-  grid-template-rows: repeat(var(--cellsDivisionNum), 1fr);
 }
 
 .calendar__rooms__room {
@@ -172,12 +163,12 @@ body {
   cursor: pointer;
 }
 
-.menu--date:before{
+.menu--date:before {
   content: none !important;
 }
 
 .arrow {
   color: #932439 !important;
-  // background-color: #4D4D4D !important; 
+  // background-color: #4D4D4D !important;
   margin-left: 5px !important;
 }
