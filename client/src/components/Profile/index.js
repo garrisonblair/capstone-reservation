@@ -7,6 +7,7 @@ import {
 import Navigation from '../Navigation';
 import Groups from '../Groups';
 import Privileges from '../Privileges';
+import AuthenticationRequired from '../HOC/AuthenticationRequired';
 // import api from '../../utils/api';
 import './Profile.scss';
 
@@ -39,4 +40,4 @@ class Profile extends Component {
   }
 }
 
-export default Profile;
+export default AuthenticationRequired(Profile);

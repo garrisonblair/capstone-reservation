@@ -19,6 +19,8 @@ class Navigation extends Component {
   }
 
   handleLogin = () => {
+    // eslint-disable-next-line react/prop-types
+    const { history } = this.props;
     if (localStorage.CapstoneReservationUser) {
       api.logout()
         .then(() => {
@@ -28,6 +30,9 @@ class Navigation extends Component {
             'success',
           );
           this.setState({ showLogin: false });
+          if (history.location.pathname !== '/') {
+            history.push('/');
+          }
         });
     } else {
       this.setState({ showLogin: true });
@@ -77,6 +82,23 @@ class Navigation extends Component {
     return component;
   }
 
+  renderAccountDropDown = () => {
+    if (!localStorage.CapstoneReservationUser) {
+      return '';
+    }
+    const { history } = this.props;
+    const component = (
+      <Dropdown item text="Account">
+        <Dropdown.Menu>
+          <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
+          <Dropdown.Item icon="cog" text="Settings" />
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+
+    return component;
+  }
+
   renderLoggedInInfo = () => {
     if (!localStorage.CapstoneReservationUser) {
       return '';
@@ -114,12 +136,7 @@ class Navigation extends Component {
           <Menu.Menu position="right" inverted="true" className="navigation__container">
             {this.renderLoggedInInfo()}
             {this.renderAdminSettings()}
-            <Dropdown item text="Account">
-              <Dropdown.Menu>
-                <Dropdown.Item icon="user" text="Profile" />
-                <Dropdown.Item icon="cog" text="Settings" />
-              </Dropdown.Menu>
-            </Dropdown>
+            {this.renderAccountDropDown()}
             <Menu.Item onClick={this.handleLogin} className="navigation__login">
               {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
             </Menu.Item>
