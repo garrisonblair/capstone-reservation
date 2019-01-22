@@ -75,11 +75,14 @@ class Booking(models.Model, SubjectModel):
         )
 
     def validate_model(self):
-
+        now = datetime.datetime.now()
         if not isinstance(self.start_time, datetime.time):
             self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
         if not isinstance(self.end_time, datetime.time):
             self.end_time = datetime.datetime.strptime(self.end_time, "%H:%M").time()
+
+        if self.date < now.date() or (self.date == now.date() and self.start_time < now.time()):
+            raise ValidationError("Booking must be made in the present")
 
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
