@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import api from '../../utils/api';
 
 
 function AuthenticationRequired(InnerComponent) {
   class HOC extends Component {
     componentDidMount() {
-      const {history} = this.props;
+      const { history } = this.props;
 
       if (!localStorage.CapstoneReservationUser) {
         history.push('/');
@@ -13,18 +13,15 @@ function AuthenticationRequired(InnerComponent) {
       }
 
       api.getMyUser()
-      .then((response) => {
-        let {data} = response;
-        // console.log(data);
-      })
-      .catch((error) => {
-        console.log(error);
-        history.push('/');
-      })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log(error);
+          history.push('/');
+        });
     }
 
     render() {
-      return <InnerComponent {...this.props}/>
+      return <InnerComponent {...this.props} />;
     }
   }
 
