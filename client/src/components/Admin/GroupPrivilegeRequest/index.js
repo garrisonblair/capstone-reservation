@@ -138,8 +138,9 @@ class GroupPrivilegeRequest extends Component {
         {this.renderDropDown()}
         {requests.length === 0 ? (
           <Message>
+            <Message.Header>No result</Message.Header>
             <p>
-              There is no request
+              There is no requests
               {filterBy.length > 0 ? ` with filter '${filterBy}'` : null}
             </p>
           </Message>
