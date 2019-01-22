@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
-  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab, Divider
+  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab, Divider,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import './ReservationDetailsModal.scss';

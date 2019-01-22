@@ -4,9 +4,12 @@ from apps.rooms.models.Room import Room
 from datetime import datetime, time
 
 from django.core.exceptions import ValidationError
+from django.core.management import call_command
 
 from apps.system_administration.models.system_settings import SystemSettings
 from apps.accounts.models.User import User
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+from apps.accounts.exceptions import PrivilegeError
 
 
 class TestBooking(TestCase):
@@ -14,8 +17,7 @@ class TestBooking(TestCase):
         # Setup one booker
         self.booker = User.objects.create_user(username="f_daigl",
                                                email="fred@email.com",
-                                               password="safe_password")
-        self.booker.user = None
+                                               password="safe_password")  # type: User
         self.booker.save()
 
         # Setup one Room
@@ -26,7 +28,7 @@ class TestBooking(TestCase):
         self.room.save()
 
         # Setup one Date and Time
-        self.date = datetime.now().strftime("%Y-%m-%d")
+        self.date = datetime.now().date()
         self.start_time = datetime.strptime("12:00", "%H:%M").time()
         self.end_time = datetime.strptime("13:00", "%H:%M").time()
 
@@ -317,6 +319,48 @@ class TestBooking(TestCase):
             return
 
         self.fail("Merged booking not deleted")
+
+    def testBypassPrivilegeBooking(self):
+        call_command("loaddata", "apps/accounts/fixtures/privilege_categories.json")
+
+        privilege = PrivilegeCategory.objects.get(is_default=True)  # type: PrivilegeCategory
+
+        privilege.max_num_bookings_for_date = 1
+        privilege.save()
+
+        self.booker.bookerprofile.privilege_categories.add(privilege)
+        self.booker.save()
+
+        booking1 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(12, 0),
+                           end_time=time(15, 0))
+
+        booking1.save()
+
+        booking2 = Booking(booker=self.booker,
+                           room=self.room,
+                           date=self.date,
+                           start_time=time(16, 0),
+                           end_time=time(18, 0))
+        try:
+            booking2.save()
+        except PrivilegeError:
+            privilege_error = True
+
+        if not privilege_error:
+            self.fail("Privilege not evaluated")
+
+        booking2.bypass_privileges = True
+
+        try:
+            booking2.save()
+        except PrivilegeCategory:
+            self.fail("Privilege should not be evaluated")
+            return
+
+        self.assertTrue(True)
 
     def activateMerging(self, threshold):
         settings = SystemSettings.get_settings()
