@@ -67,7 +67,6 @@ class Booking(models.Model, SubjectModel):
             self.object_created()
         else:
             self.object_updated()
-
         return this
 
     def __str__(self):
@@ -85,18 +84,11 @@ class Booking(models.Model, SubjectModel):
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
 
-        elif Booking.objects.filter(~Q(start_time=self.end_time),
-                                    ~Q(id=self.id),
-                                    room=self.room,
-                                    date=self.date,
-                                    start_time__range=(self.start_time, self.end_time)).exists():
-            raise ValidationError("Specified time is overlapped with other bookings.")
-
-        elif Booking.objects.filter(~Q(end_time=self.start_time),
-                                    ~Q(id=self.id),
-                                    room=self.room,
-                                    date=self.date,
-                                    end_time__range=(self.start_time, self.end_time)).exists():
+        if Booking.objects.filter(~Q(id=self.id),
+                                  start_time__lt=self.end_time,
+                                  end_time__gt=self.start_time,
+                                  room=self.room,
+                                  date=self.date).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
     def merge_with_neighbouring_bookings(self):
