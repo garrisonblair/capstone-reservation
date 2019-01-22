@@ -71,9 +71,12 @@ class ReservationDetailsModal extends Component {
         hour = `${(parseInt(hour, 10) + 12)}`;
       }
     }
+
     this.setState({
       startHour: hour,
       startMinute: minute,
+      adminSelectedUser: undefined,
+      bypassPrivileges: false,
     });
     this.getDefaultEndTime(hour, minute);
   }
