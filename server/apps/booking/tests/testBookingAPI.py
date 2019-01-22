@@ -613,6 +613,73 @@ class BookingAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
 
+    def testGetMyBookingsUnauthorizedNotLoggedInFail(self):
+
+        today = datetime.datetime.now().date()
+
+        self.room2 = Room(name="H833-2", capacity=4, number_of_computers=1)
+        self.room2.save()
+
+        self.room3 = Room(name="H833-3", capacity=4, number_of_computers=1)
+        self.room3.save()
+
+        self.room4 = Room(name="H833-4", capacity=4, number_of_computers=1)
+        self.room4.save()
+
+        booking2 = Booking(booker=self.booker_2, room=self.room2, date=today, start_time=datetime.time(12, 00),
+                           end_time=datetime.time(13, 00))
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker_2, room=self.room3, date=today, start_time=datetime.time(13, 00),
+                           end_time=datetime.time(14, 00))
+        booking3.save()
+
+        booking4 = Booking(booker=self.booker_2, room=self.room4, date=today, start_time=datetime.time(14, 00),
+                           end_time=datetime.time(15, 00))
+        booking4.save()
+
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
+            request = self.factory.get("/bookings/" + str(self.booker_2), {
+                                        }, format="json")
+
+            response = BookingViewMyBookings.as_view()(request, self.booker.id)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def testGetMyBookingsUnauthorizedNotBookingOwnerFail(self):
+
+        today = datetime.datetime.now().date()
+
+        self.room2 = Room(name="H833-2", capacity=4, number_of_computers=1)
+        self.room2.save()
+
+        self.room3 = Room(name="H833-3", capacity=4, number_of_computers=1)
+        self.room3.save()
+
+        self.room4 = Room(name="H833-4", capacity=4, number_of_computers=1)
+        self.room4.save()
+
+        booking2 = Booking(booker=self.booker_2, room=self.room2, date=today, start_time=datetime.time(12, 00),
+                           end_time=datetime.time(13, 00))
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker_2, room=self.room3, date=today, start_time=datetime.time(13, 00),
+                           end_time=datetime.time(14, 00))
+        booking3.save()
+
+        booking4 = Booking(booker=self.booker_2, room=self.room4, date=today, start_time=datetime.time(14, 00),
+                           end_time=datetime.time(15, 00))
+        booking4.save()
+
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
+            request = self.factory.get("/bookings/" + str(self.booker_2), {
+                                        }, format="json")
+
+            force_authenticate(request, user=self.booker_3)
+            response = BookingViewMyBookings.as_view()(request, self.booker.id)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def testGetMyBookingsStandardBookingsTypeOnlySuccess(self):
 
         today = datetime.datetime.now().date()
@@ -643,7 +710,7 @@ class BookingAPITest(TestCase):
                                         }, format="json")
 
             force_authenticate(request, user=self.booker_2)
-            response = BookingViewMyBookings.as_view()(request, self.booker_2)
+            response = BookingViewMyBookings.as_view()(request, self.booker_2.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["standard_bookings"]), 3)
@@ -666,11 +733,11 @@ class BookingAPITest(TestCase):
         campon.save()
 
         with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
-            request = self.factory.get("/bookings/" + str(self.booker_2), {
+            request = self.factory.get("/bookings/" + str(self.booker_2.id), {
                                         }, format="json")
 
             force_authenticate(request, user=self.booker_2)
-            response = BookingViewMyBookings.as_view()(request, self.booker_2)
+            response = BookingViewMyBookings.as_view()(request, self.booker_2.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["campons"]), 1)
@@ -685,20 +752,22 @@ class BookingAPITest(TestCase):
         self.room6 = Room(name="H833-6", capacity=4, number_of_computers=1)
         self.room6.save()
 
-        booking5 = RecurringBooking(booker=self.booker_2, room=self.room5, start_date=today, end_date=datetime.date(2030, 7, 14),  booking_start_time=datetime.time(17, 00),
+        booking5 = RecurringBooking(booker=self.booker_2, room=self.room5, start_date=today,
+                                    end_date=datetime.date(2030, 7, 14),  booking_start_time=datetime.time(17, 00),
                                     booking_end_time=datetime.time(19, 00))
         booking5.save()
 
-        booking6 = RecurringBooking(booker=self.booker_2, room=self.room2, start_date=today, end_date=datetime.date(2030, 7, 14), booking_start_time=datetime.time(20, 00),
+        booking6 = RecurringBooking(booker=self.booker_2, room=self.room2, start_date=today,
+                                    end_date=datetime.date(2030, 7, 14), booking_start_time=datetime.time(20, 00),
                                     booking_end_time=datetime.time(22, 00))
         booking6.save()
 
         with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
-            request = self.factory.get("/bookings/" + str(self.booker_2), {
+            request = self.factory.get("/bookings/" + str(self.booker_2.id), {
                                         }, format="json")
 
             force_authenticate(request, user=self.booker_2)
-            response = BookingViewMyBookings.as_view()(request, self.booker_2)
+            response = BookingViewMyBookings.as_view()(request, self.booker_2.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["recurring_bookings"]), 2)
@@ -747,20 +816,22 @@ class BookingAPITest(TestCase):
                            end_time=datetime.time(15, 00))
         booking4.save()
 
-        booking5 = RecurringBooking(booker=self.booker_2, room=self.room5, start_date=today, end_date=datetime.date(2030, 7, 14),  booking_start_time=datetime.time(17, 00),
+        booking5 = RecurringBooking(booker=self.booker_2, room=self.room5, start_date=today,
+                                    end_date=datetime.date(2030, 7, 14),  booking_start_time=datetime.time(17, 00),
                                     booking_end_time=datetime.time(19, 00))
         booking5.save()
 
-        booking6 = RecurringBooking(booker=self.booker_2, room=self.room2, start_date=today, end_date=datetime.date(2030, 7, 14), booking_start_time=datetime.time(20, 00),
+        booking6 = RecurringBooking(booker=self.booker_2, room=self.room2, start_date=today,
+                                    end_date=datetime.date(2030, 7, 14), booking_start_time=datetime.time(20, 00),
                                     booking_end_time=datetime.time(22, 00))
         booking6.save()
 
         with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
-            request = self.factory.get("/bookings/" + str(self.booker_2), {
+            request = self.factory.get("/bookings/" + str(self.booker_2.id), {
                                         }, format="json")
 
             force_authenticate(request, user=self.booker_2)
-            response = BookingViewMyBookings.as_view()(request, self.booker_2)
+            response = BookingViewMyBookings.as_view()(request, self.booker_2.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["standard_bookings"]), 3)

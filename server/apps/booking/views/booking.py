@@ -204,6 +204,9 @@ class BookingViewMyBookings(APIView):
 
     def get(self, request, pk):
 
+        if pk != self.request.user.id:
+            return Response("Only owner of bookings can view bookings", status=status.HTTP_403_FORBIDDEN)
+
         booker_id = request.user.id
         my_bookings = {}
 
