@@ -7,8 +7,25 @@ import './GroupPrivilegeRequest.scss';
 
 class PrivilegeRequestRow extends Component {
   handleDeny = () => {
-    // const { request } = this.props;
-    sweetAlert('Warning', 'Do you want to deny the privilege to group ', 'warning');
+    const { request } = this.props;
+    sweetAlert({
+      title: 'Warning',
+      text: `Are you sure you want to deny privilege to group ${request.group}? Enter a reason.`,
+      type: 'warning',
+      input: 'text',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Deny',
+    }).then((r) => {
+      if (r.value) {
+        api.denyPrivilegeRequest(request.id, r.value)
+          .then((r2) => {
+            if (r2.status === 200) {
+              sweetAlert('Success', 'It was successfully denied', 'success');
+            }
+          });
+      }
+    });
   }
 
   handleApprove = () => {
@@ -34,10 +51,10 @@ class PrivilegeRequestRow extends Component {
           {request.status}
         </Table.Cell>
         <Table.Cell>
-          <Button color="green" onClick={this.handleApprove}>Accept</Button>
+          <Button color="blue" onClick={this.handleApprove}>Accept</Button>
         </Table.Cell>
         <Table.Cell>
-          <Button color="red">Deny</Button>
+          <Button color="red" onClick={this.handleDeny}>Deny</Button>
         </Table.Cell>
       </Table.Row>
     );

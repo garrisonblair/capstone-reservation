@@ -13,6 +13,7 @@ class GroupPrivilegeRequest extends Component {
   componentDidMount() {
     api.getPrivilegeRequests()
       .then((r) => {
+        console.log(r);
         if (r.status === 200) {
           this.setState({ requests: r.data });
         }
