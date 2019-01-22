@@ -32,9 +32,12 @@ class CampOn(models.Model):
         super(CampOn, self).save(*args, **kwargs)
 
     def __str__(self):
+        booking_id = ""
+        if self.camped_on_booking:
+            booking_id = self.camped_on_booking_id
         return 'Campon: {}, Student: {}, Booking: {}, Start time: {}, End time: {},'.format(self.id,
-                                                                                            self.booker.booker_id,
-                                                                                            self.camped_on_booking.id,
+                                                                                            self.booker.username,
+                                                                                            booking_id,
                                                                                             self.start_time,
                                                                                             self.end_time)
 
