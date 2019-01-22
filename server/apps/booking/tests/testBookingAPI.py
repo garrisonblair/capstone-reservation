@@ -413,3 +413,74 @@ class BookingAPITest(TestCase):
             response = BookingRetrieveUpdateDestroy.as_view()(request, booking.id)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def testBookAsAdminForUser(self):
+        admin = User.objects.create_user(username="admin",
+                                         is_superuser=True)
+
+        admin.save()
+
+        request = self.factory.post("/booking", {
+                                        "room": self.room.id,
+                                        "date": "2018-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "16:00:00",
+                                        "admin_selected_user": self.booker.id
+                                    }, format="json")
+
+        force_authenticate(request, user=admin)
+
+        with mock_datetime(datetime.datetime(2018, 10, 7, 13, 1, 0, 0), datetime):
+            response = BookingCreate.as_view()(request)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        booking = Booking.objects.all().latest('id')
+
+        self.assertEqual(self.booker, booking.booker)
+
+    def testBookerCantBypassPrivileges(self):
+        request = self.factory.post("/booking", {
+            "room": self.room.id,
+            "date": "2018-10-7",
+            "start_time": "14:00:00",
+            "end_time": "16:00:00",
+            "bypass_privileges": True
+        }, format="json")
+
+        force_authenticate(request, user=self.booker)
+
+        with mock_datetime(datetime.datetime(2018, 10, 7, 13, 1, 0, 0), datetime):
+            response = BookingCreate.as_view()(request)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        booking = Booking.objects.all().latest('id')
+
+        self.assertEqual(self.booker, booking.booker)
+        self.assertEqual(False, booking.bypass_privileges)
+
+    def testBookerCantBookForOtherUser(self):
+
+        booker2 = User.objects.create(username="user2")
+        booker2.save()
+
+        request = self.factory.post("/booking", {
+            "room": self.room.id,
+            "date": "2018-10-7",
+            "start_time": "14:00:00",
+            "end_time": "16:00:00",
+            "admin_selected_user": self.booker.id
+        }, format="json")
+
+        force_authenticate(request, user=self.booker)
+
+        with mock_datetime(datetime.datetime(2018, 10, 7, 13, 1, 0, 0), datetime):
+            response = BookingCreate.as_view()(request)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        booking = Booking.objects.all().latest('id')
+
+        self.assertNotEqual(booker2, booking.booker)
+        self.assertEqual(self.booker, booking.booker)
