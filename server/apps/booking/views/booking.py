@@ -48,7 +48,7 @@ class BookingCreate(APIView):
     def post(self, request):
         data = request.data
 
-        if request.user.is_superuser and data["admin_selected_user"]:
+        if request.user.is_superuser and "admin_selected_user" in data:
             data["booker"] = data["admin_selected_user"]
             del data["admin_selected_user"]
         else:
