@@ -208,7 +208,7 @@ class BookingViewMyBookings(APIView):
 
         regular_bookings = Booking.objects.get(booker=booker_id)
         recurring_bookings = RecurringBooking.objects.get(booker=booker_id)
-        campons = CampOn.objects.filter(booker=booker_id)
+        campons = CampOn.objects.get(booker=booker_id)
 
         my_bookings["regular_bookings"] = regular_bookings
         my_bookings["recurring_bookings"] = recurring_bookings
@@ -219,4 +219,3 @@ class BookingViewMyBookings(APIView):
 
 def booking_key(val):
     return val.id
-
