@@ -7,6 +7,7 @@ import {
 } from 'semantic-ui-react';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
+import storage from '../../utils/local-storage';
 import './BookingInfoModal.scss';
 
 
@@ -118,7 +119,7 @@ class BookingInfoModal extends Component {
             {campons == null || campons.length === 0 ? null : this.renderCampons()}
           </div>
           <div className="ui divider" />
-          {this.renderForm(booking)}
+          {storage.getUser() ? this.renderForm(booking) : null}
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
           </div>
