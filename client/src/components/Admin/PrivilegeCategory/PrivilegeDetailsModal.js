@@ -16,6 +16,7 @@ class PrivilegeDetailsModal extends Component {
 
   render() {
     const { show, onClose, privilege } = this.props;
+    console.log(privilege);
     return (
       <Modal className="privilege-details-modal" open={show} onClose={onClose}>
         <Header>
@@ -32,7 +33,7 @@ class PrivilegeDetailsModal extends Component {
           </p>
           <p>
             <strong> Parent Category: </strong>
-            {privilege.parent_category || '-'}
+            {privilege.parent_category ? privilege.parent_category.name : '-'}
           </p>
           <p>
             <strong> Max Days Until Booking: </strong>

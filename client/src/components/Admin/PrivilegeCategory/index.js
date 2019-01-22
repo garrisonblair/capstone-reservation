@@ -92,11 +92,12 @@ class PrivilegeCategory extends Component {
       'Booking End Time',
       '',
     ];
+    console.log(privileges);
 
     const body = privileges.map(privilege => (
       <Table.Row key={privilege.id}>
         <Table.Cell>{privilege.name}</Table.Cell>
-        <Table.Cell>{privilege.parent_category || '-'}</Table.Cell>
+        <Table.Cell>{privilege.parent_category ? privilege.parent_category.name : '-'}</Table.Cell>
         <Table.Cell>{privilege.booking_start_time}</Table.Cell>
         <Table.Cell>{privilege.booking_end_time}</Table.Cell>
         <TableCell>
