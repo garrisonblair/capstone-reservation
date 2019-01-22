@@ -77,6 +77,8 @@ class ReservationDetailsModal extends Component {
     this.setState({
       startHour: hour,
       startMinute: minute,
+      adminSelectedUser: undefined,
+      bypassPrivileges: false,
     });
     this.getDefaultEndTime(hour, minute);
   }
@@ -132,8 +134,6 @@ class ReservationDetailsModal extends Component {
       },
       show: false,
       isRecurring: false,
-      adminSelectedUser: undefined,
-      bypassPrivileges: false,
     });
   }
 
