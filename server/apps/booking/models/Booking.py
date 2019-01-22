@@ -71,10 +71,9 @@ class Booking(models.Model, SubjectModel):
         return this
 
     def __str__(self):
-        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}, Recurring Booking: {}'.format(
-            self.id, self.booker.username, self.room.name, self.date, self.start_time, self.end_time,
-            self.recurring_booking
-        )
+        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}, Recurring Booking: {}'\
+            .format(self.id, self.booker.username, self.room.name, self.date, self.start_time, self.end_time,
+                    self.recurring_booking)
 
     def validate_model(self):
 
