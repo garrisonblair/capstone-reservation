@@ -7,10 +7,10 @@ import './GroupPrivilegeRequest.scss';
 
 class PrivilegeRequestRow extends Component {
   handleDeny = () => {
-    const { request } = this.props;
+    const { request, syncMethod } = this.props;
     sweetAlert({
       title: 'Warning',
-      text: `Are you sure you want to deny privilege to group ${request.group}? Enter a reason.`,
+      html: `Are you sure you want to deny privilege to group ${request.group.name}? <br />Enter a reason.`,
       type: 'warning',
       input: 'text',
       showCancelButton: true,
@@ -22,6 +22,7 @@ class PrivilegeRequestRow extends Component {
           .then((r2) => {
             if (r2.status === 200) {
               sweetAlert('Success', 'It was successfully denied', 'success');
+              syncMethod();
             }
           });
       }
@@ -29,32 +30,38 @@ class PrivilegeRequestRow extends Component {
   }
 
   handleApprove = () => {
-    const { request } = this.props;
+    const { request, syncMethod } = this.props;
     api.approvePrivilegeRequest(request.id)
       .then((r) => {
-        console.log(r);
+        if (r.status === 200) {
+          sweetAlert('Success', 'It was successfully approved', 'success');
+          syncMethod();
+        }
       });
   }
 
+  renderButtons = () => (
+    <div>
+      <Button color="blue" onClick={this.handleApprove}>Accept</Button>
+      <Button color="red" onClick={this.handleDeny}>Deny</Button>
+    </div>
+  )
+
   render() {
     const { request } = this.props;
-    console.log(request);
     return (
       <Table.Row>
         <Table.Cell>
-          {request.group}
+          {request.group.name}
         </Table.Cell>
         <Table.Cell>
-          {request.privilege_category}
+          {request.privilege_category.name}
         </Table.Cell>
         <Table.Cell>
           {request.status}
         </Table.Cell>
         <Table.Cell>
-          <Button color="blue" onClick={this.handleApprove}>Accept</Button>
-        </Table.Cell>
-        <Table.Cell>
-          <Button color="red" onClick={this.handleDeny}>Deny</Button>
+          {request.status === 'Pending' ? this.renderButtons() : null}
         </Table.Cell>
       </Table.Row>
     );
@@ -64,6 +71,7 @@ class PrivilegeRequestRow extends Component {
 PrivilegeRequestRow.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   request: PropTypes.object.isRequired,
+  syncMethod: PropTypes.func.isRequired,
 };
 
 export default PrivilegeRequestRow;

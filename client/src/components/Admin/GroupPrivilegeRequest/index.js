@@ -11,9 +11,12 @@ class GroupPrivilegeRequest extends Component {
   }
 
   componentDidMount() {
+    this.syncPrivileges();
+  }
+
+  syncPrivileges = () => {
     api.getPrivilegeRequests()
       .then((r) => {
-        console.log(r);
         if (r.status === 200) {
           this.setState({ requests: r.data });
         }
@@ -37,14 +40,14 @@ class GroupPrivilegeRequest extends Component {
               <Table.HeaderCell>
                 Status
               </Table.HeaderCell>
-              {/* This tab is for approved buttons */}
-              <Table.HeaderCell />
-              {/* This tab is for denied buttons */}
+              {/* This tab is for buttons */}
               <Table.HeaderCell />
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {requests.map(r => <PrivilegeRequestRow request={r} key={r.id} />)}
+            {requests.map(
+              r => <PrivilegeRequestRow request={r} key={r.id} syncMethod={this.syncPrivileges} />,
+            )}
           </Table.Body>
         </Table>
       </div>
