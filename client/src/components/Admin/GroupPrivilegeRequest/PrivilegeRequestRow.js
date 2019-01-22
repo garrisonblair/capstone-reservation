@@ -1,28 +1,43 @@
 import React, { Component } from 'react';
-import { Table } from 'semantic-ui-react';
+import { Table, Button } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-// import api from '../../../utils/api';
+import sweetAlert from 'sweetalert2';
+import api from '../../../utils/api';
 import './GroupPrivilegeRequest.scss';
 
 class PrivilegeRequestRow extends Component {
   handleDeny = () => {
-
+    // const { request } = this.props;
+    sweetAlert('Warning', 'Do you want to deny the privilege to group ', 'warning');
   }
 
   handleApprove = () => {
-
+    const { request } = this.props;
+    api.approvePrivilegeRequest(request.id)
+      .then((r) => {
+        console.log(r);
+      });
   }
 
   render() {
-    const { group } = this.props;
-    console.log(group);
+    const { request } = this.props;
+    console.log(request);
     return (
       <Table.Row>
         <Table.Cell>
-          {group.name}
+          {request.group}
         </Table.Cell>
         <Table.Cell>
-          {group.name}
+          {request.privilege_category}
+        </Table.Cell>
+        <Table.Cell>
+          {request.status}
+        </Table.Cell>
+        <Table.Cell>
+          <Button color="green" onClick={this.handleApprove}>Accept</Button>
+        </Table.Cell>
+        <Table.Cell>
+          <Button color="red">Deny</Button>
         </Table.Cell>
       </Table.Row>
     );
@@ -31,7 +46,7 @@ class PrivilegeRequestRow extends Component {
 
 PrivilegeRequestRow.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  group: PropTypes.object.isRequired,
+  request: PropTypes.object.isRequired,
 };
 
 export default PrivilegeRequestRow;

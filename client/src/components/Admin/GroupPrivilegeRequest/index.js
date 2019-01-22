@@ -7,20 +7,20 @@ import './GroupPrivilegeRequest.scss';
 
 class GroupPrivilegeRequest extends Component {
   state = {
-    groups: [],
+    requests: [],
   }
 
   componentDidMount() {
-    api.getMyGroups()
+    api.getPrivilegeRequests()
       .then((r) => {
         if (r.status === 200) {
-          this.setState({ groups: r.data });
+          this.setState({ requests: r.data });
         }
       });
   }
 
   render() {
-    const { groups } = this.state;
+    const { requests } = this.state;
     return (
       <div id="group-privilege-request">
         <h2>Group&lsquo;s Privilege Request</h2>
@@ -34,15 +34,16 @@ class GroupPrivilegeRequest extends Component {
                 Requested Privilege
               </Table.HeaderCell>
               <Table.HeaderCell>
-                {/* This tab is for accept buttons */}
+                Status
               </Table.HeaderCell>
-              <Table.HeaderCell>
-                {/* This tab is for denied buttons */}
-              </Table.HeaderCell>
+              {/* This tab is for approved buttons */}
+              <Table.HeaderCell />
+              {/* This tab is for denied buttons */}
+              <Table.HeaderCell />
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {groups.map(g => <PrivilegeRequestRow group={g} key={g.id} />)}
+            {requests.map(r => <PrivilegeRequestRow request={r} key={r.id} />)}
           </Table.Body>
         </Table>
       </div>
