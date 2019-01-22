@@ -41,7 +41,7 @@ class Calendar extends Component {
    */
 
   componentDidMount() {
-    document.body.style.backgroundColor = '#3d3d3e';
+    document.body.style.backgroundColor = '#F2D692';
 
     this.getBookings();
     this.getRooms();

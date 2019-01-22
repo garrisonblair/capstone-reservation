@@ -7,6 +7,8 @@ import {
 import api from '../../utils/api';
 import InvitedRowItem from './InvitedRowItem';
 import MemberRowItem from './MemberRowItem';
+import RequestPrivilege from './RequestPrivilege';
+import './GroupsModal.scss';
 
 class GroupsModal extends Component {
   state = {
@@ -18,6 +20,7 @@ class GroupsModal extends Component {
     newInvitations: [],
     newInvitation: '',
     stateOptions: [],
+    groupPrivilegeRequest: null,
   }
 
   componentDidMount() {
@@ -30,6 +33,7 @@ class GroupsModal extends Component {
         groupMembers: selectedGroup.members,
         groupName: selectedGroup.name,
         groupInvitations: selectedGroup.group_invitations,
+        groupPrivilegeRequest: selectedGroup.privilege_request,
       });
     } else {
       api.getMyUser()
@@ -226,7 +230,7 @@ class GroupsModal extends Component {
 
   renderModalContent = () => {
     const {
-      groupOwner, stateOptions, newInvitation,
+      groupOwner, stateOptions, newInvitation, groupId, groupPrivilegeRequest,
     } = this.state;
     const { isAdmin } = this.props;
     return (
@@ -237,6 +241,8 @@ class GroupsModal extends Component {
             {groupOwner.username}
           </h3>
           <FormField>
+            <RequestPrivilege groupId={groupId} groupPrivilege={groupPrivilegeRequest} />
+            <h3>Members:</h3>
             {isAdmin ? (
               <div>
                 <Dropdown
@@ -246,13 +252,10 @@ class GroupsModal extends Component {
                   onChange={this.handleDropboxChange}
                   value={newInvitation}
                 />
-                <Button onClick={this.addMemberToList}>Invite</Button>
+                <Button onClick={this.addMemberToList} className="button-right">Invite</Button>
               </div>) : ''
             }
-
           </FormField>
-          <br />
-          <h3>Members:</h3>
           {this.renderMembersList()}
           <br />
           {this.renderInvitedList()}
@@ -265,7 +268,7 @@ class GroupsModal extends Component {
     const { onClose, show, selectedGroup } = this.props;
     const { groupId, groupName } = this.state;
     return (
-      <Modal centered={false} size="tiny" open={show} id="group-modal" onClose={onClose}>
+      <Modal centered={false} size="tiny" open={show} id="groups-modal" onClose={onClose}>
         <Modal.Header>
           <Input
             size="small"
