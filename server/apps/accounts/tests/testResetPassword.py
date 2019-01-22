@@ -54,3 +54,20 @@ class TestResetPassword(TestCase):
 
         response = ResetPasswordView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testResetPasswordWithSameAC(self):
+        request = self.factory.post('/user',
+                                    {
+                                        "username": self.username
+                                    },
+                                    format="json")
+
+        response = ResetPasswordView.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        request_again = self.factory.post('/user',
+                                    {
+                                        "username": self.username
+                                    },
+                                    format="json")
+        response_again = ResetPasswordView.as_view()(request_again)
+        self.assertEqual(response_again.status_code, status.HTTP_429_TOO_MANY_REQUESTS)

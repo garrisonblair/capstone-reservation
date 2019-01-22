@@ -3,7 +3,6 @@ import datetime
 from ..models.User import User
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -30,23 +29,27 @@ class ResetPasswordView(APIView):
         # Non-verified user
         try:
             user = User.objects.get(username=username)
-        except User.DoesNotExist as ex:
-            print(ex)
+        except User.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if user:
 
-            # Create verification token with 1 hour of expiration time
-            token = VerificationToken.objects.create(user=user)
+            try:
+                # Create verification token with 1 hour of expiration time
+                token = VerificationToken.objects.create(user=user)
 
-            # Send email
-            subject = 'Capstone Reservation - Reset your password'
-            verify_url = "{}://{}/#/verify_reset/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
+                # Send email
+                subject = 'Capstone Reservation - Reset your password'
+                verify_url = "{}://{}/#/verify_reset/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
+            except Exception as ex:
+                print(ex)
+                return Response(status=status.HTTP_429_TOO_MANY_REQUESTS)
+
             context = {
                 'verify_url': verify_url,
                 'expiration': token.expiration - datetime.timedelta(hours=4)
             }
-            html_message = render_to_string('password_reset_email.html', context)
+            html_message = render_to_string('password_reset.html', context)
             plain_message = strip_tags(html_message)
 
             send_mail(
@@ -57,7 +60,6 @@ class ResetPasswordView(APIView):
                 html_message=html_message,
                 fail_silently=False,
             )
-
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
