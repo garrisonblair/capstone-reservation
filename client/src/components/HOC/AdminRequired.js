@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 
 
 function AdminRequired(InnerComponent) {
@@ -8,7 +9,7 @@ function AdminRequired(InnerComponent) {
     componentDidMount() {
       const { history } = this.props;
 
-      if (!localStorage.CapstoneReservationUser) {
+      if (!storage.getUser()) {
         history.push('/404');
         return;
       }
