@@ -114,5 +114,15 @@ class BookingViewMyBookings(APIView):
     permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
     serializer_class = BookingSerializer
 
-    def patch(self, request, pk):
+    def get_queryset(self, request):
+
+        # request.user.id
+        # TODO: User should make request and with this request, should get all types of bookings stored in a dictionary
+        # regular_bookings = User.objects.get(id=member_user_id)
+        # TODO: 1. All regular bookings
+        #regular_bookings = Booking.objects.get(id=user_id)
+        # TODO: 1. All weekly bookings
+        # weekly_bookings =
+        # TODO: 1. All campons
+
         pass
