@@ -66,14 +66,13 @@ class BookingInfoModal extends Component {
   renderCampons = () => {
     const { campons } = this.props;
     const camponsInfo = [];
-    let i = 1;
-    campons.forEach((campon) => {
+    campons.forEach((campon, index) => {
       camponsInfo.push(
-        <h3 className="header--inline" key={i}>
-          {`${i}. ${campon.booker.username}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
+        <h3 className="header--inline" key={campon.id}>
+          {`${index + 1}. ${campon.booker.username}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
+          <br />
         </h3>,
       );
-      i += 1;
     });
     return (
       <div className="modal-description--campons">
