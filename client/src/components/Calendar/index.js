@@ -113,7 +113,7 @@ class Calendar extends Component {
   setHours = () => {
     const hoursSettings = {
       start: '08:00',
-      end: '23:00',
+      end: '22:00',
       increment: 60,
     };
     const hourStart = Calendar.timeStringToInt(hoursSettings.start);
