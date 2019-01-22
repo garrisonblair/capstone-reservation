@@ -102,14 +102,16 @@ class ReservationDetailsModal extends Component {
     if (startHour !== '' && startMinute !== '') {
       let hour = parseInt(startHour, 10);
       let minute = parseInt(startMinute, 10);
-      if (minute >= 30) {
-        hour += 1;
-        minute -= 30;
-      } else {
-        minute += 30;
-      }
+      // if (minute >= 30) {
+      //   hour += 1;
+      //   minute -= 30;
+      // } else {
+      //   minute += 30;
+      // }
+      // minute = minute.toString(10);
+      if (hour < 23) { hour += 1; }
       hour = hour.toString(10);
-      minute = minute.toString(10);
+      minute = '00';
       this.setState({ endHour: hour, endMinute: minute });
     }
   }
