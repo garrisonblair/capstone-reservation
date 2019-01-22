@@ -118,7 +118,7 @@ class Login extends Component {
             {/* </Form> */}
             <div className="ui divider" />
             <span>
-              First time?
+              First time?&nbsp;
               <Link to="/registration">Register!</Link>
             </span>
           </Modal.Description>
