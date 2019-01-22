@@ -73,10 +73,6 @@ class Login extends Component {
       });
   }
 
-  componentDidMount = () => {
-    document.title = 'Login';
-  }
-
   render() {
     const { show } = this.state;
     return (
