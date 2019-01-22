@@ -43,7 +43,6 @@ class Cells extends Component {
       hoursDivisionNum: props.hoursDivisionNum,
     };
   }
-
   /*
    * STYLE METHODS
    */
@@ -195,23 +194,31 @@ class Cells extends Component {
   toggleBookingModal = () => {
     const { bookingModal } = this.state;
     this.setState({ bookingModal: !bookingModal });
+    if (bookingModal) {
+      this.updateLogin();
+    }
   }
 
   toggleBookingInfoModal = () => {
     const { bookingInfoModal } = this.state;
     this.setState({ bookingInfoModal: !bookingInfoModal });
+    if (bookingInfoModal) {
+      this.updateLogin();
+    }
   }
 
   toggleBookingModalWithReservation = () => {
     const { onCloseModalWithAction } = this.props;
     this.setState({ bookingModal: false, bookingInfoModal: false });
     onCloseModalWithAction();
+    this.updateLogin();
   }
 
   toggleBookingInfoWithAction = () => {
     const { onCloseModalWithAction } = this.props;
     this.setState({ bookingModal: false, bookingInfoModal: false });
     onCloseModalWithAction();
+    this.updateLogin();
   }
 
   /*
@@ -264,6 +271,11 @@ class Cells extends Component {
     }, () => {
       this.toggleBookingInfoModal();
     });
+  }
+
+  updateLogin = () => {
+    const { updateLogin } = this.props;
+    updateLogin();
   }
 
   /*
@@ -417,6 +429,7 @@ Cells.propTypes = {
   onCloseModalWithAction: PropTypes.func,
   campOns: PropTypes.instanceOf(Array),
   orientation: PropTypes.number,
+  updateLogin: PropTypes.func,
 };
 
 Cells.defaultProps = {
@@ -432,6 +445,7 @@ Cells.defaultProps = {
   selectedDate: new Date(),
   orientation: 0,
   onCloseModalWithAction: () => {},
+  updateLogin: () => {},
 };
 
 export default Cells;

@@ -37,6 +37,7 @@ class Calendar extends Component {
     roomsNum: 0,
     hoursDivisionNum: 0,
     orientation: 1,
+    update: false,
   };
 
   /*
@@ -213,6 +214,11 @@ class Calendar extends Component {
     }
   }
 
+  updateLogin = () => {
+    this.setState({ update: true });
+    this.setState({ update: false });
+  }
+
   /*
    * COMPONENT RENDERING
    */
@@ -228,6 +234,7 @@ class Calendar extends Component {
       orientation,
       roomsNum,
       hoursDivisionNum,
+      update,
     } = this.state;
     let colList = roomsList;
     let colName = 'room';
@@ -246,6 +253,7 @@ class Calendar extends Component {
         changeDate={this.changeDate}
         onOpenDatePicker={Calendar.onOpenDatePicker}
         onCloseDatePicker={Calendar.onCloseDatePicker}
+        update={update}
       />,
       <div className="calendar__container" key={1}>
         <button type="button" onClick={() => this.changeOrientation()}>Toggle</button>
@@ -263,6 +271,7 @@ class Calendar extends Component {
             orientation={orientation}
             roomsNum={roomsNum}
             hoursDivisionNum={hoursDivisionNum}
+            updateLogin={this.updateLogin}
           />
         </div>
       </div>,

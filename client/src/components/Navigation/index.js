@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-state */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
@@ -17,6 +18,16 @@ import './Navigation.scss';
 class Navigation extends Component {
   state = {
     showLogin: false,
+    update: false,
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.update !== state.update) {
+      return {
+        update: props.update,
+      };
+    }
+    return null;
   }
 
   handleLogin = () => {
