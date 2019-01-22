@@ -183,7 +183,7 @@ class Calendar extends Component {
     const { bookings, campOns } = this.state;
     const campOnBookings = [];
     if (!!campOns && !!bookings) {
-      campOns.forEach((campOn) => {
+      campOns.forEach((campOn, index) => {
         let dateCampOn = '';
         let roomCampOn = '';
         if (bookings) {
@@ -202,7 +202,7 @@ class Calendar extends Component {
           end_time: campOn.end_time,
           booker: campOn.booker,
           room: roomCampOn,
-          id: `camp${campOn.camped_on_booking}`,
+          id: `camp${campOn.camped_on_booking}-${index}`,
           isCampOn: true,
         });
       });
