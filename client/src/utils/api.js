@@ -342,16 +342,16 @@ function getContentTypes() {
 function getUsers(searchText) {
   const headers = getTokenHeader();
 
-  const data = {};
+  const params = {};
 
   if (searchText) {
-    data.search_text = searchText;
+    params.search_text = searchText;
   }
 
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
-    data,
+    params,
     headers,
     withCredentials: true,
   });
