@@ -155,6 +155,7 @@ class Cells extends Component {
           backgroundColor: color,
           borderTop: '1px solid white',
           borderBottom: '1px solid white',
+          width: '99.1%',
         },
       };
     } else {
@@ -166,6 +167,7 @@ class Cells extends Component {
           backgroundColor: color,
           borderLeft: '1px solid white',
           borderRight: '1px solid white',
+          height: '98%',
         },
       };
     }
