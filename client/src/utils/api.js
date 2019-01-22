@@ -415,6 +415,16 @@ function cancelPrivilegeRequest(requestId) {
   });
 }
 
+function getGroupInvitations() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/group_invitations`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -452,6 +462,7 @@ const api = {
   getBookers,
   requestPrivilege,
   cancelPrivilegeRequest,
+  getGroupInvitations,
 };
 
 export default api;
