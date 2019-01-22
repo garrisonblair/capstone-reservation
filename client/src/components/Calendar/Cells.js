@@ -24,18 +24,23 @@ class Cells extends Component {
     selectedBookingCampons: null,
     bookingModal: false,
     bookingInfoModal: false,
+    orientation: 0,
+    hoursDivisionNum: 0,
+    roomsNum: 0,
   };
 
-  /*
-   *COMPONENT LIFE CYCLE
-   */
-
   static getDerivedStateFromProps(props, state) {
-    if (props.bookings === state.bookings) {
+    if (
+      props.bookings === state.bookings
+      && props.orientation === state.orientation
+      && props.roomsNum === state.roomsNum) {
       return null;
     }
     return {
       bookings: props.bookings,
+      orientation: props.orientation,
+      roomsNum: props.roomsNum,
+      hoursDivisionNum: props.hoursDivisionNum,
     };
   }
 
@@ -46,23 +51,64 @@ class Cells extends Component {
   // Style for .calendar__cells__cell
   setCellStyle(hourRow) {
     const { hoursSettings } = this.props;
-    const rowStart = (hourRow * hoursSettings.increment / 10) + 1;
-    const rowEnd = rowStart + hoursSettings.increment / 10;
+    const { orientation } = this.state;
+    const start = (hourRow * hoursSettings.increment / 10) + 1;
+    const end = start + hoursSettings.increment / 10;
     // const height = '65px';
-
-    const style = {
-      cell_style: {
-        gridRowStart: rowStart,
-        gridRowEnd: rowEnd,
-        // height,
-      },
-    };
+    let style;
+    if (orientation === 0) {
+      style = {
+        cell_style: {
+          gridRowStart: start,
+          gridRowEnd: end,
+          gridColumn: 1,
+          width: '120px',
+          // height,
+        },
+      };
+    } else {
+      style = {
+        cell_style: {
+          gridColumnStart: start,
+          gridColumnEnd: end,
+          gridRow: 1,
+        },
+      };
+    }
     return style;
   }
 
+  // Style for .calendar__rooms__cells and .calendar__cells__wrapper
+  setStyle() {
+    const { roomsNum, orientation, hoursDivisionNum } = this.state;
+    let style;
+    if (orientation === 0) {
+      style = {
+        wrapper: {
+          gridTemplateColumns: `repeat(${roomsNum}, 1fr)`,
+        },
+        division: {
+          gridTemplateRows: `repeat(${hoursDivisionNum}, 1fr)`,
+        },
+      };
+    } else {
+      style = {
+        wrapper: {
+          gridTemplateRows: `repeat(${roomsNum}, 1fr)`,
+        },
+        division: {
+          gridTemplateColumns: `repeat(${hoursDivisionNum}, 1fr)`,
+        },
+      };
+    }
+    return style;
+  }
+
+
   // Style for .calendar__booking
-  setBookingStyle(booking, campOnsNumber) {
+  setBookingStyle(booking) {
     const { hoursSettings } = this.props;
+    const { orientation } = this.state;
     const bookingStart = Cells.timeStringToInt(booking.start_time);
     const bookingEnd = Cells.timeStringToInt(booking.end_time);
     const calendarStart = Cells.timeStringToInt(hoursSettings.start);
@@ -89,25 +135,42 @@ class Cells extends Component {
     }
     if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10))) {
       color = '#7F7F7F';
-    } else if (campOnsNumber > 0) {
+    } else if (booking.isCampOn) {
       color = '#82220E';
     }
 
     // Find the rows in the grid the booking corresponds to.
     // Assuming an hour is divided in 6 rows, each representing an increment of 10 minutes.
-    const rowStart = ((bookingStart.hour * 60 + bookingStart.minutes)
+    const start = ((bookingStart.hour * 60 + bookingStart.minutes)
                       - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
-    const rowEnd = ((bookingEnd.hour * 60 + bookingEnd.minutes)
+    const end = ((bookingEnd.hour * 60 + bookingEnd.minutes)
                     - (calendarStart.hour * 60 + calendarStart.minutes)) / 10 + 1;
-
-    const style = {
-      booking_style: {
-        gridRowStart: rowStart,
-        gridRowEnd: rowEnd,
-        gridColumn: 1,
-        backgroundColor: color,
-      },
-    };
+    let style;
+    if (orientation === 0) {
+      style = {
+        booking_style: {
+          gridRowStart: start,
+          gridRowEnd: end,
+          gridColumn: 1,
+          backgroundColor: color,
+          borderTop: '1px solid white',
+          borderBottom: '1px solid white',
+          width: '99.1%',
+        },
+      };
+    } else {
+      style = {
+        booking_style: {
+          gridColumnStart: start,
+          gridColumnEnd: end,
+          gridRow: 1,
+          backgroundColor: color,
+          borderLeft: '1px solid white',
+          borderRight: '1px solid white',
+          height: '98%',
+        },
+      };
+    }
     return style;
   }
 
@@ -247,20 +310,26 @@ class Cells extends Component {
   }
 
   renderCurrentBookings(bookings) {
+    const { orientation } = this.props;
     const bookingsDiv = [];
 
     bookings.forEach((booking) => {
-      const campOns = this.getCamponsForBooking(booking);
       bookingsDiv.push(
-        <div className="calendar__booking" style={this.setBookingStyle(booking, campOns.length).booking_style} role="button" tabIndex="0" key={booking.id} onClick={() => this.handleClickBooking(booking)} onKeyDown={() => {}}>
+        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} role="button" tabIndex="0" key={booking.id} onClick={() => this.handleClickBooking(booking)} onKeyDown={() => {}}>
           {booking.start_time.length > 5
             ? booking.start_time.substring(0, booking.start_time.length - 3) : booking.start_time}
           {' - '}
           {booking.end_time.length > 5
             ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time}
           <br />
-          {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 ? null : <span>{booking.booker.username}</span>}
-          {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''}
+          {booking.isCampOn
+            ? (
+              <span>
+                [CAMPON]
+                <br />
+              </span>) : null}
+          {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 && orientation === 0 ? null : <span>{booking.booker.username}</span>}
+          {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
         </div>,
       );
     });
@@ -270,7 +339,7 @@ class Cells extends Component {
   static renderCampOns(campOns) {
     const text = [
       <span key="-1">
-        [CAMP]
+        [CAMPON]
         <br />
       </span>];
     campOns.forEach((campOn) => {
@@ -294,8 +363,11 @@ class Cells extends Component {
   }
 
   render() {
-    const { roomsList, hoursList, bookings } = this.props;
-
+    const {
+      roomsList,
+      hoursList,
+      bookings,
+    } = this.props;
     const cells = [];
     let roomsCells = [];
     let cell = 0;
@@ -319,7 +391,7 @@ class Cells extends Component {
       }
 
       cells.push(
-        <div className="calendar__rooms__cells" key={i}>
+        <div className="calendar__rooms__cells" key={i} style={this.setStyle().division}>
           {roomsCells}
           {bookedCells}
         </div>,
@@ -328,7 +400,7 @@ class Cells extends Component {
       roomsCells = [];
     }
     return (
-      <div className="calendar__cells__wrapper">
+      <div className="calendar__cells__wrapper" style={this.setStyle().wrapper}>
         {cells}
         {this.renderModals()}
       </div>
@@ -344,6 +416,7 @@ Cells.propTypes = {
   selectedDate: PropTypes.instanceOf(Object),
   onCloseModalWithAction: PropTypes.func,
   campOns: PropTypes.instanceOf(Array),
+  orientation: PropTypes.number,
 };
 
 Cells.defaultProps = {
@@ -357,6 +430,7 @@ Cells.defaultProps = {
   bookings: [],
   campOns: null,
   selectedDate: new Date(),
+  orientation: 0,
   onCloseModalWithAction: () => {},
 };
 

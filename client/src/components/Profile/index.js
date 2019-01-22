@@ -8,18 +8,19 @@ import Navigation from '../Navigation';
 import Groups from '../Groups';
 import Privileges from '../Privileges';
 import AuthenticationRequired from '../HOC/AuthenticationRequired';
-// import api from '../../utils/api';
+import api from '../../utils/api';
 import './Profile.scss';
 
 // TODO: Add Bookings
 
 class Profile extends Component {
-  // componentDidMount() {
-  //   api.getBookings()
-  //     .then((response) => {
-  //       console.log(response);
-  //     });
-  // }
+  componentDidMount() {
+    api.getBookings()
+      .then((response) => {
+        const { data } = response;
+        console.log(data);
+      });
+  }
 
   render() {
     return (

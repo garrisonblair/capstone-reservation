@@ -109,9 +109,9 @@ class RoomManager extends Component {
     return (
       <div id="room-management">
         <h1>Manage Rooms</h1>
+        <Button onClick={this.showRoomModal}>Add new room</Button>
         {this.renderTable()}
         {this.renderNoRoomList()}
-        <Button onClick={this.showRoomModal}>Add new room</Button>
         {showModal ? this.renderRoomModal() : ''}
       </div>
     );

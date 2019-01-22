@@ -43,6 +43,12 @@ class Login extends Component {
     this.setState({ password: event.target.value });
   }
 
+  handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      this.handleLogin();
+    }
+  }
+
   handleLogin = () => {
     // eslint-disable-next-line react/prop-types
     const { username, password } = this.state;
@@ -74,12 +80,13 @@ class Login extends Component {
   render() {
     const { show } = this.state;
     return (
-      <Modal closeIcon open={show} onClose={this.closeModal}>
+      <Modal closeIcon open={show} onClose={this.closeModal} className="login__container">
         <Modal.Header>
           <h1 className="login__container__header__title"> Login </h1>
         </Modal.Header>
         <Modal.Content>
           <Modal.Description className="login__container__main__form-wrapper">
+            {/* <Form onSubmit={this.handleLogin}> */}
             <Form.Field>
               <Input
                 fluid
@@ -88,6 +95,7 @@ class Login extends Component {
                 iconPosition="left"
                 placeholder="Username"
                 onChange={this.handleUsernameChange}
+                onKeyPress={this.handleKeyPress}
               />
             </Form.Field>
             <Form.Field>
@@ -99,6 +107,7 @@ class Login extends Component {
                 placeholder="Password"
                 type="password"
                 onChange={this.handlePasswordChange}
+                onKeyPress={this.handleKeyPress}
               />
             </Form.Field>
             <Form.Field>
@@ -106,6 +115,7 @@ class Login extends Component {
                 Login
               </Button>
             </Form.Field>
+            {/* </Form> */}
             <div className="ui divider" />
             <span>
               First time?
