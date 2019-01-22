@@ -13,6 +13,8 @@ from apps.booking.models.Booking import BookingManager
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.CampOn import CampOn
 from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer
+from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
+from apps.booking.serializers.campon import ReadCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
@@ -199,22 +201,21 @@ class BookingRetrieveUpdateDestroy(APIView):
 
 class BookingViewMyBookings(APIView):
     permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
-    serializer_class = BookingSerializer
 
-    def get_queryset(self, request):
-
+    def get(self, request, pk):
+        print(pk)
         booker_id = request.user.id
         my_bookings = {}
 
-        regular_bookings = Booking.objects.get(booker=booker_id)
-        recurring_bookings = RecurringBooking.objects.get(booker=booker_id)
-        campons = CampOn.objects.get(booker=booker_id)
+        standard_bookings = Booking.objects.filter(booker=booker_id)
+        recurring_bookings = RecurringBooking.objects.filter(booker=booker_id)
+        campons = CampOn.objects.filter(booker=booker_id)
 
-        my_bookings["regular_bookings"] = regular_bookings
-        my_bookings["recurring_bookings"] = recurring_bookings
-        my_bookings["campons"] = campons
+        my_bookings["standard_bookings"] = ReadBookingSerializer(standard_bookings, many=True).data
+        my_bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
+        my_bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
 
-        return my_bookings
+        return Response(my_bookings, status=status.HTTP_200_OK)
 
 
 def booking_key(val):
