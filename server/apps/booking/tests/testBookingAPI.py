@@ -11,9 +11,9 @@ from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 from apps.accounts.models.User import User
 from apps.booking.models.CampOn import CampOn
 from apps.rooms.models.Room import Room
-from ..models.Booking import Booking
+from ..models.Booking import Booking, RecurringBooking
 
-from ..views.booking import BookingList, BookingCancel
+from ..views.booking import BookingList, BookingCancel, BookingViewMyBookings
 from ..views.booking import BookingCreate
 from ..views.booking import BookingRetrieveUpdateDestroy
 
@@ -428,6 +428,77 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def testBookAsAdminForUser(self):
+        admin = User.objects.create_user(username="admin",
+                                         is_superuser=True)
+
+        admin.save()
+
+        request = self.factory.post("/booking", {
+                                        "room": self.room.id,
+                                        "date": "2018-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "16:00:00",
+                                        "admin_selected_user": self.booker.id
+                                    }, format="json")
+
+        force_authenticate(request, user=admin)
+
+        with mock_datetime(datetime.datetime(2018, 10, 7, 13, 1, 0, 0), datetime):
+            response = BookingCreate.as_view()(request)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        booking = Booking.objects.all().latest('id')
+
+        self.assertEqual(self.booker, booking.booker)
+
+    def testBookerCantBypassPrivileges(self):
+        request = self.factory.post("/booking", {
+            "room": self.room.id,
+            "date": "2018-10-7",
+            "start_time": "14:00:00",
+            "end_time": "16:00:00",
+            "bypass_privileges": True
+        }, format="json")
+
+        force_authenticate(request, user=self.booker)
+
+        with mock_datetime(datetime.datetime(2018, 10, 7, 13, 1, 0, 0), datetime):
+            response = BookingCreate.as_view()(request)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        booking = Booking.objects.all().latest('id')
+
+        self.assertEqual(self.booker, booking.booker)
+        self.assertEqual(False, booking.bypass_privileges)
+
+    def testBookerCantBookForOtherUser(self):
+
+        booker2 = User.objects.create(username="user2")
+        booker2.save()
+
+        request = self.factory.post("/booking", {
+            "room": self.room.id,
+            "date": "2018-10-7",
+            "start_time": "14:00:00",
+            "end_time": "16:00:00",
+            "admin_selected_user": self.booker.id
+        }, format="json")
+
+        force_authenticate(request, user=self.booker)
+
+        with mock_datetime(datetime.datetime(2018, 10, 7, 13, 1, 0, 0), datetime):
+            response = BookingCreate.as_view()(request)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        booking = Booking.objects.all().latest('id')
+
+        self.assertNotEqual(booker2, booking.booker)
+        self.assertEqual(self.booker, booking.booker)
+
     def testCancelBookingNotAuthenticated(self):
         booking = Booking(booker=self.booker, room=self.room, date="2018-10-7", start_time="13:00", end_time="15:00")
         booking.save()
@@ -616,3 +687,228 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
+
+    def testGetMyBookingsUnauthorizedNotLoggedInFail(self):
+
+        today = datetime.datetime.now().date()
+
+        self.room2 = Room(name="H833-2", capacity=4, number_of_computers=1)
+        self.room2.save()
+
+        self.room3 = Room(name="H833-3", capacity=4, number_of_computers=1)
+        self.room3.save()
+
+        self.room4 = Room(name="H833-4", capacity=4, number_of_computers=1)
+        self.room4.save()
+
+        booking2 = Booking(booker=self.booker_2, room=self.room2, date=today, start_time=datetime.time(12, 00),
+                           end_time=datetime.time(13, 00))
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker_2, room=self.room3, date=today, start_time=datetime.time(13, 00),
+                           end_time=datetime.time(14, 00))
+        booking3.save()
+
+        booking4 = Booking(booker=self.booker_2, room=self.room4, date=today, start_time=datetime.time(14, 00),
+                           end_time=datetime.time(15, 00))
+        booking4.save()
+
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
+            request = self.factory.get("/bookings/" + str(self.booker_2), {
+                                        }, format="json")
+
+            response = BookingViewMyBookings.as_view()(request, self.booker.id)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def testGetMyBookingsUnauthorizedNotBookingOwnerFail(self):
+
+        today = datetime.datetime.now().date()
+
+        self.room2 = Room(name="H833-2", capacity=4, number_of_computers=1)
+        self.room2.save()
+
+        self.room3 = Room(name="H833-3", capacity=4, number_of_computers=1)
+        self.room3.save()
+
+        self.room4 = Room(name="H833-4", capacity=4, number_of_computers=1)
+        self.room4.save()
+
+        booking2 = Booking(booker=self.booker_2, room=self.room2, date=today, start_time=datetime.time(12, 00),
+                           end_time=datetime.time(13, 00))
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker_2, room=self.room3, date=today, start_time=datetime.time(13, 00),
+                           end_time=datetime.time(14, 00))
+        booking3.save()
+
+        booking4 = Booking(booker=self.booker_2, room=self.room4, date=today, start_time=datetime.time(14, 00),
+                           end_time=datetime.time(15, 00))
+        booking4.save()
+
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
+            request = self.factory.get("/bookings/" + str(self.booker_2), {
+                                        }, format="json")
+
+            force_authenticate(request, user=self.booker_3)
+            response = BookingViewMyBookings.as_view()(request, self.booker.id)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def testGetMyBookingsStandardBookingsTypeOnlySuccess(self):
+
+        today = datetime.datetime.now().date()
+
+        self.room2 = Room(name="H833-2", capacity=4, number_of_computers=1)
+        self.room2.save()
+
+        self.room3 = Room(name="H833-3", capacity=4, number_of_computers=1)
+        self.room3.save()
+
+        self.room4 = Room(name="H833-4", capacity=4, number_of_computers=1)
+        self.room4.save()
+
+        booking2 = Booking(booker=self.booker_2, room=self.room2, date=today, start_time=datetime.time(12, 00),
+                           end_time=datetime.time(13, 00))
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker_2, room=self.room3, date=today, start_time=datetime.time(13, 00),
+                           end_time=datetime.time(14, 00))
+        booking3.save()
+
+        booking4 = Booking(booker=self.booker_2, room=self.room4, date=today, start_time=datetime.time(14, 00),
+                           end_time=datetime.time(15, 00))
+        booking4.save()
+
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
+            request = self.factory.get("/bookings/" + str(self.booker_2), {
+                                        }, format="json")
+
+            force_authenticate(request, user=self.booker_2)
+            response = BookingViewMyBookings.as_view()(request, self.booker_2.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["standard_bookings"]), 3)
+
+    def testGetMyBookingsAllTypesSuccess(self):
+
+        today = datetime.datetime.now().date()
+
+        self.room1 = Room(name="H833-1", capacity=4, number_of_computers=1)
+        self.room1.save()
+
+        booking = Booking(booker=self.booker, room=self.room1, date=today, start_time=datetime.time(00, 00),
+                          end_time=datetime.time(23, 59))
+        booking.save()
+
+        campon = CampOn(booker=self.booker_2,
+                        camped_on_booking=booking,
+                        start_time=datetime.time(10, 0),
+                        end_time=datetime.time(12, 0))
+        campon.save()
+
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
+            request = self.factory.get("/bookings/" + str(self.booker_2.id), {
+                                        }, format="json")
+
+            force_authenticate(request, user=self.booker_2)
+            response = BookingViewMyBookings.as_view()(request, self.booker_2.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["campons"]), 1)
+
+    def testGetMyBookingsAllTypesSuccess(self):
+
+        today = datetime.datetime.now().date()
+
+        self.room5 = Room(name="H833-5", capacity=4, number_of_computers=1)
+        self.room5.save()
+
+        self.room6 = Room(name="H833-6", capacity=4, number_of_computers=1)
+        self.room6.save()
+
+        booking5 = RecurringBooking(booker=self.booker_2, room=self.room5, start_date=today,
+                                    end_date=datetime.date(2030, 7, 14),  booking_start_time=datetime.time(17, 00),
+                                    booking_end_time=datetime.time(19, 00))
+        booking5.save()
+
+        booking6 = RecurringBooking(booker=self.booker_2, room=self.room2, start_date=today,
+                                    end_date=datetime.date(2030, 7, 14), booking_start_time=datetime.time(20, 00),
+                                    booking_end_time=datetime.time(22, 00))
+        booking6.save()
+
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
+            request = self.factory.get("/bookings/" + str(self.booker_2.id), {
+                                        }, format="json")
+
+            force_authenticate(request, user=self.booker_2)
+            response = BookingViewMyBookings.as_view()(request, self.booker_2.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["recurring_bookings"]), 2)
+
+    def testGetMyBookingsAllTypesSuccess(self):
+
+        today = datetime.datetime.now().date()
+
+        self.room1 = Room(name="H833-1", capacity=4, number_of_computers=1)
+        self.room1.save()
+
+        self.room2 = Room(name="H833-2", capacity=4, number_of_computers=1)
+        self.room2.save()
+
+        self.room3 = Room(name="H833-3", capacity=4, number_of_computers=1)
+        self.room3.save()
+
+        self.room4 = Room(name="H833-4", capacity=4, number_of_computers=1)
+        self.room4.save()
+
+        self.room5 = Room(name="H833-5", capacity=4, number_of_computers=1)
+        self.room5.save()
+
+        self.room6 = Room(name="H833-6", capacity=4, number_of_computers=1)
+        self.room6.save()
+
+        booking = Booking(booker=self.booker, room=self.room1, date=today, start_time=datetime.time(00, 00),
+                          end_time=datetime.time(23, 59))
+        booking.save()
+
+        campon = CampOn(booker=self.booker_2,
+                        camped_on_booking=booking,
+                        start_time=datetime.time(10, 0),
+                        end_time=datetime.time(12, 0))
+        campon.save()
+
+        booking2 = Booking(booker=self.booker_2, room=self.room2, date=today, start_time=datetime.time(12, 00),
+                           end_time=datetime.time(13, 00))
+        booking2.save()
+
+        booking3 = Booking(booker=self.booker_2, room=self.room3, date=today, start_time=datetime.time(13, 00),
+                           end_time=datetime.time(14, 00))
+        booking3.save()
+
+        booking4 = Booking(booker=self.booker_2, room=self.room4, date=today, start_time=datetime.time(14, 00),
+                           end_time=datetime.time(15, 00))
+        booking4.save()
+
+        booking5 = RecurringBooking(booker=self.booker_2, room=self.room5, start_date=today,
+                                    end_date=datetime.date(2030, 7, 14),  booking_start_time=datetime.time(17, 00),
+                                    booking_end_time=datetime.time(19, 00))
+        booking5.save()
+
+        booking6 = RecurringBooking(booker=self.booker_2, room=self.room2, start_date=today,
+                                    end_date=datetime.date(2030, 7, 14), booking_start_time=datetime.time(20, 00),
+                                    booking_end_time=datetime.time(22, 00))
+        booking6.save()
+
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 10, 30, 0, 0), datetime):
+            request = self.factory.get("/bookings/" + str(self.booker_2.id), {
+                                        }, format="json")
+
+            force_authenticate(request, user=self.booker_2)
+            response = BookingViewMyBookings.as_view()(request, self.booker_2.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["standard_bookings"]), 3)
+        self.assertEqual(len(response.data["campons"]), 1)
+        self.assertEqual(len(response.data["recurring_bookings"]), 2)
