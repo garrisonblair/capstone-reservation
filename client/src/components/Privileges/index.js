@@ -33,7 +33,6 @@ class Privileges extends Component {
 
   render() {
     const { privileges } = this.state;
-    console.log(privileges);
     return (
       <div id="privileges">
         <h1> My Privileges </h1>

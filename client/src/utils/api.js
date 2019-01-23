@@ -339,8 +339,15 @@ function getContentTypes() {
   });
 }
 
-function getUsers(params) {
+function getUsers(searchText) {
   const headers = getTokenHeader();
+
+  const params = {};
+
+  if (searchText) {
+    params.search_text = searchText;
+  }
+
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
@@ -405,12 +412,51 @@ function requestPrivilege(groupId, privilegeId) {
   });
 }
 
+function getPrivilegeRequests() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/privilege_requests`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function cancelPrivilegeRequest(requestId) {
   const headers = getTokenHeader();
   return axios({
     method: 'DELETE',
     url: `${settings.API_ROOT}/cancel_request/${requestId}`,
     headers,
+    withCredentials: true,
+  });
+}
+
+function approvePrivilegeRequest(requestId) {
+  const headers = getTokenHeader();
+  const data = {
+    privilege_request: requestId,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/approve_privilege_request`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function denyPrivilegeRequest(requestId, reason) {
+  const headers = getTokenHeader();
+  const data = {
+    privilege_request: requestId,
+    denial_reason: reason,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/deny_privilege_request`,
+    headers,
+    data,
     withCredentials: true,
   });
 }
@@ -451,7 +497,10 @@ const api = {
   removePrivilege,
   getBookers,
   requestPrivilege,
+  getPrivilegeRequests,
   cancelPrivilegeRequest,
+  approvePrivilegeRequest,
+  denyPrivilegeRequest,
 };
 
 export default api;

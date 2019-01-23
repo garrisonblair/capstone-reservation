@@ -39,7 +39,6 @@ class RequestPrivilege extends Component {
         }
       })
       .catch((r) => {
-        console.log(r);
         sweetAlert('Something went wrong', r.text, 'error');
       });
     if (groupPrivilege !== null) {
@@ -70,7 +69,6 @@ class RequestPrivilege extends Component {
         }
       })
       .catch((r) => {
-        console.log(r);
         sweetAlert('Something went wrong', r.text, 'error');
       });
   }
@@ -86,7 +84,6 @@ class RequestPrivilege extends Component {
         }
       })
       .catch((r) => {
-        console.log(r);
         sweetAlert('Something went wrong', r.text, 'error');
       });
   }

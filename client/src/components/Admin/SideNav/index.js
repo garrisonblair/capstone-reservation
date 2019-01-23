@@ -65,6 +65,7 @@ SideNav.defaultProps = {
     { text: 'Logs', menu: 'logs', path: '/admin/logs' },
     { text: 'Stats', menu: 'stats', path: '/admin/stats' },
     { text: 'Bookers', menu: 'bookers', path: '/admin/bookers' },
+    { text: "Group's Privilege Request", menu: 'group-privilege-request', path: '/admin/privilegeRequest' },
   ],
 };
 
