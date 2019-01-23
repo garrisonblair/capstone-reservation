@@ -446,7 +446,6 @@ class ReservationDetailsModal extends Component {
       endHour,
       endMinute,
       reservationProfiles,
-      updatedOwnerOptions,
     } = this.state;
     const { selectedDate } = this.props;
     return (
@@ -515,7 +514,7 @@ class ReservationDetailsModal extends Component {
               onChange={this.handleOwnerChange}
               className="dropdown--fixed-width"
               options={reservationProfiles}
-              defaultValue={updatedOwnerOptions ? 'me' : null}
+              defaultValue="me"
             />
           </div>
           <div className="modal-description">
