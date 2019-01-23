@@ -177,6 +177,10 @@ class Cells extends Component {
   * HELPER METHOD
   */
 
+  static getBookingDuration(booking) {
+    return (booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, ''));
+  }
+
   getCamponsForBooking(booking) {
     const { campOns } = this.props;
     const campOnsList = [];
@@ -322,24 +326,36 @@ class Cells extends Component {
   }
 
   renderCurrentBookings(bookings) {
-    const { orientation } = this.props;
     const bookingsDiv = [];
 
     bookings.forEach((booking) => {
       bookingsDiv.push(
         <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} role="button" tabIndex="0" key={booking.id} onClick={() => this.handleClickBooking(booking)} onKeyDown={() => {}}>
+          {this.renderBookingText(booking)}
+          {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
+        </div>,
+      );
+    });
+    return bookingsDiv;
+  }
+
+  renderBookingText(booking) {
+    const { orientation } = this.props;
+    if (Cells.getBookingDuration(booking) >= 2000) {
+      return (
+        <span>
           {booking.start_time.length > 5
             ? booking.start_time.substring(0, booking.start_time.length - 3) : booking.start_time}
           {' - '}
           {booking.end_time.length > 5
             ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time}
           <br />
-          {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 && orientation === 0 ? null : <span>{booking.booker.username}</span>}
-          {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
-        </div>,
+          {Cells.getBookingDuration(booking) < 4000 && orientation === 0
+            ? null : <span>{booking.booker.username}</span>}
+        </span>
       );
-    });
-    return bookingsDiv;
+    }
+    return null;
   }
 
   static renderCampOns(campOns) {
