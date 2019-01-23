@@ -339,8 +339,15 @@ function getContentTypes() {
   });
 }
 
-function getUsers(params) {
+function getUsers(searchText) {
   const headers = getTokenHeader();
+
+  const params = {};
+
+  if (searchText) {
+    params.search_text = searchText;
+  }
+
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,

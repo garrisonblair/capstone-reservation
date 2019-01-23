@@ -49,7 +49,15 @@ class BookingCreate(APIView):
 
     def post(self, request):
         data = request.data
-        data["booker"] = request.user.id
+
+        if request.user.is_superuser and "admin_selected_user" in data:
+            data["booker"] = data["admin_selected_user"]
+            del data["admin_selected_user"]
+        else:
+            data["booker"] = request.user.id
+
+        if not request.user.is_superuser:
+            data["bypass_privileges"] = False
 
         serializer = BookingSerializer(data=data)
 
@@ -176,6 +184,10 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         data = request.data
         data["booker"] = booking.booker.id
+
+        if "bypass_privileges" in data and not request.user.is_superuser:
+            del data["bypass_privileges"]
+
         serializer = BookingSerializer(booking, data=data, partial=True)
 
         if not serializer.is_valid():
