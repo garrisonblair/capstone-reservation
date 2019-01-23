@@ -45,12 +45,14 @@ class BookingAPITest(TestCase):
         self.room = Room(name="H833-17", capacity=4, number_of_computers=1)
         self.room.save()
 
+        self.datetime = datetime.datetime(2019, 1, 1, 8, 0)
+
     def testCreateBookingSuccess(self):
 
         request = self.factory.post("/booking",
                                     {
                                         "room": 1,
-                                        "date": "2019-08-10",
+                                        "date": self.datetime.date(),
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     },
@@ -58,7 +60,8 @@ class BookingAPITest(TestCase):
 
         force_authenticate(request, user=self.booker)
 
-        response = BookingCreate.as_view()(request)
+        with mock_datetime(self.datetime, datetime):
+            response = BookingCreate.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -67,7 +70,7 @@ class BookingAPITest(TestCase):
         created_booking = bookings[0]
         self.assertEqual(created_booking.start_time, datetime.time(14, 0))
         self.assertEqual(created_booking.end_time, datetime.time(15, 0))
-        self.assertEqual(created_booking.date, datetime.date(2019, 8, 10))
+        self.assertEqual(created_booking.date, self.datetime.date())
         self.assertEqual(created_booking.room, Room.objects.get(name="H833-17"))
         self.assertEqual(created_booking.booker, self.booker)
 
@@ -82,11 +85,12 @@ class BookingAPITest(TestCase):
         request = self.factory.post("/booking",
                                     {
                                         "room": 1,
-                                        "date": "2019-08-10",
+                                        "date": self.datetime.date(),
                                         "start_time": "14:00:00",
                                         "end_time": "15:00:00"
                                     }, format="json")
-        response = BookingRetrieveUpdateDestroy.as_view()(request)
+        with mock_datetime(self.datetime, datetime):
+            response = BookingRetrieveUpdateDestroy.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -135,7 +139,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(len(returned_bookings), 1)
         self.assertEqual(len(returned_bookings), len(bookings_oct7))
 
-    def testViewBookingssMultipleResults(self):
+    def testViewBookingsMultipleResults(self):
 
         room = Room(name=2, capacity=4, number_of_computers=1)
         room.save()

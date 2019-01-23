@@ -51,10 +51,18 @@ class BookingCreate(APIView):
         data = request.data
         data["booker"] = request.user.id
 
+        now = datetime.datetime.now()
+
         serializer = BookingSerializer(data=data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        date = datetime.datetime.strptime(data["date"], '%Y-%m-%d').date()
+        start_time = datetime.datetime.strptime(data["start_time"], '%H:%M:%S').time()
+
+        if (date < now.date() or (date == now.date() and start_time < now.time())) and not request.user.is_superuser:
+            return Response("Booking can not be made in the past", status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             booking = serializer.save()
