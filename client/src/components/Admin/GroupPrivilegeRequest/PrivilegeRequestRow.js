@@ -52,7 +52,6 @@ class PrivilegeRequestRow extends Component {
         }),
       allowOutsideClick: () => !sweetAlert.isLoading(),
     }).then((result) => {
-      console.log(result);
       if (result.value) {
         sweetAlert('Success', 'It approved successfully', 'success');
         syncMethod();

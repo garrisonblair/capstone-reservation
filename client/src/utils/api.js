@@ -445,7 +445,6 @@ function denyPrivilegeRequest(requestId, reason) {
     privilege_request: requestId,
     denial_reason: reason,
   };
-  console.log(data);
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/deny_privilege_request`,
