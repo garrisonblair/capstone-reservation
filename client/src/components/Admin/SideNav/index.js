@@ -60,11 +60,12 @@ SideNav.defaultProps = {
   navConfig: [
     { text: 'Calendar', menu: 'calendar', path: '/' },
     { text: 'Settings', menu: 'settings', path: '/admin/settings' },
+    { text: 'Bookers', menu: 'bookers', path: '/admin/bookers' },
     { text: 'Privileges', menu: 'privileges', path: '/admin/privileges' },
+    { text: "Group's Privilege Request", menu: 'group-privilege-request', path: '/admin/privileges/requests' },
     { text: 'Rooms', menu: 'rooms', path: '/admin/rooms' },
     { text: 'Logs', menu: 'logs', path: '/admin/logs' },
     { text: 'Stats', menu: 'stats', path: '/admin/stats' },
-    { text: 'Bookers', menu: 'bookers', path: '/admin/bookers' },
   ],
 };
 
