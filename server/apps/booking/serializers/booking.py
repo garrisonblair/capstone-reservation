@@ -16,6 +16,16 @@ class BookingSerializer(serializers.ModelSerializer):
 class ReadBookingSerializer(serializers.ModelSerializer):
 
     booker = UserSerializer(required=False)
+
+    class Meta:
+        model = Booking
+        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time')
+        read_only_fields = ('id',)
+
+
+class MyBookingSerializer(serializers.ModelSerializer):
+
+    booker = UserSerializer(required=False)
     group = ReadGroupSerializer(required=False)
     room = RoomSerializer(required=False)
 

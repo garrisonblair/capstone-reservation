@@ -12,7 +12,7 @@ from apps.booking.models.Booking import Booking
 from apps.booking.models.Booking import BookingManager
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.CampOn import CampOn
-from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer
+from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer, MyBookingSerializer
 from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
 from apps.booking.serializers.campon import ReadCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
@@ -22,7 +22,7 @@ from apps.system_administration.models.system_settings import SystemSettings
 
 class BookingList(ListAPIView):
     permission_classes = ()
-    serializer_class = ReadBookingSerializer
+    serializer_class = MyBookingSerializer
     queryset = Booking.objects.all()
 
     def get_queryset(self):
@@ -221,7 +221,7 @@ class BookingViewMyBookings(APIView):
             standard_bookings.exclude(recurring_booking=recurring_booking)
 
         # Add serialized lists of booking types to dictionary associated with type key
-        my_bookings["standard_bookings"] = ReadBookingSerializer(standard_bookings, many=True).data
+        my_bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
         my_bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
         my_bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
 
