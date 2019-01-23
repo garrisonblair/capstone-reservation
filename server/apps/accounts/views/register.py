@@ -33,7 +33,6 @@ class RegisterView(APIView):
             pass
 
         if user:
-            print("User exists in the system")
             return Response(status=status.HTTP_302_FOUND)
 
         # New user from LDAP
@@ -45,8 +44,11 @@ class RegisterView(APIView):
             user.is_active = False
             user.save()
 
-            # Create verification token with 1 hour of expiration time
-            token = VerificationToken.objects.create(user=user)
+            if not VerificationToken.objects.filter(user=user).exists():
+                # Create verification token with 1 hour of expiration time
+                token = VerificationToken.objects.create(user=user)
+            else:
+                token = VerificationToken.objects.get(user=user)
 
             # Send email
             subject = 'Capstone Reservation - Verify your email!'

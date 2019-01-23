@@ -34,16 +34,15 @@ class ResetPasswordView(APIView):
 
         if user:
 
-            try:
+            if not VerificationToken.objects.filter(user=user).exists():
                 # Create verification token with 1 hour of expiration time
                 token = VerificationToken.objects.create(user=user)
+            else:
+                token = VerificationToken.objects.get(user=user)
 
-                # Send email
-                subject = 'Capstone Reservation - Reset your password'
-                verify_url = "{}://{}/#/verify_reset/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
-            except Exception as ex:
-                print(ex)
-                return Response(status=status.HTTP_429_TOO_MANY_REQUESTS)
+            # Send email
+            subject = 'Capstone Reservation - Reset your password'
+            verify_url = "{}://{}/#/verify_reset/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
 
             context = {
                 'verify_url': verify_url,

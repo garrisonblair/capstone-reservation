@@ -1,14 +1,11 @@
-import requests
 import responses
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import User
 from django.test.testcases import TestCase
-from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework.test import APIRequestFactory
-from apps.accounts.serializers.user import UserSerializerLogin
 
-from ..views.reset_password import ResetPasswordView
+from apps.accounts.models.VerificationToken import VerificationToken
 
 
 class TestResetPassword(TestCase):
@@ -25,49 +22,37 @@ class TestResetPassword(TestCase):
         pass
 
     @responses.activate
-    def testResetPasswordURL(self):
-        json = UserSerializerLogin(self.user).data
+    def testResetPasswordSuccess(self):
         data = dict(
             username=self.username
         )
-        responses.add(responses.POST, 'http://localhost:8000/reset_password', json=json, status=201)
-        response = requests.post('http://localhost:8000/reset_password', data=data)
 
-        assert response.status_code == 201
-
-    def testResetPasswordSuccess(self):
-        request = self.factory.post('/user',
-                                    {
-                                        "username": self.username
-                                    },
-                                    format="json")
-
-        response = ResetPasswordView.as_view()(request)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.post('/reset_password', data)
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.get(username=self.username)
+        self.assertTrue(VerificationToken.objects.filter(user=user).exists())
 
     def testResetPasswordFailure(self):
-        request = self.factory.post('/user',
-                                    {
-                                        "username": "NoneExist"
-                                    },
-                                    format="json")
+        data = dict(
+            username="NoneExist"
+        )
 
-        response = ResetPasswordView.as_view()(request)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.post('/reset_password', data)
+        self.assertEqual(response.status_code, 400)
+        user = User.objects.get(username=self.username)
+        self.assertFalse(VerificationToken.objects.filter(user=user).exists())
 
-    def testResetPasswordWithSameAC(self):
-        request = self.factory.post('/user',
-                                    {
-                                        "username": self.username
-                                    },
-                                    format="json")
+    def testResetPasswordWithSameUsername(self):
+        data = dict(
+            username=self.username
+        )
 
-        response = ResetPasswordView.as_view()(request)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        request_again = self.factory.post('/user',
-                                          {
-                                                "username": self.username
-                                          },
-                                          format="json")
-        response_again = ResetPasswordView.as_view()(request_again)
-        self.assertEqual(response_again.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        response = self.client.post('/reset_password', data)
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.get(username=self.username)
+        self.assertTrue(VerificationToken.objects.filter(user=user).exists())
+
+        response_again = self.client.post('/reset_password', data)
+        self.assertEqual(response_again.status_code, 201)
+        user = User.objects.get(username=self.username)
+        self.assertTrue(VerificationToken.objects.filter(user=user).exists())
