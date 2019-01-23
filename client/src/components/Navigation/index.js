@@ -19,6 +19,17 @@ class Navigation extends Component {
     showLogin: false,
   }
 
+  handleClickLogo = () => {
+    // eslint-disable-next-line react/prop-types
+    const { history } = this.props;
+
+    if (history.location.pathname === '/') {
+      window.location.reload();
+    } else {
+      history.push('/');
+    }
+  }
+
   handleLogin = () => {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
@@ -122,7 +133,7 @@ class Navigation extends Component {
     return (
       <div className="navigation">
         <Menu inverted fixed="top" className="navigation__bar">
-          <Menu.Item className="navigation__title" onClick={() => window.location.reload()}>
+          <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
             Capstone
           </Menu.Item>
           { showDate
