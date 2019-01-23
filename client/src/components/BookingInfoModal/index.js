@@ -5,9 +5,11 @@ import {
   Icon,
   Modal,
 } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
 import './BookingInfoModal.scss';
+import api from '../../utils/api';
 
 
 class BookingInfoModal extends Component {
@@ -62,6 +64,27 @@ class BookingInfoModal extends Component {
   }
 
   handleOpen = () => this.setState({ show: true });
+
+  handleDelete = () => {
+    sweetAlert({
+      title: 'Are you sure?',
+      text: 'Booking will be deleted.',
+      type: 'warning',
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.value) {
+        const { booking } = this.props;
+        api.deleteBooking(booking.id)
+          .then(() => {
+            sweetAlert({
+              title: 'Success',
+              text: 'Booking deleted',
+              type: 'success',
+            });
+          });
+      }
+    });
+  }
 
   renderCampons = () => {
     const { campons } = this.props;
@@ -122,6 +145,7 @@ class BookingInfoModal extends Component {
           {this.renderForm(booking)}
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
+            <Button content="Delete" color="red" onClick={this.handleDelete} />
           </div>
         </Modal.Description>
       </Modal.Content>

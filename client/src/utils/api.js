@@ -101,6 +101,15 @@ function updateBooking(id, data) {
   });
 }
 
+function deleteBooking(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/booking/${id}/cancel_booking`,
+    headers,
+  });
+}
+
 function createRecurringBooking(data) {
   const headers = getTokenHeader();
   return axios({
@@ -425,6 +434,7 @@ const api = {
   getBookings,
   createBooking,
   updateBooking,
+  deleteBooking,
   createRecurringBooking,
   getCampOns,
   createCampOn,
