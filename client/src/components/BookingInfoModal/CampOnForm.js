@@ -95,7 +95,7 @@ class CampOnForm extends Component {
     const { endHour, endMinute } = this.state;
 
     const data = {
-      camped_on_booking: booking.id,
+      camped_on_booking: booking.isCampOn ? booking.camped_on_booking : booking.id,
       end_time: `${endHour}:${endMinute}`,
     };
     api.createCampOn(data)
