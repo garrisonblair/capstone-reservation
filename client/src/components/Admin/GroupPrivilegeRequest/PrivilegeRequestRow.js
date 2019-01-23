@@ -15,29 +15,49 @@ class PrivilegeRequestRow extends Component {
       input: 'text',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
+      showLoaderOnConfirm: true,
       confirmButtonText: 'Deny',
+      preConfirm: text => api.denyPrivilegeRequest(request.id, text)
+        .then((r) => {
+          if (r.status !== 200) {
+            sweetAlert(':(', 'It did not approved.', 'error');
+          }
+        }),
+      allowOutsideClick: () => !sweetAlert.isLoading(),
     }).then((r) => {
       if (r.value) {
-        api.denyPrivilegeRequest(request.id, r.value)
-          .then((r2) => {
-            if (r2.status === 200) {
-              sweetAlert('Success', 'It was successfully denied', 'success');
-              syncMethod();
-            }
-          });
+        sweetAlert('Success', 'It denied successfully', 'success');
+        syncMethod();
       }
     });
   }
 
   handleApprove = () => {
     const { request, syncMethod } = this.props;
-    api.approvePrivilegeRequest(request.id)
-      .then((r) => {
-        if (r.status === 200) {
-          sweetAlert('Success', 'It was successfully approved', 'success');
-          syncMethod();
-        }
-      });
+    sweetAlert.fire({
+      title: 'Confirmation',
+      text: `Are you sure you want to approve privilege category '${request.privilege_category.name}'`
+        + ` to group '${request.group.name}'?`,
+      showCancelButton: true,
+      confirmButtonText: 'Approve',
+      showLoaderOnConfirm: true,
+      preConfirm: () => api.approvePrivilegeRequest(request.id)
+        .then((r) => {
+          if (r.status !== 200) {
+            sweetAlert(':(', 'It did not approved.', 'error');
+          }
+        })
+        .catch(() => {
+          sweetAlert(':(', 'It did not approved.', 'error');
+        }),
+      allowOutsideClick: () => !sweetAlert.isLoading(),
+    }).then((result) => {
+      console.log(result);
+      if (result.value) {
+        sweetAlert('Success', 'It approved successfully', 'success');
+        syncMethod();
+      }
+    });
   }
 
   renderButtons = () => (
