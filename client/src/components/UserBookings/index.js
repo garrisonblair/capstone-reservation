@@ -1,21 +1,35 @@
+/* eslint-disable no-console */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import {
   Table, TableBody,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 
 
 class UserBookings extends Component {
   state = {
     bookings: [],
+    recurringBookings: [],
+    CampOns: [],
   }
 
   componentDidMount() {
-    api.getBookings()
-      .then((response) => {
-        const { data: bookings } = response;
+    const user = storage.getUser();
+    api.getUserBookings(user.id)
+      .then(({ data }) => data)
+      .then((data) => {
+        const {
+          campons: CampOns,
+          recurring_bookings: recurringBookings,
+          standard_bookings: bookings,
+        } = data;
         this.setState({
+          CampOns,
+          recurringBookings,
           bookings,
         });
       });
@@ -42,12 +56,18 @@ class UserBookings extends Component {
 
   renderTableBody = () => {
     const { bookings } = this.state;
-    let rows = [];
-    rows = bookings.map((booking, index) => (
+    let component = [];
+
+    if (bookings.length === 0) {
+      return component;
+    }
+
+    console.log(bookings);
+    component = bookings.map((booking, index) => (
       // eslint-disable-next-line react/no-array-index-key
       <Table.Row key={index}>
         <Table.Cell>
-          {booking.room}
+          {booking.room.name}
         </Table.Cell>
         <Table.Cell>
           {booking.date}
@@ -65,7 +85,7 @@ class UserBookings extends Component {
     ));
     return (
       <TableBody>
-        {rows}
+        {component}
       </TableBody>
     );
   }
