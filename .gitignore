@@ -31,3 +31,5 @@ yarn-error.log*
 
 # PyCharm
 .idea
+*.pickle
+server/apps/booking_exporter/GmailImporter/credentials.json
