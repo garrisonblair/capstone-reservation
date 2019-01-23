@@ -95,6 +95,7 @@ body {
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
   min-height: $cellsMinHeight;
+  width: 120px;
   // height: 50px;
   background-color: $backgroundColorCells;
   &--campon {
@@ -147,11 +148,9 @@ body {
   justify-content: center;
   align-items: center;
   border: $borderWidth solid $borderColor;
-  border-left: 2px solid #932439;
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
   padding: 0 1px;
-  min-width: 100px;
   border-radius: 5px;
   background-color: $backgroundColorHours;
 }

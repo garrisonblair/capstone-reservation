@@ -28,7 +28,7 @@ class Header extends Component {
     if (type === 'column') {
       style = {
         cell: {
-
+          width: '120px',
         },
         wrapper: {
           gridTemplateColumns: `repeat(${headerNum}, 1fr)`,
@@ -40,6 +40,7 @@ class Header extends Component {
       style = {
         cell: {
           minHeight: '60px',
+          width: '90px',
         },
         wrapper: {
           gridTemplateRows: `repeat(${headerNum}, 1fr)`,

@@ -134,7 +134,8 @@ class Cells extends Component {
     }
     if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10))) {
       color = '#7F7F7F';
-    } else if (booking.isCampOn) {
+    } else
+    if (booking.isCampOn) {
       color = '#82220E';
     }
 
@@ -154,7 +155,8 @@ class Cells extends Component {
           backgroundColor: color,
           borderTop: '1px solid white',
           borderBottom: '1px solid white',
-          width: '99.1%',
+          width: booking.isCampOn ? '66.1%' : '99.1%',
+          transform: booking.isCampOn ? 'translateX(50%)' : '',
         },
       };
     } else {
@@ -166,7 +168,9 @@ class Cells extends Component {
           backgroundColor: color,
           borderLeft: '1px solid white',
           borderRight: '1px solid white',
-          height: '98%',
+          borderTop: '1px solid white',
+          height: booking.isCampOn ? '65%' : '98%',
+          transform: booking.isCampOn ? 'translateY(50%)' : '',
         },
       };
     }

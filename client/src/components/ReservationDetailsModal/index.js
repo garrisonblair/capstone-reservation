@@ -248,7 +248,6 @@ class ReservationDetailsModal extends Component {
     if (ownerValue !== 'me') {
       data.group = ownerValue;
     }
-    console.log(data);
     api.createBooking(data)
       .then(() => {
         sweetAlert('Completed',
