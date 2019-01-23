@@ -18,25 +18,24 @@ class ReservationDetailsModal extends Component {
     endHour: '8',
     endMinute: '30',
     hourOptions: [],
-    reservedOptions: [],
     isRecurring: false,
     tabIndex: 0,
     inputOption0: {
       startDate: '',
       endDate: '',
     },
-    reservationProfiles: ['me'],
+    ownerValue: 'me',
+    reservationProfiles: [],
+    updatedOwnerOptions: false,
   }
 
   componentWillMount() {
     const {
       minHour, maxHour, minuteInterval, selectedDate,
     } = this.props;
-    const { reservationProfiles } = this.state;
     this.setState({
       hourOptions: this.generateHourOptions(minHour, maxHour),
       minuteOptions: this.generateMinuteOptions(minuteInterval),
-      reservedOptions: this.generateReservationProfilesOptions(reservationProfiles),
       inputOption0: {
         startDate: toDateInputValue(selectedDate),
         endDate: toDateInputValue(selectedDate),
@@ -116,20 +115,18 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  // TODO: This method needs to be changed when accessing groups
-  generateReservationProfilesOptions = r => r.map(profile => ({ text: profile, value: profile }))
-
   closeModal = () => {
     const { onClose, selectedDate } = this.props;
-    onClose();
     this.setState({
+      show: false,
       inputOption0: {
         startDate: toDateInputValue(selectedDate),
         endDate: toDateInputValue(selectedDate),
       },
-      show: false,
       isRecurring: false,
+      updatedOwnerOptions: false,
     });
+    onClose();
   }
 
   closeModalWithReservation = () => {
@@ -138,6 +135,21 @@ class ReservationDetailsModal extends Component {
     this.setState({
       show: false,
     });
+  }
+
+  updateOwnerOptions = () => {
+    const ownerOptions = [{ key: 'me', value: 'me', text: 'me' }];
+    api.getMyGroups()
+      .then((r) => {
+        // eslint-disable-next-line array-callback-return
+        r.data.map((g) => {
+          ownerOptions.push({ key: g.id, value: g.id, text: `${g.name} (group)` });
+          this.setState({
+            reservationProfiles: ownerOptions,
+            updatedOwnerOptions: true,
+          });
+        });
+      });
   }
 
   closeLogin = () => {
@@ -173,6 +185,10 @@ class ReservationDetailsModal extends Component {
     this.setState({
       endHour: value,
     });
+  }
+
+  handleOwnerChange = (e, { value }) => {
+    this.setState({ ownerValue: value });
   }
 
   handleEndMinuteChange = (e, { value }) => {
@@ -216,19 +232,23 @@ class ReservationDetailsModal extends Component {
   sendPostRequestBooking = () => {
     const { selectedDate, selectedRoomId, selectedRoomName } = this.props;
     const {
-      startHour, startMinute, endHour, endMinute,
+      startHour, startMinute, endHour, endMinute, ownerValue,
     } = this.state;
     // Handle time zone
     const tzoffset = (selectedDate).getTimezoneOffset() * 60000;
     const date = new Date(selectedDate - tzoffset);
     const localISOTime = date.toISOString().slice(0, -1);
-
+    // const user = JSON.parse(localStorage.CapstoneReservationUser);
     const data = {
       room: selectedRoomId,
       date: localISOTime.slice(0, 10),
       start_time: `${startHour}:${startMinute}:00`,
       end_time: `${endHour}:${endMinute}:00`,
     };
+    if (ownerValue !== 'me') {
+      data.group = ownerValue;
+    }
+    console.log(data);
     api.createBooking(data)
       .then(() => {
         sweetAlert('Completed',
@@ -249,7 +269,7 @@ class ReservationDetailsModal extends Component {
 
   sendPostRequestRecurringBooking = (skipConflicts) => {
     const {
-      startHour, endHour, startMinute, endMinute, inputOption0,
+      startHour, endHour, startMinute, endMinute, inputOption0, ownerValue,
     } = this.state;
     const { selectedRoomId, selectedRoomName } = this.props;
     const user = JSON.parse(localStorage.CapstoneReservationUser);
@@ -260,10 +280,12 @@ class ReservationDetailsModal extends Component {
       booking_start_time: `${startHour}:${startMinute}`,
       booking_end_time: `${endHour}:${endMinute}`,
       room: selectedRoomId,
-      group: '',
       booker: user.id,
       skip_conflicts: skipConflicts,
     };
+    if (ownerValue !== 'me') {
+      data.group = ownerValue;
+    }
     api.createRecurringBooking(data)
       .then((response) => {
         let conflictsMessage = '';
@@ -420,10 +442,10 @@ class ReservationDetailsModal extends Component {
       startMinute,
       hourOptions,
       minuteOptions,
-      reservedOptions,
       isRecurring,
       endHour,
       endMinute,
+      reservationProfiles,
     } = this.state;
     const { selectedDate } = this.props;
     return (
@@ -489,13 +511,11 @@ class ReservationDetailsModal extends Component {
             </h3>
             <Dropdown
               selection
-              compact
+              onChange={this.handleOwnerChange}
               className="dropdown--fixed-width"
-              placeholder="hh"
-              options={reservedOptions}
-              defaultValue={reservedOptions[0].value}
+              options={reservationProfiles}
+              defaultValue="me"
             />
-
           </div>
           <div className="modal-description">
             <Checkbox label="Request a recurring booking" onClick={this.handleCheckboxClick} />
@@ -512,8 +532,10 @@ class ReservationDetailsModal extends Component {
   }
 
   render() {
-    const { show, showLogin } = this.state;
+    const { show, showLogin, updatedOwnerOptions } = this.state;
     const { selectedRoomName } = this.props;
+
+    if (show === true && updatedOwnerOptions === false) { this.updateOwnerOptions(); }
     return (
       <div id="reservation-details-modal">
         <Modal centered={false} size="tiny" open={show} onClose={this.closeModal}>
