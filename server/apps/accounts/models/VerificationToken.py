@@ -4,6 +4,8 @@ import os
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class VerificationToken(models.Model):
@@ -26,3 +28,9 @@ class VerificationToken(models.Model):
 
     def __str__(self):
         return self.token
+
+    @receiver(post_save, sender=User)
+    def delete_token(sender, instance, **kwargs):
+        if VerificationToken.objects.filter(user=instance).exists():
+            token = VerificationToken.objects.get(user=instance)
+            token.delete()

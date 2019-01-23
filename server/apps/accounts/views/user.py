@@ -8,12 +8,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts.permissions.IsBooker import IsBooker
-from apps.accounts.models.VerificationToken import VerificationToken
 from ..models.BookerProfile import BookerProfile
 from ..serializers.user import UserSerializer, BookerProfileSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
-
 
 
 class UserList(ListAPIView):
@@ -85,11 +83,6 @@ class UserUpdate(APIView):
             user.email = email
 
         if password:
-            # Delete verification token after adding a password for the first time
-            if not user.has_usable_password():
-                verification_token = VerificationToken.objects.get(user=user)
-                verification_token.delete()
-
             user.password = make_password(password)  # Hash password
 
         booker = BookerProfile.objects.get(user_id=user.id)

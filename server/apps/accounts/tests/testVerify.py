@@ -23,12 +23,21 @@ class TestVerify(TestCase):
         )
         response = self.client.post('/verify', data)
         assert response.status_code == 200
-
-        try:
-            verification_token = VerificationToken.objects.get(token=self.token)
-        except VerificationToken.DoesNotExist:
-            self.fail('Token DNE')
-
-        assert verification_token.user == self.user
         assert self.user.is_active is True
         self.assertTrue('User is verified')
+
+    def testVerifySuccess(self):
+        data = dict(
+            token=self.token.token
+        )
+        response = self.client.post('/verify', data)
+        assert response.status_code == 200
+        assert self.user.is_active is True
+        self.assertFalse(VerificationToken.objects.filter(user=self.user).exists())
+
+    def testVerifyResetFailure(self):
+        data = dict(
+            token="fake_token"
+        )
+        response = self.client.post('/verify', data)
+        assert response.status_code == 400
