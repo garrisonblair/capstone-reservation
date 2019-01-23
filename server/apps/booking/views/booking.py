@@ -211,14 +211,9 @@ class BookingViewMyBookings(APIView):
         my_bookings = {}
 
         # Obtain all standard_bookings, recurring_bookings, and campons for this booker
-        standard_bookings = Booking.objects.filter(booker=booker_id)
+        standard_bookings = Booking.objects.filter(booker=booker_id, recurring_booking=None)
         recurring_bookings = RecurringBooking.objects.filter(booker=booker_id)
         campons = CampOn.objects.filter(booker=booker_id)
-
-        # Iterate through all booker's recurring bookings and remove all standard bookings associated with this
-        # recurring booking
-        for recurring_booking in recurring_bookings:
-            standard_bookings.exclude(recurring_booking=recurring_booking)
 
         # Add serialized lists of booking types to dictionary associated with type key
         my_bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
