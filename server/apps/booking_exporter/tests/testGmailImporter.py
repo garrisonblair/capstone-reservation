@@ -7,4 +7,4 @@ class GmailImporterTest(TestCase):
     def testGmailImporter(self):
         importer = GmailICSImporter()
 
-        print(importer.get_message_ICS_attachment('1687760a9899c4bc'))
+        # print(importer.get_message_ICS_attachment('16877e6911c03044'))

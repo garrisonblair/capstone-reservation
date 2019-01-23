@@ -2,9 +2,12 @@ from __future__ import print_function
 import pickle
 import os.path
 import base64
+from ics import Calendar, Event
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+
+from arrow.arrow import Arrow
 
 from ..models.EmailId import EmailId
 
@@ -28,7 +31,9 @@ class GmailICSImporter:
             self.create_booking_from_ics(self.get_message_ICS_attachment(message_id))
 
     def create_booking_from_ics(self, ics_file):
-        pass
+        calendar = Calendar(ics_file)
+        event = calendar.events[0]  # type: Event
+        print(event.begin.datetime)
 
     def get_service(self):
         creds = None
@@ -64,10 +69,10 @@ class GmailICSImporter:
         unprocessed_messages = list()
         for message in messages:
             try:
-                EmailId.objects.get(email_id=message.id)
+                EmailId.objects.get(email_id=message["id"])
             except EmailId.DoesNotExist:
-                unprocessed_messages.append(message.id)
-                email_id = EmailId(email_id=message.id)
+                unprocessed_messages.append(message["id"])
+                email_id = EmailId(email_id=message["id"])
                 email_id.save()
 
         return unprocessed_messages
@@ -90,3 +95,5 @@ class GmailICSImporter:
             .execute()
 
         file_data = base64.urlsafe_b64decode(attachment['data'].encode('UTF-8'))
+
+        return file_data
