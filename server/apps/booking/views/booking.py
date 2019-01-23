@@ -22,7 +22,7 @@ from apps.system_administration.models.system_settings import SystemSettings
 
 class BookingList(ListAPIView):
     permission_classes = ()
-    serializer_class = MyBookingSerializer
+    serializer_class = ReadBookingSerializer
     queryset = Booking.objects.all()
 
     def get_queryset(self):
@@ -62,10 +62,18 @@ class BookingCreate(APIView):
         if not request.user.is_superuser:
             data["bypass_privileges"] = False
 
+        now = datetime.datetime.now()
+
         serializer = BookingSerializer(data=data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        date = datetime.datetime.strptime(data["date"], '%Y-%m-%d').date()
+        start_time = datetime.datetime.strptime(data["start_time"], '%H:%M:%S').time()
+
+        if (date < now.date() or (date == now.date() and start_time < now.time())) and not request.user.is_superuser:
+            return Response("Booking can not be made in the past", status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             booking = serializer.save()

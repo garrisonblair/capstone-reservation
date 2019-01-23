@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from apps.accounts.exceptions import PrivilegeError
+from apps.accounts.models.User import User
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.CampOn import CampOn
 from apps.booking.models.Booking import Booking
@@ -87,6 +88,9 @@ class CampOnCreate(APIView):
             request_end_time = datetime.datetime.strptime(data["end_time"], "%H:%M").time()
         except Booking.DoesNotExist:
             return Response("No Booking to camp on to", status=status.HTTP_400_BAD_REQUEST)
+
+        if current_booking.booker.username == request.user.username:
+            return Response("You can't camp on to your own booking", status=status.HTTP_401_UNAUTHORIZED)
 
         # If the camp on doesn't end later than the booking, then we create the camp on
         # Otherwise we will attempt to create a booking following the camp on
