@@ -254,8 +254,8 @@ class Calendar extends Component {
         update={update}
       />,
       <div className="calendar__container" key={1}>
-        <button type="button" onClick={() => this.changeOrientation()}>Toggle</button>
         <div className="calendar__wrapper" style={this.setStyle().wrapper}>
+          <button type="button" onClick={() => this.changeOrientation()}>Toggle</button>
           <Header headerList={colList} type="column" name={colName} />
           <Header headerList={rowList} type="row" name={rowName} />
           <Cells
