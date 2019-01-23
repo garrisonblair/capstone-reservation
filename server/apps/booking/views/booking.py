@@ -10,8 +10,11 @@ from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
 from apps.booking.models.Booking import BookingManager
+from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.CampOn import CampOn
-from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer
+from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer, MyBookingSerializer
+from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
+from apps.booking.serializers.campon import ReadCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
@@ -19,7 +22,7 @@ from apps.system_administration.models.system_settings import SystemSettings
 
 class BookingList(ListAPIView):
     permission_classes = ()
-    serializer_class = ReadBookingSerializer
+    serializer_class = MyBookingSerializer
     queryset = Booking.objects.all()
 
     def get_queryset(self):
@@ -206,6 +209,30 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BookingViewMyBookings(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+
+    def get(self, request, pk):
+
+        if pk != self.request.user.id:
+            return Response("Only owner of bookings can view bookings", status=status.HTTP_403_FORBIDDEN)
+
+        booker_id = request.user.id
+        my_bookings = {}
+
+        # Obtain all standard_bookings, recurring_bookings, and campons for this booker
+        standard_bookings = Booking.objects.filter(booker=booker_id, recurring_booking=None)
+        recurring_bookings = RecurringBooking.objects.filter(booker=booker_id)
+        campons = CampOn.objects.filter(booker=booker_id)
+
+        # Add serialized lists of booking types to dictionary associated with type key
+        my_bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
+        my_bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
+        my_bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
+
+        return Response(my_bookings, status=status.HTTP_200_OK)
 
 
 def booking_key(val):
