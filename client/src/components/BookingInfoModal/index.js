@@ -34,6 +34,17 @@ class BookingInfoModal extends Component {
     return false;
   }
 
+  static checkAdmin() {
+    if (localStorage.getItem('CapstoneReservationUser')) {
+      return JSON.parse(localStorage.getItem('CapstoneReservationUser')).is_superuser;
+    }
+    return false;
+  }
+
+  static checkSameUserOrAdmin(booking) {
+    return BookingInfoModal.checkSameUser(booking) || BookingInfoModal.checkAdmin();
+  }
+
   state = {
     show: false,
   }
@@ -76,11 +87,19 @@ class BookingInfoModal extends Component {
         const { booking } = this.props;
         api.deleteBooking(booking.id)
           .then(() => {
+            this.closeModalWithAction();
             sweetAlert({
               title: 'Success',
               text: 'Booking deleted',
               type: 'success',
             });
+          })
+          .catch((error) => {
+            sweetAlert(
+              'Cancellation failed',
+              error.response.data,
+              'error',
+            );
           });
       }
     });
@@ -145,7 +164,7 @@ class BookingInfoModal extends Component {
           {this.renderForm(booking)}
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
-            <Button content="Delete" color="red" onClick={this.handleDelete} />
+            {BookingInfoModal.checkSameUserOrAdmin(booking) ? <Button content="Delete" color="red" onClick={this.handleDelete} /> : null }
           </div>
         </Modal.Description>
       </Modal.Content>
