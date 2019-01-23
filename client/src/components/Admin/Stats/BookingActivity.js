@@ -143,7 +143,6 @@ class BookingActivity extends Component {
   //   api.getLogEntries(data)
   //     .then((response) => {
   //       if (response.status === 200) {
-  //         console.log(response.data);
   //         const logsToDisplay = this.setLogsToDisplay(response.data);
   //         this.setState({ logs: response.data, logsToDisplay });
   //       }

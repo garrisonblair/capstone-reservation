@@ -16,7 +16,7 @@ from apps.groups.models.PrivilegeRequest import PrivilegeRequest
 
 class PrivilegeRequestList(ListAPIView):
     permission_classes = (IsAuthenticated, IsBooker)
-    serializer_class = ReadPrivilegeRequestSerializer
+    serializer_class = WritePrivilegeRequestSerializer
     queryset = PrivilegeRequest.objects.all()
 
     def get_queryset(self):
