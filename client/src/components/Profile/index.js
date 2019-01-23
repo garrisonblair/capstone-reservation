@@ -1,27 +1,17 @@
-/* eslint-disable no-console */
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import {
   Segment,
 } from 'semantic-ui-react';
 import Navigation from '../Navigation';
-import Groups from '../Groups';
 import Privileges from '../Privileges';
+import UserBookings from '../UserBookings';
+import Groups from '../Groups';
 import AuthenticationRequired from '../HOC/AuthenticationRequired';
-import api from '../../utils/api';
 import './Profile.scss';
 
-// TODO: Add Bookings
 
 class Profile extends Component {
-  componentDidMount() {
-    api.getBookings()
-      .then((response) => {
-        const { data } = response;
-        console.log(data);
-      });
-  }
-
   render() {
     return (
       <div>
@@ -33,7 +23,7 @@ class Profile extends Component {
               <Privileges />
             </Segment>
             <Segment>
-              {/* Bookings */}
+              <UserBookings />
             </Segment>
           </Segment.Group>
           <Segment.Group horizontal compact>
