@@ -3,7 +3,7 @@ import { Table, Button } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
-import './GroupPrivilegeRequest.scss';
+import './PrivilegeRequestRow.scss';
 
 class PrivilegeRequestRow extends Component {
   handleDeny = () => {
@@ -59,6 +59,20 @@ class PrivilegeRequestRow extends Component {
     });
   }
 
+  handleClickOnInfo = () => {
+    const { request } = this.props;
+    sweetAlert({
+      title: 'Members',
+      html: this.renderMembers(request.group.members),
+      type: 'info',
+    });
+  }
+
+  renderMembers = (members) => {
+    const list = `<ul> ${members.map(m => `<li style="width:100px">${m.username}</li>`)}</ul>`;
+    return list;
+  }
+
   renderButtons = () => (
     <div>
       <Button color="blue" onClick={this.handleApprove}>Accept</Button>
@@ -69,9 +83,10 @@ class PrivilegeRequestRow extends Component {
   render() {
     const { request } = this.props;
     return (
-      <Table.Row>
+      <Table.Row className="privilege-request-row">
         <Table.Cell>
           {request.group.name}
+          <Button circular icon="info circle" className="info-button" onClick={this.handleClickOnInfo} />
         </Table.Cell>
         <Table.Cell>
           {request.privilege_category.name}
