@@ -80,6 +80,16 @@ function getBookings(params) {
   });
 }
 
+function getUserBookings(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/bookings/${id}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function createBooking(data) {
   const headers = getTokenHeader();
   return axios({
@@ -469,6 +479,7 @@ const api = {
   getMyUser,
   updateUser,
   getBookings,
+  getUserBookings,
   createBooking,
   updateBooking,
   createRecurringBooking,
