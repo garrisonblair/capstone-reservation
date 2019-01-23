@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table } from 'semantic-ui-react';
+import { Table, Message } from 'semantic-ui-react';
 import api from '../../utils/api';
 import './GroupInvitations.scss';
 import InvitationRow from './InvitationRow';
@@ -42,11 +42,19 @@ class GroupInvitations extends Component {
     );
   }
 
+  renderEmptyMessage = () => (
+    <Message>
+      <Message.Header>No result</Message.Header>
+      <p>You don&lsquo;t have group invitations.</p>
+    </Message>
+  )
+
   render() {
+    const { invitations } = this.state;
     return (
       <div id="group-invitations">
         <h1>Invitations</h1>
-        {this.renderTable()}
+        {invitations.length === 0 ? this.renderEmptyMessage() : this.renderTable()}
       </div>
     );
   }
