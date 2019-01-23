@@ -178,7 +178,13 @@ class Cells extends Component {
   */
 
   static getBookingDuration(booking) {
-    return (booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, ''));
+    let hourDiff = booking.end_time.replace(/:/g, '').substring(0, 2) - booking.start_time.replace(/:/g, '').substring(0, 2);
+    let minuteDiff = booking.end_time.replace(/:/g, '').substring(2, 4) - booking.start_time.replace(/:/g, '').substring(2, 4);
+    if (minuteDiff < 0) {
+      minuteDiff += 60;
+      hourDiff -= 1;
+    }
+    return (hourDiff * 100 + minuteDiff);
   }
 
   getCamponsForBooking(booking) {
@@ -341,7 +347,7 @@ class Cells extends Component {
 
   renderBookingText(booking) {
     const { orientation } = this.props;
-    if (Cells.getBookingDuration(booking) >= 2000) {
+    if (Cells.getBookingDuration(booking) >= 20) {
       return (
         <span>
           {booking.start_time.length > 5
@@ -350,8 +356,9 @@ class Cells extends Component {
           {booking.end_time.length > 5
             ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time}
           <br />
-          {Cells.getBookingDuration(booking) < 4000 && orientation === 0
-            ? null : <span>{booking.booker.username}</span>}
+          {Cells.getBookingDuration(booking) < 30 && orientation === 1
+            ? <span>{booking.booker.username.substring(0, 4)}</span>
+            : <span>{booking.booker.username}</span>}
         </span>
       );
     }
