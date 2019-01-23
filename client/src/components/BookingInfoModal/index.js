@@ -67,13 +67,15 @@ class BookingInfoModal extends Component {
   renderCampons = () => {
     const { campons } = this.props;
     const camponsInfo = [];
+    let i = 1;
     campons.forEach((campon, index) => {
       camponsInfo.push(
-        <h3 className="header--inline" key={campon.id}>
+        <h3 className="header--inline" key={i}>
           {`${index + 1}. ${campon.booker.username}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
           <br />
         </h3>,
       );
+      i += 1;
     });
     return (
       <div className="modal-description--campons">
@@ -130,7 +132,7 @@ class BookingInfoModal extends Component {
 
   renderForm(booking) {
     const { selectedRoomName } = this.props;
-    if (BookingInfoModal.checkSameUser(booking)) {
+    if (!!booking.isCampOn === false && BookingInfoModal.checkSameUser(booking)) {
       return (
         <EditBookingForm
           booking={booking}

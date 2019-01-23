@@ -334,12 +334,6 @@ class Cells extends Component {
           {booking.end_time.length > 5
             ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time}
           <br />
-          {booking.isCampOn
-            ? (
-              <span>
-                [CAMPON]
-                <br />
-              </span>) : null}
           {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 && orientation === 0 ? null : <span>{booking.booker.username}</span>}
           {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
         </div>,

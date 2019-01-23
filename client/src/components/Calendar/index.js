@@ -76,13 +76,12 @@ class Calendar extends Component {
 
       api.getBookings(params)
         .then((response) => {
-          this.setState({ bookings: response.data });
-          this.getCampOns(params);
+          this.getCampOns(params, response.data);
         });
     }
   }
 
-  getCampOns(params) {
+  getCampOns(params, bookings) {
     const { propsTestingCampOns } = this.props;
     const test = !!propsTestingCampOns;
     if (test) {
@@ -90,9 +89,7 @@ class Calendar extends Component {
     } else {
       api.getCampOns(params)
         .then((response) => {
-          this.setState({ campOns: response.data }, () => {
-            this.campOnToBooking();
-          });
+          this.campOnToBooking(response.data, bookings);
         });
     }
   }
@@ -180,8 +177,7 @@ class Calendar extends Component {
     this.getBookings();
   }
 
-  campOnToBooking = () => {
-    const { bookings, campOns } = this.state;
+  campOnToBooking = (campOns, bookings) => {
     const campOnBookings = [];
     if (!!campOns && !!bookings) {
       campOns.forEach((campOn, index) => {
@@ -210,7 +206,7 @@ class Calendar extends Component {
       campOnBookings.forEach((campOnBooking) => {
         bookings.push(campOnBooking);
       });
-      this.setState({ bookings });
+      this.setState({ bookings, campOns });
     }
   }
 
