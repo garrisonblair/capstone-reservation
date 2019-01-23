@@ -425,6 +425,26 @@ function getGroupInvitations() {
   });
 }
 
+function acceptInvitation(invitationId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group_invitation/${invitationId}/accept`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function rejectInvitation(invitationId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group_invitation/${invitationId}/reject`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   login,
@@ -463,6 +483,8 @@ const api = {
   requestPrivilege,
   cancelPrivilegeRequest,
   getGroupInvitations,
+  acceptInvitation,
+  rejectInvitation,
 };
 
 export default api;
