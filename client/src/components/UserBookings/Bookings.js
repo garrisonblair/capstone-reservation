@@ -61,7 +61,6 @@ class Bookings extends Component {
   render() {
     return (
       <div>
-        <h1> Bookings </h1>
         <Table>
           {this.renderTableHeader()}
           {this.renderTableBody()}

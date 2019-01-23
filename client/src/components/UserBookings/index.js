@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import {
-  Table, TableBody,
+  Menu,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
@@ -16,6 +16,7 @@ class UserBookings extends Component {
     bookings: [],
     recurringBookings: [],
     campOns: [],
+    activeItem: 'bookings',
   }
 
   componentDidMount() {
@@ -28,6 +29,9 @@ class UserBookings extends Component {
           recurring_bookings: recurringBookings,
           standard_bookings: bookings,
         } = data;
+        console.log(campOns);
+        console.log(recurringBookings);
+        console.log(bookings);
         this.setState({
           campOns,
           recurringBookings,
@@ -36,11 +40,33 @@ class UserBookings extends Component {
       });
   }
 
-  render() {
+  handleItemClick = (activeItem) => {
+    this.setState({
+      activeItem,
+    });
+  }
+
+  renderTab = (activeItem) => {
     const { bookings } = this.state;
+    const components = {
+      bookings: <Bookings bookings={bookings} />,
+      recurring: '',
+      campons: '',
+    };
+
+    return components[activeItem];
+  }
+
+  render() {
+    const { activeItem } = this.state;
     return (
       <div>
-        <Bookings bookings={bookings} />
+        <Menu tabular>
+          <Menu.Item name="Bookings" active={activeItem === 'bookings'} onClick={() => this.handleItemClick('bookings')} />
+          <Menu.Item name="Recurring Bookings" active={activeItem === 'recurring'} onClick={() => this.handleItemClick('recurring')} />
+          <Menu.Item name="Camp Ons" active={activeItem === 'campons'} onClick={() => this.handleItemClick('campons')} />
+        </Menu>
+        {this.renderTab(activeItem)}
       </div>
     );
   }
