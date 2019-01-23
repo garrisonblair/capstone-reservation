@@ -63,13 +63,6 @@ class ResetPassword extends Component {
             'error',
           );
         }
-        else if (error.message.includes('429')) {
-          sweetAlert(
-            'User requests too many times',
-            "Email has already sent to the associated email. Do not need to require again.",
-            'error',
-          );
-        }
       });
   }
 
