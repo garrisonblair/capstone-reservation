@@ -195,7 +195,7 @@ class Cells extends Component {
     const { bookingModal } = this.state;
     this.setState({ bookingModal: !bookingModal });
     if (bookingModal) {
-      this.updateLogin();
+      this.update();
     }
   }
 
@@ -203,7 +203,7 @@ class Cells extends Component {
     const { bookingInfoModal } = this.state;
     this.setState({ bookingInfoModal: !bookingInfoModal });
     if (bookingInfoModal) {
-      this.updateLogin();
+      this.update();
     }
   }
 
@@ -211,14 +211,14 @@ class Cells extends Component {
     const { onCloseModalWithAction } = this.props;
     this.setState({ bookingModal: false, bookingInfoModal: false });
     onCloseModalWithAction();
-    this.updateLogin();
+    this.update();
   }
 
   toggleBookingInfoWithAction = () => {
     const { onCloseModalWithAction } = this.props;
     this.setState({ bookingModal: false, bookingInfoModal: false });
     onCloseModalWithAction();
-    this.updateLogin();
+    this.update();
   }
 
   /*
@@ -273,9 +273,9 @@ class Cells extends Component {
     });
   }
 
-  updateLogin = () => {
-    const { updateLogin } = this.props;
-    updateLogin();
+  update = () => {
+    const { update } = this.props;
+    update();
   }
 
   /*
@@ -429,7 +429,7 @@ Cells.propTypes = {
   onCloseModalWithAction: PropTypes.func,
   campOns: PropTypes.instanceOf(Array),
   orientation: PropTypes.number,
-  updateLogin: PropTypes.func,
+  update: PropTypes.func,
 };
 
 Cells.defaultProps = {
@@ -445,7 +445,7 @@ Cells.defaultProps = {
   selectedDate: new Date(),
   orientation: 0,
   onCloseModalWithAction: () => {},
-  updateLogin: () => {},
+  update: () => {},
 };
 
 export default Cells;

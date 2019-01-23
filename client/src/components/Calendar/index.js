@@ -214,7 +214,8 @@ class Calendar extends Component {
     }
   }
 
-  updateLogin = () => {
+  update = () => {
+    this.getBookings();
     this.setState({ update: true });
     this.setState({ update: false });
   }
@@ -271,7 +272,7 @@ class Calendar extends Component {
             orientation={orientation}
             roomsNum={roomsNum}
             hoursDivisionNum={hoursDivisionNum}
-            updateLogin={this.updateLogin}
+            update={this.update}
           />
         </div>
       </div>,
