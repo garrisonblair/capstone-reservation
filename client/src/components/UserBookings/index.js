@@ -8,13 +8,14 @@ import {
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
+import Bookings from './Bookings';
 
 
 class UserBookings extends Component {
   state = {
     bookings: [],
     recurringBookings: [],
-    CampOns: [],
+    campOns: [],
   }
 
   componentDidMount() {
@@ -23,81 +24,23 @@ class UserBookings extends Component {
       .then(({ data }) => data)
       .then((data) => {
         const {
-          campons: CampOns,
+          campons: campOns,
           recurring_bookings: recurringBookings,
           standard_bookings: bookings,
         } = data;
         this.setState({
-          CampOns,
+          campOns,
           recurringBookings,
           bookings,
         });
       });
   }
 
-  renderTableHeader = () => {
-    const headers = ['Room', 'Date', 'Start', 'End', 'Group'];
-    let component = [];
-    component = headers.map((header, index) => (
-      // eslint-disable-next-line react/no-array-index-key
-      <Table.HeaderCell key={index}>
-        {header}
-      </Table.HeaderCell>
-    ));
-
-    return (
-      <Table.Header>
-        <Table.Row>
-          {component}
-        </Table.Row>
-      </Table.Header>
-    );
-  }
-
-  renderTableBody = () => {
-    const { bookings } = this.state;
-    let component = [];
-
-    if (bookings.length === 0) {
-      return component;
-    }
-
-    console.log(bookings);
-    component = bookings.map((booking, index) => (
-      // eslint-disable-next-line react/no-array-index-key
-      <Table.Row key={index}>
-        <Table.Cell>
-          {booking.room.name}
-        </Table.Cell>
-        <Table.Cell>
-          {booking.date}
-        </Table.Cell>
-        <Table.Cell>
-          {booking.start_time}
-        </Table.Cell>
-        <Table.Cell>
-          {booking.end_time}
-        </Table.Cell>
-        <Table.Cell>
-          {booking.group}
-        </Table.Cell>
-      </Table.Row>
-    ));
-    return (
-      <TableBody>
-        {component}
-      </TableBody>
-    );
-  }
-
   render() {
+    const { bookings } = this.state;
     return (
       <div>
-        <h1> Bookings </h1>
-        <Table>
-          {this.renderTableHeader()}
-          {this.renderTableBody()}
-        </Table>
+        <Bookings bookings={bookings} />
       </div>
     );
   }
