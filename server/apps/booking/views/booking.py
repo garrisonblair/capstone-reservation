@@ -22,7 +22,7 @@ from apps.system_administration.models.system_settings import SystemSettings
 
 class BookingList(ListAPIView):
     permission_classes = ()
-    serializer_class = MyBookingSerializer
+    serializer_class = ReadBookingSerializer
     queryset = Booking.objects.all()
 
     def get_queryset(self):
