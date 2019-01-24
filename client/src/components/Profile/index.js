@@ -4,6 +4,7 @@ import {
   Segment,
 } from 'semantic-ui-react';
 import Navigation from '../Navigation';
+import UserInfo from '../UserInfo';
 import Privileges from '../Privileges';
 import UserBookings from '../UserBookings';
 import Groups from '../Groups';
@@ -20,7 +21,7 @@ class Profile extends Component {
           <h1> Profile </h1>
           <Segment.Group horizontal compact>
             <Segment>
-              <h1> Contact Information </h1>
+              <UserInfo />
             </Segment>
             <Segment>
               <Privileges />
