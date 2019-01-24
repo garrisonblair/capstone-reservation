@@ -20,12 +20,15 @@ class Profile extends Component {
           <h1> Profile </h1>
           <Segment.Group horizontal compact>
             <Segment>
-              <Privileges />
+              <h1> Contact Information </h1>
             </Segment>
             <Segment>
-              <UserBookings />
+              <Privileges />
             </Segment>
           </Segment.Group>
+          <Segment>
+            <UserBookings />
+          </Segment>
           <Segment.Group horizontal compact>
             <Segment>
               <Groups />

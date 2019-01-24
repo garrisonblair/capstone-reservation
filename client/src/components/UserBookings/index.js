@@ -10,6 +10,7 @@ import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 import Bookings from './Bookings';
 import RecurringBookings from './RecurringBookings';
+import CampOns from './CampOns';
 
 
 class UserBookings extends Component {
@@ -48,11 +49,11 @@ class UserBookings extends Component {
   }
 
   renderTab = (activeItem) => {
-    const { bookings, recurringBookings } = this.state;
+    const { bookings, recurringBookings, campOns } = this.state;
     const components = {
       bookings: <Bookings bookings={bookings} />,
       recurring: <RecurringBookings bookings={recurringBookings} />,
-      campons: '',
+      campons: <CampOns bookings={bookings} campOns={campOns} />,
     };
 
     return components[activeItem];
