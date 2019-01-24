@@ -1,16 +1,12 @@
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from apps.accounts.models.User import User
 
 
 def log_model_change(model_instance, action, user=None):
 
     if user is None:
-        try:
-            user = User.objects.get(username="system_user")
-
-        except User.DoesNotExist:
-            user = User.objects.create_user(username="system_user", password="system_user")
+        user = get_system_user()
 
     log_entry = LogEntry.objects.log_action(
         user_id=user.id,
@@ -23,3 +19,13 @@ def log_model_change(model_instance, action, user=None):
 
     log_entry.object_repr = model_instance.json_serialize()
     log_entry.save()
+
+
+def get_system_user():
+    try:
+        user = User.objects.get(username="system_user")
+
+    except User.DoesNotExist:
+        user = User.objects.create_user(username="system_user", password="system_user")
+
+    return user

@@ -7,12 +7,20 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-from arrow.arrow import Arrow
 
 from ..models.EmailId import EmailId
 
+from apps.accounts.models.User import User
+from apps.booking.models import Booking
+from apps.rooms.models import Room
+
+from apps.util import utils
+from apps.util import Logging
+
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+
+logger = Logging.get_logger()
 
 
 class GmailICSImporter:
@@ -25,15 +33,41 @@ class GmailICSImporter:
 
         message_ids = self.get_unprocessed_message_ids()
 
-        ics_files = list()
-
         for message_id in message_ids:
-            self.create_booking_from_ics(self.get_message_ICS_attachment(message_id))
+            self.create_booking_from_message(message_id)
 
-    def create_booking_from_ics(self, ics_file):
-        calendar = Calendar(ics_file)
-        event = calendar.events[0]  # type: Event
-        print(event.begin.datetime)
+        logger.debug("ICS Webcalender bookings updated.")
+
+    def create_booking_from_message(self, message_id):
+        try:
+            message = self.get_message(message_id)
+
+            ics_file = self.get_message_ICS_attachment(message)
+            room_name = self.get_room_from_message(message)
+
+            calendar = Calendar(ics_file)
+            event = calendar.events[0]  # type: Event
+
+            start_time = event.begin.datetime.replace(tzinfo=None)
+            end_time = event.end.datetime.replace(tzinfo=None)
+
+            booker = utils.get_system_user()
+
+            room = Room.objects.get(name=room_name)
+
+            booking = Booking(room=room,
+                              booker=booker,
+                              date=start_time.date(),
+                              start_time=start_time.time(),
+                              end_time=end_time.time())
+
+            booking.save()
+            utils.log_model_change(booking, utils.ADDITION)
+            logger.info("Booking {} imported from ICS file.".format(booking.id))
+
+        except Exception as error:
+            logger.warn("A booking failed to import from ICS file.")
+            print(error)
 
     def get_service(self):
         creds = None
@@ -82,9 +116,7 @@ class GmailICSImporter:
 
         return response
 
-    def get_message_ICS_attachment(self, id):
-
-        message = self.get_message(id)
+    def get_message_ICS_attachment(self, message):
 
         for part in message['payload']['parts']:
             if 'filename' in part and part['filename'] == 'WebCalendar.ics':
@@ -96,4 +128,12 @@ class GmailICSImporter:
 
         file_data = base64.urlsafe_b64decode(attachment['data'].encode('UTF-8'))
 
-        return file_data
+        return file_data.decode('UTF-8')
+
+    def get_room_from_message(self, message):
+        body_encoded = message['payload']['parts'][0]['body']['data']
+        email_text = base64.urlsafe_b64decode(body_encoded.encode('UTF-8')).decode('UTF-8')  # type: str
+        first_line = email_text.split('\r')[0]
+        room_name = first_line.split(' ')[1]
+
+        return room_name
