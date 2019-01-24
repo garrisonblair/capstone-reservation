@@ -1,7 +1,6 @@
 from django.urls import path
 from apps.accounts.views.register import RegisterView
 from apps.accounts.views.reset_password import ResetPasswordView
-from apps.accounts.views.verify_reset import VerifyResetView
 from apps.accounts.views.verify import VerifyView
 from apps.accounts.views.login import LoginView
 from apps.accounts.views.logout import LogoutView
@@ -20,7 +19,6 @@ urlpatterns = [
     path(r'register', RegisterView.as_view()),
     path(r'reset_password', ResetPasswordView.as_view()),
     path(r'verify', VerifyView.as_view()),
-    path(r'verify_reset', VerifyResetView.as_view()),
     path(r'login', LoginView.as_view()),
     path(r'logout', LogoutView.as_view()),
 

@@ -9,16 +9,11 @@ import api from '../../utils/api';
 import CustomFormInput from './CustomFormInput';
 import './Verification.scss';
 
-import getEmailRegex from '../../utils/emailRegex';
 
-
-// TODO: Check if user already set its booker ID
-class Verification extends Component {
+class ResetPasswordVerification extends Component {
   state = {
     password: '',
     confirmPassword: '',
-    bookerID: '',
-    secondaryEmail: '',
     errorMessagePassword: '',
     errorMessageConfirmPassword: '',
     errorMessageBookerID: '',
@@ -40,6 +35,11 @@ class Verification extends Component {
     if (token) {
       api.verify(token)
         .then((response) => {
+          sweetAlert(
+            ':(',
+            response.data,
+            'error',
+          );
           this.setState({
             isLoading: false,
             firstName: response.data.first_name,
@@ -55,47 +55,6 @@ class Verification extends Component {
           );
         });
     }
-  }
-
-  verifyEmail = () => {
-    const { secondaryEmail } = this.state;
-    let preventSubmit = false;
-    let errorMessageEmail = '';
-
-    if (secondaryEmail !== '' && !secondaryEmail.match(getEmailRegex())) {
-      preventSubmit = true;
-      errorMessageEmail = 'Please enter a valid email.';
-    }
-
-    this.setState({
-      errorMessageEmail,
-    });
-
-    return preventSubmit;
-  }
-
-  verifyBookerID = () => {
-    const { bookerID } = this.state;
-    let preventSubmit = false;
-    let errorMessageBookerID = '';
-
-    if (bookerID.length === 0) {
-      preventSubmit = true;
-      errorMessageBookerID = 'Please enter your booker ID number';
-    } else if (bookerID.length !== 8) {
-      preventSubmit = true;
-      errorMessageBookerID = 'Field should have 8 digits';
-    } else if (!bookerID.match('^[0-9]*$')) {
-      preventSubmit = true;
-      errorMessageBookerID = 'Booker ID should have only digits';
-    }
-
-    this.setState({
-      bookerID,
-      errorMessageBookerID,
-    });
-
-    return preventSubmit;
   }
 
   verifyPasswords = () => {
@@ -142,46 +101,28 @@ class Verification extends Component {
     });
   }
 
-  handleChangeBookerId = (event) => {
-    this.setState({
-      bookerID: event.target.value,
-      errorMessageBookerID: '',
-    });
-  }
-
-  handleChangeEmail = (event) => {
-    this.setState({
-      secondaryEmail: event.target.value,
-      errorMessageEmail: '',
-    });
-  }
-
   handleSubmit = () => {
     // Verify form before continuing transaction.
     const {
-      bookerID, userId, password, secondaryEmail,
+      userId, password
     } = this.state;
     const { history } = this.props;
 
-    const preventSubmit = this.verifyPasswords()
-                          | this.verifyBookerID()
-                          | this.verifyEmail();
+    const preventSubmit = this.verifyPasswords();
 
     if (preventSubmit) {
       return;
     }
 
     const data = {
-      booker_id: bookerID,
       password,
-      secondary_email: secondaryEmail,
     };
 
     api.updateUser(userId, data)
       .then(() => {
         sweetAlert(
-          'Settings',
-          'Settings recorded successfully',
+          'Reset Password',
+          'Password reset successfully',
           'success',
         )
           .then(() => {
@@ -213,20 +154,20 @@ class Verification extends Component {
     } = this.state;
     return (
       <div>
-        <h1> Account settings </h1>
+        <h1>Reset Password</h1>
         <Step.Group size="mini" widths={2}>
           <Step completed>
             <Icon name="envelope" />
             <Step.Content>
               <Step.Title>Step 1</Step.Title>
-              <Step.Description>ENCS username verification</Step.Description>
+              <Step.Description>Username confirmation</Step.Description>
             </Step.Content>
           </Step>
           <Step active>
             <Icon name="cog" />
             <Step.Content>
               <Step.Title>Step 2</Step.Title>
-              <Step.Description>Account setup</Step.Description>
+              <Step.Description>Reset Password</Step.Description>
             </Step.Content>
           </Step>
         </Step.Group>
@@ -257,28 +198,6 @@ class Verification extends Component {
             onChange={this.handleChangeConfirmPassword}
             errormessage={errorMessageConfirmPassword}
           />
-
-          <CustomFormInput
-            fluid
-            size="medium"
-            icon="id card"
-            iconPosition="left"
-            placeholder="12345678"
-            onChange={this.handleChangeBookerId}
-            title="Concordia Student ID:"
-            errormessage={errorMessageBookerID}
-          />
-
-          <CustomFormInput
-            fluid
-            size="medium"
-            icon="envelope"
-            iconPosition="left"
-            placeholder="youremail@example.com"
-            title="Secondary email (optional):"
-            onChange={this.handleChangeEmail}
-            errormessage={errorMessageEmail}
-          />
         </Form>
         <Form.Field>
           <br />
@@ -293,7 +212,7 @@ class Verification extends Component {
   render() {
     const { isLoading } = this.state;
     return (
-      <div id="verification">
+      <div id="resetPasswordVerification">
         <div className="container">
           {isLoading ? this.renderLoader() : this.renderMainForm()}
         </div>
@@ -302,12 +221,12 @@ class Verification extends Component {
   }
 }
 
-Verification.propTypes = {
+ResetPasswordVerification.propTypes = {
   showFormForTesting: PropTypes.bool,
 };
 
-Verification.defaultProps = {
+ResetPasswordVerification.defaultProps = {
   showFormForTesting: false,
 };
 
-export default Verification;
+export default ResetPasswordVerification;

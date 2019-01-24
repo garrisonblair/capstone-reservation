@@ -42,7 +42,7 @@ class ResetPasswordView(APIView):
 
             # Send email
             subject = 'Capstone Reservation - Reset your password'
-            verify_url = "{}://{}/#/verify_reset/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
+            verify_url = "{}://{}/#/verifyReset/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
 
             context = {
                 'verify_url': verify_url,
