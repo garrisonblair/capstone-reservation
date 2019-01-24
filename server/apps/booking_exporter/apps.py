@@ -1,5 +1,5 @@
 import threading
-
+import os
 from django.apps import AppConfig
 
 
@@ -11,8 +11,7 @@ class BookingExporterConfig(AppConfig):
     def __init__(self, arg1, arg2):
         super(BookingExporterConfig, self).__init__(arg1, arg2)
         self.web_calendar_exporter = None
-        self.importer_thread  # type: threading.Timer
-        self.ready_count = 0
+        self.importer_thread = None
 
     def ready(self):
         from apps.system_administration.models.system_settings import SystemSettings
@@ -23,10 +22,9 @@ class BookingExporterConfig(AppConfig):
             if settings.is_webcalendar_backup_active:
                 self.register_web_calender_exporter()
 
-            if settings.is_webcalendar_synchronization_active:
+            # check that this is main thread, needed in dev environment because 2 apps are loaded
+            if settings.is_webcalendar_synchronization_active and os.environ.get('RUN_MAIN', None) == 'true':
                 self.start_importing_ics_bookings()
-
-            self.ready_count += 1
 
         except Exception:  # Fails during migrations
             pass

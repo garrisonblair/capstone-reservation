@@ -33,3 +33,4 @@ yarn-error.log*
 .idea
 *.pickle
 server/apps/booking_exporter/GmailImporter/credentials.json
+*.sqlite3-journal
