@@ -42,7 +42,7 @@ class UserInfo extends Component {
   render() {
     const { user } = this.state;
     return (
-      <div>
+      <div className="segment">
         <h1> User Information </h1>
         <h3>
           <Icon name="user" />
