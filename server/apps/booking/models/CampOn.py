@@ -9,9 +9,10 @@ from django.core.exceptions import ValidationError
 
 from apps.accounts.exceptions import PrivilegeError
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+from apps.util.SubjectModel import SubjectModel
 
 
-class CampOn(models.Model):
+class CampOn(models.Model, SubjectModel):
     booker = models.ForeignKey(User, on_delete=models.CASCADE)
     camped_on_booking = models.ForeignKey(Booking,
                                           on_delete=models.SET_NULL,
@@ -25,6 +26,11 @@ class CampOn(models.Model):
                                           related_name="generator_camp_on")
     start_time = models.TimeField()
     end_time = models.TimeField()
+
+    observers = list()
+
+    def get_observers(self):
+        return CampOn.observers
 
     def save(self, *args, **kwargs):
         self.evaluate_privilege()

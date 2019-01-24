@@ -1,7 +1,7 @@
 import requests
 
 from ..BookingExporter import BookingExporter
-from .ICSSerializer import ICSSerializer
+from .ICSSerializer import ICSSerializerFactory
 
 from apps.system_administration.models.system_settings import SystemSettings
 
@@ -26,10 +26,6 @@ class WEBCalendarExporter(BookingExporter):
         if not request_session:
             request_session = requests.Session()
         self.session = request_session
-
-        if not ics_serializer:
-            ics_serializer = ICSSerializer()
-        self.serializer = ics_serializer
 
         self.logged_in = False
 
@@ -68,7 +64,8 @@ class WEBCalendarExporter(BookingExporter):
         if not self.logged_in:
             self.login()
 
-        ics_file_content = self.serializer.serialize_booking(booking)
+        serializer = ICSSerializerFactory.get_serializer(booking)
+        ics_file_content = serializer.serialize(booking)
         self.export_file(booking, ics_file_content)
 
     # ClassObserver
