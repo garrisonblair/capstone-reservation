@@ -2,36 +2,48 @@
   padding: 50px 30px 30px 30px;
   background-color: #4D4D4D;
 }
+
 .segment__user {
-	background-color: #B0AEAE !important;
-	border-radius: 5px !important;
-	max-width: 25% !important;
+  background-color: #B0AEAE !important;
+  border-radius: 5px !important;
 }
+
 .segment__bookings {
-	background-color: #B0AEAE !important;
-	border-radius: 5px !important;
-	max-width: 75% !important;
+  background-color: #B0AEAE !important;
+  border-radius: 5px !important;
 }
+
 .segment__privileges {
-	background-color: #B0AEAE !important;
-	border-radius: 5px !important;
-	max-width: 25% !important;
+  background-color: #B0AEAE !important;
+  border-radius: 5px !important;
+  max-width: 25% !important;
 }
+
 .segment__groups {
-	background-color: #B0AEAE !important;
-	border-radius: 5px !important;
-	max-width: 37.5% !important;
+  background-color: #B0AEAE !important;
+  border-radius: 5px !important;
+  max-width: 37.5% !important;
 }
+
 .segment__invitations {
-	background-color: #B0AEAE !important;
-	border-radius: 5px !important;
-	max-width: 37.5% !important;
+  background-color: #B0AEAE !important;
+  border-radius: 5px !important;
+  max-width: 37.5% !important;
 }
+
 .segment__container {
-	background-color: #932439 !important;
-	padding: 2px !important;
-	border-radius: 5px !important;
+  background-color: #932439 !important;
+  padding: 2px !important;
+  border-radius: 5px !important;
+  &.top {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    .segment {
+      margin: 0 2px;
+    }
+  }
 }
+
 .divider {
-	padding: 1px;
+  padding: 1px;
 }
