@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
-  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab,
+  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import './ReservationDetailsModal.scss';
@@ -215,10 +215,6 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  handleTabChange = (e, { activeIndex }) => {
-    this.setState({ tabIndex: activeIndex });
-  }
-
   verifyRecurringOption0 = () => {
     const { inputOption0 } = this.state;
     if (inputOption0.endDate == null) {
@@ -248,7 +244,6 @@ class ReservationDetailsModal extends Component {
     if (ownerValue !== 'me') {
       data.group = ownerValue;
     }
-    console.log(data);
     api.createBooking(data)
       .then(() => {
         sweetAlert('Completed',
@@ -282,6 +277,7 @@ class ReservationDetailsModal extends Component {
       room: selectedRoomId,
       booker: user.id,
       skip_conflicts: skipConflicts,
+      group: null,
     };
     if (ownerValue !== 'me') {
       data.group = ownerValue;
@@ -379,7 +375,7 @@ class ReservationDetailsModal extends Component {
     });
   }
 
-  renderRecurringBookingOption0 = () => {
+  renderRecurringForm = () => {
     const { inputOption0 } = this.state;
     return (
       <div>
@@ -387,7 +383,7 @@ class ReservationDetailsModal extends Component {
           <h3 className="header--inline">
             <Icon name="calendar alternate" />
             {' '}
-            {'Starting date'}
+            {'Start date'}
           </h3>
           <Form.Field>
             <Input
@@ -419,19 +415,6 @@ class ReservationDetailsModal extends Component {
             />
           </Form.Field>
         </div>
-      </div>
-    );
-  }
-
-  renderRecurringForm() {
-    const panes = [
-      { menuItem: 'Option 1', render: () => <Tab.Pane attached={false}>{this.renderRecurringBookingOption0()}</Tab.Pane> },
-      { menuItem: 'Option 2', render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane> },
-      { menuItem: 'Option 3', render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane> },
-    ];
-    return (
-      <div>
-        <Tab menu={{ pointing: true }} onTabChange={this.handleTabChange} panes={panes} />
       </div>
     );
   }

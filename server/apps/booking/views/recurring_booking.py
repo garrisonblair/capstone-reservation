@@ -19,9 +19,11 @@ class RecurringBookingCreate(APIView):
 
         recurring_booking_data = request.data
         recurring_booking_data["booker"] = request.user.id
+        print(request.data)
 
         serializer = RecurringBookingSerializer(data=recurring_booking_data)
         if not serializer.is_valid():
+            print(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
