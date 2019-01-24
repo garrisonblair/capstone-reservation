@@ -35,11 +35,6 @@ class ResetPasswordVerification extends Component {
     if (token) {
       api.verify(token)
         .then((response) => {
-          sweetAlert(
-            ':(',
-            response.data,
-            'error',
-          );
           this.setState({
             isLoading: false,
             firstName: response.data.first_name,
