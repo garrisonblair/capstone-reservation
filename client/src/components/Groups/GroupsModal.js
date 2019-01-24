@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, List, Dropdown, Message,
+  Modal, Button, FormField, Input, List, Dropdown,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import InvitedRowItem from './InvitedRowItem';
@@ -203,13 +203,13 @@ class GroupsModal extends Component {
   }
 
   renderMembersList = () => {
-    const { groupMembers, groupOwner } = this.state;
+    const { groupMembers } = this.state;
     const { isAdmin } = this.props;
 
-    let content = (
+    const content = (
       <List divided>
         {
-          groupMembers.filter(m => m.id !== groupOwner.id).map(
+          groupMembers.map(
             m => (
               <MemberRowItem
                 member={m}
@@ -222,24 +222,17 @@ class GroupsModal extends Component {
         }
       </List>
     );
-    if (groupMembers.length === 1) {
-      content = (<Message visible>There is currently no members except you.</Message>);
-    }
     return content;
   }
 
   renderModalContent = () => {
     const {
-      groupOwner, stateOptions, newInvitation, groupId, groupPrivilegeRequest,
+      stateOptions, newInvitation, groupId, groupPrivilegeRequest,
     } = this.state;
     const { isAdmin } = this.props;
     return (
       <Modal.Content>
         <Modal.Description>
-          <h3>
-            Group Owner:
-            {groupOwner.username}
-          </h3>
           <FormField>
             <RequestPrivilege groupId={groupId} groupPrivilege={groupPrivilegeRequest} />
             <h3>Members:</h3>
