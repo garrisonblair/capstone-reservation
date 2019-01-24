@@ -5,9 +5,11 @@ import {
   Icon,
   Modal,
 } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
 import './BookingInfoModal.scss';
+import api from '../../utils/api';
 
 
 class BookingInfoModal extends Component {
@@ -30,6 +32,17 @@ class BookingInfoModal extends Component {
       return booking.booker.username === JSON.parse(localStorage.getItem('CapstoneReservationUser')).username;
     }
     return false;
+  }
+
+  static checkAdmin() {
+    if (localStorage.getItem('CapstoneReservationUser')) {
+      return JSON.parse(localStorage.getItem('CapstoneReservationUser')).is_superuser;
+    }
+    return false;
+  }
+
+  static checkSameUserOrAdmin(booking) {
+    return BookingInfoModal.checkSameUser(booking) || BookingInfoModal.checkAdmin();
   }
 
   state = {
@@ -62,6 +75,35 @@ class BookingInfoModal extends Component {
   }
 
   handleOpen = () => this.setState({ show: true });
+
+  handleDelete = () => {
+    sweetAlert({
+      title: 'Are you sure?',
+      text: 'Booking will be deleted.',
+      type: 'warning',
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.value) {
+        const { booking } = this.props;
+        api.deleteBooking(booking.id)
+          .then(() => {
+            this.closeModalWithAction();
+            sweetAlert({
+              title: 'Success',
+              text: 'Booking deleted',
+              type: 'success',
+            });
+          })
+          .catch((error) => {
+            sweetAlert(
+              'Cancellation failed',
+              error.response.data,
+              'error',
+            );
+          });
+      }
+    });
+  }
 
   renderCampons = () => {
     const { campons } = this.props;
@@ -122,6 +164,7 @@ class BookingInfoModal extends Component {
           {this.renderForm(booking)}
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
+            {BookingInfoModal.checkSameUserOrAdmin(booking) ? <Button content="Delete" color="red" onClick={this.handleDelete} /> : null }
           </div>
         </Modal.Description>
       </Modal.Content>
