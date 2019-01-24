@@ -30,8 +30,9 @@ def get_system_user(username="system_user"):
         user = User.objects.get(username=username)
 
     except User.DoesNotExist:
-        password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
 
-        user = User.objects.create_user(username="system_user", password=password)
+        password = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
+
+        user = User.objects.create_user(username=username, password=password)
 
     return user

@@ -61,6 +61,10 @@ class WEBCalendarExporter(BookingExporter):
         if not hasattr(booking.room, "externalroomid"):
             return
 
+        # dont backup bookings that come from Webcalendar
+        if booking.booker.username == "Webcalendar User":
+            return
+
         if not self.logged_in:
             self.login()
 
