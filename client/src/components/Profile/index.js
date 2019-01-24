@@ -19,22 +19,22 @@ class Profile extends Component {
         <Navigation />
         <div className="profile">
           <h1> Profile </h1>
-          <Segment.Group horizontal compact className="segment_container">
-            <Segment className="segment">
+          <Segment.Group horizontal compact className="segment__container">
+            <Segment className="segment__user">
               <UserInfo />
             </Segment>
-            <Segment className="segment">
+            <Segment className="segment__bookings">
               <UserBookings />
             </Segment>
           </Segment.Group>
-          <Segment.Group horizontal compact>
-            <Segment className="segment">
+          <Segment.Group horizontal compact className="segment__container">
+            <Segment className="segment__privileges">
               <Privileges />
             </Segment>
-            <Segment className="segment">
+            <Segment className="segment__groups">
               <Groups />
             </Segment>
-            <Segment className="segment">
+            <Segment className="segment__invitations">
               {/* Group invivations */}
             </Segment>
           </Segment.Group>

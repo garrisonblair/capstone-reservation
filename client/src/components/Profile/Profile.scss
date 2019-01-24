@@ -2,12 +2,36 @@
   padding: 50px 30px 30px 30px;
   background-color: #4D4D4D;
 }
-.segment {
+.segment__user {
 	background-color: #B0AEAE !important;
 	border-radius: 5px !important;
+	max-width: 25% !important;
 }
-.segment_container {
+.segment__bookings {
+	background-color: #B0AEAE !important;
+	border-radius: 5px !important;
+	max-width: 75% !important;
+}
+.segment__privileges {
+	background-color: #B0AEAE !important;
+	border-radius: 5px !important;
+	max-width: 25% !important;
+}
+.segment__groups {
+	background-color: #B0AEAE !important;
+	border-radius: 5px !important;
+	max-width: 37.5% !important;
+}
+.segment__invitations {
+	background-color: #B0AEAE !important;
+	border-radius: 5px !important;
+	max-width: 37.5% !important;
+}
+.segment__container {
 	background-color: #932439 !important;
 	padding: 2px !important;
 	border-radius: 5px !important;
+}
+.divider {
+	padding: 1px;
 }
