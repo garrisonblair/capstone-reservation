@@ -51,7 +51,7 @@ class GmailICSImporter:
             start_time = event.begin.datetime.replace(tzinfo=None)
             end_time = event.end.datetime.replace(tzinfo=None)
 
-            booker = utils.get_system_user()
+            booker = utils.get_system_user("WebCalendar User")
 
             room = Room.objects.get(name=room_name)
 
@@ -66,8 +66,7 @@ class GmailICSImporter:
             logger.info("Booking {} imported from ICS file.".format(booking.id))
 
         except Exception as error:
-            logger.warn("A booking failed to import from ICS file.")
-            print(error)
+            logger.warn("A booking failed to import from ICS file. Error :" + str(error))
 
     def get_service(self):
         creds = None

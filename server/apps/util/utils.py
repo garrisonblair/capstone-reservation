@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.contrib.contenttypes.models import ContentType
 from apps.accounts.models.User import User
@@ -21,11 +24,14 @@ def log_model_change(model_instance, action, user=None):
     log_entry.save()
 
 
-def get_system_user():
+def get_system_user(username="system_user"):
+
     try:
-        user = User.objects.get(username="system_user")
+        user = User.objects.get(username=username)
 
     except User.DoesNotExist:
-        user = User.objects.create_user(username="system_user", password="system_user")
+        password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
+
+        user = User.objects.create_user(username="system_user", password=password)
 
     return user

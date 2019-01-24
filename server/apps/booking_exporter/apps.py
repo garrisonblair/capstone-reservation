@@ -32,15 +32,19 @@ class BookingExporterConfig(AppConfig):
     def register_web_calender_exporter(self):
         from .WEBCalendarExporter.WEBCalendarExporter import WEBCalendarExporter
         from apps.booking.models.Booking import Booking
+        from apps.booking.models.CampOn import CampOn
         if self.web_calendar_exporter is None:
             self.web_calendar_exporter = WEBCalendarExporter()
 
         Booking().register(self.web_calendar_exporter)
+        CampOn().register(self.web_calendar_exporter)
 
     def unregister_web_calendar_exporter(self):
         from apps.booking.models.Booking import Booking
+        from apps.booking.models.CampOn import CampOn
         if self.web_calendar_exporter is not None:
             Booking().unregister(self.web_calendar_exporter)
+            CampOn().unregister(self.web_calendar_exporter)
 
     def start_importing_ics_bookings(self):
         from .GmailImporter.GmailICSImporter import GmailICSImporter
