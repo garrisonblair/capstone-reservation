@@ -9,6 +9,7 @@ import {
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 import Bookings from './Bookings';
+import RecurringBookings from './RecurringBookings';
 
 
 class UserBookings extends Component {
@@ -47,10 +48,10 @@ class UserBookings extends Component {
   }
 
   renderTab = (activeItem) => {
-    const { bookings } = this.state;
+    const { bookings, recurringBookings } = this.state;
     const components = {
       bookings: <Bookings bookings={bookings} />,
-      recurring: '',
+      recurring: <RecurringBookings bookings={recurringBookings} />,
       campons: '',
     };
 
