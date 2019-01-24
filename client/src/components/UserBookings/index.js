@@ -1,6 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable react/no-unused-state */
-/* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import {
@@ -18,6 +15,8 @@ class UserBookings extends Component {
     bookings: [],
     recurringBookings: [],
     campOns: [],
+    allBookings: [],
+    rooms: [],
     activeItem: 'bookings',
   }
 
@@ -31,13 +30,26 @@ class UserBookings extends Component {
           recurring_bookings: recurringBookings,
           standard_bookings: bookings,
         } = data;
-        console.log(campOns);
-        console.log(recurringBookings);
-        console.log(bookings);
         this.setState({
           campOns,
           recurringBookings,
           bookings,
+        });
+      });
+
+    api.getBookings()
+      .then((response) => {
+        const { data: allBookings } = response;
+        this.setState({
+          allBookings,
+        });
+      });
+
+    api.getRooms()
+      .then((response) => {
+        const { data: rooms } = response;
+        this.setState({
+          rooms,
         });
       });
   }
@@ -49,11 +61,18 @@ class UserBookings extends Component {
   }
 
   renderTab = (activeItem) => {
-    const { bookings, recurringBookings, campOns } = this.state;
+    const {
+      bookings,
+      recurringBookings,
+      campOns,
+      allBookings,
+      rooms,
+    } = this.state;
+
     const components = {
       bookings: <Bookings bookings={bookings} />,
       recurring: <RecurringBookings bookings={recurringBookings} />,
-      campons: <CampOns bookings={bookings} campOns={campOns} />,
+      campons: <CampOns rooms={rooms} allBookings={allBookings} campOns={campOns} />,
     };
 
     return components[activeItem];

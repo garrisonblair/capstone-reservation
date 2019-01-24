@@ -5,8 +5,7 @@ import { Table, TableBody } from 'semantic-ui-react';
 
 class CampOns extends Component {
   renderTableHeader = () => {
-    // const headers = ['Room', 'Date', 'Start', 'End', 'Group'];
-    const headers = ['Start', 'End'];
+    const headers = ['Room', 'Date', 'Start', 'End', 'Group'];
     let component = [];
     component = headers.map((header, index) => (
       // eslint-disable-next-line react/no-array-index-key
@@ -25,31 +24,51 @@ class CampOns extends Component {
   }
 
   renderTableBody = () => {
-    const { campOns } = this.props;
+    const { campOns, allBookings, rooms } = this.props;
     let component = [];
 
     if (campOns.length === 0) {
       return component;
     }
 
-    component = campOns.map((booking, index) => (
+    const bookingsLookup = allBookings.reduce((obj, booking) => {
+      // eslint-disable-next-line no-param-reassign
+      obj[booking.id] = {
+        room: booking.room,
+        date: booking.date,
+        start_time: booking.start_time,
+        end_time: booking.end_time,
+        group: booking.group,
+      };
+      return obj;
+    });
+
+    const roomsLookup = rooms.reduce((obj, room) => {
+      // eslint-disable-next-line no-param-reassign
+      obj[room.id] = {
+        name: room.name,
+      };
+      return obj;
+    });
+
+    component = campOns.map((campOn, index) => (
       // eslint-disable-next-line react/no-array-index-key
       <Table.Row key={index}>
-        {/* <Table.Cell>
-          {booking.room.name}
-        </Table.Cell> */}
-        {/* <Table.Cell>
-          {booking.date}
-        </Table.Cell> */}
         <Table.Cell>
-          {booking.start_time}
+          {roomsLookup[bookingsLookup[`${campOn.camped_on_booking}`].room].name}
         </Table.Cell>
         <Table.Cell>
-          {booking.end_time}
+          {bookingsLookup[`${campOn.camped_on_booking}`].date}
         </Table.Cell>
-        {/* <Table.Cell>
-          {booking.group}
-        </Table.Cell> */}
+        <Table.Cell>
+          {campOn.start_time}
+        </Table.Cell>
+        <Table.Cell>
+          {campOn.end_time}
+        </Table.Cell>
+        <Table.Cell>
+          {bookingsLookup[`${campOn.camped_on_booking}`].group}
+        </Table.Cell>
       </Table.Row>
     ));
     return (
@@ -72,6 +91,8 @@ class CampOns extends Component {
 }
 
 CampOns.propTypes = {
+  rooms: PropTypes.instanceOf(Object).isRequired,
+  allBookings: PropTypes.instanceOf(Object).isRequired,
   campOns: PropTypes.instanceOf(Object).isRequired,
 };
 
