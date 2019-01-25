@@ -3,7 +3,7 @@ from datetime import time
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
-from ..models.PrivilegeCategory import PrivilegeCategory, PrivilegeMerger
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory, PrivilegeMerger
 
 
 class TestPrivilegeCategoryModel(TestCase):

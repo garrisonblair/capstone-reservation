@@ -69,6 +69,7 @@ class WEBCalendarExporter(BookingExporter):
             self.login()
 
         serializer = ICSSerializerFactory.get_serializer(booking)
+
         ics_file_content = serializer.serialize(booking)
         self.export_file(booking, ics_file_content)
 

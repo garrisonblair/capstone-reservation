@@ -11,13 +11,13 @@ from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 from apps.accounts.models.User import User
 from apps.booking.models.CampOn import CampOn
 from apps.rooms.models.Room import Room
-from ..models.Booking import Booking, RecurringBooking
+from apps.booking.models.Booking import Booking, RecurringBooking
 
-from ..views.booking import BookingList, BookingCancel, BookingViewMyBookings
-from ..views.booking import BookingCreate
-from ..views.booking import BookingRetrieveUpdateDestroy
+from apps.booking.views.booking import BookingList, BookingCancel, BookingViewMyBookings
+from apps.booking.views.booking import BookingCreate
+from apps.booking.views.booking import BookingRetrieveUpdateDestroy
 
-from ..serializers.booking import BookingSerializer
+from apps.booking.serializers.booking import BookingSerializer
 
 from apps.util.mock_datetime import mock_datetime
 

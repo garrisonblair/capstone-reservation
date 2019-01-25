@@ -7,7 +7,7 @@ from django.core.management import call_command
 from rest_framework.test import APIRequestFactory, force_authenticate
 
 from django.contrib.admin.models import LogEntry
-from ..views.log_entry_api import LogEntryView
+from apps.system_administration.views.log_entry_api import LogEntryView
 from django.contrib.auth.models import User
 
 

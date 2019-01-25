@@ -6,7 +6,7 @@ from django.test import TestCase
 from apps.booking.models.Booking import Booking
 from apps.rooms.models.Room import Room
 from apps.accounts.models.User import User
-from ..WEBCalendarExporter.ICSSerializer import BookingICSSerializer
+from apps.booking_exporter.WEBCalendarExporter.ICSSerializer import BookingICSSerializer
 from apps.groups.models.Group import Group
 
 

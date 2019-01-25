@@ -1,5 +1,5 @@
 from django.test import TestCase
-from ..models.system_settings import SystemSettings
+from apps.system_administration.models.system_settings import SystemSettings
 from apps.booking.models.Booking import Booking
 
 
