@@ -86,7 +86,7 @@ END:VCALENDAR"""
 
         test = BookingICSSerializer()
 
-        generated = test.serialize_booking(self.booking)
+        generated = test.serialize(self.booking)
         predefined_no_group = str(self.returnSerializedICSPredefinedNoGroup())
 
         self.assertEquals(generated, predefined_no_group)
@@ -95,7 +95,7 @@ END:VCALENDAR"""
 
         test = BookingICSSerializer()
 
-        generated = test.serialize_booking(self.booking2)
+        generated = test.serialize(self.booking2)
         predefined_with_group = str(self.returnSerializedICSPredefinedWithGroup())
 
         self.assertEquals(generated, predefined_with_group)
