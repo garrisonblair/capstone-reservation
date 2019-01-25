@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Popup } from 'semantic-ui-react';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
@@ -42,6 +43,14 @@ class Cells extends Component {
       roomsNum: props.roomsNum,
       hoursDivisionNum: props.hoursDivisionNum,
     };
+  }
+
+  static getPopupContent(booking) {
+    const start = booking.start_time.length > 5
+      ? booking.start_time.substring(0, booking.start_time.length - 3) : booking.start_time;
+    const end = booking.end_time.length > 5
+      ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time;
+    return `${start} - ${end} ${booking.booker.username}`;
   }
   /*
    * STYLE METHODS
@@ -153,6 +162,7 @@ class Cells extends Component {
           gridRowEnd: end,
           gridColumn: 1,
           backgroundColor: color,
+          borderLeft: '1px solid white',
           borderTop: '1px solid white',
           borderBottom: '1px solid white',
           width: booking.isCampOn ? '66.1%' : '99.1%',
@@ -340,10 +350,24 @@ class Cells extends Component {
 
     bookings.forEach((booking) => {
       bookingsDiv.push(
-        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} role="button" tabIndex="0" key={booking.id} onClick={() => this.handleClickBooking(booking)} onKeyDown={() => {}}>
-          {this.renderBookingText(booking)}
-          {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
-        </div>,
+        <Popup
+          key={booking.id}
+          trigger={
+            (
+              <div
+                className="calendar__booking"
+                style={this.setBookingStyle(booking).booking_style}
+                role="button"
+                tabIndex="0"
+                onClick={() => this.handleClickBooking(booking)}
+                onKeyDown={() => {}}
+              >
+                {this.renderBookingText(booking)}
+                {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
+              </div>
+          )}
+          content={Cells.getPopupContent(booking)}
+        />,
       );
     });
     return bookingsDiv;
