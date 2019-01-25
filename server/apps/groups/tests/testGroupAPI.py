@@ -7,9 +7,9 @@ from rest_framework import status
 
 from apps.accounts.models.User import User
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from ..models.Group import Group
-from ..models.GroupInvitation import GroupInvitation
-from ..views.groups import GroupList, GroupCreate, RemoveMembers, InviteMembers, LeaveGroup
+from apps.groups.models.Group import Group
+from apps.groups.models.GroupInvitation import GroupInvitation
+from apps.groups.views.groups import GroupList, GroupCreate, RemoveMembers, InviteMembers, LeaveGroup
 
 
 class GroupAPITest(TestCase):

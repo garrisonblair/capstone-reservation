@@ -11,8 +11,8 @@ from google.auth.transport.requests import Request
 from ..models.EmailId import EmailId
 
 from apps.accounts.models.User import User
-from apps.booking.models import Booking
-from apps.rooms.models import Room
+from apps.booking.models.Booking import Booking
+from apps.rooms.models.Room import Room
 
 from apps.util import utils
 from apps.util import Logging
