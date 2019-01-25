@@ -6,7 +6,7 @@ from django.test import TestCase
 from apps.booking.models import Booking
 from apps.rooms.models import Room
 from apps.accounts.models.User import User
-from ..WEBCalendarExporter.ICSSerializer import ICSSerializer
+from ..WEBCalendarExporter.ICSSerializer import BookingICSSerializer
 from apps.groups.models import Group
 
 
@@ -84,7 +84,7 @@ END:VCALENDAR"""
 
     def testICSSerializeBookingNoGroup(self):
 
-        test = ICSSerializer()
+        test = BookingICSSerializer()
 
         generated = test.serialize_booking(self.booking)
         predefined_no_group = str(self.returnSerializedICSPredefinedNoGroup())
@@ -93,7 +93,7 @@ END:VCALENDAR"""
 
     def testICSSerializeBookingWithGroup(self):
 
-        test = ICSSerializer()
+        test = BookingICSSerializer()
 
         generated = test.serialize_booking(self.booking2)
         predefined_with_group = str(self.returnSerializedICSPredefinedWithGroup())
