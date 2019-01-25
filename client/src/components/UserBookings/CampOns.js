@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Table, TableBody } from 'semantic-ui-react';
+import EmptySegment from './EmptySegment';
 
 
 class CampOns extends Component {
@@ -79,7 +80,8 @@ class CampOns extends Component {
   }
 
   render() {
-    return (
+    const { campOns } = this.props;
+    let component = (
       <div>
         <Table>
           {this.renderTableHeader()}
@@ -87,6 +89,13 @@ class CampOns extends Component {
         </Table>
       </div>
     );
+
+    if (campOns.length === 0) {
+      component = (
+        <EmptySegment message="No Camp Ons" />
+      );
+    }
+    return component;
   }
 }
 

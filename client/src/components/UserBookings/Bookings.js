@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Table, TableBody } from 'semantic-ui-react';
+import EmptySegment from './EmptySegment';
 
 
 class Bookings extends Component {
@@ -59,7 +60,8 @@ class Bookings extends Component {
   }
 
   render() {
-    return (
+    const { bookings } = this.props;
+    let component = (
       <div>
         <Table>
           {this.renderTableHeader()}
@@ -67,6 +69,13 @@ class Bookings extends Component {
         </Table>
       </div>
     );
+
+    if (bookings.length === 0) {
+      component = (
+        <EmptySegment message="No Bookings" />
+      );
+    }
+    return component;
   }
 }
 
