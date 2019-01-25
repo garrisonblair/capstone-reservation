@@ -1,6 +1,15 @@
+/* eslint-disable no-console */
+/* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Table, TableBody } from 'semantic-ui-react';
+import {
+  Button,
+  Header,
+  Icon,
+  Segment,
+  Table,
+  TableBody,
+} from 'semantic-ui-react';
 
 
 class RecurringBookings extends Component {
@@ -25,13 +34,7 @@ class RecurringBookings extends Component {
 
   renderTableBody = () => {
     const { bookings } = this.props;
-    let component = [];
-
-    if (bookings.length === 0) {
-      return component;
-    }
-
-    component = bookings.map((booking, index) => (
+    const component = bookings.map((booking, index) => (
       // eslint-disable-next-line react/no-array-index-key
       <Table.Row key={index}>
         <Table.Cell>
@@ -62,7 +65,8 @@ class RecurringBookings extends Component {
   }
 
   render() {
-    return (
+    const { bookings } = this.props;
+    let component = (
       <div>
         <Table>
           {this.renderTableHeader()}
@@ -70,6 +74,18 @@ class RecurringBookings extends Component {
         </Table>
       </div>
     );
+
+    if (bookings.length === 0) {
+      component = (
+        <Segment placeholder textAlign="center">
+          <Header icon>
+            <Icon name="ban" />
+            No Recurring Bookings
+          </Header>
+        </Segment>
+      );
+    }
+    return component;
   }
 }
 
