@@ -547,15 +547,18 @@ class BookingAPITest(TestCase):
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
 
     def testCancelBookingNoCamponsSuccess(self):
+        today = datetime.datetime.now().date()
+
         booking = Booking(booker=self.booker, room=self.room, date="2019-10-7", start_time="13:00", end_time="15:00")
         booking.save()
 
         bookings_before_cancel = len(Booking.objects.all())
 
-        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
-                                    }, format="json")
-        force_authenticate(request, user=self.booker)
-        response = BookingCancel.as_view()(request, booking.id)
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
+            request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                        }, format="json")
+            force_authenticate(request, user=self.booker)
+            response = BookingCancel.as_view()(request, booking.id)
 
         bookings_after_cancel = len(Booking.objects.all())
 
@@ -578,10 +581,11 @@ class BookingAPITest(TestCase):
         bookings_before_cancel = len(Booking.objects.all())
         campons_before_cancel = len(CampOn.objects.all())
 
-        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
-                                    }, format="json")
-        force_authenticate(request, user=self.booker)
-        response = BookingCancel.as_view()(request, booking.id)
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
+            request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                        }, format="json")
+            force_authenticate(request, user=self.booker)
+            response = BookingCancel.as_view()(request, booking.id)
 
         bookings_after_cancel = len(Booking.objects.all())
         campons_after_cancel = len(CampOn.objects.all())
@@ -612,10 +616,11 @@ class BookingAPITest(TestCase):
         bookings_before_cancel = len(Booking.objects.all())
         campons_before_cancel = len(CampOn.objects.all())
 
-        request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
-                                    }, format="json")
-        force_authenticate(request, user=self.booker)
-        response = BookingCancel.as_view()(request, booking.id)
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
+            request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                        }, format="json")
+            force_authenticate(request, user=self.booker)
+            response = BookingCancel.as_view()(request, booking.id)
 
         bookings_after_cancel = len(Booking.objects.all())
         campons_after_cancel = len(CampOn.objects.all())
