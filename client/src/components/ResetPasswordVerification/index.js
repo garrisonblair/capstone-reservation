@@ -16,8 +16,6 @@ class ResetPasswordVerification extends Component {
     confirmPassword: '',
     errorMessagePassword: '',
     errorMessageConfirmPassword: '',
-    errorMessageBookerID: '',
-    errorMessageEmail: '',
     isLoading: true,
     firstName: '',
     userId: 0,
@@ -99,7 +97,7 @@ class ResetPasswordVerification extends Component {
   handleSubmit = () => {
     // Verify form before continuing transaction.
     const {
-      userId, password
+      userId, password,
     } = this.state;
     const { history } = this.props;
 
@@ -112,9 +110,10 @@ class ResetPasswordVerification extends Component {
     const data = {
       password,
     };
-
+    console.log('boom');
     api.updateUser(userId, data)
       .then(() => {
+        console.log('testing');
         sweetAlert(
           'Reset Password',
           'Password reset successfully',
@@ -143,8 +142,6 @@ class ResetPasswordVerification extends Component {
     const {
       errorMessagePassword,
       errorMessageConfirmPassword,
-      errorMessageBookerID,
-      errorMessageEmail,
       firstName,
     } = this.state;
     return (
