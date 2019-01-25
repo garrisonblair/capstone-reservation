@@ -1,15 +1,10 @@
-/* eslint-disable no-console */
-/* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button,
-  Header,
-  Icon,
-  Segment,
   Table,
   TableBody,
 } from 'semantic-ui-react';
+import EmptySegment from './EmptySegment';
 
 
 class RecurringBookings extends Component {
@@ -77,12 +72,7 @@ class RecurringBookings extends Component {
 
     if (bookings.length === 0) {
       component = (
-        <Segment placeholder textAlign="center">
-          <Header icon>
-            <Icon name="ban" />
-            No Recurring Bookings
-          </Header>
-        </Segment>
+        <EmptySegment message="No Recurring Bookings" />
       );
     }
     return component;
