@@ -171,3 +171,14 @@ body {
   // background-color: #4D4D4D !important;
   margin-left: 5px !important;
 }
+
+.button_orientation {
+  border: 2px solid #932439;
+  border-radius: 5px;
+  background-color: $backgroundColorHours;
+  width: 98.5%;
+  height: 95%;
+  color: white;
+  text-align: center;
+  line-height: 100%;
+}

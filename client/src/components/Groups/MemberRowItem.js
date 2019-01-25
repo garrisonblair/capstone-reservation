@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { List, Icon, Button } from 'semantic-ui-react';
+import {
+  List, Icon, Button,
+} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 // import api from '../../utils/api';
 
