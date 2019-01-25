@@ -5,7 +5,7 @@ from rest_framework import status
 
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
-from apps.rooms.models import Room
+from apps.rooms.models.Room import Room
 from apps.statistics.util.RoomStatisticManager import RoomStatisticManager
 
 

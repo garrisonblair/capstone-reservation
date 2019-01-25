@@ -6,7 +6,7 @@ from unittest.mock import Mock
 from django.apps import apps
 from django.test.testcases import TestCase
 
-from apps.booking.models import Booking
+from apps.booking.models.Booking import Booking
 from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 

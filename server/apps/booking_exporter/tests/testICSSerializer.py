@@ -3,11 +3,11 @@ import datetime
 
 from django.test import TestCase
 
-from apps.booking.models import Booking
-from apps.rooms.models import Room
+from apps.booking.models.Booking import Booking
+from apps.rooms.models.Room import Room
 from apps.accounts.models.User import User
 from ..WEBCalendarExporter.ICSSerializer import BookingICSSerializer
-from apps.groups.models import Group
+from apps.groups.models.Group import Group
 
 
 class testWebCalendarExporter(TestCase):

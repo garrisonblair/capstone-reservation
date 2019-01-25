@@ -6,10 +6,10 @@ from unittest import mock
 from ..WEBCalendarExporter.WEBCalendarExporter import WEBCalendarExporter
 from ..models.bookingExporterModels import ExternalRoomID
 
-from apps.booking.models import Booking
-from apps.rooms.models import Room
+from apps.booking.models.Booking import Booking
+from apps.rooms.models.Room import Room
 from apps.accounts.models.User import User
-from apps.system_administration.models import SystemSettings
+from apps.system_administration.models.system_settings import SystemSettings
 
 
 class testWebCalendarExporter(TestCase):
