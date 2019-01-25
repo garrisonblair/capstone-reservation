@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 
 
 function AuthenticationRequired(InnerComponent) {
@@ -7,7 +8,7 @@ function AuthenticationRequired(InnerComponent) {
     componentDidMount() {
       const { history } = this.props;
 
-      if (!localStorage.CapstoneReservationUser) {
+      if (!storage.getUser()) {
         history.push('/');
         return;
       }
@@ -21,6 +22,15 @@ function AuthenticationRequired(InnerComponent) {
           console.log(error);
           history.push('/');
         });
+          if (!data) {
+            history.push('/404');
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log(error);
+          history.push('/');
+        })
     }
 
     render() {

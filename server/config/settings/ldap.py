@@ -5,7 +5,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend"
 ]
 
-LDAP_AUTH_URL = 'ldaps://0.0.0.0:636'
+LDAP_AUTH_URL = os.environ.get('LDAP_AUTH_URL')
 LDAP_AUTH_USE_TLS = False
 
 # Search

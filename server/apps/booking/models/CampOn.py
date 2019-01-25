@@ -9,9 +9,10 @@ from django.core.exceptions import ValidationError
 
 from apps.accounts.exceptions import PrivilegeError
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+from apps.util.SubjectModel import SubjectModel
 
 
-class CampOn(models.Model):
+class CampOn(models.Model, SubjectModel):
     booker = models.ForeignKey(User, on_delete=models.CASCADE)
     camped_on_booking = models.ForeignKey(Booking,
                                           on_delete=models.SET_NULL,
@@ -26,15 +27,23 @@ class CampOn(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
 
+    observers = list()
+
+    def get_observers(self):
+        return CampOn.observers
+
     def save(self, *args, **kwargs):
         self.evaluate_privilege()
         self.validate_model()
         super(CampOn, self).save(*args, **kwargs)
 
     def __str__(self):
+        booking_id = ""
+        if self.camped_on_booking:
+            booking_id = self.camped_on_booking_id
         return 'Campon: {}, Student: {}, Booking: {}, Start time: {}, End time: {},'.format(self.id,
-                                                                                            self.booker.booker_id,
-                                                                                            self.camped_on_booking.id,
+                                                                                            self.booker.username,
+                                                                                            booking_id,
                                                                                             self.start_time,
                                                                                             self.end_time)
 

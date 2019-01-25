@@ -198,6 +198,18 @@ The default port of the React app is **3000**
     python3 manage.py test apps
 ```
 
+## Gmail ICS file Import
+To import external ICS events sent to a gmail account, that gmail account needs to activate the Gmail API.
+One can do so the following Link:
+https://developers.google.com/gmail/api/quickstart/python
+
+Store the resulting credentials.json file at
+```
+server/apps/booking_exporter/GmailImporter
+```
+
+The first time the server is run with these credentials a browser window will open with the google authentication flow.
+
 ## References
 
 - [http://www.django-rest-framework.org/](http://www.django-rest-framework.org/)

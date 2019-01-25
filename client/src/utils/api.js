@@ -112,6 +112,15 @@ function updateBooking(id, data) {
   });
 }
 
+function deleteBooking(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/booking/${id}/cancel_booking`,
+    headers,
+  });
+}
+
 function createRecurringBooking(data) {
   const headers = getTokenHeader();
   return axios({
@@ -350,8 +359,15 @@ function getContentTypes() {
   });
 }
 
-function getUsers(params) {
+function getUsers(searchText) {
   const headers = getTokenHeader();
+
+  const params = {};
+
+  if (searchText) {
+    params.search_text = searchText;
+  }
+
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
@@ -401,6 +417,70 @@ function getBookers() {
   });
 }
 
+function requestPrivilege(groupId, privilegeId) {
+  const headers = getTokenHeader();
+  const data = {
+    group: groupId,
+    privilege_category: privilegeId,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/request_privilege`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function getPrivilegeRequests() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/privilege_requests`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function cancelPrivilegeRequest(requestId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'DELETE',
+    url: `${settings.API_ROOT}/cancel_request/${requestId}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function approvePrivilegeRequest(requestId) {
+  const headers = getTokenHeader();
+  const data = {
+    privilege_request: requestId,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/approve_privilege_request`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function denyPrivilegeRequest(requestId, reason) {
+  const headers = getTokenHeader();
+  const data = {
+    privilege_request: requestId,
+    denial_reason: reason,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/deny_privilege_request`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -412,6 +492,7 @@ const api = {
   getBookings,
   createBooking,
   updateBooking,
+  deleteBooking,
   createRecurringBooking,
   getCampOns,
   createCampOn,
@@ -437,6 +518,11 @@ const api = {
   addPrivilege,
   removePrivilege,
   getBookers,
+  requestPrivilege,
+  getPrivilegeRequests,
+  cancelPrivilegeRequest,
+  approvePrivilegeRequest,
+  denyPrivilegeRequest,
 };
 
 export default api;

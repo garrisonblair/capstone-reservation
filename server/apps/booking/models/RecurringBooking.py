@@ -28,7 +28,7 @@ class RecurringBookingManager(models.Manager):
             skip_conflicts=skip_conflicts
         )
 
-        from . import Booking
+        from apps.booking.models.Booking import Booking
         date = recurring_booking.start_date
         conflicts = list()
         while date <= recurring_booking.end_date:
@@ -78,7 +78,8 @@ class RecurringBooking(models.Model):
         elif self.booking_start_time >= self.booking_end_time:
             raise ValidationError("Start time can not be after End time.")
         else:
-            from . import Booking
+            from apps.booking.models.Booking import Booking
+
             date = self.start_date
             bookings = 0
             while date <= self.end_date:

@@ -3,13 +3,13 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDe
 
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
-from apps.accounts.serializers.privilege_category import PrivilegeCategorySerializer
+from apps.accounts.serializers.privilege_category import PrivilegeCategorySerializer, ReadPrivilegeCategorySerializer
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 
 class PrivilegeCategoryList(ListAPIView):
-    permission_classes = (IsAuthenticated, IsSuperUser)
-    serializer_class = PrivilegeCategorySerializer
+    permission_classes = (IsAuthenticated, IsBooker)
+    serializer_class = ReadPrivilegeCategorySerializer
     queryset = PrivilegeCategory.objects.all()
 
     def get_queryset(self):
@@ -25,7 +25,7 @@ class PrivilegeCategoryList(ListAPIView):
 
 class MyPrivilegeCategoryList(ListAPIView):
     permission_classes = (IsAuthenticated, IsBooker)
-    serializer_class = PrivilegeCategorySerializer
+    serializer_class = ReadPrivilegeCategorySerializer
 
     def get_queryset(self):
         booker = self.request.user.bookerprofile

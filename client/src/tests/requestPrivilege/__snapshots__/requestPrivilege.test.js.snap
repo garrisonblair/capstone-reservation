@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Shows RequestPrivilege 1`] = `
+<div
+  id="reservation-details-modal"
+/>
+`;
+
+exports[`Shows empty RequestPrivilege 1`] = `""`;
+
+exports[`Shows new RequestPrivilege 1`] = `
+<div
+  id="groups-request-privilege"
+>
+  <div>
+    <h3>
+      Privilege
+    </h3>
+    <div
+      className="ui grey label"
+      onClick={[Function]}
+    >
+      none
+    </div>
+  </div>
+  <br />
+  <div
+    aria-disabled={false}
+    aria-expanded={false}
+    className="ui selection dropdown"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onMouseDown={[Function]}
+    role="listbox"
+    tabIndex={0}
+  >
+    <div
+      aria-live="polite"
+      className="default text"
+      role="alert"
+    >
+      Privileges
+    </div>
+    <i
+      aria-hidden="true"
+      className="dropdown icon"
+      onClick={[Function]}
+    />
+    <div
+      className="menu transition"
+    >
+      <div
+        aria-checked={false}
+        aria-selected={true}
+        className="selected item"
+        onClick={[Function]}
+        role="option"
+        style={
+          Object {
+            "pointerEvents": "all",
+          }
+        }
+      >
+        <span
+          className="text"
+        >
+          option 1
+        </span>
+      </div>
+    </div>
+  </div>
+  <button
+    className="ui blue button"
+    onClick={[Function]}
+    role="button"
+  >
+    Request Privilege
+  </button>
+</div>
+`;

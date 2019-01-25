@@ -4,9 +4,10 @@ from rest_framework.test import force_authenticate, APIRequestFactory
 from rest_framework import status
 
 from apps.accounts.models.User import User
-from ..models.GroupInvitation import GroupInvitation
-from ..models.Group import Group
-from ..views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation, RevokeInvitation
+from apps.groups.models.GroupInvitation import GroupInvitation
+from apps.groups.models.Group import Group
+from apps.groups.views.group_invitations import GroupInvitationsList, AcceptInvitation, RejectInvitation,\
+    RevokeInvitation
 
 
 class TestGroupInvitationAPI(TestCase):

@@ -241,18 +241,6 @@ class TestPrivilegeCategoryAPI(TestCase):
         response = PrivilegeCategoryList.as_view()(request)
         self.assertEqual(len(response.data), 0)
 
-    def testViewFailureUnauthorized(self):
-        self.user.is_superuser = False
-        self.user.save()
-        self.user.refresh_from_db()
-
-        request = self.factory.get("privilege_categories")
-        force_authenticate(request, user=self.user)
-        response = PrivilegeCategoryList.as_view()(request)
-
-        # A permission class returns either 401/403 if the user is not authorized
-        self.assertTrue(response.status_code in [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED])
-
     def testViewBookerPrivileges(self):
         booker = self.user.bookerprofile
         self.user.is_superuser = False

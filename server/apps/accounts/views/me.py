@@ -27,6 +27,9 @@ class MyPrivileges(APIView):
         my_privileges = dict()
 
         for field_name in PrivilegeCategory.get_parameter_names():
-            my_privileges[field_name] = privilege_merger.get_parameter(field_name)
+            if user.bookerprofile.privilege_categories.count() == 0:
+                my_privileges[field_name] = ''
+            else:
+                my_privileges[field_name] = privilege_merger.get_parameter(field_name)
 
         return Response(my_privileges, status=status.HTTP_200_OK)

@@ -5,8 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 import unittest
 
-from ..models.PrivilegeCategory import PrivilegeCategory
-from ..models.BookerProfile import BookerProfile
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+from apps.accounts.models.BookerProfile import BookerProfile
 
 
 class TestUserUpdate(TestCase):
