@@ -5,6 +5,19 @@ import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
 
 class InvitationRow extends Component {
+  state = {
+    groupOwner: '',
+  }
+
+  componentDidMount() {
+    const { invitation } = this.props;
+    api.getUsers()
+      .then((r) => {
+        const o = r.data.find(u => u.id === invitation.group.owner);
+        this.setState({ groupOwner: o.username });
+      });
+  }
+
   handleAccept = () => {
     const { invitation, syncMethod } = this.props;
     api.acceptInvitation(invitation.id)
@@ -29,13 +42,14 @@ class InvitationRow extends Component {
 
   render() {
     const { invitation } = this.props;
+    const { groupOwner } = this.state;
     return (
       <Table.Row key={invitation.id}>
         <Table.Cell>
           {invitation.group.name}
         </Table.Cell>
         <Table.Cell>
-          {invitation.group.owner}
+          {groupOwner}
         </Table.Cell>
         <Table.Cell>
           <Button color="blue" onClick={this.handleAccept}>Accept</Button>
