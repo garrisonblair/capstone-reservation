@@ -451,6 +451,26 @@ function cancelPrivilegeRequest(requestId) {
   });
 }
 
+function getGroupInvitations() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/group_invitations`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function acceptInvitation(invitationId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group_invitation/${invitationId}/accept`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function approvePrivilegeRequest(requestId) {
   const headers = getTokenHeader();
   const data = {
@@ -461,6 +481,16 @@ function approvePrivilegeRequest(requestId) {
     url: `${settings.API_ROOT}/approve_privilege_request`,
     headers,
     data,
+    withCredentials: true,
+  });
+}
+
+function rejectInvitation(invitationId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group_invitation/${invitationId}/reject`,
+    headers,
     withCredentials: true,
   });
 }
@@ -520,7 +550,10 @@ const api = {
   requestPrivilege,
   getPrivilegeRequests,
   cancelPrivilegeRequest,
+  getGroupInvitations,
+  acceptInvitation,
   approvePrivilegeRequest,
+  rejectInvitation,
   denyPrivilegeRequest,
 };
 

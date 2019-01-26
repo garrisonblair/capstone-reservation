@@ -1,7 +1,7 @@
 import datetime
 import decimal
 
-from apps.booking.models import Booking
+from apps.booking.models.Booking import Booking
 from apps.rooms.serializers.room import RoomSerializer
 
 

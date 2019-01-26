@@ -8,17 +8,16 @@ from django.contrib.auth.models import User
 from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
 from datetime import timedelta, datetime
 
-from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.User import User
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.Booking import Booking
-from apps.groups.models import Group
+from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
 
-from ..views.recurring_booking import RecurringBookingCreate
+from apps.booking.views.recurring_booking import RecurringBookingCreate
 
-from ..serializers.recurring_booking import RecurringBookingSerializer
-from ..serializers.booking import BookingSerializer
+from apps.booking.serializers.recurring_booking import RecurringBookingSerializer
+from apps.booking.serializers.booking import BookingSerializer
 
 
 class BookingAPITest(TestCase):

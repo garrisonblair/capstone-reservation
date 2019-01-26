@@ -1,1 +1,0 @@
-from .bookingExporterModels import ExternalRoomID

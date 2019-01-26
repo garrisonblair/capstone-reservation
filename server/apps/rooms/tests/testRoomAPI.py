@@ -8,9 +8,9 @@ from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
 
-from ..views.room import RoomList
-from ..views.room import RoomCreate
-from ..views.room import RoomRetrieveUpdateDestroy
+from apps.rooms.views.room import RoomList
+from apps.rooms.views.room import RoomCreate
+from apps.rooms.views.room import RoomRetrieveUpdateDestroy
 
 
 class RoomAPITest(TestCase):
