@@ -8,6 +8,7 @@ import UserInfo from '../UserInfo';
 import Privileges from '../Privileges';
 import UserBookings from '../UserBookings';
 import Groups from '../Groups';
+import GroupInvitations from '../GroupInvitations';
 import AuthenticationRequired from '../HOC/AuthenticationRequired';
 import './Profile.scss';
 
@@ -35,7 +36,7 @@ class Profile extends Component {
               <Groups />
             </Segment>
             <Segment className="segment__invitations">
-              {/* Group invivations */}
+              <GroupInvitations />
             </Segment>
           </Segment.Group>
         </div>
