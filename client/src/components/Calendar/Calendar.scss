@@ -95,7 +95,7 @@ body {
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
   min-height: $cellsMinHeight;
-  width: 120px;
+  min-width: 120px;
   // height: 50px;
   background-color: $backgroundColorCells;
   &--campon {
