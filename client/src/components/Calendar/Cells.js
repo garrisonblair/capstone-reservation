@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Popup } from 'semantic-ui-react';
+import { Label, Popup } from 'semantic-ui-react';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
@@ -50,7 +50,20 @@ class Cells extends Component {
       ? booking.start_time.substring(0, booking.start_time.length - 3) : booking.start_time;
     const end = booking.end_time.length > 5
       ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time;
-    return `${start} - ${end} ${booking.booker.username}`;
+    const popup = {
+      content:
+  <span>
+    <Label color="blue">
+      {start}
+      -
+      {end}
+    </Label>
+    <Label color="yellow">{booking.booker.username}</Label>
+    {booking.isCampOn
+      ? <Label color="red">CAMPON</Label> : null}
+  </span>,
+    };
+    return popup;
   }
   /*
    * STYLE METHODS
@@ -366,7 +379,9 @@ class Cells extends Component {
                 {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
               </div>
           )}
-          content={Cells.getPopupContent(booking)}
+          content={Cells.getPopupContent(booking).content}
+          flowing
+          style={{ padding: '5px' }}
         />,
       );
     });
