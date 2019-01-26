@@ -30,17 +30,17 @@ body {
 .calendar__container {
   opacity: var(--opacity);
   pointer-events: var(--pointerEvents);
-  position: fixed;
+  // position: fixed;
   display: inline-grid;
   margin-top: 65px;
   // padding: 20px;
   width: 100%;
-  height: 100%;
-  overflow: scroll;
-  overflow-x: visible;
+  // height: 100%;
+  // overflow: scroll;
+  // overflow-x: visible;
   background-color: $backgroundColorContainer;
   grid-template-rows: max-content auto;
-  padding-bottom: 100px;
+  // padding-bottom: 100px;
 }
 
 .calendar__wrapper {
@@ -72,16 +72,16 @@ body {
 
 .calendar__rooms__wrapper {
   display: inline-grid;
-  position: -webkit-sticky;
-  position: sticky;
+  // position: -webkit-sticky;
+  // position: sticky;
   // height: 50px;
   color: $textColorHeader;
 }
 
 .calendar__hours__wrapper {
   display: inline-grid;
-  position: -webkit-sticky;
-  position: sticky;
+  // position: -webkit-sticky;
+  // position: sticky;
   color: $textColorHeader;
 }
 
@@ -181,7 +181,7 @@ body {
   border: 2px solid #932439;
   border-radius: 5px;
   background-color: $backgroundColorHours;
-  width: 98.5%;
+  width: 88px;
   height: 95%;
   color: white;
   text-align: center;
@@ -191,4 +191,8 @@ body {
 .button_orientation:hover {
   background-color: rgb(124, 98, 37);
   cursor: pointer;
+}
+
+.main__page {
+  display: grid;
 }

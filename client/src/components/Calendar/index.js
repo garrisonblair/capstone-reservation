@@ -7,7 +7,6 @@ import Navigation from '../Navigation';
 import api from '../../utils/api';
 import './Calendar.scss';
 
-
 class Calendar extends Component {
   static timeStringToInt(time) {
     const tokens = time.split(':');
@@ -242,36 +241,38 @@ class Calendar extends Component {
       colList = hoursList;
       colName = 'hour';
     }
-    return [
-      <Navigation
-        key={0}
-        showDate
-        changeDate={this.changeDate}
-        onOpenDatePicker={Calendar.onOpenDatePicker}
-        onCloseDatePicker={Calendar.onCloseDatePicker}
-        update={update}
-      />,
-      <div className="calendar__container" key={1}>
-        <div className="calendar__wrapper" style={this.setStyle().wrapper}>
-          <button type="button" className="button_orientation" onClick={() => this.changeOrientation()}><Icon name="exchange" /></button>
-          <Header headerList={colList} type="column" name={colName} />
-          <Header headerList={rowList} type="row" name={rowName} />
-          <Cells
-            hoursSettings={hoursSettings}
-            bookings={bookings}
-            roomsList={roomsList}
-            hoursList={hoursList}
-            campOns={campOns}
-            selectedDate={selectedDate}
-            onCloseModalWithAction={this.onCloseModalWithAction}
-            orientation={orientation}
-            roomsNum={roomsNum}
-            hoursDivisionNum={hoursDivisionNum}
-            update={this.update}
-          />
+    return (
+      <div className="main__page">
+        <Navigation
+          key={0}
+          showDate
+          changeDate={this.changeDate}
+          onOpenDatePicker={Calendar.onOpenDatePicker}
+          onCloseDatePicker={Calendar.onCloseDatePicker}
+          update={update}
+        />
+        <div className="calendar__container" key={1}>
+          <div className="calendar__wrapper" style={this.setStyle().wrapper}>
+            <button type="button" className="button_orientation" onClick={() => this.changeOrientation()}><Icon name="exchange" /></button>
+            <Header headerList={colList} type="column" name={colName} />
+            <Header headerList={rowList} type="row" name={rowName} />
+            <Cells
+              hoursSettings={hoursSettings}
+              bookings={bookings}
+              roomsList={roomsList}
+              hoursList={hoursList}
+              campOns={campOns}
+              selectedDate={selectedDate}
+              onCloseModalWithAction={this.onCloseModalWithAction}
+              orientation={orientation}
+              roomsNum={roomsNum}
+              hoursDivisionNum={hoursDivisionNum}
+              update={this.update}
+            />
+          </div>
         </div>
-      </div>,
-    ];
+      </div>
+    );
   }
 }
 
