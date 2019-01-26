@@ -149,7 +149,8 @@ body {
   border: $borderWidth solid $borderColor;
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
-  padding: 0 1px;
+  // padding: 0 1px;
+  padding: 5px 10px;
   border-radius: 5px;
   background-color: $backgroundColorHours;
 }
