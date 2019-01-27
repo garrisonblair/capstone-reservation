@@ -67,7 +67,12 @@ class CampOnForm extends Component {
     try {
       this.verifyReservationTimes();
     } catch (err) {
-      sweetAlert('Camp on blocked', err.message, 'warning');
+      sweetAlert.fire({
+        position: 'top',
+        type: 'warning',
+        title: 'Campon blocked',
+        text: err.message,
+      });
       return;
     }
     if (localStorage.getItem('CapstoneReservationUser') == null) {
@@ -80,11 +85,12 @@ class CampOnForm extends Component {
   closeLogin = () => {
     this.setState({ showLogin: false });
     if (localStorage.getItem('CapstoneReservationUser') == null) {
-      sweetAlert(
-        'Campon failed',
-        'Please Log in to make camp on the reservation.',
-        'error',
-      );
+      sweetAlert.fire({
+        position: 'top',
+        type: 'error',
+        title: 'Campon failed',
+        text: 'Please login to camp on the reservation.',
+      });
     } else {
       this.sendPostRequestCampOn();
     }
@@ -100,9 +106,12 @@ class CampOnForm extends Component {
     };
     api.createCampOn(data)
       .then(() => {
-        sweetAlert('Completed',
-          'Your camp-on was successful.',
-          'success')
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Completed',
+          text: 'Your campon was successful',
+        })
           .then((result) => {
             if (result.value) {
               this.closeModalWithCampOn();
@@ -110,11 +119,12 @@ class CampOnForm extends Component {
           });
       })
       .catch((error) => {
-        sweetAlert(
-          'Reservation failed',
-          error.response.data,
-          'error',
-        );
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Reservation failed',
+          text: error.message.data,
+        });
       });
   }
 

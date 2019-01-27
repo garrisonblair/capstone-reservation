@@ -57,19 +57,19 @@ class Login extends Component {
       .then(response => response.data)
       .then((data) => {
         localStorage.setItem('CapstoneReservationUser', JSON.stringify(data));
-        sweetAlert(
-          'Logged in',
-          '',
-          'success',
-        );
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Logged in',
+        });
         this.closeModal();
       })
       .catch(() => {
-        sweetAlert(
-          ':(',
-          'Invalid credentials',
-          'error',
-        );
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          text: 'Invalid credentials',
+        });
       });
   }
 

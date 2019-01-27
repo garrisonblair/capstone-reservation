@@ -156,11 +156,11 @@ class ReservationDetailsModal extends Component {
     const { show } = this.props;
     this.setState({ showLogin: false });
     if (localStorage.getItem('CapstoneReservationUser') == null) {
-      sweetAlert(
-        'Error',
-        'Please Log in to make a reservation.',
-        'error',
-      );
+      sweetAlert.fire({
+        position: 'top',
+        type: 'error',
+        text: 'Please log in to make a reservation.',
+      });
       this.closeModal();
     } else {
       this.setState({ show });
@@ -246,19 +246,22 @@ class ReservationDetailsModal extends Component {
     }
     api.createBooking(data)
       .then(() => {
-        sweetAlert('Completed',
-          `Room ${selectedRoomName} was successfuly booked.`,
-          'success')
-          .then(() => {
-            this.closeModalWithReservation();
-          });
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Completed',
+          text: `Room ${selectedRoomName} was successfuly booked.`,
+        }).then(() => {
+          this.closeModalWithReservation();
+        });
       })
       .catch((error) => {
-        sweetAlert(
-          'Reservation failed',
-          error.response.data,
-          'error',
-        );
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Reservation failed',
+          text: error.response.data,
+        });
       });
   }
 
@@ -291,11 +294,11 @@ class ReservationDetailsModal extends Component {
           response.data.map(date => conflictsMessage = `${conflictsMessage}<li>${date}</li>`);
           conflictsMessage = `${conflictsMessage}</ul>`;
         }
-        sweetAlert(
-          'Completed',
-          `Room ${selectedRoomName} was successfuly booked for the selected dates.<br/><div id="exception-dates">${conflictsMessage}</div>`,
-          'success',
-        )
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          html: `Room ${selectedRoomName} was successfuly booked for the selected dates.<br/><div id="exception-dates">${conflictsMessage}</div>`,
+        })
           .then(() => {
             this.closeModalWithReservation();
           });
@@ -304,10 +307,11 @@ class ReservationDetailsModal extends Component {
         const { response } = error;
 
         if (response.status === 409) {
-          sweetAlert({
+          sweetAlert.fire({
+            position: 'top',
+            type: 'warning',
             title: 'Reservation blocked',
             text: 'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
-            type: 'warning',
             confirmButtonText: 'YES',
             cancelButtonText: 'NO',
             showCancelButton: true,
@@ -318,10 +322,11 @@ class ReservationDetailsModal extends Component {
               }
             });
         } else {
-          sweetAlert({
+          sweetAlert.fire({
+            position: 'top',
+            type: 'error',
             title: 'Error',
             text: response.data,
-            type: 'error',
           });
         }
       });
@@ -343,7 +348,12 @@ class ReservationDetailsModal extends Component {
         }
       }
     } catch (err) {
-      sweetAlert('Reservation blocked', err.message, 'warning');
+      sweetAlert.fire({
+        position: 'top',
+        type: 'warning',
+        title: 'Reservation blocked.',
+        text: err.message,
+      });
       return;
     }
 

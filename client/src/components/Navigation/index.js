@@ -34,11 +34,11 @@ class Navigation extends Component {
     if (storage.getUser()) {
       api.logout()
         .then(() => {
-          sweetAlert(
-            'Logged out',
-            '',
-            'success',
-          );
+          sweetAlert.fire({
+            position: 'top',
+            type: 'success',
+            title: 'Logged out',
+          });
           this.setState({ showLogin: false });
         });
     } else {
