@@ -114,7 +114,7 @@ class Navigation extends Component {
       <Dropdown item text="Account">
         <Dropdown.Menu>
           <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
-          <Dropdown.Item icon="cog" text="Settings" />
+          {/* <Dropdown.Item icon="cog" text="Settings" /> */}
         </Dropdown.Menu>
       </Dropdown>
     );
