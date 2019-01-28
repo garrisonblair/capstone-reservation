@@ -114,6 +114,9 @@ class Navigation extends Component {
           <Menu.Item className="navigation__title" onClick={() => window.location.reload()}>
             Capstone
           </Menu.Item>
+          <Menu.Item>
+            <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing">Feedback</a>
+          </Menu.Item>
           { showDate
             ? (
               <SelectedDate
