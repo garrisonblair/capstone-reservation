@@ -1,4 +1,5 @@
 import datetime
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
@@ -224,23 +225,28 @@ class BookingViewMyBookings(APIView):
 
     def get(self, request, pk):
 
-        if pk != self.request.user.id:
-            return Response("Only owner of bookings can view bookings", status=status.HTTP_403_FORBIDDEN)
+        user = None
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        booker_id = request.user.id
-        my_bookings = {}
+        # Check permissions
+        self.check_object_permissions(request, user)
+
+        bookings = dict()
 
         # Obtain all standard_bookings, recurring_bookings, and campons for this booker
-        standard_bookings = Booking.objects.filter(booker=booker_id, recurring_booking=None)
-        recurring_bookings = RecurringBooking.objects.filter(booker=booker_id)
-        campons = CampOn.objects.filter(booker=booker_id)
+        standard_bookings = Booking.objects.filter(booker=user, recurring_booking=None)
+        recurring_bookings = RecurringBooking.objects.filter(booker=user)
+        campons = CampOn.objects.filter(booker=user)
 
         # Add serialized lists of booking types to dictionary associated with type key
-        my_bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
-        my_bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
-        my_bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
+        bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
+        bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
+        bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
 
-        return Response(my_bookings, status=status.HTTP_200_OK)
+        return Response(bookings, status=status.HTTP_200_OK)
 
 
 def booking_key(val):

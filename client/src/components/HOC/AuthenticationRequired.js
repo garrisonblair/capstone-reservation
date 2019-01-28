@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 
@@ -17,14 +17,14 @@ function AuthenticationRequired(InnerComponent) {
         .then((response) => {
           const { data } = response;
           if (!data) {
-            history.push('/404');
+            history.push('/');
           }
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
           console.log(error);
           history.push('/');
-        })
+        });
     }
 
     render() {

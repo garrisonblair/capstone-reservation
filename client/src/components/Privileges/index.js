@@ -66,7 +66,7 @@ class Privileges extends Component {
             </Table.Row>
             <Table.Row>
               <Table.Cell textAlign="left">Recurring bookings</Table.Cell>
-              <Table.Cell>{privileges.can_make_recurring_booking ? 'True' : 'False'}</Table.Cell>
+              <Table.Cell>{privileges.can_make_recurring_booking ? 'Yes' : 'No'}</Table.Cell>
             </Table.Row>
             {this.renderMaximumRecurringBookings()}
           </Table.Body>
