@@ -5,6 +5,7 @@ import Cells from './Cells';
 import Header from './Header';
 import Navigation from '../Navigation';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import './Calendar.scss';
 
 class Calendar extends Component {
@@ -43,7 +44,9 @@ class Calendar extends Component {
 
   componentDidMount() {
     document.body.style.backgroundColor = '#F2D692';
-
+    this.setState(
+      { orientation: storage.getOrientation() === null ? 1 : storage.getOrientation() },
+    );
     this.getBookings();
     this.getRooms();
     this.setHours();
@@ -167,7 +170,9 @@ class Calendar extends Component {
 
   changeOrientation = () => {
     const { orientation } = this.state;
-    this.setState({ orientation: orientation === 0 ? 1 : 0 });
+    const newOrientation = orientation === 0 ? 1 : 0;
+    storage.saveOrientation(newOrientation);
+    this.setState({ orientation: newOrientation });
   }
 
   onCloseModalWithAction = () => {
