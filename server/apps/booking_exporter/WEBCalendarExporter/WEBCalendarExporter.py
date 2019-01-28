@@ -62,7 +62,7 @@ class WEBCalendarExporter(BookingExporter):
             return
 
         # dont backup bookings that come from Webcalendar
-        if booking.booker.username == "Webcalendar User":
+        if booking.booker.username == "WebCalendar User":
             return
 
         if not self.logged_in:
