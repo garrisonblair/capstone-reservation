@@ -27,7 +27,7 @@ class ReservationDetailsModal extends Component {
     },
     ownerValue: 'me',
     updatedOwnerOptions: false,
-    reservationProfiles: ['me'],
+    reservationProfiles: [],
     bypassPrivileges: false,
     adminSelectedUser: undefined,
   }
