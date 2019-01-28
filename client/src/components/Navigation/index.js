@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-state */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
@@ -17,6 +18,16 @@ import './Navigation.scss';
 class Navigation extends Component {
   state = {
     showLogin: false,
+    update: false,
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.update !== state.update) {
+      return {
+        update: props.update,
+      };
+    }
+    return null;
   }
 
   handleClickLogo = () => {
@@ -36,11 +47,11 @@ class Navigation extends Component {
     if (storage.getUser()) {
       api.logout()
         .then(() => {
-          sweetAlert(
-            'Logged out',
-            '',
-            'success',
-          );
+          sweetAlert.fire({
+            position: 'top',
+            type: 'success',
+            title: 'Logged out',
+          });
           this.setState({ showLogin: false });
           if (history.location.pathname !== '/') {
             history.push('/');
@@ -103,7 +114,7 @@ class Navigation extends Component {
       <Dropdown item text="Account">
         <Dropdown.Menu>
           <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
-          <Dropdown.Item icon="cog" text="Settings" />
+          {/* <Dropdown.Item icon="cog" text="Settings" /> */}
         </Dropdown.Menu>
       </Dropdown>
     );
@@ -135,6 +146,9 @@ class Navigation extends Component {
         <Menu inverted fixed="top" className="navigation__bar">
           <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
             Capstone
+          </Menu.Item>
+          <Menu.Item>
+            <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing">Feedback</a>
           </Menu.Item>
           { showDate
             ? (

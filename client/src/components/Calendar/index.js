@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
+import { Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-// import SelectedDate from './SelectedDate';
-// import Rooms from './Rooms';
-// import Hours from './Hours';
 import Cells from './Cells';
 import Header from './Header';
 import Navigation from '../Navigation';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import './Calendar.scss';
-
 
 class Calendar extends Component {
   static timeStringToInt(time) {
@@ -37,6 +35,7 @@ class Calendar extends Component {
     roomsNum: 0,
     hoursDivisionNum: 0,
     orientation: 1,
+    update: false,
   };
 
   /*
@@ -45,7 +44,9 @@ class Calendar extends Component {
 
   componentDidMount() {
     document.body.style.backgroundColor = '#F2D692';
-
+    this.setState(
+      { orientation: storage.getOrientation() === null ? 1 : storage.getOrientation() },
+    );
     this.getBookings();
     this.getRooms();
     this.setHours();
@@ -75,13 +76,12 @@ class Calendar extends Component {
 
       api.getBookings(params)
         .then((response) => {
-          this.setState({ bookings: response.data });
-          this.getCampOns(params);
+          this.getCampOns(params, response.data);
         });
     }
   }
 
-  getCampOns(params) {
+  getCampOns(params, bookings) {
     const { propsTestingCampOns } = this.props;
     const test = !!propsTestingCampOns;
     if (test) {
@@ -89,9 +89,7 @@ class Calendar extends Component {
     } else {
       api.getCampOns(params)
         .then((response) => {
-          this.setState({ campOns: response.data }, () => {
-            this.campOnToBooking();
-          });
+          this.campOnToBooking(response.data, bookings);
         });
     }
   }
@@ -112,7 +110,7 @@ class Calendar extends Component {
   setHours = () => {
     const hoursSettings = {
       start: '08:00',
-      end: '23:00',
+      end: '22:00',
       increment: 60,
     };
     const hourStart = Calendar.timeStringToInt(hoursSettings.start);
@@ -172,15 +170,16 @@ class Calendar extends Component {
 
   changeOrientation = () => {
     const { orientation } = this.state;
-    this.setState({ orientation: orientation === 0 ? 1 : 0 });
+    const newOrientation = orientation === 0 ? 1 : 0;
+    storage.saveOrientation(newOrientation);
+    this.setState({ orientation: newOrientation });
   }
 
   onCloseModalWithAction = () => {
     this.getBookings();
   }
 
-  campOnToBooking = () => {
-    const { bookings, campOns } = this.state;
+  campOnToBooking = (campOns, bookings) => {
     const campOnBookings = [];
     if (!!campOns && !!bookings) {
       campOns.forEach((campOn, index) => {
@@ -204,13 +203,20 @@ class Calendar extends Component {
           room: roomCampOn,
           id: `camp${campOn.camped_on_booking}-${index}`,
           isCampOn: true,
+          camped_on_booking: campOn.camped_on_booking,
         });
       });
       campOnBookings.forEach((campOnBooking) => {
         bookings.push(campOnBooking);
       });
-      this.setState({ bookings });
+      this.setState({ bookings, campOns });
     }
+  }
+
+  update = () => {
+    this.getBookings();
+    this.setState({ update: true });
+    this.setState({ update: false });
   }
 
   /*
@@ -228,6 +234,7 @@ class Calendar extends Component {
       orientation,
       roomsNum,
       hoursDivisionNum,
+      update,
     } = this.state;
     let colList = roomsList;
     let colName = 'room';
@@ -239,34 +246,38 @@ class Calendar extends Component {
       colList = hoursList;
       colName = 'hour';
     }
-    return [
-      <Navigation
-        key={0}
-        showDate
-        changeDate={this.changeDate}
-        onOpenDatePicker={Calendar.onOpenDatePicker}
-        onCloseDatePicker={Calendar.onCloseDatePicker}
-      />,
-      <div className="calendar__container" key={1}>
-        <button type="button" onClick={() => this.changeOrientation()}>Toggle</button>
-        <div className="calendar__wrapper" style={this.setStyle().wrapper}>
-          <Header headerList={colList} type="column" name={colName} />
-          <Header headerList={rowList} type="row" name={rowName} />
-          <Cells
-            hoursSettings={hoursSettings}
-            bookings={bookings}
-            roomsList={roomsList}
-            hoursList={hoursList}
-            campOns={campOns}
-            selectedDate={selectedDate}
-            onCloseModalWithAction={this.onCloseModalWithAction}
-            orientation={orientation}
-            roomsNum={roomsNum}
-            hoursDivisionNum={hoursDivisionNum}
-          />
+    return (
+      <div className="main__page">
+        <Navigation
+          key={0}
+          showDate
+          changeDate={this.changeDate}
+          onOpenDatePicker={Calendar.onOpenDatePicker}
+          onCloseDatePicker={Calendar.onCloseDatePicker}
+          update={update}
+        />
+        <div className="calendar__container" key={1}>
+          <div className="calendar__wrapper" style={this.setStyle().wrapper}>
+            <button type="button" className="button_orientation" onClick={() => this.changeOrientation()}><Icon name="exchange" /></button>
+            <Header headerList={colList} type="column" name={colName} />
+            <Header headerList={rowList} type="row" name={rowName} />
+            <Cells
+              hoursSettings={hoursSettings}
+              bookings={bookings}
+              roomsList={roomsList}
+              hoursList={hoursList}
+              campOns={campOns}
+              selectedDate={selectedDate}
+              onCloseModalWithAction={this.onCloseModalWithAction}
+              orientation={orientation}
+              roomsNum={roomsNum}
+              hoursDivisionNum={hoursDivisionNum}
+              update={this.update}
+            />
+          </div>
         </div>
-      </div>,
-    ];
+      </div>
+    );
   }
 }
 

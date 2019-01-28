@@ -30,17 +30,17 @@ body {
 .calendar__container {
   opacity: var(--opacity);
   pointer-events: var(--pointerEvents);
-  position: fixed;
+  // position: fixed;
   display: inline-grid;
   margin-top: 65px;
   // padding: 20px;
   width: 100%;
-  height: 100%;
-  overflow: scroll;
-  overflow-x: visible;
+  // height: 100%;
+  // overflow: scroll;
+  // overflow-x: visible;
   background-color: $backgroundColorContainer;
   grid-template-rows: max-content auto;
-  padding-bottom: 100px;
+  // padding-bottom: 100px;
 }
 
 .calendar__wrapper {
@@ -72,16 +72,16 @@ body {
 
 .calendar__rooms__wrapper {
   display: inline-grid;
-  position: -webkit-sticky;
-  position: sticky;
+  // position: -webkit-sticky;
+  // position: sticky;
   // height: 50px;
   color: $textColorHeader;
 }
 
 .calendar__hours__wrapper {
   display: inline-grid;
-  position: -webkit-sticky;
-  position: sticky;
+  // position: -webkit-sticky;
+  // position: sticky;
   color: $textColorHeader;
 }
 
@@ -95,6 +95,7 @@ body {
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
   min-height: $cellsMinHeight;
+  min-width: 120px;
   // height: 50px;
   background-color: $backgroundColorCells;
   &--campon {
@@ -110,14 +111,14 @@ body {
 
 .calendar__booking {
   padding: 1px;
-  font-size: 10px;
-  // display: grid;
-  // grid-template-rows: repeat(1, 1fr);
+  padding-top: 3px;
+  font-size: 12px;
   color: white;
   font-weight: 100;
   border-radius: 5px;
-  min-width: max-content;
-  // min-height: max-content;
+  span {
+    line-height: 10px;
+  }
 }
 
 .calendar__booking:hover {
@@ -146,11 +147,10 @@ body {
   justify-content: center;
   align-items: center;
   border: $borderWidth solid $borderColor;
-  border-left: 2px solid #932439;
   margin-top: -$borderWidth;
   margin-left: -$borderWidth;
-  padding: 0 1px;
-  width: 100px;
+  // padding: 0 1px;
+  padding: 5px 10px;
   border-radius: 5px;
   background-color: $backgroundColorHours;
 }
@@ -171,4 +171,28 @@ body {
   color: #932439 !important;
   // background-color: #4D4D4D !important;
   margin-left: 5px !important;
+}
+
+.arrow:hover {
+  background-color: rgb(87, 85, 85);
+}
+
+.button_orientation {
+  border: 2px solid #932439;
+  border-radius: 5px;
+  background-color: $backgroundColorHours;
+  width: 88px;
+  height: 95%;
+  color: white;
+  text-align: center;
+  line-height: 100%;
+}
+
+.button_orientation:hover {
+  background-color: rgb(124, 98, 37);
+  cursor: pointer;
+}
+
+.main__page {
+  display: grid;
 }

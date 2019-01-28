@@ -27,14 +27,25 @@ class Header extends Component {
     let style;
     if (type === 'column') {
       style = {
-        gridTemplateColumns: `repeat(${headerNum}, 1fr)`,
-        gridColumnStart: 2,
-        top: 0,
+        cell: {
+          minWidth: '120px',
+        },
+        wrapper: {
+          gridTemplateColumns: `repeat(${headerNum}, 1fr)`,
+          gridColumnStart: 2,
+          top: 0,
+        },
       };
     } else {
       style = {
-        gridTemplateRows: `repeat(${headerNum}, 1fr)`,
-        left: 0,
+        cell: {
+          minHeight: '60px',
+          width: '90px',
+        },
+        wrapper: {
+          gridTemplateRows: `repeat(${headerNum}, 1fr)`,
+          left: 0,
+        },
       };
     }
     return style;
@@ -43,12 +54,12 @@ class Header extends Component {
   render() {
     const { headerList, name } = this.state;
     const header = headerList.map(h => (
-      <div className={`calendar__${name}s__${name}`} key={h.name ? h.name : h}>
+      <div className={`calendar__${name}s__${name}`} style={this.setStyle().cell} key={h.name ? h.name : h}>
         {h.name ? h.name : h}
       </div>
     ));
 
-    return <div className={`calendar__${name}s__wrapper`} style={this.setStyle()}>{header}</div>;
+    return <div className={`calendar__${name}s__wrapper`} style={this.setStyle().wrapper}>{header}</div>;
   }
 }
 
