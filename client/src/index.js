@@ -5,7 +5,9 @@ import Home from './components/Home';
 // import Login from './components/Login';
 import NotFound from './components/NotFound';
 import Registration from './components/Registration';
+import ResetPassword from './components/ResetPassword';
 import Verification from './components/Verification';
+import ResetPasswordVerification from './components/ResetPasswordVerification';
 import Admin from './components/Admin';
 import PrivilegeCategory from './components/Admin/PrivilegeCategory';
 import RoomManager from './components/Admin/RoomManager';
@@ -24,7 +26,9 @@ ReactDOM.render(
         <Route exact path="/" component={Home} />
         {/* <Route exact path="/login" component={Login} /> */}
         <Route exact path="/registration" component={Registration} />
+        <Route exact path="/resetPassword" component={ResetPassword} />
         <Route exact path="/verify/:token" component={Verification} />
+        <Route exact path="/verifyReset/:token" component={ResetPasswordVerification} />
         <Route exact path="/admin" render={() => <Admin menuType="settings" content={<Settings />} />} />
         <Route exact path="/admin/settings" render={() => <Admin menuType="settings" content={<Settings />} />} />
         <Route exact path="/admin/bookers" render={() => <Admin menuType="bookers" content={<Bookers />} />} />

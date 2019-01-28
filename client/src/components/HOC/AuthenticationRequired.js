@@ -16,6 +16,12 @@ function AuthenticationRequired(InnerComponent) {
       api.getMyUser()
         .then((response) => {
           const { data } = response;
+        // console.log(data);
+        })
+        .catch((error) => {
+          console.log(error);
+          history.push('/');
+        });
           if (!data) {
             history.push('/');
           }

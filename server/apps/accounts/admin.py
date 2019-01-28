@@ -5,7 +5,7 @@ from .models.PrivilegeCategory import PrivilegeCategory
 
 
 class BookerAdmin(admin.ModelAdmin):
-    list_display = ('user_id', 'booker_id', 'user', 'email', 'first_name', 'last_name')
+    list_display = ('user_id', 'booker_id', 'user', 'email', 'secondary_email', 'first_name', 'last_name')
 
     def user_id(self, instance):
         return instance.user.id
