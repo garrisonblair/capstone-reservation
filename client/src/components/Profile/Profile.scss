@@ -17,19 +17,16 @@
 .segment__privileges {
   background-color: #B0AEAE !important;
   border-radius: 5px !important;
-  max-width: 25% !important;
 }
 
 .segment__groups {
   background-color: #B0AEAE !important;
   border-radius: 5px !important;
-  max-width: 37.5% !important;
 }
 
 .segment__invitations {
   background-color: #B0AEAE !important;
   border-radius: 5px !important;
-  max-width: 37.5% !important;
 }
 
 .segment__container {
@@ -39,6 +36,13 @@
   &.top {
     display: grid;
     grid-template-columns: 1fr 3fr;
+    .segment {
+      margin: 0 2px;
+    }
+  }
+  &.bottom {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr;
     .segment {
       margin: 0 2px;
     }

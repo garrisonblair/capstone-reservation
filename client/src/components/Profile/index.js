@@ -28,7 +28,7 @@ class Profile extends Component {
               <UserBookings />
             </Segment>
           </div>
-          <Segment.Group horizontal compact className="segment__container">
+          <div className="segment__container bottom">
             <Segment className="segment__privileges">
               <Privileges />
             </Segment>
@@ -38,7 +38,7 @@ class Profile extends Component {
             <Segment className="segment__invitations">
               <GroupInvitations />
             </Segment>
-          </Segment.Group>
+          </div>
         </div>
       </div>
     );
