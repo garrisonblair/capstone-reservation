@@ -69,7 +69,9 @@ class PrivilegeRequestRow extends Component {
   }
 
   renderMembers = (members) => {
-    const list = `<ul> ${members.map(m => `<li style="width:100px">${m.username}</li>`)}</ul>`;
+    const list = `<ul> ${members.map(
+      m => `<li style="width:250px">${m.username} (${m.first_name} ${m.last_name})</li>`,
+    )}</ul>`;
     return list;
   }
 
