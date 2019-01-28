@@ -562,7 +562,7 @@ class ReservationDetailsModal extends Component {
               selection
               onChange={this.handleOwnerChange}
               className="dropdown--fixed-width"
-              options={reservationProfiles}
+              options={reservationProfiles.length === 0 ? [{ key: 'me', value: 'me', text: 'me' }] : reservationProfiles}
               defaultValue="me"
             />
             {user && user.is_superuser ? this.renderAdminBookingForm() : null}
