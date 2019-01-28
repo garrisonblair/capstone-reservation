@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from apps.rooms.models.Room import Room
-from ..models.bookingExporterModels import ExternalRoomID
+from apps.booking_exporter.models.bookingExporterModels import ExternalRoomID
 
 
 class TestModels(TestCase):

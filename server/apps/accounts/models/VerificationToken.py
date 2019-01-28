@@ -4,6 +4,8 @@ import os
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_save, post_save
+from django.dispatch import receiver
 
 
 class VerificationToken(models.Model):
@@ -26,3 +28,18 @@ class VerificationToken(models.Model):
 
     def __str__(self):
         return self.token
+
+    @receiver(pre_save, sender=User)
+    def user_updated(sender, **kwargs):
+        user = kwargs.get('instance', None)
+        if user:
+            new_password = user.password
+            try:
+                old_password = User.objects.get(pk=user.pk).password
+            except User.DoesNotExist:
+                old_password = None
+            if new_password != old_password:
+                if VerificationToken.objects.filter(user=user).exists():
+                    print("delete token")
+                    token = VerificationToken.objects.get(user=user)
+                    token.delete()

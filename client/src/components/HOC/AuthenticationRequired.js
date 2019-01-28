@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 
@@ -16,15 +16,21 @@ function AuthenticationRequired(InnerComponent) {
       api.getMyUser()
         .then((response) => {
           const { data } = response;
+        // console.log(data);
+        })
+        .catch((error) => {
+          console.log(error);
+          history.push('/');
+        });
           if (!data) {
-            history.push('/404');
+            history.push('/');
           }
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
           console.log(error);
           history.push('/');
-        })
+        });
     }
 
     render() {

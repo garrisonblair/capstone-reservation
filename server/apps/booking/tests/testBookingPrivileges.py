@@ -5,7 +5,7 @@ import datetime
 from apps.accounts.models.User import User
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.rooms.models.Room import Room
-from ..models.Booking import Booking
+from apps.booking.models.Booking import Booking
 from apps.groups.models.Group import Group
 from apps.accounts.exceptions import PrivilegeError
 from apps.util.mock_datetime import mock_datetime

@@ -181,7 +181,7 @@ class Verification extends Component {
       .then(() => {
         sweetAlert(
           'Settings',
-          'Settings recorded successfuly',
+          'Settings recorded successfully',
           'success',
         )
           .then(() => {

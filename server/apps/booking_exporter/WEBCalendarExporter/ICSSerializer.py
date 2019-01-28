@@ -1,8 +1,16 @@
+import abc
+
+from apps.booking.models.CampOn import CampOn
+from apps.booking.models.Booking import Booking
 
 
-class ICSSerializer:
+class ICSSerializer(abc.ABC):
 
-    def serialize_booking(self, booking):
+    @abc.abstractmethod
+    def get_date(self, entity):
+        pass
+
+    def serialize(self, booking):
 
         booker_id = booking.booker.username
         if booking.group is not None:
@@ -13,9 +21,11 @@ class ICSSerializer:
 
         description = summary
 
-        dt_start_yyyy = booking.date.year
-        dt_start_mm = booking.date.month
-        dt_start_dd = booking.date.day
+        date = self.get_date(booking)
+
+        dt_start_yyyy = date.year
+        dt_start_mm = date.month
+        dt_start_dd = date.day
 
         if len(str(dt_start_mm)) == 1:
             dt_start_mm = '0' + str(dt_start_mm)
@@ -84,3 +94,26 @@ END:VEVENT
 END:VCALENDAR""" % (str(booking.id), str(summary), str(description), str(dt_start), str(dt_end))
 
         return ics_file
+
+
+class BookingICSSerializer(ICSSerializer):
+
+    def get_date(self, booking):
+        return booking.date
+
+
+class CamponICSSerializer(ICSSerializer):
+
+    def get_date(self, campon):
+        return campon.camped_on_booking.date
+
+
+class ICSSerializerFactory:
+
+    @staticmethod
+    def get_serializer(entity):
+
+        if isinstance(entity, Booking):
+            return BookingICSSerializer()
+        if isinstance(entity, CampOn):
+            return CamponICSSerializer()

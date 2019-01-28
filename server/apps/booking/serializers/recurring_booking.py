@@ -4,6 +4,8 @@ from ..models.RecurringBooking import RecurringBooking
 from apps.rooms.models.Room import Room
 from apps.groups.models.Group import Group
 from apps.accounts.models.User import User
+from apps.accounts.serializers.user import UserSerializer
+from apps.rooms.serializers.room import RoomSerializer
 
 
 class RecurringBookingSerializer(serializers.ModelSerializer):
@@ -31,3 +33,15 @@ class RecurringBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecurringBooking
         fields = '__all__'
+
+
+class ReadRecurringBookingSerializer(serializers.ModelSerializer):
+
+    booker = UserSerializer(required=False)
+    room = RoomSerializer(required=False)
+
+    class Meta:
+        model = RecurringBooking
+        fields = ('id', 'start_date', 'end_date', 'booking_start_time', 'booking_end_time',
+                  'room', 'group', 'booker', 'skip_conflicts')
+        read_only_fields = ('id',)

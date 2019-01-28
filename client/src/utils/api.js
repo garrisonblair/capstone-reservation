@@ -14,6 +14,17 @@ function register(username) {
   });
 }
 
+function resetPassword(username) {
+  const data = {
+    username,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/reset_password`,
+    data,
+  });
+}
+
 function login(username, password) {
   const data = {
     username,
@@ -80,6 +91,16 @@ function getBookings(params) {
   });
 }
 
+function getUserBookings(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/bookings/${id}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function createBooking(data) {
   const headers = getTokenHeader();
   return axios({
@@ -98,6 +119,15 @@ function updateBooking(id, data) {
     url: `${settings.API_ROOT}/booking/${id}`,
     headers,
     data,
+  });
+}
+
+function deleteBooking(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/booking/${id}/cancel_booking`,
+    headers,
   });
 }
 
@@ -339,8 +369,15 @@ function getContentTypes() {
   });
 }
 
-function getUsers(params) {
+function getUsers(searchText) {
   const headers = getTokenHeader();
+
+  const params = {};
+
+  if (searchText) {
+    params.search_text = searchText;
+  }
+
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
@@ -405,6 +442,16 @@ function requestPrivilege(groupId, privilegeId) {
   });
 }
 
+function getPrivilegeRequests() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/privilege_requests`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function cancelPrivilegeRequest(requestId) {
   const headers = getTokenHeader();
   return axios({
@@ -415,16 +462,78 @@ function cancelPrivilegeRequest(requestId) {
   });
 }
 
+function getGroupInvitations() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/group_invitations`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function acceptInvitation(invitationId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group_invitation/${invitationId}/accept`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function approvePrivilegeRequest(requestId) {
+  const headers = getTokenHeader();
+  const data = {
+    privilege_request: requestId,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/approve_privilege_request`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function rejectInvitation(invitationId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/group_invitation/${invitationId}/reject`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function denyPrivilegeRequest(requestId, reason) {
+  const headers = getTokenHeader();
+  const data = {
+    privilege_request: requestId,
+    denial_reason: reason,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/deny_privilege_request`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
+  resetPassword,
   login,
   logout,
   verify,
   getMyUser,
   updateUser,
   getBookings,
+  getUserBookings,
   createBooking,
   updateBooking,
+  deleteBooking,
   createRecurringBooking,
   getCampOns,
   createCampOn,
@@ -451,7 +560,13 @@ const api = {
   removePrivilege,
   getBookers,
   requestPrivilege,
+  getPrivilegeRequests,
   cancelPrivilegeRequest,
+  getGroupInvitations,
+  acceptInvitation,
+  approvePrivilegeRequest,
+  rejectInvitation,
+  denyPrivilegeRequest,
 };
 
 export default api;

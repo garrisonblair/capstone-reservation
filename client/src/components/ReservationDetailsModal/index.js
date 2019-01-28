@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
-  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox,
+  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab, Divider,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import './ReservationDetailsModal.scss';
 import toDateInputValue from '../../utils/dateFormatter';
 import Login from '../Login';
 import api from '../../utils/api';
+import UserSearch from '../ReusableComponents/UserSearch';
 
 class ReservationDetailsModal extends Component {
   state = {
@@ -25,8 +26,10 @@ class ReservationDetailsModal extends Component {
       endDate: '',
     },
     ownerValue: 'me',
-    reservationProfiles: [],
     updatedOwnerOptions: false,
+    reservationProfiles: ['me'],
+    bypassPrivileges: false,
+    adminSelectedUser: undefined,
   }
 
   componentWillMount() {
@@ -68,9 +71,12 @@ class ReservationDetailsModal extends Component {
         hour = `${(parseInt(hour, 10) + 12)}`;
       }
     }
+
     this.setState({
       startHour: hour,
       startMinute: minute,
+      adminSelectedUser: undefined,
+      bypassPrivileges: false,
     });
     this.getDefaultEndTime(hour, minute);
   }
@@ -228,7 +234,7 @@ class ReservationDetailsModal extends Component {
   sendPostRequestBooking = () => {
     const { selectedDate, selectedRoomId, selectedRoomName } = this.props;
     const {
-      startHour, startMinute, endHour, endMinute, ownerValue,
+      startHour, startMinute, endHour, endMinute, ownerValue, bypassPrivileges, adminSelectedUser,
     } = this.state;
     // Handle time zone
     const tzoffset = (selectedDate).getTimezoneOffset() * 60000;
@@ -244,6 +250,15 @@ class ReservationDetailsModal extends Component {
     if (ownerValue !== 'me') {
       data.group = ownerValue;
     }
+
+    if (bypassPrivileges) {
+      data.bypass_privileges = true;
+    }
+
+    if (adminSelectedUser) {
+      data.admin_selected_user = adminSelectedUser.id;
+    }
+
     api.createBooking(data)
       .then(() => {
         sweetAlert.fire({
@@ -429,6 +444,42 @@ class ReservationDetailsModal extends Component {
     );
   }
 
+  handleAdminUserSelect = (user) => {
+    this.setState({ adminSelectedUser: user });
+  }
+
+  handleBypassPrivilegesChange = (event, data) => {
+    this.setState({ bypassPrivileges: data.checked });
+  }
+
+  renderRecurringForm() {
+    const panes = [
+      { menuItem: 'Option 1', render: () => <Tab.Pane attached={false}>{this.renderRecurringBookingOption0()}</Tab.Pane> },
+      { menuItem: 'Option 2', render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane> },
+      { menuItem: 'Option 3', render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane> },
+    ];
+    return (
+      <div>
+        <Tab menu={{ pointing: true }} onTabChange={this.handleTabChange} panes={panes} />
+      </div>
+    );
+  }
+
+  renderAdminBookingForm() {
+    return (
+      <div className="modal-description">
+        <div className="modal-description">
+          <h3 className="header--inline">
+            Book for:
+          </h3>
+        </div>
+        <UserSearch maxUsers={2} onSelect={this.handleAdminUserSelect} />
+        <Checkbox label="Bypass Privileges" onChange={this.handleBypassPrivilegesChange} />
+        <Divider />
+      </div>
+    );
+  }
+
   renderDescription() {
     const {
       startHour,
@@ -441,6 +492,11 @@ class ReservationDetailsModal extends Component {
       reservationProfiles,
     } = this.state;
     const { selectedDate } = this.props;
+    let user;
+    if (localStorage.CapstoneReservationUser) {
+      user = JSON.parse(localStorage.CapstoneReservationUser);
+    }
+
     return (
       <Modal.Content>
         <Modal.Description>
@@ -509,6 +565,7 @@ class ReservationDetailsModal extends Component {
               options={reservationProfiles}
               defaultValue="me"
             />
+            {user && user.is_superuser ? this.renderAdminBookingForm() : null}
           </div>
           <div className="modal-description">
             <Checkbox label="Request a recurring booking" onClick={this.handleCheckboxClick} />

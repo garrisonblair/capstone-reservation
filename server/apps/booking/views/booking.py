@@ -1,4 +1,5 @@
 import datetime
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
@@ -10,8 +11,11 @@ from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
 from apps.booking.models.Booking import BookingManager
+from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.CampOn import CampOn
-from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer
+from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer, MyBookingSerializer
+from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
+from apps.booking.serializers.campon import ReadCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
@@ -49,12 +53,28 @@ class BookingCreate(APIView):
 
     def post(self, request):
         data = request.data
-        data["booker"] = request.user.id
+
+        if request.user.is_superuser and "admin_selected_user" in data:
+            data["booker"] = data["admin_selected_user"]
+            del data["admin_selected_user"]
+        else:
+            data["booker"] = request.user.id
+
+        if not request.user.is_superuser:
+            data["bypass_privileges"] = False
+
+        now = datetime.datetime.now()
 
         serializer = BookingSerializer(data=data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        date = datetime.datetime.strptime(data["date"], '%Y-%m-%d').date()
+        start_time = datetime.datetime.strptime(data["start_time"], '%H:%M:%S').time()
+
+        if (date < now.date() or (date == now.date() and start_time < now.time())) and not request.user.is_superuser:
+            return Response("Booking can not be made in the past", status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             booking = serializer.save()
@@ -176,6 +196,10 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         data = request.data
         data["booker"] = booking.booker.id
+
+        if "bypass_privileges" in data and not request.user.is_superuser:
+            del data["bypass_privileges"]
+
         serializer = BookingSerializer(booking, data=data, partial=True)
 
         if not serializer.is_valid():
@@ -194,6 +218,35 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BookingViewMyBookings(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+
+    def get(self, request, pk):
+
+        user = None
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Check permissions
+        self.check_object_permissions(request, user)
+
+        bookings = dict()
+
+        # Obtain all standard_bookings, recurring_bookings, and campons for this booker
+        standard_bookings = Booking.objects.filter(booker=user, recurring_booking=None)
+        recurring_bookings = RecurringBooking.objects.filter(booker=user)
+        campons = CampOn.objects.filter(booker=user)
+
+        # Add serialized lists of booking types to dictionary associated with type key
+        bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
+        bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
+        bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
+
+        return Response(bookings, status=status.HTTP_200_OK)
 
 
 def booking_key(val):
