@@ -3,7 +3,7 @@ import { Table, Button } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
-import './GroupPrivilegeRequest.scss';
+import './PrivilegeRequestRow.scss';
 
 class PrivilegeRequestRow extends Component {
   handleDeny = () => {
@@ -20,13 +20,13 @@ class PrivilegeRequestRow extends Component {
       preConfirm: text => api.denyPrivilegeRequest(request.id, text)
         .then((r) => {
           if (r.status !== 200) {
-            sweetAlert(':(', 'It did not approved.', 'error');
+            sweetAlert(':(', 'It was not approved.', 'error');
           }
         }),
       allowOutsideClick: () => !sweetAlert.isLoading(),
     }).then((r) => {
       if (r.value) {
-        sweetAlert('Success', 'It denied successfully', 'success');
+        sweetAlert('Success', 'Denied successfully', 'success');
         syncMethod();
       }
     });
@@ -36,7 +36,7 @@ class PrivilegeRequestRow extends Component {
     const { request, syncMethod } = this.props;
     sweetAlert.fire({
       title: 'Confirmation',
-      text: `Are you sure you want to approve privilege category '${request.privilege_category.name}'`
+      text: `Are you sure you want to approve this privilege request '${request.privilege_category.name}'`
         + ` to group '${request.group.name}'?`,
       showCancelButton: true,
       confirmButtonText: 'Approve',
@@ -44,19 +44,35 @@ class PrivilegeRequestRow extends Component {
       preConfirm: () => api.approvePrivilegeRequest(request.id)
         .then((r) => {
           if (r.status !== 200) {
-            sweetAlert(':(', 'It did not approved.', 'error');
+            sweetAlert(':(', 'It was not approved.', 'error');
           }
         })
         .catch(() => {
-          sweetAlert(':(', 'It did not approved.', 'error');
+          sweetAlert(':(', 'It was not approved.', 'error');
         }),
       allowOutsideClick: () => !sweetAlert.isLoading(),
     }).then((result) => {
       if (result.value) {
-        sweetAlert('Success', 'It approved successfully', 'success');
+        sweetAlert('Success', 'Approved successfully', 'success');
         syncMethod();
       }
     });
+  }
+
+  handleClickOnInfo = () => {
+    const { request } = this.props;
+    sweetAlert({
+      title: 'Members',
+      html: this.renderMembers(request.group.members),
+      type: 'info',
+    });
+  }
+
+  renderMembers = (members) => {
+    const list = `<ul> ${members.map(
+      m => `<li style="width:250px">${m.username} (${m.first_name} ${m.last_name})</li>`,
+    )}</ul>`;
+    return list;
   }
 
   renderButtons = () => (
@@ -69,9 +85,10 @@ class PrivilegeRequestRow extends Component {
   render() {
     const { request } = this.props;
     return (
-      <Table.Row>
+      <Table.Row className="privilege-request-row">
         <Table.Cell>
           {request.group.name}
+          <Button circular icon="info circle" className="info-button" onClick={this.handleClickOnInfo} />
         </Table.Cell>
         <Table.Cell>
           {request.privilege_category.name}

@@ -15,12 +15,9 @@ class UserSearch extends Component {
   }
 
   handleSearchChange = (event) => {
-    console.log(event.target.value);
     api.getUsers(event.target.value).then((response) => {
       const { maxUsers } = this.props;
-      console.log(response.data);
       const users = response.data.slice(0, maxUsers);
-      console.log(users);
       const dropdownUsers = users.map(user => ({
         key: user.id,
         value: user.id,
