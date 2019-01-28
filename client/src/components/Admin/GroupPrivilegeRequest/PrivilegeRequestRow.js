@@ -20,13 +20,13 @@ class PrivilegeRequestRow extends Component {
       preConfirm: text => api.denyPrivilegeRequest(request.id, text)
         .then((r) => {
           if (r.status !== 200) {
-            sweetAlert(':(', 'It did not approved.', 'error');
+            sweetAlert(':(', 'It was not approved.', 'error');
           }
         }),
       allowOutsideClick: () => !sweetAlert.isLoading(),
     }).then((r) => {
       if (r.value) {
-        sweetAlert('Success', 'It denied successfully', 'success');
+        sweetAlert('Success', 'Denied successfully', 'success');
         syncMethod();
       }
     });
@@ -36,7 +36,7 @@ class PrivilegeRequestRow extends Component {
     const { request, syncMethod } = this.props;
     sweetAlert.fire({
       title: 'Confirmation',
-      text: `Are you sure you want to approve privilege category '${request.privilege_category.name}'`
+      text: `Are you sure you want to approve this privilege request '${request.privilege_category.name}'`
         + ` to group '${request.group.name}'?`,
       showCancelButton: true,
       confirmButtonText: 'Approve',
@@ -44,16 +44,16 @@ class PrivilegeRequestRow extends Component {
       preConfirm: () => api.approvePrivilegeRequest(request.id)
         .then((r) => {
           if (r.status !== 200) {
-            sweetAlert(':(', 'It did not approved.', 'error');
+            sweetAlert(':(', 'It was not approved.', 'error');
           }
         })
         .catch(() => {
-          sweetAlert(':(', 'It did not approved.', 'error');
+          sweetAlert(':(', 'It was not approved.', 'error');
         }),
       allowOutsideClick: () => !sweetAlert.isLoading(),
     }).then((result) => {
       if (result.value) {
-        sweetAlert('Success', 'It approved successfully', 'success');
+        sweetAlert('Success', 'Approved successfully', 'success');
         syncMethod();
       }
     });
