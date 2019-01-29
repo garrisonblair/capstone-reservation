@@ -916,7 +916,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(len(response.data["campons"]), 1)
         self.assertEqual(len(response.data["recurring_bookings"]), 2)
 
-    def testEditBookingAsAdminForUser(self):
+    def testEditBookingAsAdminForUserSuccessful(self):
 
         # Setup one Booking
         room = Room(name=2, capacity=4, number_of_computers=1)
@@ -948,3 +948,32 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(edit_booking.booker, self.booker)
         self.assertEqual(edit_booking.end_time, datetime.time(16, 00))
+
+    def testEditBookingAsAdminForUserFailure(self):
+
+        # Setup one Booking
+        room = Room(name=2, capacity=4, number_of_computers=1)
+        room.save()
+
+        booking1 = Booking(booker=self.booker, room=room, date="2018-10-7", start_time="14:00", end_time="15:00")
+        booking1.save()
+
+        request = self.factory.patch("/booking", {
+                                        "room": 2,
+                                        "date": "2018-10-7",
+                                        "start_time": "14:00:00",
+                                        "end_time": "16:00:00",
+                                        "admin_selected_user": self.booker.id
+                                    }, format="json")
+
+        force_authenticate(request, user=self.booker_2)
+
+        with mock_datetime(datetime.datetime(2018, 10, 7, 13, 1, 0, 0), datetime):
+            response = BookingRetrieveUpdateDestroy.as_view()(request, 1)
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+        edit_booking = Booking.objects.all().latest('id')
+
+        self.assertEqual(edit_booking.booker, self.booker)
+        self.assertEqual(edit_booking.end_time, datetime.time(15, 00))

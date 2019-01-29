@@ -184,7 +184,6 @@ class BookingRetrieveUpdateDestroy(APIView):
 
         data = request.data
         if request.user.is_superuser and "admin_selected_user" in data:
-            print("is super user")
             data["booker"] = data["admin_selected_user"]
             del data["admin_selected_user"]
         else:
