@@ -182,6 +182,17 @@ class BookingRetrieveUpdateDestroy(APIView):
         except Booking.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+        data = request.data
+        if request.user.is_superuser and "admin_selected_user" in data:
+            print("is super user")
+            data["booker"] = data["admin_selected_user"]
+            del data["admin_selected_user"]
+        else:
+            data["booker"] = request.user.id
+
+        if not request.user.is_superuser:
+            data["bypass_privileges"] = False
+
         # Check user permissions
         self.check_object_permissions(request, booking.booker)
 
