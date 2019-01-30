@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.util.ldap_server import get_ldap_connection
+from apps.util.ldap_server import get_ldap_connection, get_user
 from apps.accounts.models.VerificationToken import VerificationToken
 
 
@@ -37,7 +37,7 @@ class RegisterView(APIView):
 
         # New user from LDAP
         connection = get_ldap_connection()
-        user = connection.get_user(username=username)
+        user = get_user(username=username)
 
         if user:
             print("New LDAP user")
