@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ReactGA from 'react-ga';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import settings from './config/settings';
 import Home from './components/Home';
 // import Login from './components/Login';
 import NotFound from './components/NotFound';
@@ -18,6 +20,9 @@ import Bookers from './components/Admin/Bookers';
 import GroupPrivilegeRequest from './components/Admin/GroupPrivilegeRequest';
 import Profile from './components/Profile';
 
+if (settings.IS_PROD) {
+  ReactGA.initialize(settings.gaTrackingID);
+}
 
 ReactDOM.render(
   <Router>
