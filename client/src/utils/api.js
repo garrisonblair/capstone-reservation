@@ -521,6 +521,16 @@ function denyPrivilegeRequest(requestId, reason) {
   });
 }
 
+function getRoomStatistics() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/room_statistics`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -567,6 +577,7 @@ const api = {
   approvePrivilegeRequest,
   rejectInvitation,
   denyPrivilegeRequest,
+  getRoomStatistics,
 };
 
 export default api;
