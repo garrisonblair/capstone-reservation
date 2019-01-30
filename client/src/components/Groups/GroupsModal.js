@@ -109,10 +109,12 @@ class GroupsModal extends Component {
   }
 
   handleLeaveGroup = () => {
+    this.setState({ isLoading: true });
     const { groupId } = this.state;
     const { onClose } = this.props;
     api.leaveGroup(groupId)
       .then((r) => {
+        this.setState({ isLoading: false });
         if (r.status === 202) {
           onClose();
           sweetAlert('Completed', 'You have left the group.', 'success');
@@ -121,10 +123,12 @@ class GroupsModal extends Component {
   }
 
   handleDeleteGroup = () => {
+    this.setState({ isLoading: true });
     const { groupId } = this.state;
     const { onClose } = this.props;
     api.leaveGroup(groupId)
       .then((r) => {
+        this.setState({ isLoading: false });
         if (r.status === 202) {
           onClose();
           sweetAlert('Completed', 'You have deleted the group.', 'success');
@@ -133,7 +137,7 @@ class GroupsModal extends Component {
   }
 
   deleteInvitation = (invitationId) => {
-    this.setState({ isLoading: true });
+    // this.setState({ isLoading: true });
     const { groupInvitations } = this.state;
     api.revokeInvitation(invitationId)
       .then((r) => {
@@ -145,9 +149,11 @@ class GroupsModal extends Component {
   }
 
   deleteMember = (memberId) => {
+    this.setState({ isLoading: true });
     const { groupId, groupMembers } = this.state;
     api.removeMembersFromGroup(groupId, [memberId])
       .then((r) => {
+        this.setState({ isLoading: false });
         if (r.status === 202) {
           this.setState({ groupMembers: groupMembers.filter(m => m.id !== memberId) });
         }
@@ -155,12 +161,14 @@ class GroupsModal extends Component {
   }
 
   handleCreateGroup = () => {
+    this.setState({ isLoading: true });
     if (!this.verifyModalForm()) {
       return;
     }
     const { groupName } = this.state;
     api.createGroup(groupName)
       .then((r) => {
+        this.setState({ isLoading: false });
         if (r.status === 201) {
           this.setState({
             groupId: r.data.id,
@@ -238,7 +246,7 @@ class GroupsModal extends Component {
 
   renderModalContent = () => {
     const {
-      stateOptions, newInvitation, groupId, groupPrivilegeRequest, isLoading,
+      stateOptions, newInvitation, groupId, groupPrivilegeRequest,
     } = this.state;
     const { isAdmin } = this.props;
     return (
@@ -248,9 +256,6 @@ class GroupsModal extends Component {
             <RequestPrivilege groupId={groupId} groupPrivilege={groupPrivilegeRequest} />
             <h3>
               Members:
-              <Dimmer active={isLoading} inverted>
-                <Loader />
-              </Dimmer>
             </h3>
             {isAdmin ? (
               <div>
@@ -275,7 +280,7 @@ class GroupsModal extends Component {
 
   render() {
     const { onClose, show, selectedGroup } = this.props;
-    const { groupId, groupName } = this.state;
+    const { groupId, groupName, isLoading } = this.state;
     return (
       <Modal centered={false} size="tiny" open={show} id="groups-modal" onClose={onClose}>
         <Modal.Header>
@@ -293,6 +298,9 @@ class GroupsModal extends Component {
           <Button onClick={onClose}>Cancel</Button>
           {this.renderRedButton()}
         </Modal.Actions>
+        <Dimmer active={isLoading} inverted>
+          <Loader />
+        </Dimmer>
       </Modal>
     );
   }

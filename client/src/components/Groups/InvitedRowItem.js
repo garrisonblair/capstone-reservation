@@ -1,14 +1,23 @@
 import React, { Component } from 'react';
-import { Button, List, Icon } from 'semantic-ui-react';
+import {
+  Button, List, Icon, Loader, Dimmer,
+} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import './InvitedRowItem.scss';
 
 class InvitedRowItem extends Component {
+  state = {
+    isLoading: false,
+  }
+
   handleDeletion = () => {
+    this.setState({ isLoading: true });
     const { deleteFunction, selectedInvitation } = this.props;
     deleteFunction(selectedInvitation.id);
   }
 
   render() {
+    const { isLoading } = this.state;
     const { selectedInvitation, isAdmin } = this.props;
     return (
       <List.Item>
@@ -19,8 +28,12 @@ class InvitedRowItem extends Component {
           </h3>
         </List.Content>
         <List.Content floated="right">
-          {isAdmin === true ? <Button onClick={this.handleDeletion}>Remove</Button> : ''}
+          {isAdmin === true && isLoading === false ? <Button onClick={this.handleDeletion}>Remove</Button> : ''}
+          {/* {isLoading ? <Loader active inline /> : null} */}
         </List.Content>
+        <Dimmer active={isLoading} inverted>
+          <Loader />
+        </Dimmer>
       </List.Item>
     );
   }
