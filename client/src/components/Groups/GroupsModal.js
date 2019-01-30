@@ -133,9 +133,11 @@ class GroupsModal extends Component {
   }
 
   deleteInvitation = (invitationId) => {
+    this.setState({ isLoading: true });
     const { groupInvitations } = this.state;
     api.revokeInvitation(invitationId)
       .then((r) => {
+        this.setState({ isLoading: false });
         if (r.status === 200) {
           this.setState({ groupInvitations: groupInvitations.filter(i => i.id !== invitationId) });
         }
