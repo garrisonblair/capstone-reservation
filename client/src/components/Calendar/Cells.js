@@ -133,7 +133,7 @@ class Cells extends Component {
     const bookingStart = Cells.timeStringToInt(booking.start_time);
     const bookingEnd = Cells.timeStringToInt(booking.end_time);
     const calendarStart = Cells.timeStringToInt(hoursSettings.start);
-    let color = '#1F5465';
+    let color = '#2c3e50';
     const currentDate = new Date();
     const currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`;
 
@@ -155,10 +155,10 @@ class Cells extends Component {
       }
     }
     if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10))) {
-      color = '#7F7F7F';
+      color = '#bdc3c7';
     } else
     if (booking.isCampOn) {
-      color = '#82220E';
+      color = '#c0392b';
     }
 
     // Find the rows in the grid the booking corresponds to.

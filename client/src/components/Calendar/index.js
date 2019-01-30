@@ -43,7 +43,7 @@ class Calendar extends Component {
    */
 
   componentDidMount() {
-    document.body.style.backgroundColor = '#F2D692';
+    document.body.style.backgroundColor = '#bdc3c7';
     this.setState(
       { orientation: storage.getOrientation() === null ? 1 : storage.getOrientation() },
     );
