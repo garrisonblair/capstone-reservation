@@ -173,7 +173,7 @@ class BookingInfoModal extends Component {
 
   renderForm(booking) {
     const { selectedRoomName } = this.props;
-    if (BookingInfoModal.checkSameUser(booking)) {
+    if (BookingInfoModal.checkSameUserOrAdmin(booking)) {
       return (
         <EditBookingForm
           booking={booking}

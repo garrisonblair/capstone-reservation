@@ -6,7 +6,7 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
-import CustomFormInput from './CustomFormInput';
+import CustomFormInput from '../ReusableComponents/CustomFormInput';
 import './Verification.scss';
 
 import getEmailRegex from '../../utils/emailRegex';
