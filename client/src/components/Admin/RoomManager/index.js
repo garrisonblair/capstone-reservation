@@ -113,8 +113,8 @@ class RoomManager extends Component {
     const { showModal, isLoading } = this.state;
     return (
       <div id="room-management">
+        <h1>Manage Rooms</h1>
         <Segment loading={isLoading}>
-          <h1>Manage Rooms</h1>
           <Button onClick={this.showRoomModal}>Add new room</Button>
           {this.renderTable()}
           {this.renderNoRoomList()}

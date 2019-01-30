@@ -32,8 +32,8 @@ class Bookers extends Component {
     const { bookers, isLoading } = this.state;
     return (
       <div id="bookers">
+        <h1>Bookers</h1>
         <Segment loading={isLoading}>
-          <h1>Bookers</h1>
           <Table>
             <Table.Header>
               <Table.Row key="-1">

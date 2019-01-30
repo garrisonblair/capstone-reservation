@@ -4,6 +4,7 @@ import {
   Icon,
   Table,
   TableCell,
+  Segment,
 } from 'semantic-ui-react';
 import api from '../../../utils/api';
 import AdminRequired from '../../HOC/AdminRequired';
@@ -19,6 +20,7 @@ class PrivilegeCategory extends Component {
     privilege: {},
     showAddPrivilegeModal: false,
     showDetailsModal: false,
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -26,6 +28,7 @@ class PrivilegeCategory extends Component {
   }
 
   getPrivileges = () => {
+    this.setState({ isLoading: true });
     // eslint-disable-next-line react/prop-types
     const { privilegesMock } = this.props;
     if (privilegesMock) {
@@ -35,6 +38,7 @@ class PrivilegeCategory extends Component {
     api.getPrivileges()
       .then(response => response.data)
       .then((privileges) => {
+        this.setState({ isLoading: false });
         this.setState({
           privileges,
         });
@@ -73,11 +77,11 @@ class PrivilegeCategory extends Component {
       <div>
         <Button icon labelPosition="left" primary size="small" onClick={this.handleAddPrivilege}>
           <Icon name="plus" />
-            Add
+          Add
         </Button>
         <Button icon labelPosition="left" primary size="small">
           <Icon name="plus" />
-            Assign
+          Assign
         </Button>
       </div>
     );
@@ -139,22 +143,25 @@ class PrivilegeCategory extends Component {
         privileges,
         showAddPrivilegeModal,
         showDetailsModal,
+        isLoading,
       } = this.state;
     return (
       <div className="privileges">
         <h1>Privileges</h1>
-        {this.renderControls()}
-        {this.renderTable()}
-        <AddPrivilegeModal
-          privileges={privileges}
-          show={showAddPrivilegeModal}
-          onClose={this.handleOnCloseAddPrivilegeModal}
-        />
-        <PrivilegeDetailsModal
-          privilege={privilege}
-          show={showDetailsModal}
-          onClose={this.handleOnCloseDisplayPrivilegeModal}
-        />
+        <Segment loading={isLoading}>
+          {this.renderControls()}
+          {this.renderTable()}
+          <AddPrivilegeModal
+            privileges={privileges}
+            show={showAddPrivilegeModal}
+            onClose={this.handleOnCloseAddPrivilegeModal}
+          />
+          <PrivilegeDetailsModal
+            privilege={privilege}
+            show={showDetailsModal}
+            onClose={this.handleOnCloseDisplayPrivilegeModal}
+          />
+        </Segment>
       </div>
     );
   }
