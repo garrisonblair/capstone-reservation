@@ -29,7 +29,7 @@ def get_ldap_connection():
             user=settings.LDAP_AUTH_CONNECTION_USERNAME,
             password=settings.LDAP_AUTH_CONNECTION_PASSWORD,
             auto_bind=auto_bind,
-            raise_exceptions=True,
+            raise_exceptions=False,
             receive_timeout=settings.LDAP_AUTH_RECEIVE_TIMEOUT,
         )
         return ldap.Connection(connection)
