@@ -1,5 +1,4 @@
 import datetime
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
@@ -7,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
+from apps.accounts.models.User import User
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
@@ -247,7 +247,8 @@ class BookingViewMyBookings(APIView):
         bookings = dict()
 
         # Obtain all standard_bookings, recurring_bookings, and campons for this booker
-        standard_bookings = Booking.objects.filter(booker=user, recurring_booking=None)
+
+        standard_bookings = user.get_active_non_recurring_bookings()
         recurring_bookings = RecurringBooking.objects.filter(booker=user)
         campons = CampOn.objects.filter(booker=user)
 

@@ -110,10 +110,8 @@ class ResetPasswordVerification extends Component {
     const data = {
       password,
     };
-    console.log('boom');
     api.updateUser(userId, data)
       .then(() => {
-        console.log('testing');
         sweetAlert(
           'Reset Password',
           'Password reset successfully',
