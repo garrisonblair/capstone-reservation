@@ -14,7 +14,7 @@ import Admin from './components/Admin';
 import PrivilegeCategory from './components/Admin/PrivilegeCategory';
 import RoomManager from './components/Admin/RoomManager';
 import Stats from './components/Admin/Stats';
-import BookingActivity from './components/Admin/Stats/BookingActivity';
+import BookingActivity from './components/Admin/Logs/BookingActivity';
 import Settings from './components/Admin/Settings';
 import Bookers from './components/Admin/Bookers';
 import GroupPrivilegeRequest from './components/Admin/GroupPrivilegeRequest';
