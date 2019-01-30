@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-state */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
@@ -10,24 +11,51 @@ import sweetAlert from 'sweetalert2';
 import SelectedDate from '../Calendar/SelectedDate';
 import Login from '../Login';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import './Navigation.scss';
 
 
 class Navigation extends Component {
   state = {
     showLogin: false,
+    update: false,
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.update !== state.update) {
+      return {
+        update: props.update,
+      };
+    }
+    return null;
+  }
+
+  handleClickLogo = () => {
+    // eslint-disable-next-line react/prop-types
+    const { history } = this.props;
+
+    if (history.location.pathname === '/') {
+      window.location.reload();
+    } else {
+      history.push('/');
+    }
   }
 
   handleLogin = () => {
-    if (localStorage.CapstoneReservationUser) {
+    // eslint-disable-next-line react/prop-types
+    const { history } = this.props;
+    if (storage.getUser()) {
       api.logout()
         .then(() => {
-          sweetAlert(
-            'Logged out',
-            '',
-            'success',
-          );
+          sweetAlert.fire({
+            position: 'top',
+            type: 'success',
+            title: 'Logged out',
+          });
           this.setState({ showLogin: false });
+          if (history.location.pathname !== '/') {
+            history.push('/');
+          }
         });
     } else {
       this.setState({ showLogin: true });
@@ -56,11 +84,11 @@ class Navigation extends Component {
   // handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
   renderAdminSettings = () => {
-    if (!localStorage.CapstoneReservationUser) {
+    if (!storage.getUser()) {
       return '';
     }
 
-    const user = JSON.parse(localStorage.CapstoneReservationUser);
+    const user = storage.getUser();
     if (!user.is_superuser) {
       return '';
     }
@@ -68,7 +96,7 @@ class Navigation extends Component {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
     const component = (
-      <Menu.Item onClick={() => { history.push('admin'); }}>
+      <Menu.Item onClick={() => { history.push('admin'); }} className="navigation__admin">
         <Icon name="university" />
         Admin
       </Menu.Item>
@@ -77,14 +105,31 @@ class Navigation extends Component {
     return component;
   }
 
-  renderLoggedInInfo = () => {
+  renderAccountDropDown = () => {
     if (!localStorage.CapstoneReservationUser) {
       return '';
     }
-
-    const user = JSON.parse(localStorage.CapstoneReservationUser);
+    const { history } = this.props;
     const component = (
-      <Menu.Item>
+      <Dropdown item text="Account">
+        <Dropdown.Menu>
+          <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
+          {/* <Dropdown.Item icon="cog" text="Settings" /> */}
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+
+    return component;
+  }
+
+  renderLoggedInInfo = () => {
+    if (!storage.getUser()) {
+      return '';
+    }
+
+    const user = storage.getUser();
+    const component = (
+      <Menu.Item className="navigation__user">
         <Icon name="user" />
         {`Logged in as ${user.username}`}
       </Menu.Item>
@@ -98,9 +143,12 @@ class Navigation extends Component {
 
     return (
       <div className="navigation">
-        <Menu inverted fixed="top">
-          <Menu.Item>
+        <Menu inverted fixed="top" className="navigation__bar">
+          <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
             Capstone
+          </Menu.Item>
+          <Menu.Item>
+            <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing">Feedback</a>
           </Menu.Item>
           { showDate
             ? (
@@ -111,19 +159,15 @@ class Navigation extends Component {
               />
             )
             : null}
-          <Menu.Menu position="right" inverted="true">
+          <Menu.Menu position="right" inverted="true" className="navigation__container">
             {this.renderLoggedInInfo()}
             {this.renderAdminSettings()}
-            <Dropdown item text="Account">
-              <Dropdown.Menu>
-                <Dropdown.Item icon="user" text="Profile" />
-                <Dropdown.Item icon="cog" text="Settings" />
-              </Dropdown.Menu>
-            </Dropdown>
+            {this.renderAccountDropDown()}
             <Menu.Item
               onClick={this.handleLogin}
+              className="navigation__login"
             >
-              {localStorage.CapstoneReservationUser ? 'Logout' : 'Login'}
+              {storage.getUser() ? 'Logout' : 'Login'}
             </Menu.Item>
           </Menu.Menu>
           <Login

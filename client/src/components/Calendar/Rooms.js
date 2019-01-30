@@ -5,15 +5,35 @@ import './Calendar.scss';
 class Rooms extends Component {
   state = {
     roomsList: [],
+    roomsNum: 0,
+    orientation: 0,
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (props.roomsList === state.roomsList) {
+    if (props.roomsList === state.roomsList && props.orientation === state.orientation) {
       return null;
     }
     return {
       roomsList: props.roomsList,
+      roomsNum: props.roomsNum,
+      orientation: props.orientation,
     };
+  }
+
+  setStyle() {
+    const { roomsNum, orientation } = this.state;
+    let style;
+    if (orientation === 0) {
+      style = {
+        gridTemplateColumns: `repeat(${roomsNum}, 1fr)`,
+        gridColumnStart: 2,
+      };
+    } else {
+      style = {
+        gridTemplateRows: `repeat(${roomsNum}, 1fr)`,
+      };
+    }
+    return style;
   }
 
   render() {
@@ -24,7 +44,7 @@ class Rooms extends Component {
       </div>
     ));
 
-    return <div className="calendar__rooms__wrapper">{rooms}</div>;
+    return <div className="calendar__rooms__wrapper" style={this.setStyle()}>{rooms}</div>;
   }
 }
 

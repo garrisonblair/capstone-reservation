@@ -63,9 +63,12 @@ class EditBookingForm extends Component {
     };
     api.updateBooking(booking.id, data)
       .then(() => {
-        sweetAlert('Completed',
-          'Booking was sucessfully updated.',
-          'success')
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Completed',
+          text: 'Booking was successfully updated.',
+        })
           .then((result) => {
             if (result.value) {
               this.closeModalWithEditBooking();
@@ -73,11 +76,12 @@ class EditBookingForm extends Component {
           });
       })
       .catch((error) => {
-        sweetAlert(
-          'Reservation failed',
-          error.response.data,
-          'error',
-        );
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Reservation failed',
+          text: error.response.data,
+        });
       });
   }
 
@@ -86,7 +90,12 @@ class EditBookingForm extends Component {
     try {
       this.verifyReservationTimes();
     } catch (err) {
-      sweetAlert('Edit blocked', err.message, 'warning');
+      sweetAlert.fire({
+        position: 'top',
+        type: 'warning',
+        title: 'Edit blocked',
+        text: err.message,
+      });
       return;
     }
 

@@ -4,7 +4,7 @@
   // height: 100vh;
   &__container {
     border: 1px solid #cfd0d2;
-    width: 400px;
+    width: 400px !important;
     box-shadow: 2px 2px 5px #cfd0d2;
     &__header {
       background: url(../../assets/img/login_bg.png);

@@ -63,3 +63,11 @@ class Room(models.Model):
 
     def get_observers(self):
         return Room.observers
+
+    def get_bookings(self, start_date=None, end_date=None):
+        bookings = self.booking_set
+        if start_date is not None:
+            bookings = bookings.filter(date__gte=start_date)
+        if end_date is not None:
+            bookings = bookings.filter(date__lte=end_date)
+        return bookings

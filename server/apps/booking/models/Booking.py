@@ -32,6 +32,11 @@ class BookingManager(models.Manager):
 
         return booking
 
+    def get_first_booking_date(self):
+        if self.count() == 0:
+            return datetime.datetime.now().date()
+        return self.order_by("date").first().date
+
 
 class Booking(models.Model, SubjectModel):
     booker = models.ForeignKey(User,
@@ -49,6 +54,8 @@ class Booking(models.Model, SubjectModel):
                                           blank=True,
                                           null=True)
 
+    bypass_privileges = models.BooleanField(default=False)
+
     objects = BookingManager()
 
     observers = list()
@@ -60,23 +67,24 @@ class Booking(models.Model, SubjectModel):
         if self.id is None:
             is_create = True
 
-        self.evaluate_privilege(is_create)
+        if not self.bypass_privileges:
+            self.evaluate_privilege(is_create)
+
         this = super(Booking, self).save(*args, **kwargs)
 
         if is_create:
             self.object_created()
         else:
             self.object_updated()
-
         return this
 
     def __str__(self):
-        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}'.format(
-            self.id, self.booker.booker_id, self.room.name, self.date, self.start_time, self.end_time
-        )
+        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}, Recurring Booking: {}'\
+            .format(self.id, self.booker.username, self.room.name, self.date, self.start_time, self.end_time,
+                    self.recurring_booking)
 
     def validate_model(self):
-
+        now = datetime.datetime.now()
         if not isinstance(self.start_time, datetime.time):
             self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
         if not isinstance(self.end_time, datetime.time):
@@ -85,18 +93,11 @@ class Booking(models.Model, SubjectModel):
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
 
-        elif Booking.objects.filter(~Q(start_time=self.end_time),
-                                    ~Q(id=self.id),
-                                    room=self.room,
-                                    date=self.date,
-                                    start_time__range=(self.start_time, self.end_time)).exists():
-            raise ValidationError("Specified time is overlapped with other bookings.")
-
-        elif Booking.objects.filter(~Q(end_time=self.start_time),
-                                    ~Q(id=self.id),
-                                    room=self.room,
-                                    date=self.date,
-                                    end_time__range=(self.start_time, self.end_time)).exists():
+        if Booking.objects.filter(~Q(id=self.id),
+                                  start_time__lt=self.end_time,
+                                  end_time__gt=self.start_time,
+                                  room=self.room,
+                                  date=self.date).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
     def merge_with_neighbouring_bookings(self):
@@ -181,3 +182,7 @@ class Booking(models.Model, SubjectModel):
     def json_serialize(self):
         from ..serializers.booking import BookingSerializer
         return json.dumps(BookingSerializer(self).data)
+
+    def get_duration(self):
+        return (datetime.datetime.combine(date=datetime.date.today(), time=self.end_time)
+                - datetime.datetime.combine(date=datetime.date.today(), time=self.start_time))

@@ -3,10 +3,9 @@ from datetime import date, time, timedelta
 import datetime
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
-from ..models.Booking import RecurringBooking
+from apps.booking.models.Booking import RecurringBooking
 from apps.groups.models.Group import Group
 from apps.accounts.exceptions import PrivilegeError
 from apps.util.mock_datetime import mock_datetime

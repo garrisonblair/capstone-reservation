@@ -16,6 +16,9 @@ db.sqlite3
 **/migrations/*
 !**/migrations/__init__.py
 
+# Static files
+server/static
+
 # Dependency directories
 node_modules/
 
@@ -31,3 +34,6 @@ yarn-error.log*
 
 # PyCharm
 .idea
+*.pickle
+server/apps/booking_exporter/GmailImporter/credentials.json
+*.sqlite3-journal

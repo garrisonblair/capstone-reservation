@@ -1,7 +1,7 @@
 import os
 
 # Email config
-EMAIL_USE_SSL = True
+EMAIL_USE_SSL = False
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')

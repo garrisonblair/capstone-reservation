@@ -5,9 +5,12 @@ import {
   Icon,
   Modal,
 } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
+import storage from '../../utils/local-storage';
 import './BookingInfoModal.scss';
+import api from '../../utils/api';
 
 
 class BookingInfoModal extends Component {
@@ -30,6 +33,17 @@ class BookingInfoModal extends Component {
       return booking.booker.username === JSON.parse(localStorage.getItem('CapstoneReservationUser')).username;
     }
     return false;
+  }
+
+  static checkAdmin() {
+    if (localStorage.getItem('CapstoneReservationUser')) {
+      return JSON.parse(localStorage.getItem('CapstoneReservationUser')).is_superuser;
+    }
+    return false;
+  }
+
+  static checkSameUserOrAdmin(booking) {
+    return BookingInfoModal.checkSameUser(booking) || BookingInfoModal.checkAdmin();
   }
 
   state = {
@@ -63,14 +77,44 @@ class BookingInfoModal extends Component {
 
   handleOpen = () => this.setState({ show: true });
 
+  handleDelete = () => {
+    sweetAlert({
+      title: 'Are you sure?',
+      text: 'Booking will be deleted.',
+      type: 'warning',
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.value) {
+        const { booking } = this.props;
+        api.deleteBooking(booking.id)
+          .then(() => {
+            this.closeModalWithAction();
+            sweetAlert({
+              title: 'Success',
+              text: 'Booking deleted',
+              type: 'success',
+            });
+          })
+          .catch((error) => {
+            sweetAlert(
+              'Cancellation failed',
+              error.response.data,
+              'error',
+            );
+          });
+      }
+    });
+  }
+
   renderCampons = () => {
     const { campons } = this.props;
     const camponsInfo = [];
     let i = 1;
-    campons.forEach((campon) => {
+    campons.forEach((campon, index) => {
       camponsInfo.push(
         <h3 className="header--inline" key={i}>
-          {`${i}. ${campon.booker.username}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
+          {`${index + 1}. ${campon.booker.username}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
+          <br />
         </h3>,
       );
       i += 1;
@@ -119,9 +163,10 @@ class BookingInfoModal extends Component {
             {campons == null || campons.length === 0 ? null : this.renderCampons()}
           </div>
           <div className="ui divider" />
-          {this.renderForm(booking)}
+          {storage.getUser() ? this.renderForm(booking) : null}
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
+            {BookingInfoModal.checkSameUserOrAdmin(booking) ? <Button content="Delete" color="red" onClick={this.handleDelete} /> : null }
           </div>
         </Modal.Description>
       </Modal.Content>
@@ -130,7 +175,7 @@ class BookingInfoModal extends Component {
 
   renderForm(booking) {
     const { selectedRoomName } = this.props;
-    if (BookingInfoModal.checkSameUser(booking)) {
+    if (!!booking.isCampOn === false && BookingInfoModal.checkSameUser(booking)) {
       return (
         <EditBookingForm
           booking={booking}
@@ -154,7 +199,7 @@ class BookingInfoModal extends Component {
     const { selectedRoomName } = this.props;
     return (
       <div id="reservation-details-modal">
-        <Modal centered={false} size="tiny" open={show}>
+        <Modal centered={false} size="tiny" open={show} onClose={this.closeModal}>
           <Modal.Header>
             <Icon name="map marker alternate" />
             Room&nbsp;

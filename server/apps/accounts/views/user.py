@@ -9,21 +9,19 @@ from rest_framework.views import APIView
 
 from apps.accounts.permissions.IsBooker import IsBooker
 from ..models.BookerProfile import BookerProfile
-from ..serializers.user import UserSerializer, BookerSerializer
+from ..serializers.user import UserSerializer, BookerProfileSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
-from ..permissions.IsSuperUser import IsSuperUser
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
 class UserList(ListAPIView):
-    permission_classes = (IsAuthenticated)
+    permission_class = IsAuthenticated
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
     def get_queryset(self):
-
         search_term = self.request.query_params.get("search_text")
-        users = User.objects.all()
+        users = super(UserList, self).get_queryset()
 
         if search_term is not None:
             users = users.filter(Q(username__contains=search_term) |
@@ -36,10 +34,10 @@ class UserList(ListAPIView):
 class BookerList(ListAPIView):
     permission_classes = (IsAuthenticated, IsBooker)
     queryset = BookerProfile.objects.all()
-    serializer_class = BookerSerializer
+    serializer_class = BookerProfileSerializer
 
     def get_queryset(self):
-        search_term = self.request.GET.get("search_text")
+        search_term = self.request.query_params.get("search_text")
         qs = super(BookerList, self).get_queryset()
 
         if search_term is not None:
@@ -64,6 +62,8 @@ class UserUpdate(APIView):
         is_superuser = request.data.get('is_superuser')
         booker_id = request.data.get('booker_id')
 
+        secondary_email = request.data.get('secondary_email')
+
         user = None
         try:
             user = User.objects.get(pk=pk)
@@ -87,11 +87,16 @@ class UserUpdate(APIView):
 
         booker = BookerProfile.objects.get(user_id=user.id)
         # Add booker ID only if it's a new user
-        booker.booker_id = booker_id
+        if booker_id:
+            booker.booker_id = booker_id
+
+        if secondary_email:
+            booker.secondary_email = secondary_email
+
         booker.save()
         # Add Booker Privileges
         manager = PrivilegeCategoryManager()
-        manager.assign_booker_privileges(user.bookerprofile)
+        manager.assign_booker_privileges(user)
 
         # Must be superuser to update those fields
         if username and request.user.is_superuser:
@@ -108,6 +113,5 @@ class UserUpdate(APIView):
 
         user.save()
         serializer = UserSerializer(user)
-        if booker:
-            serializer = BookerSerializer(booker)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
