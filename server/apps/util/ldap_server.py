@@ -73,7 +73,10 @@ def search_user(**kwargs):
         get_operational_attributes=True,
         size_limit=1
     ):
-        return connection._connection.response[0]
+
+        for response in connection._connection.response:
+            if response["attributes"]["name"][0] == kwargs["username"]:
+                return response
     return None
 
 
