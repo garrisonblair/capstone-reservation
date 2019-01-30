@@ -1,11 +1,11 @@
 import binascii
-import datetime
 import os
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
+from datetime import timedelta
 
 
 class VerificationToken(models.Model):
@@ -17,10 +17,8 @@ class VerificationToken(models.Model):
         if not self.token:
             self.token = self.generate_key()
 
-        # Set token expiration to 1 hour
-        if not self.expiration:
-            self.expiration = timezone.now() + datetime.timedelta(hours=1)
-
+        self.expiration = timezone.now() + timedelta(hours=1)
+        print(self.expiration)
         return super(VerificationToken, self).save(*args, **kwargs)
 
     def generate_key(self):
@@ -40,6 +38,5 @@ class VerificationToken(models.Model):
                 old_password = None
             if new_password != old_password:
                 if VerificationToken.objects.filter(user=user).exists():
-                    print("delete token")
                     token = VerificationToken.objects.get(user=user)
                     token.delete()

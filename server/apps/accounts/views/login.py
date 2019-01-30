@@ -23,7 +23,6 @@ class LoginView(APIView):
 
         # Existing user in DB
         if user:
-            print("Existing user")
             login(request, user)
             serializer = UserSerializerLogin(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
