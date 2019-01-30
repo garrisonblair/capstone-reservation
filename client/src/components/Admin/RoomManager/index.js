@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Button, Message, Table } from 'semantic-ui-react';
+import {
+  Button, Message, Table, Segment,
+} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import RoomRowItem from './RoomRowItem';
 import RoomModal from './RoomModal';
@@ -13,6 +15,7 @@ class RoomManager extends Component {
     showModal: false,
     selectedRoom: null,
     showEmptyMessage: false,
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -34,8 +37,10 @@ class RoomManager extends Component {
   }
 
   syncRooms = () => {
+    this.setState({ isLoading: true });
     api.getRooms()
       .then((response) => {
+        this.setState({ isLoading: false });
         if (response.status === 200) {
           this.setState({
             roomsList: response.data,
@@ -105,14 +110,16 @@ class RoomManager extends Component {
   }
 
   render() {
-    const { showModal } = this.state;
+    const { showModal, isLoading } = this.state;
     return (
       <div id="room-management">
-        <h1>Manage Rooms</h1>
-        <Button onClick={this.showRoomModal}>Add new room</Button>
-        {this.renderTable()}
-        {this.renderNoRoomList()}
-        {showModal ? this.renderRoomModal() : ''}
+        <Segment loading={isLoading}>
+          <h1>Manage Rooms</h1>
+          <Button onClick={this.showRoomModal}>Add new room</Button>
+          {this.renderTable()}
+          {this.renderNoRoomList()}
+          {showModal ? this.renderRoomModal() : ''}
+        </Segment>
       </div>
     );
   }

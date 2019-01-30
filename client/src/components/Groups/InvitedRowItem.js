@@ -3,7 +3,6 @@ import {
   Button, List, Icon, Loader, Dimmer,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import './InvitedRowItem.scss';
 
 class InvitedRowItem extends Component {
   state = {
