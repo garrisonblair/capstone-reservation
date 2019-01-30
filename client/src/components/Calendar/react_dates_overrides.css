@@ -121,7 +121,7 @@
   font-size: 18px;
   text-align: center;
   padding-top: 22px;
-  padding-bottom: 37px;
+  padding-bottom: 40px;
   caption-side: initial
 }
 .CalendarMonth_caption__verticalScrollable {
@@ -138,7 +138,7 @@
 }
 .CalendarMonthGrid__horizontal {
   position: absolute;
-  left: 9px
+  left: 1px
 }
 .CalendarMonthGrid__vertical {
   margin: 0 auto
@@ -172,4 +172,33 @@
   top: 62px;
   z-index: 2;
   text-align: left
+}
+.DayPicker_transitionContainer {
+  background-color: #2D2D2D;
+  position: relative;
+  overflow: hidden;
+  border-radius: 3px
+}
+.DayPicker_transitionContainer__horizontal {
+  -webkit-transition: height .2s ease-in-out;
+  -moz-transition: height .2s ease-in-out;
+  transition: height .2s ease-in-out
+}
+.DayPicker_transitionContainer__vertical {
+  width: 100%
+}
+.DayPicker_transitionContainer__verticalScrollable {
+  padding-top: 20px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  overflow-y: scroll
+}
+.SingleDatePicker_picker {
+  z-index: 1;
+  background-color: #2D2D2D;
+  position: absolute
 }
