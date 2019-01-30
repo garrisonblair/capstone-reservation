@@ -1,11 +1,37 @@
-/* eslint-disable react/no-unused-state */
-/* eslint-disable react/prop-types */
-/* eslint-disable no-console */
-/* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Dropdown } from 'semantic-ui-react';
 import { Bar } from 'react-chartjs-2';
 
 class RoomStats extends Component {
+  state = {
+    selected: ['Hours Booked'],
+  }
+
+  onDropDownChange = (event, data) => {
+    this.setState({
+      selected: data.value,
+    });
+  }
+
+  renderDropDown = () => {
+    const { selected } = this.state;
+    const options = ['Hours Booked', 'Number of Room Bookings', 'Average Time Booked Per Day', 'Average Bookings Per Day'];
+    const stateOptions = options.map(option => ({ key: option, value: option, text: option }));
+    return (
+      <Dropdown
+        placeholder="Stats"
+        fluid
+        multiple
+        search
+        selection
+        value={selected}
+        options={stateOptions}
+        onChange={this.onDropDownChange}
+      />
+    );
+  }
+
   renderChart = (header, type) => {
     const { stats } = this.props;
     if (stats.length === 0) {
@@ -38,16 +64,23 @@ class RoomStats extends Component {
   }
 
   render() {
+    const { selected } = this.state;
+
     return (
       <div>
         <h1> Room stats </h1>
-        {this.renderChart('Hours Booked', 'hours_booked')}
-        {this.renderChart('Number of Room Bookings', 'num_room_bookings')}
-        {this.renderChart('Average Time Booked Per Day', 'average_time_booked_per_day')}
-        {this.renderChart('Average Bookings Per Day', 'average_bookings_per_day')}
+        {this.renderDropDown()}
+        {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
+        {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Room Bookings', 'num_room_bookings') : ''}
+        {selected.includes('Average Time Booked Per Day') ? this.renderChart('Average Time Booked Per Day', 'average_time_booked_per_day') : ''}
+        {selected.includes('Average Bookings Per Day') ? this.renderChart('Average Bookings Per Day', 'average_bookings_per_day') : ''}
       </div>
     );
   }
 }
+
+RoomStats.propTypes = {
+  stats: PropTypes.instanceOf(Object).isRequired,
+};
 
 export default RoomStats;
