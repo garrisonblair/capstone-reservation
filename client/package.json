@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --port 3000 --mode development --config webpack.dev.js",
-    "build": "webpack --progress --mode production --config webpack.prod.js",
+    "build": "NODE_ENV=production webpack --progress --mode production --config webpack.prod.js",
     "test": "jest"
   },
   "devDependencies": {
