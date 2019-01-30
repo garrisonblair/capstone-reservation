@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Button, Icon, Table, TableBody,
+  Button, Icon, Table, TableBody, Segment,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import GroupsRowItem from './GroupsRowItem';
@@ -13,6 +13,7 @@ class Groups extends Component {
     showModal: false,
     groups: [],
     myUserId: 0,
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -26,9 +27,10 @@ class Groups extends Component {
   }
 
   syncGroups = () => {
+    this.setState({ isLoading: true });
     api.getMyGroups()
       .then((r) => {
-        this.setState({ groups: r.data });
+        this.setState({ groups: r.data, isLoading: false });
       });
   }
 
@@ -40,36 +42,40 @@ class Groups extends Component {
   }
 
   render() {
-    const { groups, showModal, myUserId } = this.state;
+    const {
+      groups, showModal, myUserId, isLoading,
+    } = this.state;
     return (
       <div id="groups">
         <h1>Groups</h1>
-        <Button icon labelPosition="left" primary size="small" onClick={this.showGroupsModal}>
-          <Icon name="plus" />
-          Add
-        </Button>
-        <Table>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Privilege</Table.HeaderCell>
-              <Table.HeaderCell> </Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <TableBody>
-            {groups.map(
-              g => (
-                <GroupsRowItem
-                  key={g.id}
-                  group={g}
-                  syncGroupsList={this.syncGroups}
-                  myUserId={myUserId}
-                />
-              ),
-            )}
-          </TableBody>
-        </Table>
-        {showModal ? <GroupsModal show onClose={this.closeGroupsModal} isAdmin /> : ''}
+        <Segment loading={isLoading}>
+          <Button icon labelPosition="left" primary size="small" onClick={this.showGroupsModal}>
+            <Icon name="plus" />
+            Add
+          </Button>
+          <Table>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Name</Table.HeaderCell>
+                <Table.HeaderCell>Privilege</Table.HeaderCell>
+                <Table.HeaderCell> </Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <TableBody>
+              {groups.map(
+                g => (
+                  <GroupsRowItem
+                    key={g.id}
+                    group={g}
+                    syncGroupsList={this.syncGroups}
+                    myUserId={myUserId}
+                  />
+                ),
+              )}
+            </TableBody>
+          </Table>
+          {showModal ? <GroupsModal show onClose={this.closeGroupsModal} isAdmin /> : ''}
+        </Segment>
       </div>
     );
   }
