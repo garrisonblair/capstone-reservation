@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Message } from 'semantic-ui-react';
+import { Table, Message, Segment } from 'semantic-ui-react';
 import api from '../../utils/api';
 import './GroupInvitations.scss';
 import InvitationRow from './InvitationRow';
@@ -7,6 +7,7 @@ import InvitationRow from './InvitationRow';
 class GroupInvitations extends Component {
   state = {
     invitations: [],
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -14,8 +15,10 @@ class GroupInvitations extends Component {
   }
 
   syncInvitations = () => {
+    this.setState({ isLoading: true });
     api.getGroupInvitations()
       .then((r) => {
+        this.setState({ isLoading: false });
         if (r.status === 200) {
           this.setState({ invitations: r.data });
         }
@@ -50,11 +53,13 @@ class GroupInvitations extends Component {
   )
 
   render() {
-    const { invitations } = this.state;
+    const { invitations, isLoading } = this.state;
     return (
       <div id="group-invitations">
         <h1>Invitations</h1>
-        {invitations.length === 0 ? this.renderEmptyMessage() : this.renderTable()}
+        <Segment loading={isLoading}>
+          {invitations.length === 0 ? this.renderEmptyMessage() : this.renderTable()}
+        </Segment>
       </div>
     );
   }

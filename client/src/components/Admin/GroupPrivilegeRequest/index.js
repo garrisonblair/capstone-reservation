@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Table, Dropdown, Message } from 'semantic-ui-react';
+import {
+  Table, Dropdown, Message, Segment,
+} from 'semantic-ui-react';
 import api from '../../../utils/api';
 import PrivilegeRequestRow from './PrivilegeRequestRow';
 import './GroupPrivilegeRequest.scss';
@@ -13,6 +15,7 @@ class GroupPrivilegeRequest extends Component {
     activePending: false,
     activeApproved: false,
     activeDeny: false,
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -20,8 +23,10 @@ class GroupPrivilegeRequest extends Component {
   }
 
   syncPrivileges = () => {
+    this.setState({ isLoading: true });
     api.getPrivilegeRequests()
       .then((r) => {
+        this.setState({ isLoading: false });
         if (r.status === 200) {
           this.setState({ requests: r.data });
         }
@@ -127,7 +132,7 @@ class GroupPrivilegeRequest extends Component {
   )
 
   render() {
-    const { filterBy } = this.state;
+    const { filterBy, isLoading } = this.state;
     let { requests } = this.state;
     if (filterBy.length > 0) {
       requests = requests.filter(r => r.status === filterBy);
@@ -135,17 +140,18 @@ class GroupPrivilegeRequest extends Component {
     return (
       <div id="group-privilege-request">
         <h2>Group&lsquo;s Privilege Request</h2>
-        {this.renderDropDown()}
-        {requests.length === 0 ? (
-          <Message>
-            <Message.Header>No result</Message.Header>
-            <p>
-              There is no requests
-              {filterBy.length > 0 ? ` with filter '${filterBy}'` : null}
-            </p>
-          </Message>
-        ) : this.renderTable(requests)}
-
+        <Segment loading={isLoading}>
+          {this.renderDropDown()}
+          {requests.length === 0 ? (
+            <Message>
+              <Message.Header>No result</Message.Header>
+              <p>
+                There is no requests
+                {filterBy.length > 0 ? ` with filter '${filterBy}'` : null}
+              </p>
+            </Message>
+          ) : this.renderTable(requests)}
+        </Segment>
       </div>
     );
   }
