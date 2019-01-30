@@ -6,111 +6,18 @@ import React, { Component } from 'react';
 import { Bar } from 'react-chartjs-2';
 
 class RoomStats extends Component {
-  renderHoursBooked = () => {
+  renderChart = (header, type) => {
     const { stats } = this.props;
     if (stats.length === 0) {
       return [];
     }
     const labels = stats.map(stat => stat.room.name);
-    const values = stats.map(stat => stat.hours_booked);
+    const values = stats.map(stat => stat[type]);
     const data = {
       labels,
       datasets: [
         {
-          label: 'Hours Booked',
-          backgroundColor: 'rgba(255,99,132,0.2)',
-          borderColor: 'rgba(255,99,132,1)',
-          borderWidth: 1,
-          hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-          hoverBorderColor: 'rgba(255,99,132,1)',
-          data: values,
-        },
-      ],
-    };
-
-    return (
-      <Bar
-        data={data}
-        width={100}
-        height={30}
-      />
-    );
-  }
-
-  renderNumberRoomBookings = () => {
-    const { stats } = this.props;
-    if (stats.length === 0) {
-      return [];
-    }
-    const labels = stats.map(stat => stat.room.name);
-    const values = stats.map(stat => stat.num_room_bookings);
-    const data = {
-      labels,
-      datasets: [
-        {
-          label: 'Number of Room Bookings',
-          backgroundColor: 'rgba(255,99,132,0.2)',
-          borderColor: 'rgba(255,99,132,1)',
-          borderWidth: 1,
-          hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-          hoverBorderColor: 'rgba(255,99,132,1)',
-          data: values,
-        },
-      ],
-    };
-
-    return (
-      <Bar
-        data={data}
-        width={100}
-        height={30}
-      />
-    );
-  }
-
-  renderAverageTimeBooked = () => {
-    const { stats } = this.props;
-    if (stats.length === 0) {
-      return [];
-    }
-    const labels = stats.map(stat => stat.room.name);
-    const values = stats.map(stat => stat.average_time_booked_per_day);
-    const data = {
-      labels,
-      datasets: [
-        {
-          label: 'Average Time Booked Per Day',
-          backgroundColor: 'rgba(255,99,132,0.2)',
-          borderColor: 'rgba(255,99,132,1)',
-          borderWidth: 1,
-          hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-          hoverBorderColor: 'rgba(255,99,132,1)',
-          data: values,
-        },
-      ],
-    };
-
-    return (
-      <Bar
-        data={data}
-        width={100}
-        height={30}
-      />
-    );
-  }
-
-  renderAverageBookings = () => {
-    const { stats } = this.props;
-    if (stats.length === 0) {
-      return [];
-    }
-    const labels = stats.map(stat => stat.room.name);
-    const values = stats.map(stat => stat.average_bookings_per_day);
-    const data = {
-      labels,
-      datasets: [
-        {
-          label: 'Average Bookings Per Day',
+          label: header,
           backgroundColor: 'rgba(255,99,132,0.2)',
           borderColor: 'rgba(255,99,132,1)',
           borderWidth: 1,
@@ -134,10 +41,10 @@ class RoomStats extends Component {
     return (
       <div>
         <h1> Room stats </h1>
-        {this.renderHoursBooked()}
-        {this.renderNumberRoomBookings()}
-        {this.renderAverageTimeBooked()}
-        {this.renderAverageBookings()}
+        {this.renderChart('Hours Booked', 'hours_booked')}
+        {this.renderChart('Number of Room Bookings', 'num_room_bookings')}
+        {this.renderChart('Average Time Booked Per Day', 'average_time_booked_per_day')}
+        {this.renderChart('Average Bookings Per Day', 'average_bookings_per_day')}
       </div>
     );
   }
