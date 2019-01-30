@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, List, Dropdown,
+  Modal, Button, FormField, Input, List, Dropdown, Loader, Dimmer,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import InvitedRowItem from './InvitedRowItem';
@@ -21,6 +21,7 @@ class GroupsModal extends Component {
     newInvitation: '',
     stateOptions: [],
     groupPrivilegeRequest: null,
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -84,14 +85,22 @@ class GroupsModal extends Component {
       sweetAlert('Warning', 'Cannot invite yourself.', 'warning');
       return;
     }
+    this.setState({ isLoading: true });
     api.inviteMembers(groupId, [newInvitation])
       .then((r) => {
+        this.setState({ isLoading: false });
         if (r.status === 201) {
           groupInvitations.push(r.data[0]);
           this.setState({
             groupInvitations,
           });
         }
+      })
+      .catch((r) => {
+        sweetAlert(':(', 'Something went wrong. Please refresh.', 'error');
+        this.setState({ isLoading: false });
+        // eslint-disable-next-line no-console
+        console.log(r);
       });
   }
 
@@ -227,7 +236,7 @@ class GroupsModal extends Component {
 
   renderModalContent = () => {
     const {
-      stateOptions, newInvitation, groupId, groupPrivilegeRequest,
+      stateOptions, newInvitation, groupId, groupPrivilegeRequest, isLoading,
     } = this.state;
     const { isAdmin } = this.props;
     return (
@@ -235,7 +244,12 @@ class GroupsModal extends Component {
         <Modal.Description>
           <FormField>
             <RequestPrivilege groupId={groupId} groupPrivilege={groupPrivilegeRequest} />
-            <h3>Members:</h3>
+            <h3>
+              Members:
+              <Dimmer active={isLoading} inverted>
+                <Loader />
+              </Dimmer>
+            </h3>
             {isAdmin ? (
               <div>
                 <Dropdown
