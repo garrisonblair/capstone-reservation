@@ -140,6 +140,7 @@ class ReservationDetailsModal extends Component {
     onCloseWithReservation();
     this.setState({
       show: false,
+      isRecurring: false,
     });
   }
 
