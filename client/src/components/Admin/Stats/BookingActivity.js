@@ -8,6 +8,7 @@ import {
   Dropdown,
   Input,
   Button,
+  Segment,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import 'react-dates/initialize';
@@ -64,6 +65,7 @@ class BookingActivity extends Component {
     focusedFrom: false,
     focusedTo: false,
     contentTypes: [],
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -77,8 +79,10 @@ class BookingActivity extends Component {
   }
 
   getLogs = (data) => {
+    this.setState({ isLoading: true });
     api.getLogEntries(data)
       .then((response) => {
+        this.setState({ isLoading: false });
         if (response.status === 200) {
           const logsToDisplay = this.setLogsToDisplay(response.data);
           this.setState({ logs: response.data, logsToDisplay });
@@ -278,7 +282,7 @@ class BookingActivity extends Component {
         <Table sortable celled fixed selectable>
           <Table.Header>
             <Table.Row>
-              { tableHeaders.map(header => (
+              {tableHeaders.map(header => (
                 <Table.HeaderCell
                   sorted={column === header ? direction : null}
                   onClick={header === 'date' ? this.handleSort(header) : null}
@@ -291,7 +295,7 @@ class BookingActivity extends Component {
             </Table.Row>
           </Table.Header>
 
-          { logsToDisplay.length > 0 ? this.renderLogs() : BookingActivity.renderEmptyLogs() }
+          {logsToDisplay.length > 0 ? this.renderLogs() : BookingActivity.renderEmptyLogs()}
         </Table>
         <Dropdown placeholder="# logs" search selection options={elementsPerPage} onChange={this.handlePaginationSettingsChange} />
         <Pagination
@@ -309,16 +313,18 @@ class BookingActivity extends Component {
   }
 
   render() {
-    const { selectedLog, showBookingActivityModal } = this.state;
+    const { selectedLog, showBookingActivityModal, isLoading } = this.state;
     return (
       <div className="admin">
         <h1>Booking activity</h1>
-        { this.renderBookingActivity() }
-        <BookingActivityModal
-          log={selectedLog}
-          show={showBookingActivityModal}
-          onClose={this.handleOnCloseBookingActivityModal}
-        />
+        <Segment loading={isLoading}>
+          {this.renderBookingActivity()}
+          <BookingActivityModal
+            log={selectedLog}
+            show={showBookingActivityModal}
+            onClose={this.handleOnCloseBookingActivityModal}
+          />
+        </Segment>
       </div>
     );
   }
