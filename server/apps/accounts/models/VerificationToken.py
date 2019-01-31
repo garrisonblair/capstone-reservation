@@ -18,7 +18,6 @@ class VerificationToken(models.Model):
             self.token = self.generate_key()
 
         self.expiration = timezone.now() + timedelta(hours=1)
-        print(self.expiration)
         return super(VerificationToken, self).save(*args, **kwargs)
 
     def generate_key(self):
