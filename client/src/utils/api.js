@@ -521,12 +521,22 @@ function denyPrivilegeRequest(requestId, reason) {
   });
 }
 
-function getRoomStatistics() {
+function getRoomStatistics(startDate, endDate) {
   const headers = getTokenHeader();
+  const params = {};
+  if (startDate.length !== 0) {
+    params.start = startDate;
+  }
+
+  if (endDate.length !== 0) {
+    params.end = endDate;
+  }
+
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/room_statistics`,
     headers,
+    params,
     withCredentials: true,
   });
 }
