@@ -1,6 +1,9 @@
 import threading
 import os
 from django.apps import AppConfig
+from apps.util import Logging
+
+logger = Logging.get_logger()
 
 
 class BookingExporterConfig(AppConfig):
@@ -39,12 +42,16 @@ class BookingExporterConfig(AppConfig):
         Booking().register(self.web_calendar_exporter)
         CampOn().register(self.web_calendar_exporter)
 
+        logger.info("Webcalendar exporting turned on")
+
     def unregister_web_calendar_exporter(self):
         from apps.booking.models.Booking import Booking
         from apps.booking.models.CampOn import CampOn
         if self.web_calendar_exporter is not None:
             Booking().unregister(self.web_calendar_exporter)
             CampOn().unregister(self.web_calendar_exporter)
+
+            logger.info("Webcalendar exporting turned off")
 
     def start_importing_ics_bookings(self):
         from .GmailImporter.GmailICSImporter import GmailICSImporter
