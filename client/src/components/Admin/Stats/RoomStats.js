@@ -1,8 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import {
   Button,
   Dropdown,
@@ -14,11 +12,14 @@ import {
 import { SingleDatePicker } from 'react-dates';
 // import * as moment from 'moment';
 import { Bar } from 'react-chartjs-2';
+import api from '../../../utils/api';
 import 'react-dates/lib/css/_datepicker.css';
+import './RoomStats.scss';
 
 
 class RoomStats extends Component {
   state = {
+    stats: [],
     selected: ['Hours Booked'],
     date: null,
     focused: false,
@@ -26,6 +27,19 @@ class RoomStats extends Component {
     focusEndDate: false,
     startDate: '',
     endDate: '',
+  }
+
+  componentDidMount() {
+    this.getStats();
+  }
+
+  getStats = () => {
+    const { startDate, endDate } = this.state;
+    api.getRoomStatistics(startDate, endDate)
+      .then((response) => {
+        const { data: stats } = response;
+        this.setState({ stats });
+      });
   }
 
   handleChangeDate = (date) => {
@@ -134,7 +148,7 @@ class RoomStats extends Component {
             hideKeyboardShortcutsPanel
             id="roomstats-picker"
           />
-          <Button>
+          <Button onClick={this.getStats}>
             <Icon name="options" />
             Filter
           </Button>
@@ -144,7 +158,7 @@ class RoomStats extends Component {
   }
 
   renderChart = (header, type) => {
-    const { stats } = this.props;
+    const { stats } = this.state;
     if (stats.length === 0) {
       return [];
     }
@@ -178,7 +192,7 @@ class RoomStats extends Component {
     const { selected } = this.state;
 
     return (
-      <div>
+      <div className="room-stats">
         <h1> Room stats </h1>
         {this.renderDateFilter()}
         {this.renderDropDown()}
@@ -190,9 +204,5 @@ class RoomStats extends Component {
     );
   }
 }
-
-RoomStats.propTypes = {
-  stats: PropTypes.instanceOf(Object).isRequired,
-};
 
 export default RoomStats;
