@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import {
-  Menu,
+  Menu, Segment,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
@@ -18,13 +18,16 @@ class UserBookings extends Component {
     allBookings: [],
     rooms: [],
     activeItem: 'bookings',
+    isLoading: false,
   }
 
   componentDidMount() {
     const user = storage.getUser();
+    this.setState({ isLoading: true });
     api.getUserBookings(user.id)
       .then(({ data }) => data)
       .then((data) => {
+        this.setState({ isLoading: false });
         const {
           campons: campOns,
           recurring_bookings: recurringBookings,
@@ -79,7 +82,7 @@ class UserBookings extends Component {
   }
 
   render() {
-    const { activeItem } = this.state;
+    const { activeItem, isLoading } = this.state;
     return (
       <div>
         <Menu tabular>
@@ -87,7 +90,9 @@ class UserBookings extends Component {
           <Menu.Item name="Recurring Bookings" active={activeItem === 'recurring'} onClick={() => this.handleItemClick('recurring')} />
           <Menu.Item name="Camp Ons" active={activeItem === 'campons'} onClick={() => this.handleItemClick('campons')} />
         </Menu>
-        {this.renderTab(activeItem)}
+        <Segment loading={isLoading}>
+          {this.renderTab(activeItem)}
+        </Segment>
       </div>
     );
   }
