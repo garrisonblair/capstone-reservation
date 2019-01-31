@@ -7,7 +7,7 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
-import CustomFormInput from './CustomFormInput';
+import CustomFormInput from '../ReusableComponents/CustomFormInput';
 import './Verification.scss';
 
 
@@ -126,10 +126,8 @@ class ResetPasswordVerification extends Component {
     const data = {
       password,
     };
-    console.log('boom');
     api.updateUser(userId, data)
       .then(() => {
-        console.log('testing');
         sweetAlert(
           'Reset Password',
           'Password reset successfully',

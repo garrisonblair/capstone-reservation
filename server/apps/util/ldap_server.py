@@ -1,5 +1,6 @@
 import ldap3
 from django_python3_ldap import ldap
+from django_python3_ldap import utils
 from django_python3_ldap.conf import settings
 
 
@@ -39,6 +40,29 @@ def get_ldap_connection():
     return None
 
 
+def get_user(**kwargs):
+    """
+    Returns the user with the given identifier.
+
+    The user identifier should be keyword arguments matching the fields
+    in settings.LDAP_AUTH_USER_LOOKUP_FIELDS.
+    """
+    connection = get_ldap_connection()
+    if connection._connection.search(
+            search_base=settings.LDAP_AUTH_SEARCH_BASE,
+            search_filter=utils.format_search_filter(kwargs),
+            search_scope=ldap3.SUBTREE,
+            attributes=ldap3.ALL_ATTRIBUTES,
+            get_operational_attributes=True,
+            size_limit=5,
+    ):
+
+        for response in connection._connection.response:
+            if response["attributes"]["name"][0] == kwargs["username"]:
+                return connection._get_or_create_user(response)
+    return None
+
+
 def search_user(**kwargs):
     connection = get_ldap_connection()
     if connection._connection.search(
@@ -49,7 +73,10 @@ def search_user(**kwargs):
         get_operational_attributes=True,
         size_limit=1
     ):
-        return connection._connection.response[0]
+
+        for response in connection._connection.response:
+            if response["attributes"]["name"][0] == kwargs["username"]:
+                return response
     return None
 
 

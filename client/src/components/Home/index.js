@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import './Home.scss';
+import withTracker from '../HOC/withTracker';
 import Calendar from '../Calendar';
+import './Home.scss';
 
 
 class Home extends Component {
@@ -19,4 +20,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default withTracker(Home);

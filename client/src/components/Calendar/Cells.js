@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Label, Popup } from 'semantic-ui-react';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
@@ -44,6 +45,26 @@ class Cells extends Component {
     };
   }
 
+  static getPopupContent(booking) {
+    const start = booking.start_time.length > 5
+      ? booking.start_time.substring(0, booking.start_time.length - 3) : booking.start_time;
+    const end = booking.end_time.length > 5
+      ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time;
+    const popup = {
+      content:
+  <span>
+    <Label color="blue">
+      {start}
+      -
+      {end}
+    </Label>
+    <Label color="yellow">{booking.booker.username}</Label>
+    {booking.isCampOn
+      ? <Label color="red">CAMPON</Label> : null}
+  </span>,
+    };
+    return popup;
+  }
   /*
    * STYLE METHODS
    */
@@ -135,7 +156,8 @@ class Cells extends Component {
     }
     if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10))) {
       color = '#7F7F7F';
-    } else if (booking.isCampOn) {
+    } else
+    if (booking.isCampOn) {
       color = '#82220E';
     }
 
@@ -153,9 +175,11 @@ class Cells extends Component {
           gridRowEnd: end,
           gridColumn: 1,
           backgroundColor: color,
+          borderLeft: '1px solid white',
           borderTop: '1px solid white',
           borderBottom: '1px solid white',
-          width: '99.1%',
+          width: booking.isCampOn ? '66.1%' : '99.1%',
+          transform: booking.isCampOn ? 'translateX(50%)' : '',
         },
       };
     } else {
@@ -167,7 +191,9 @@ class Cells extends Component {
           backgroundColor: color,
           borderLeft: '1px solid white',
           borderRight: '1px solid white',
-          height: '98%',
+          borderTop: '1px solid white',
+          height: booking.isCampOn ? '65%' : '98%',
+          transform: booking.isCampOn ? 'translateY(50%)' : '',
         },
       };
     }
@@ -177,6 +203,16 @@ class Cells extends Component {
   /*
   * HELPER METHOD
   */
+
+  static getBookingDuration(booking) {
+    let hourDiff = booking.end_time.replace(/:/g, '').substring(0, 2) - booking.start_time.replace(/:/g, '').substring(0, 2);
+    let minuteDiff = booking.end_time.replace(/:/g, '').substring(2, 4) - booking.start_time.replace(/:/g, '').substring(2, 4);
+    if (minuteDiff < 0) {
+      minuteDiff += 60;
+      hourDiff -= 1;
+    }
+    return (hourDiff * 100 + minuteDiff);
+  }
 
   getCamponsForBooking(booking) {
     const { campOns } = this.props;
@@ -195,23 +231,31 @@ class Cells extends Component {
   toggleBookingModal = () => {
     const { bookingModal } = this.state;
     this.setState({ bookingModal: !bookingModal });
+    if (bookingModal) {
+      this.update();
+    }
   }
 
   toggleBookingInfoModal = () => {
     const { bookingInfoModal } = this.state;
     this.setState({ bookingInfoModal: !bookingInfoModal });
+    if (bookingInfoModal) {
+      this.update();
+    }
   }
 
   toggleBookingModalWithReservation = () => {
     const { onCloseModalWithAction } = this.props;
     this.setState({ bookingModal: false, bookingInfoModal: false });
     onCloseModalWithAction();
+    this.update();
   }
 
   toggleBookingInfoWithAction = () => {
     const { onCloseModalWithAction } = this.props;
     this.setState({ bookingModal: false, bookingInfoModal: false });
     onCloseModalWithAction();
+    this.update();
   }
 
   /*
@@ -266,6 +310,11 @@ class Cells extends Component {
     });
   }
 
+  update = () => {
+    const { update } = this.props;
+    update();
+  }
+
   /*
   * COMPONENT RENDERING
   */
@@ -310,30 +359,53 @@ class Cells extends Component {
   }
 
   renderCurrentBookings(bookings) {
-    const { orientation } = this.props;
     const bookingsDiv = [];
 
     bookings.forEach((booking) => {
       bookingsDiv.push(
-        <div className="calendar__booking" style={this.setBookingStyle(booking).booking_style} role="button" tabIndex="0" key={booking.id} onClick={() => this.handleClickBooking(booking)} onKeyDown={() => {}}>
+        <Popup
+          key={booking.id}
+          trigger={
+            (
+              <div
+                className="calendar__booking"
+                style={this.setBookingStyle(booking).booking_style}
+                role="button"
+                tabIndex="0"
+                onClick={() => this.handleClickBooking(booking)}
+                onKeyDown={() => {}}
+              >
+                {this.renderBookingText(booking)}
+                {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
+              </div>
+          )}
+          content={Cells.getPopupContent(booking).content}
+          flowing
+          style={{ padding: '5px' }}
+        />,
+      );
+    });
+    return bookingsDiv;
+  }
+
+  renderBookingText(booking) {
+    const { orientation } = this.props;
+    if (Cells.getBookingDuration(booking) >= 20) {
+      return (
+        <span>
           {booking.start_time.length > 5
             ? booking.start_time.substring(0, booking.start_time.length - 3) : booking.start_time}
           {' - '}
           {booking.end_time.length > 5
             ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time}
           <br />
-          {booking.isCampOn
-            ? (
-              <span>
-                [CAMPON]
-                <br />
-              </span>) : null}
-          {(booking.end_time.replace(/:/g, '') - booking.start_time.replace(/:/g, '')) < 4000 && orientation === 0 ? null : <span>{booking.booker.username}</span>}
-          {/* {campOns.length > 0 ? Cells.renderCampOns(campOns) : ''} */}
-        </div>,
+          {Cells.getBookingDuration(booking) < 30 && orientation === 1
+            ? <span>{booking.booker.username.substring(0, 4)}</span>
+            : <span>{booking.booker.username.substring(0, 9)}</span>}
+        </span>
       );
-    });
-    return bookingsDiv;
+    }
+    return null;
   }
 
   static renderCampOns(campOns) {
@@ -417,6 +489,7 @@ Cells.propTypes = {
   onCloseModalWithAction: PropTypes.func,
   campOns: PropTypes.instanceOf(Array),
   orientation: PropTypes.number,
+  update: PropTypes.func,
 };
 
 Cells.defaultProps = {
@@ -432,6 +505,7 @@ Cells.defaultProps = {
   selectedDate: new Date(),
   orientation: 0,
   onCloseModalWithAction: () => {},
+  update: () => {},
 };
 
 export default Cells;

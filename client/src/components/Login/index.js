@@ -57,30 +57,26 @@ class Login extends Component {
       .then(response => response.data)
       .then((data) => {
         localStorage.setItem('CapstoneReservationUser', JSON.stringify(data));
-        sweetAlert(
-          'Logged in',
-          '',
-          'success',
-        );
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Logged in',
+        });
         this.closeModal();
       })
       .catch(() => {
-        sweetAlert(
-          ':(',
-          'Invalid credentials',
-          'error',
-        );
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          text: 'Invalid credentials',
+        });
       });
-  }
-
-  componentDidMount = () => {
-    document.title = 'Login';
   }
 
   render() {
     const { show } = this.state;
     return (
-      <Modal closeIcon open={show} onClose={this.closeModal} className="login__container">
+      <Modal closeIcon open={show} onClose={this.closeModal} className="login__container" centered={false}>
         <Modal.Header>
           <h1 className="login__container__header__title"> Login </h1>
         </Modal.Header>

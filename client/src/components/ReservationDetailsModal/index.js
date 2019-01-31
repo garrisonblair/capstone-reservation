@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
-  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab, Divider,
+  Button, Dropdown, Header, Icon, Form, Input, Modal, Checkbox, Tab, Divider, Segment,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import './ReservationDetailsModal.scss';
@@ -19,28 +19,27 @@ class ReservationDetailsModal extends Component {
     endHour: '8',
     endMinute: '30',
     hourOptions: [],
-    reservedOptions: [],
     isRecurring: false,
     tabIndex: 0,
     inputOption0: {
       startDate: '',
       endDate: '',
     },
-    reservationProfiles: ['me'],
-
+    ownerValue: 'me',
+    updatedOwnerOptions: false,
+    reservationProfiles: [],
     bypassPrivileges: false,
     adminSelectedUser: undefined,
+    isLoading: false,
   }
 
   componentWillMount() {
     const {
       minHour, maxHour, minuteInterval, selectedDate,
     } = this.props;
-    const { reservationProfiles } = this.state;
     this.setState({
       hourOptions: this.generateHourOptions(minHour, maxHour),
       minuteOptions: this.generateMinuteOptions(minuteInterval),
-      reservedOptions: this.generateReservationProfilesOptions(reservationProfiles),
       inputOption0: {
         startDate: toDateInputValue(selectedDate),
         endDate: toDateInputValue(selectedDate),
@@ -109,32 +108,32 @@ class ReservationDetailsModal extends Component {
     if (startHour !== '' && startMinute !== '') {
       let hour = parseInt(startHour, 10);
       let minute = parseInt(startMinute, 10);
-      if (minute >= 30) {
-        hour += 1;
-        minute -= 30;
-      } else {
-        minute += 30;
-      }
+      // if (minute >= 30) {
+      //   hour += 1;
+      //   minute -= 30;
+      // } else {
+      //   minute += 30;
+      // }
+      // minute = minute.toString(10);
+      if (hour < 23) { hour += 1; }
       hour = hour.toString(10);
-      minute = minute.toString(10);
+      minute = '00';
       this.setState({ endHour: hour, endMinute: minute });
     }
   }
 
-  // TODO: This method needs to be changed when accessing groups
-  generateReservationProfilesOptions = r => r.map(profile => ({ text: profile, value: profile }))
-
   closeModal = () => {
     const { onClose, selectedDate } = this.props;
-    onClose();
     this.setState({
+      show: false,
       inputOption0: {
         startDate: toDateInputValue(selectedDate),
         endDate: toDateInputValue(selectedDate),
       },
-      show: false,
       isRecurring: false,
+      updatedOwnerOptions: false,
     });
+    onClose();
   }
 
   closeModalWithReservation = () => {
@@ -145,15 +144,30 @@ class ReservationDetailsModal extends Component {
     });
   }
 
+  updateOwnerOptions = () => {
+    const ownerOptions = [{ key: 'me', value: 'me', text: 'me' }];
+    api.getMyGroups()
+      .then((r) => {
+        // eslint-disable-next-line array-callback-return
+        r.data.map((g) => {
+          ownerOptions.push({ key: g.id, value: g.id, text: `${g.name} (group)` });
+          this.setState({
+            reservationProfiles: ownerOptions,
+            updatedOwnerOptions: true,
+          });
+        });
+      });
+  }
+
   closeLogin = () => {
     const { show } = this.props;
     this.setState({ showLogin: false });
     if (localStorage.getItem('CapstoneReservationUser') == null) {
-      sweetAlert(
-        'Error',
-        'Please Log in to make a reservation.',
-        'error',
-      );
+      sweetAlert.fire({
+        position: 'top',
+        type: 'error',
+        text: 'Please log in to make a reservation.',
+      });
       this.closeModal();
     } else {
       this.setState({ show });
@@ -180,6 +194,10 @@ class ReservationDetailsModal extends Component {
     });
   }
 
+  handleOwnerChange = (e, { value }) => {
+    this.setState({ ownerValue: value });
+  }
+
   handleEndMinuteChange = (e, { value }) => {
     this.setState({
       endMinute: value,
@@ -204,10 +222,6 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  handleTabChange = (e, { activeIndex }) => {
-    this.setState({ tabIndex: activeIndex });
-  }
-
   verifyRecurringOption0 = () => {
     const { inputOption0 } = this.state;
     if (inputOption0.endDate == null) {
@@ -219,21 +233,26 @@ class ReservationDetailsModal extends Component {
   }
 
   sendPostRequestBooking = () => {
+    this.setState({ isLoading: true });
+
     const { selectedDate, selectedRoomId, selectedRoomName } = this.props;
     const {
-      startHour, startMinute, endHour, endMinute, bypassPrivileges, adminSelectedUser,
+      startHour, startMinute, endHour, endMinute, ownerValue, bypassPrivileges, adminSelectedUser,
     } = this.state;
     // Handle time zone
     const tzoffset = (selectedDate).getTimezoneOffset() * 60000;
     const date = new Date(selectedDate - tzoffset);
     const localISOTime = date.toISOString().slice(0, -1);
-
+    // const user = JSON.parse(localStorage.CapstoneReservationUser);
     const data = {
       room: selectedRoomId,
       date: localISOTime.slice(0, 10),
       start_time: `${startHour}:${startMinute}:00`,
       end_time: `${endHour}:${endMinute}:00`,
     };
+    if (ownerValue !== 'me') {
+      data.group = ownerValue;
+    }
 
     if (bypassPrivileges) {
       data.bypass_privileges = true;
@@ -245,25 +264,33 @@ class ReservationDetailsModal extends Component {
 
     api.createBooking(data)
       .then(() => {
-        sweetAlert('Completed',
-          `Room ${selectedRoomName} was successfuly booked.`,
-          'success')
-          .then(() => {
-            this.closeModalWithReservation();
-          });
+        this.setState({ isLoading: false });
+
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Completed',
+          text: `Room ${selectedRoomName} was successfuly booked.`,
+        }).then(() => {
+          this.closeModalWithReservation();
+        });
       })
       .catch((error) => {
-        sweetAlert(
-          'Reservation failed',
-          error.response.data,
-          'error',
-        );
+        this.setState({ isLoading: false });
+
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Reservation failed',
+          text: error.response.data,
+        });
       });
   }
 
   sendPostRequestRecurringBooking = (skipConflicts) => {
+    this.setState({ isLoading: true });
     const {
-      startHour, endHour, startMinute, endMinute, inputOption0,
+      startHour, endHour, startMinute, endMinute, inputOption0, ownerValue,
     } = this.state;
     const { selectedRoomId, selectedRoomName } = this.props;
     const user = JSON.parse(localStorage.CapstoneReservationUser);
@@ -274,12 +301,17 @@ class ReservationDetailsModal extends Component {
       booking_start_time: `${startHour}:${startMinute}`,
       booking_end_time: `${endHour}:${endMinute}`,
       room: selectedRoomId,
-      group: '',
       booker: user.id,
       skip_conflicts: skipConflicts,
+      group: null,
     };
+    if (ownerValue !== 'me') {
+      data.group = ownerValue;
+    }
     api.createRecurringBooking(data)
       .then((response) => {
+        this.setState({ isLoading: false });
+
         let conflictsMessage = '';
         if (response.data.length > 0) {
           conflictsMessage = 'Except for:<ul>';
@@ -287,23 +319,25 @@ class ReservationDetailsModal extends Component {
           response.data.map(date => conflictsMessage = `${conflictsMessage}<li>${date}</li>`);
           conflictsMessage = `${conflictsMessage}</ul>`;
         }
-        sweetAlert(
-          'Completed',
-          `Room ${selectedRoomName} was successfuly booked for the selected dates.<br/><div id="exception-dates">${conflictsMessage}</div>`,
-          'success',
-        )
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          html: `Room ${selectedRoomName} was successfuly booked for the selected dates.<br/><div id="exception-dates">${conflictsMessage}</div>`,
+        })
           .then(() => {
             this.closeModalWithReservation();
           });
       })
       .catch((error) => {
+        this.setState({ isLoading: false });
         const { response } = error;
 
         if (response.status === 409) {
-          sweetAlert({
+          sweetAlert.fire({
+            position: 'top',
+            type: 'warning',
             title: 'Reservation blocked',
             text: 'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
-            type: 'warning',
             confirmButtonText: 'YES',
             cancelButtonText: 'NO',
             showCancelButton: true,
@@ -314,10 +348,11 @@ class ReservationDetailsModal extends Component {
               }
             });
         } else {
-          sweetAlert({
+          sweetAlert.fire({
+            position: 'top',
+            type: 'error',
             title: 'Error',
             text: response.data,
-            type: 'error',
           });
         }
       });
@@ -339,7 +374,12 @@ class ReservationDetailsModal extends Component {
         }
       }
     } catch (err) {
-      sweetAlert('Reservation blocked', err.message, 'warning');
+      sweetAlert.fire({
+        position: 'top',
+        type: 'warning',
+        title: 'Reservation blocked.',
+        text: err.message,
+      });
       return;
     }
 
@@ -371,7 +411,7 @@ class ReservationDetailsModal extends Component {
     });
   }
 
-  renderRecurringBookingOption0 = () => {
+  renderRecurringForm = () => {
     const { inputOption0 } = this.state;
     return (
       <div>
@@ -379,7 +419,7 @@ class ReservationDetailsModal extends Component {
           <h3 className="header--inline">
             <Icon name="calendar alternate" />
             {' '}
-            {'Starting date'}
+            {'Start date'}
           </h3>
           <Form.Field>
             <Input
@@ -457,10 +497,11 @@ class ReservationDetailsModal extends Component {
       startMinute,
       hourOptions,
       minuteOptions,
-      reservedOptions,
       isRecurring,
       endHour,
       endMinute,
+      reservationProfiles,
+      isLoading,
     } = this.state;
     const { selectedDate } = this.props;
     let user;
@@ -469,93 +510,96 @@ class ReservationDetailsModal extends Component {
     }
 
     return (
-      <Modal.Content>
-        <Modal.Description>
-          <Header>
-            <Icon name="calendar" />
-            {selectedDate.toDateString()}
-          </Header>
-          <div className="modal-description">
-            <h3 className="header--inline">
-              <Icon className="hourglass start" />
-              {'from '}
-            </h3>
-            <Dropdown
-              selection
-              compact
-              placeholder="hh"
-              className="dropdown--fixed-width"
-              options={hourOptions}
-              defaultValue={startHour}
-              onChange={this.handleStartHourChange}
-            />
-            <Dropdown
-              selection
-              compact
-              placeholder="mm"
-              className="dropdown--fixed-width"
-              options={minuteOptions}
-              defaultValue={startMinute}
-              onChange={this.handleStartMinuteChange}
-            />
-          </div>
-          <div className="modal-description">
-            <h3 className="header--inline">
-              <Icon className="hourglass end" />
-              {'to '}
-            </h3>
-            <Dropdown
-              selection
-              compact
-              className="dropdown--fixed-width"
-              placeholder="hh"
-              options={hourOptions}
-              defaultValue={endHour}
-              onChange={this.handleEndHourChange}
-            />
-            <Dropdown
-              selection
-              compact
-              className="dropdown--fixed-width"
-              placeholder="mm"
-              options={minuteOptions}
-              defaultValue={endMinute}
-              onChange={this.handleEndMinuteChange}
-            />
-          </div>
-          <div className="modal-description">
-            <h3 className="header--inline">
-              <Icon name="user" />
-              {' '}
-              {'by '}
-            </h3>
-            <Dropdown
-              selection
-              compact
-              className="dropdown--fixed-width"
-              placeholder="hh"
-              options={reservedOptions}
-              defaultValue={reservedOptions[0].value}
-            />
-            {user && user.is_superuser ? this.renderAdminBookingForm() : null}
-          </div>
-          <div className="modal-description">
-            <Checkbox label="Request a recurring booking" onClick={this.handleCheckboxClick} />
-          </div>
-          {isRecurring ? this.renderRecurringForm() : null}
-          <div className="ui divider" />
-          <div>
-            <Button content="Reserve" primary onClick={this.handleSubmit} />
-            <Button content="Cancel" secondary onClick={this.closeModal} />
-          </div>
-        </Modal.Description>
-      </Modal.Content>
+      <Segment loading={isLoading}>
+        <Modal.Content>
+          <Modal.Description>
+            <Header>
+              <Icon name="calendar" />
+              {selectedDate.toDateString()}
+            </Header>
+            <div className="modal-description">
+              <h3 className="header--inline">
+                <Icon className="hourglass start" />
+                {'from '}
+              </h3>
+              <Dropdown
+                selection
+                compact
+                placeholder="hh"
+                className="dropdown--fixed-width"
+                options={hourOptions}
+                defaultValue={startHour}
+                onChange={this.handleStartHourChange}
+              />
+              <Dropdown
+                selection
+                compact
+                placeholder="mm"
+                className="dropdown--fixed-width"
+                options={minuteOptions}
+                defaultValue={startMinute}
+                onChange={this.handleStartMinuteChange}
+              />
+            </div>
+            <div className="modal-description">
+              <h3 className="header--inline">
+                <Icon className="hourglass end" />
+                {'to '}
+              </h3>
+              <Dropdown
+                selection
+                compact
+                className="dropdown--fixed-width"
+                placeholder="hh"
+                options={hourOptions}
+                defaultValue={endHour}
+                onChange={this.handleEndHourChange}
+              />
+              <Dropdown
+                selection
+                compact
+                className="dropdown--fixed-width"
+                placeholder="mm"
+                options={minuteOptions}
+                defaultValue={endMinute}
+                onChange={this.handleEndMinuteChange}
+              />
+            </div>
+            <div className="modal-description">
+              <h3 className="header--inline">
+                <Icon name="user" />
+                {' '}
+                {'by '}
+              </h3>
+              <Dropdown
+                selection
+                onChange={this.handleOwnerChange}
+                className="dropdown--fixed-width"
+                options={reservationProfiles.length === 0 ? [{ key: 'me', value: 'me', text: 'me' }] : reservationProfiles}
+                defaultValue="me"
+              />
+              {user && user.is_superuser ? this.renderAdminBookingForm() : null}
+            </div>
+            <div className="modal-description">
+              <Checkbox label="Request a recurring booking" onClick={this.handleCheckboxClick} />
+            </div>
+            {isRecurring ? this.renderRecurringForm() : null}
+            <div className="ui divider" />
+            <div>
+              <Button content="Reserve" primary onClick={this.handleSubmit} />
+              <Button content="Cancel" secondary onClick={this.closeModal} />
+            </div>
+          </Modal.Description>
+        </Modal.Content>
+      </Segment>
     );
   }
 
   render() {
-    const { show, showLogin } = this.state;
+    const { show, showLogin, updatedOwnerOptions } = this.state;
     const { selectedRoomName } = this.props;
+
+    if (show === true && updatedOwnerOptions === false) { this.updateOwnerOptions(); }
     return (
       <div id="reservation-details-modal">
         <Modal centered={false} size="tiny" open={show} onClose={this.closeModal}>

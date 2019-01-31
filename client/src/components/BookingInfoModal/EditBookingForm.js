@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Button, Dropdown, Icon } from 'semantic-ui-react';
+import {
+  Button,
+  Dropdown,
+  Icon,
+} from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
 import './BookingInfoModal.scss';
@@ -31,6 +35,7 @@ class EditBookingForm extends Component {
     hourOptions: [],
     minuteOptions: [],
     reservedOptions: [{ text: 'me', value: 'me' }],
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -49,6 +54,8 @@ class EditBookingForm extends Component {
   }
 
   sendPatchBooking = () => {
+    this.setState({ isLoading: true });
+
     const { booking } = this.props;
     const {
       startHour,
@@ -63,9 +70,14 @@ class EditBookingForm extends Component {
     };
     api.updateBooking(booking.id, data)
       .then(() => {
-        sweetAlert('Completed',
-          'Booking was sucessfully updated.',
-          'success')
+        this.setState({ isLoading: false });
+
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Completed',
+          text: 'Booking was successfully updated.',
+        })
           .then((result) => {
             if (result.value) {
               this.closeModalWithEditBooking();
@@ -73,11 +85,14 @@ class EditBookingForm extends Component {
           });
       })
       .catch((error) => {
-        sweetAlert(
-          'Reservation failed',
-          error.response.data,
-          'error',
-        );
+        this.setState({ isLoading: false });
+
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Reservation failed',
+          text: error.response.data,
+        });
       });
   }
 
@@ -86,7 +101,12 @@ class EditBookingForm extends Component {
     try {
       this.verifyReservationTimes();
     } catch (err) {
-      sweetAlert('Edit blocked', err.message, 'warning');
+      sweetAlert.fire({
+        position: 'top',
+        type: 'warning',
+        title: 'Edit blocked',
+        text: err.message,
+      });
       return;
     }
 
@@ -157,6 +177,7 @@ class EditBookingForm extends Component {
       startMinute,
       endHour,
       endMinute,
+      isLoading,
     } = this.state;
     return (
       <div>
@@ -221,7 +242,7 @@ class EditBookingForm extends Component {
             defaultValue={reservedOptions[0].value}
           />
         </div>
-        <Button content="Edit Booking" primary onClick={this.handleSubmit} />
+        <Button content="Edit Booking" loading={isLoading} primary onClick={this.handleSubmit} />
         <div className="ui divider" />
       </div>
     );

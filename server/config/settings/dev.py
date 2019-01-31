@@ -5,6 +5,8 @@ from .email import *
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
+EMAIL_USE_SSL = True
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

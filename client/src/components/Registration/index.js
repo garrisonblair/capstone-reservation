@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, Input, Button, Icon, Step, Loader,
+  Form, Input, Button, Icon, Step, Loader, Dimmer,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
@@ -66,6 +66,12 @@ class Registration extends Component {
             "We couldn't find this user in the system.",
             'error',
           );
+        } else if (error.message.includes('500')) {
+          sweetAlert(
+            'Error',
+            'Server error',
+            'error',
+          );
         }
       });
   }
@@ -116,7 +122,10 @@ class Registration extends Component {
     return (
       <div id="registration">
         <div className="container">
-          {showLoader ? <Loader active inline="centered" size="large" /> : this.renderMainForm()}
+          {this.renderMainForm()}
+          <Dimmer active={showLoader} inverted>
+            <Loader />
+          </Dimmer>
         </div>
       </div>
     );

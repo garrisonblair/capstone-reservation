@@ -8,6 +8,7 @@ import {
 import sweetAlert from 'sweetalert2';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
+import storage from '../../utils/local-storage';
 import './BookingInfoModal.scss';
 import api from '../../utils/api';
 
@@ -109,10 +110,11 @@ class BookingInfoModal extends Component {
     const { campons } = this.props;
     const camponsInfo = [];
     let i = 1;
-    campons.forEach((campon) => {
+    campons.forEach((campon, index) => {
       camponsInfo.push(
         <h3 className="header--inline" key={i}>
-          {`${i}. ${campon.booker.username}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
+          {`${index + 1}. ${campon.booker.username}: ${campon.start_time.slice(0, -3)} -  ${campon.end_time.slice(0, -3)}`}
+          <br />
         </h3>,
       );
       i += 1;
@@ -161,7 +163,7 @@ class BookingInfoModal extends Component {
             {campons == null || campons.length === 0 ? null : this.renderCampons()}
           </div>
           <div className="ui divider" />
-          {this.renderForm(booking)}
+          {storage.getUser() ? this.renderForm(booking) : null}
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
             {BookingInfoModal.checkSameUserOrAdmin(booking) ? <Button content="Delete" color="red" onClick={this.handleDelete} /> : null }
@@ -173,7 +175,7 @@ class BookingInfoModal extends Component {
 
   renderForm(booking) {
     const { selectedRoomName } = this.props;
-    if (BookingInfoModal.checkSameUser(booking)) {
+    if (!!booking.isCampOn === false && BookingInfoModal.checkSameUserOrAdmin(booking)) {
       return (
         <EditBookingForm
           booking={booking}

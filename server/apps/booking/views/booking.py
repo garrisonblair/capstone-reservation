@@ -1,5 +1,4 @@
 import datetime
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
@@ -7,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
+from apps.accounts.models.User import User
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
@@ -182,6 +182,16 @@ class BookingRetrieveUpdateDestroy(APIView):
         except Booking.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+        data = request.data
+        if request.user.is_superuser and "admin_selected_user" in data:
+            data["booker"] = data["admin_selected_user"]
+            del data["admin_selected_user"]
+        else:
+            data["booker"] = request.user.id
+
+        if not request.user.is_superuser:
+            data["bypass_privileges"] = False
+
         # Check user permissions
         self.check_object_permissions(request, booking.booker)
 
@@ -192,7 +202,8 @@ class BookingRetrieveUpdateDestroy(APIView):
         timeout = (now + settings.booking_edit_lock_timeout).time()
 
         if now.date() > booking.date or (now.date() == booking.date and timeout >= booking.start_time):
-            return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
+            if not request.user.is_superuser:
+                return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
         data["booker"] = booking.booker.id
@@ -237,7 +248,8 @@ class BookingViewMyBookings(APIView):
         bookings = dict()
 
         # Obtain all standard_bookings, recurring_bookings, and campons for this booker
-        standard_bookings = Booking.objects.filter(booker=user, recurring_booking=None)
+
+        standard_bookings = user.get_active_non_recurring_bookings()
         recurring_bookings = RecurringBooking.objects.filter(booker=user)
         campons = CampOn.objects.filter(booker=user)
 
