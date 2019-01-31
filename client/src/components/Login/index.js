@@ -1,6 +1,7 @@
-import PropTypes from 'prop-types';
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Link, withRouter } from 'react-router-dom';
 import {
   Button,
   Form,
@@ -107,18 +108,19 @@ class Login extends Component {
               />
             </Form.Field>
             <Form.Field>
+              <Link to="/resetPassword">Forgot your password?</Link>
+            </Form.Field>
+            <Form.Field>
               <Button fluid size="small" icon onClick={this.handleLogin}>
                 Login
               </Button>
             </Form.Field>
             {/* </Form> */}
+            <Form.Field>
+              {/* <Link className="ui button" to="/registration">Register?</Link> */}
+              <Button fluid size="small" onClick={() => { const { history } = this.props; history.push('/registration'); }}> Register </Button>
+            </Form.Field>
             <div className="ui divider" />
-            <span>
-              First time?&nbsp;
-              <Link to="/registration">Register!</Link>
-              &nbsp;Forget Password?&nbsp;
-              <Link to="/resetPassword">Reset Password!</Link>
-            </span>
           </Modal.Description>
         </Modal.Content>
         {/* <div className="login login--center">
@@ -184,4 +186,4 @@ Login.defaultProps = {
   },
 };
 
-export default Login;
+export default withRouter(Login);
