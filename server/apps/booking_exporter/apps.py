@@ -18,19 +18,19 @@ class BookingExporterConfig(AppConfig):
 
     def ready(self):
         from apps.system_administration.models.system_settings import SystemSettings
+        if os.environ.get('RUN_MAIN', None) == 'true':
+            try:
+                settings = SystemSettings.get_settings()
 
-        try:
-            settings = SystemSettings.get_settings()
+                if settings.is_webcalendar_backup_active:
+                    self.register_web_calender_exporter()
 
-            if settings.is_webcalendar_backup_active:
-                self.register_web_calender_exporter()
+                # check that this is main thread, needed in dev environment because 2 apps are loaded
+                if settings.is_webcalendar_synchronization_active:
+                    self.start_importing_ics_bookings()
 
-            # check that this is main thread, needed in dev environment because 2 apps are loaded
-            if settings.is_webcalendar_synchronization_active and os.environ.get('RUN_MAIN', None) == 'true':
-                self.start_importing_ics_bookings()
-
-        except Exception:  # Fails during migrations
-            pass
+            except Exception:  # Fails during migrations
+                pass
 
     def register_web_calender_exporter(self):
         from .WEBCalendarExporter.WEBCalendarExporter import WEBCalendarExporter
