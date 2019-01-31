@@ -71,7 +71,7 @@ def search_user(**kwargs):
         search_scope=ldap3.SUBTREE,
         attributes=ldap3.ALL_ATTRIBUTES,
         get_operational_attributes=True,
-        size_limit=1
+        size_limit=5
     ):
 
         for response in connection._connection.response:
