@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AdminRequired from '../../HOC/AdminRequired';
+import RoomStats from './RoomStats';
 import '../Admin.scss';
 
 
@@ -8,7 +9,7 @@ class Stats extends Component {
   render() {
     return (
       <div className="stats">
-        <div>Stats Content</div>
+        <RoomStats />
       </div>
     );
   }
