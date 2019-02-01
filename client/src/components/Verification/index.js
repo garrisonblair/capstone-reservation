@@ -247,7 +247,7 @@ class Verification extends Component {
         </Step.Group>
 
         <h2>
-          Welcome
+          Welcome&nbsp;
           {firstName}
         </h2>
         <Form>
