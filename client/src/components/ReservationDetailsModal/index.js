@@ -141,6 +141,7 @@ class ReservationDetailsModal extends Component {
     onCloseWithReservation();
     this.setState({
       show: false,
+      isRecurring: false,
     });
   }
 
@@ -581,7 +582,7 @@ class ReservationDetailsModal extends Component {
               {user && user.is_superuser ? this.renderAdminBookingForm() : null}
             </div>
             <div className="modal-description">
-              <Checkbox label="Request a recurring booking" onClick={this.handleCheckboxClick} />
+              <Checkbox label="Request a recurring booking" onChange={this.handleCheckboxClick} />
             </div>
             {isRecurring ? this.renderRecurringForm() : null}
             <div className="ui divider" />

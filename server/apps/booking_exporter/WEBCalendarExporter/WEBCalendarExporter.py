@@ -57,6 +57,8 @@ class WEBCalendarExporter(BookingExporter):
             logger.error("WebCalendar .ics Upload failed.")
 
     def backup_booking(self, booking):
+
+        logger.debug("Exporting booking {} to Webcalendar".format(booking.id))
         # only backup if room has external id
         if not hasattr(booking.room, "externalroomid"):
             return
