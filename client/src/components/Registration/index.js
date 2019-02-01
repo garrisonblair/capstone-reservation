@@ -62,7 +62,7 @@ class Registration extends Component {
           );
         } else if (error.message.includes('400')) {
           sweetAlert(
-            'Error',
+            'ENCS user not found',
             "We couldn't find this user in the system.",
             'error',
           );
