@@ -2,501 +2,821 @@
 
 exports[`Shows calendar 1`] = `
 <div
-  className="calendar__container"
+  className="main__page"
 >
   <div
-    className="calendar__date"
+    className="navigation"
   >
-    <button
-      className="ui tiny basic circular icon button"
-      onClick={[Function]}
-      role="button"
+    <div
+      className="ui inverted top fixed navigation__bar menu"
     >
-      <i
-        aria-hidden="true"
-        className="chevron left icon"
-      />
-    </button>
-    <h3
-      className="calendar__date__header"
-    >
-      <i
-        aria-hidden="true"
-        className="calendar alternate outline icon"
-      />
-      Fri Nov 09 2018
-    </h3>
-    <button
-      className="ui tiny basic circular icon button"
-      onClick={[Function]}
-      role="button"
-    >
-      <i
-        aria-hidden="true"
-        className="chevron right icon"
-      />
-    </button>
+      <a
+        className="item navigation__title"
+        onClick={[Function]}
+      >
+        Capstone
+      </a>
+      <div
+        className="item"
+        onClick={[Function]}
+      >
+        <a
+          href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing"
+        >
+          Feedback
+        </a>
+      </div>
+      <div
+        className="right item menu--date"
+        onClick={[Function]}
+      >
+        <i
+          aria-hidden="true"
+          className="angle left circular icon arrow"
+          onClick={[Function]}
+        />
+        <i
+          aria-hidden="true"
+          className="calendar alternate outline icon"
+          onClick={[Function]}
+        />
+        <div
+          className="datepicker"
+        >
+          <div
+            className="SingleDatePicker SingleDatePicker_1"
+          >
+            <div>
+              <div
+                className="SingleDatePickerInput SingleDatePickerInput_1 SingleDatePickerInput__withBorder SingleDatePickerInput__withBorder_2"
+              >
+                <div
+                  className="DateInput DateInput_1"
+                >
+                  <input
+                    aria-describedby="DateInput__screen-reader-message-datepicker"
+                    aria-label="Date"
+                    autoComplete="off"
+                    className="DateInput_input DateInput_input_1"
+                    disabled={false}
+                    id="datepicker"
+                    name="datepicker"
+                    onChange={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    placeholder="Date"
+                    readOnly={false}
+                    required={false}
+                    type="text"
+                    value="02/02/2019"
+                  />
+                  <p
+                    className="DateInput_screenReaderMessage DateInput_screenReaderMessage_1"
+                    id="DateInput__screen-reader-message-datepicker"
+                  >
+                    Press the down arrow key to interact with the calendar and
+  select a date. Press the question mark key to get the keyboard shortcuts for changing dates.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span
+          onClick={[Function]}
+          onKeyDown={[Function]}
+          role="presentation"
+        >
+          Sat Feb 2nd 2019
+        </span>
+        <i
+          aria-hidden="true"
+          className="angle right circular icon arrow"
+          onClick={[Function]}
+        />
+      </div>
+      <div
+        className="right menu navigation__container"
+        inverted="true"
+      >
+        
+        
+        
+        <a
+          className="item navigation__login"
+          onClick={[Function]}
+        >
+          Login
+        </a>
+      </div>
+    </div>
   </div>
   <div
-    className="calendar__wrapper"
+    className="calendar__container"
   >
     <div
-      className="calendar__rooms__wrapper"
+      className="calendar__wrapper"
+      style={
+        Object {
+          "gridTemplateColumns": "max-content auto",
+        }
+      }
     >
-      <div
-        className="calendar__rooms__room"
+      <button
+        className="button_orientation"
+        onClick={[Function]}
+        type="button"
       >
-        room 1
-      </div>
-      <div
-        className="calendar__rooms__room"
-      >
-        room 2
-      </div>
-    </div>
-    <div
-      className="calendar__hours__wrapper"
-    >
-      <div
-        className="calendar__hours__hour"
-      >
-        08:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        09:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        10:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        11:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        12:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        13:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        14:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        15:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        16:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        17:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        18:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        19:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        20:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        21:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        22:00
-      </div>
-      <div
-        className="calendar__hours__hour"
-      >
-        23:00
-      </div>
-    </div>
-    <div
-      className="calendar__cells__wrapper"
-    >
-      <div
-        className="calendar__rooms__cells"
-      >
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 7,
-              "gridRowStart": 1,
-            }
-          }
+        <i
+          aria-hidden="true"
+          className="exchange icon"
         />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 13,
-              "gridRowStart": 7,
-            }
+      </button>
+      <div
+        className="calendar__hours__wrapper"
+        style={
+          Object {
+            "gridColumnStart": 2,
+            "gridTemplateColumns": "repeat(15, 1fr)",
+            "top": 0,
           }
-        />
+        }
+      >
         <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
+          className="calendar__hours__hour"
           style={
             Object {
-              "gridRowEnd": 19,
-              "gridRowStart": 13,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 25,
-              "gridRowStart": 19,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 31,
-              "gridRowStart": 25,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 37,
-              "gridRowStart": 31,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 43,
-              "gridRowStart": 37,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 49,
-              "gridRowStart": 43,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 55,
-              "gridRowStart": 49,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 61,
-              "gridRowStart": 55,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 67,
-              "gridRowStart": 61,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 73,
-              "gridRowStart": 67,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 79,
-              "gridRowStart": 73,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 85,
-              "gridRowStart": 79,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 91,
-              "gridRowStart": 85,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 97,
-              "gridRowStart": 91,
-            }
-          }
-        />
-        <div
-          className="calendar__booking"
-          onClick={[Function]}
-          style={
-            Object {
-              "backgroundColor": "#4285f4",
-              "gridColumn": 1,
-              "gridRowEnd": 12,
-              "gridRowStart": 2,
+              "minWidth": "120px",
             }
           }
         >
-          08:10
-           - 
-          09:50
-          <br />
-          <span>
-            12345567
-          </span>
-          
+          08:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          09:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          10:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          11:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          12:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          13:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          14:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          15:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          16:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          17:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          18:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          19:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          20:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          21:00
+        </div>
+        <div
+          className="calendar__hours__hour"
+          style={
+            Object {
+              "minWidth": "120px",
+            }
+          }
+        >
+          22:00
         </div>
       </div>
       <div
-        className="calendar__rooms__cells"
+        className="calendar__rooms__wrapper"
+        style={
+          Object {
+            "gridTemplateRows": "repeat(2, 1fr)",
+            "left": 0,
+          }
+        }
       >
         <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
+          className="calendar__rooms__room"
           style={
             Object {
-              "gridRowEnd": 7,
-              "gridRowStart": 1,
+              "minHeight": "60px",
+              "width": "90px",
             }
           }
-        />
+        >
+          room 1
+        </div>
         <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
+          className="calendar__rooms__room"
           style={
             Object {
-              "gridRowEnd": 13,
-              "gridRowStart": 7,
+              "minHeight": "60px",
+              "width": "90px",
             }
           }
-        />
+        >
+          room 2
+        </div>
+      </div>
+      <div
+        className="calendar__cells__wrapper"
+        style={
+          Object {
+            "gridTemplateRows": "repeat(0, 1fr)",
+          }
+        }
+      >
         <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
+          className="calendar__rooms__cells"
           style={
             Object {
-              "gridRowEnd": 19,
-              "gridRowStart": 13,
+              "gridTemplateColumns": "repeat(90, 1fr)",
             }
           }
-        />
+        >
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 7,
+                "gridColumnStart": 1,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 13,
+                "gridColumnStart": 7,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 19,
+                "gridColumnStart": 13,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 25,
+                "gridColumnStart": 19,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 31,
+                "gridColumnStart": 25,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 37,
+                "gridColumnStart": 31,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 43,
+                "gridColumnStart": 37,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 49,
+                "gridColumnStart": 43,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 55,
+                "gridColumnStart": 49,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 61,
+                "gridColumnStart": 55,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 67,
+                "gridColumnStart": 61,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 73,
+                "gridColumnStart": 67,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 79,
+                "gridColumnStart": 73,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 85,
+                "gridColumnStart": 79,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 91,
+                "gridColumnStart": 85,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__booking"
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onMouseEnter={[Function]}
+            onMouseLeave={[Function]}
+            role="button"
+            style={
+              Object {
+                "backgroundColor": "#7F7F7F",
+                "borderLeft": "1px solid white",
+                "borderRight": "1px solid white",
+                "borderTop": "1px solid white",
+                "gridColumnEnd": 12,
+                "gridColumnStart": 2,
+                "gridRow": 1,
+                "height": "98%",
+                "transform": "",
+              }
+            }
+            tabIndex="0"
+          >
+            <span>
+              08:10
+               - 
+              09:50
+              <br />
+              <span>
+                Ken
+              </span>
+            </span>
+          </div>
+        </div>
         <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
+          className="calendar__rooms__cells"
           style={
             Object {
-              "gridRowEnd": 25,
-              "gridRowStart": 19,
+              "gridTemplateColumns": "repeat(90, 1fr)",
             }
           }
-        />
+        >
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 7,
+                "gridColumnStart": 1,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 13,
+                "gridColumnStart": 7,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 19,
+                "gridColumnStart": 13,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 25,
+                "gridColumnStart": 19,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 31,
+                "gridColumnStart": 25,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 37,
+                "gridColumnStart": 31,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 43,
+                "gridColumnStart": 37,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 49,
+                "gridColumnStart": 43,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 55,
+                "gridColumnStart": 49,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 61,
+                "gridColumnStart": 55,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 67,
+                "gridColumnStart": 61,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 73,
+                "gridColumnStart": 67,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 79,
+                "gridColumnStart": 73,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 85,
+                "gridColumnStart": 79,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+          <div
+            className="calendar__cells__cell"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            style={
+              Object {
+                "gridColumnEnd": 91,
+                "gridColumnStart": 85,
+                "gridRow": 1,
+              }
+            }
+            tabIndex="0"
+          />
+        </div>
         <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 31,
-              "gridRowStart": 25,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 37,
-              "gridRowStart": 31,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 43,
-              "gridRowStart": 37,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 49,
-              "gridRowStart": 43,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 55,
-              "gridRowStart": 49,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 61,
-              "gridRowStart": 55,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 67,
-              "gridRowStart": 61,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 73,
-              "gridRowStart": 67,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 79,
-              "gridRowStart": 73,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 85,
-              "gridRowStart": 79,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 91,
-              "gridRowStart": 85,
-            }
-          }
-        />
-        <div
-          className="calendar__cells__cell"
-          onClick={[Function]}
-          style={
-            Object {
-              "gridRowEnd": 97,
-              "gridRowStart": 91,
-            }
-          }
-        />
+          className="modals"
+        >
+          <div
+            id="reservation-details-modal"
+          />
+          <div
+            id="reservation-details-modal"
+          />
+        </div>
       </div>
     </div>
   </div>
-  <div
-    id="reservation-details-modal"
-  />
-  <div
-    id="reservation-details-modal"
-  />
 </div>
 `;
