@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Shows row as member 1`] = `
+<tr
+  className=""
+>
+  <td
+    className=""
+  >
+    <h4>
+      groupName
+    </h4>
+  </td>
+  <td
+    className=""
+  >
+    <div
+      className="ui grey label"
+      onClick={[Function]}
+    >
+      MEMBER
+    </div>
+  </td>
+  <td
+    className="center aligned"
+  >
+    <button
+      className="ui icon button"
+      onClick={[Function]}
+      role="button"
+    >
+      <i
+        aria-hidden="true"
+        className="edit icon"
+      />
+    </button>
+    
+  </td>
+</tr>
+`;
+
+exports[`Shows row as owner 1`] = `
+<tr
+  className=""
+>
+  <td
+    className=""
+  >
+    <h4>
+      groupName
+    </h4>
+  </td>
+  <td
+    className=""
+  >
+    <div
+      className="ui yellow label"
+      onClick={[Function]}
+    >
+      OWNER
+    </div>
+  </td>
+  <td
+    className="center aligned"
+  >
+    <button
+      className="ui icon button"
+      onClick={[Function]}
+      role="button"
+    >
+      <i
+        aria-hidden="true"
+        className="edit icon"
+      />
+    </button>
+    
+  </td>
+</tr>
+`;
