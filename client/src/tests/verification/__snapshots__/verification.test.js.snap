@@ -78,7 +78,7 @@ exports[`Show registration form 1`] = `
         </div>
       </div>
       <h2>
-        Welcome 
+        Welcome
         
       </h2>
       <form
@@ -88,9 +88,12 @@ exports[`Show registration form 1`] = `
         <div
           className="field"
         >
-          <label>
+          <div
+            className="ui label"
+            onClick={[Function]}
+          >
             Enter Password:
-          </label>
+          </div>
           
           <div
             className="ui medium fluid left icon input"
@@ -110,9 +113,12 @@ exports[`Show registration form 1`] = `
         <div
           className="field"
         >
-          <label>
+          <div
+            className="ui label"
+            onClick={[Function]}
+          >
             Confirm Password:
-          </label>
+          </div>
           
           <div
             className="ui medium fluid left icon input"
@@ -132,14 +138,17 @@ exports[`Show registration form 1`] = `
         <div
           className="field"
         >
-          <label>
-            booker ID:
-          </label>
+          <div
+            className="ui label"
+            onClick={[Function]}
+          >
+            Concordia Student ID:
+          </div>
           
           <div
             className="ui medium fluid left icon input"
             errormessage=""
-            title="booker ID:"
+            title="Concordia Student ID:"
           >
             <input
               onChange={[Function]}
@@ -149,6 +158,32 @@ exports[`Show registration form 1`] = `
             <i
               aria-hidden="true"
               className="id card icon"
+            />
+          </div>
+        </div>
+        <div
+          className="field"
+        >
+          <div
+            className="ui label"
+            onClick={[Function]}
+          >
+            Secondary email (optional):
+          </div>
+          
+          <div
+            className="ui medium fluid left icon input"
+            errormessage=""
+            title="Secondary email (optional):"
+          >
+            <input
+              onChange={[Function]}
+              placeholder="youremail@example.com"
+              type="text"
+            />
+            <i
+              aria-hidden="true"
+              className="envelope icon"
             />
           </div>
         </div>
