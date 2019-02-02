@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Shows bookers table 1`] = `
+<div
+  id="bookers"
+>
+  <h1>
+    Bookers
+  </h1>
+  <div
+    className="ui loading segment"
+  >
+    <table
+      className="ui table"
+    >
+      <thead
+        className=""
+      >
+        <tr
+          className=""
+        >
+          <th
+            className="center aligned"
+          >
+            Username
+          </th>
+          <th
+            className="center aligned"
+          >
+            Full name
+          </th>
+          <th
+            className=""
+          />
+        </tr>
+      </thead>
+      <tbody
+        className=""
+      />
+    </table>
+  </div>
+</div>
+`;

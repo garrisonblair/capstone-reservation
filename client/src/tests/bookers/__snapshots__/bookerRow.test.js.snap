@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Shows bookers table 1`] = `
+<tr
+  className=""
+>
+  <td
+    className="center aligned"
+  >
+    username
+  </td>
+  <td
+    className="center aligned"
+  >
+    first last
+  </td>
+  <td
+    className=""
+  >
+    <button
+      className="ui icon button edit-button"
+      onClick={[Function]}
+      role="button"
+    >
+      <i
+        aria-hidden="true"
+        className="edit icon"
+      />
+    </button>
+  </td>
+</tr>
+`;
