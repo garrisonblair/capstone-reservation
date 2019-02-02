@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Shows row with username as admin 1`] = `
+<div
+  className="item"
+  onClick={[Function]}
+  role="listitem"
+>
+  <div
+    className="left floated content"
+  >
+    <h3>
+      <i
+        aria-hidden="true"
+        className="user icon"
+      />
+      myusername
+    </h3>
+  </div>
+  <div
+    className="right floated content"
+  >
+    <button
+      className="ui button"
+      onClick={[Function]}
+      role="button"
+    >
+      Remove
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Shows row with username as non-admin 1`] = `
+<div
+  className="item"
+  onClick={[Function]}
+  role="listitem"
+>
+  <div
+    className="left floated content"
+  >
+    <h3>
+      <i
+        aria-hidden="true"
+        className="user icon"
+      />
+      myusername
+    </h3>
+  </div>
+  <div
+    className="right floated content"
+  >
+    
+  </div>
+</div>
+`;

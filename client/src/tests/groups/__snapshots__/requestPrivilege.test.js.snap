@@ -1,11 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Shows RequestPrivilege 1`] = `
-<div
-  id="reservation-details-modal"
-/>
-`;
-
 exports[`Shows empty RequestPrivilege 1`] = `""`;
 
 exports[`Shows new RequestPrivilege 1`] = `
@@ -72,7 +66,7 @@ exports[`Shows new RequestPrivilege 1`] = `
     </div>
   </div>
   <button
-    className="ui blue button"
+    className="ui blue button button-right"
     onClick={[Function]}
     role="button"
   >
