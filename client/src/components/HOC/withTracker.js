@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import ReactGA from 'react-ga';
 import settings from '../../config/settings';

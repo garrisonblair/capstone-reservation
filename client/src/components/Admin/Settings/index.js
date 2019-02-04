@@ -147,7 +147,8 @@ class Settings extends Component {
                   onChange={this.handleChangeMergeThreshold}
                 />
                 <br />
-              </div>)
+              </div>
+            )
             : null
           }
           <Input
@@ -158,7 +159,7 @@ class Settings extends Component {
           />
           <Divider />
           <Button onClick={this.saveSettings}>
-          Save Changes
+            Save Changes
           </Button>
         </div>
         <WebCalendarLogin

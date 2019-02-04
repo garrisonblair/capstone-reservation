@@ -109,6 +109,7 @@ class Navigation extends Component {
     if (!localStorage.CapstoneReservationUser) {
       return '';
     }
+    // eslint-disable-next-line react/prop-types
     const { history } = this.props;
     const component = (
       <Dropdown item text="Account">
