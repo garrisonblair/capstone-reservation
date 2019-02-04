@@ -80,7 +80,6 @@ class BookerModal extends Component {
   render() {
     const { show, booker, onClose } = this.props;
     const { dropdownOptions, myPrivileges } = this.state;
-    console.log(booker);
     return (
       <Modal open={show} onClose={onClose} size="small" id="booker-modal">
         <Modal.Header>
