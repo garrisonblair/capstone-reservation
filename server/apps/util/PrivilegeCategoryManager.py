@@ -40,6 +40,8 @@ class PrivilegeCategoryManager:
                 course.lower()
                 if category.related_course in course:
                     booker.bookerprofile.privilege_categories.add(category)
+                elif 'grad' in course:
+                    print(course)
 
         booker.save()
 
