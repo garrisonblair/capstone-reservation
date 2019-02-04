@@ -4,3 +4,10 @@
         margin: auto;
     }
 }
+.segment_container {
+	display: grid;
+    grid-template-columns: 1fr 1fr;
+    .segment {
+      margin: 0 2px;
+    }
+}
