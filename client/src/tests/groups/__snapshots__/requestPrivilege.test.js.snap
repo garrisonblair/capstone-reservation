@@ -68,7 +68,6 @@ exports[`Shows new RequestPrivilege 1`] = `
   <button
     className="ui blue button button-right"
     onClick={[Function]}
-    role="button"
   >
     Request Privilege
   </button>

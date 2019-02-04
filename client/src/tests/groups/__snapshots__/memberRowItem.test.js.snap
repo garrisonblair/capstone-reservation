@@ -23,7 +23,6 @@ exports[`Shows row with username as admin 1`] = `
     <button
       className="ui button"
       onClick={[Function]}
-      role="button"
     >
       Remove
     </button>

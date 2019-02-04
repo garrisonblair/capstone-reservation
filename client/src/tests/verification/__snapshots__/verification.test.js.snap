@@ -98,10 +98,10 @@ exports[`Show registration form 1`] = `
           <div
             className="ui medium fluid left icon input"
             errormessage=""
-            title="Enter Password:"
           >
             <input
               onChange={[Function]}
+              title="Enter Password:"
               type="password"
             />
             <i
@@ -123,10 +123,10 @@ exports[`Show registration form 1`] = `
           <div
             className="ui medium fluid left icon input"
             errormessage=""
-            title="Confirm Password:"
           >
             <input
               onChange={[Function]}
+              title="Confirm Password:"
               type="password"
             />
             <i
@@ -148,11 +148,11 @@ exports[`Show registration form 1`] = `
           <div
             className="ui medium fluid left icon input"
             errormessage=""
-            title="Concordia Student ID:"
           >
             <input
               onChange={[Function]}
               placeholder="12345678"
+              title="Concordia Student ID:"
               type="text"
             />
             <i
@@ -174,11 +174,11 @@ exports[`Show registration form 1`] = `
           <div
             className="ui medium fluid left icon input"
             errormessage=""
-            title="Secondary email (optional):"
           >
             <input
               onChange={[Function]}
               placeholder="youremail@example.com"
+              title="Secondary email (optional):"
               type="text"
             />
             <i
@@ -195,7 +195,6 @@ exports[`Show registration form 1`] = `
         <button
           className="ui small fluid icon button"
           onClick={[Function]}
-          role="button"
         >
           Save
         </button>

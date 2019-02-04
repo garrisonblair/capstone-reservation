@@ -27,7 +27,6 @@ exports[`Shows row as member 1`] = `
     <button
       className="ui icon button"
       onClick={[Function]}
-      role="button"
     >
       <i
         aria-hidden="true"
@@ -66,7 +65,6 @@ exports[`Shows row as owner 1`] = `
     <button
       className="ui icon button"
       onClick={[Function]}
-      role="button"
     >
       <i
         aria-hidden="true"

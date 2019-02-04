@@ -20,7 +20,6 @@ exports[`Shows bookers table 1`] = `
     <button
       className="ui icon button edit-button"
       onClick={[Function]}
-      role="button"
     >
       <i
         aria-hidden="true"

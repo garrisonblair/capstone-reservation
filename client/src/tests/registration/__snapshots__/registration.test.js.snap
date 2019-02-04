@@ -88,7 +88,6 @@ exports[`Show registration 1`] = `
         <button
           className="ui small fluid icon button"
           onClick={[Function]}
-          role="button"
         >
           Send Email
         </button>
@@ -198,7 +197,6 @@ exports[`Show registration loader 1`] = `
         <button
           className="ui small fluid icon button"
           onClick={[Function]}
-          role="button"
         >
           Send Email
         </button>
