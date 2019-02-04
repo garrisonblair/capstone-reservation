@@ -40,10 +40,11 @@ class PrivilegeCategoryManager:
                 course.lower()
                 if category.related_course in course:
                     booker.bookerprofile.privilege_categories.add(category)
-                elif 'grad' in course:
-                    print(course)
-
-        booker.save()
+                elif "_people_types" in course:
+                    program_attributes = course[3:-77].split("_")
+                    booker.bookerprofile.program = program_attributes[0]
+                    booker.bookerprofile.graduate_level = program_attributes[1]
+                    booker.bookerprofile.save()
 
     def assign_all_booker_privileges(self, server=ldap_server):
         bookers = User.objects.all()
