@@ -302,8 +302,8 @@ class Verification extends Component {
   }
 
   render() {
-    const { isLoading } = this.state;
-    if (this.state.hasError) {
+    const { isLoading, hasError } = this.state;
+    if (hasError) {
       return <Redirect to="/" />;
     }
     return (
