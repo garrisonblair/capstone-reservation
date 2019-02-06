@@ -33,36 +33,34 @@ class ResetPasswordVerification extends Component {
 
     if (token) {
       api.verify(token)
-      .then((response) => {
-        if (response.status === 200) {
+        .then((response) => {
+          if (response.status === 200) {
+            this.setState({
+              isLoading: false,
+              firstName: response.data.first_name,
+              userId: response.data.id,
+            });
+            localStorage.setItem('CapstoneReservationUser', JSON.stringify(response.data));
+          }
+        })
+        .catch((error) => {
           this.setState({
-            isLoading: false,
-            firstName: response.data.first_name,
-            userId: response.data.id,
+            hasError: true,
           });
-          localStorage.setItem('CapstoneReservationUser', JSON.stringify(response.data));
-        }
-      })
-      .catch((error) => {
-        this.setState({ 
-          showLoader: false,
-          hasError: true 
+          if (error.message.includes('400')) {
+            sweetAlert(
+              'Verification link does not exist',
+              'Link is expired.',
+              'error',
+            );
+          } else {
+            sweetAlert(
+              ':(',
+              'Unknown error',
+              'error',
+            );
+          }
         });
-        if (error.message.includes('400')) {
-          sweetAlert(
-            'Verification link does not exist',
-            "Link is expired.",
-            'error',
-          );
-        }
-        else {
-          sweetAlert(
-            ':(',
-            'Unknown error',
-            'error',
-          );
-        }
-      });
     }
   }
 
@@ -218,7 +216,7 @@ class ResetPasswordVerification extends Component {
   render() {
     const { isLoading } = this.state;
     if (this.state.hasError) {
-      return <Redirect to='/' />;
+      return <Redirect to="/" />;
     }
     return (
       <div id="resetPasswordVerification">

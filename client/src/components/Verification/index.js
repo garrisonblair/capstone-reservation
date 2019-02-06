@@ -49,18 +49,16 @@ class Verification extends Component {
           localStorage.setItem('CapstoneReservationUser', JSON.stringify(response.data));
         })
         .catch((error) => {
-          this.setState({ 
-            showLoader: false,
-            hasError: true 
+          this.setState({
+            hasError: true,
           });
           if (error.message.includes('400')) {
             sweetAlert(
               'Verification link does not exist',
-              "Link is expired.",
+              'Link is expired.',
               'error',
             );
-          }
-          else {
+          } else {
             sweetAlert(
               ':(',
               'Unknown error',
@@ -103,15 +101,13 @@ class Verification extends Component {
         preventSubmit = true;
         errorMessageBookerID = 'Booker ID should have only digits';
       }
-    
+      this.setState({
+        bookerID,
+        errorMessageBookerID,
+      });
 
-    this.setState({
-      bookerID,
-      errorMessageBookerID,
-    });
-
-    return preventSubmit;
-  }
+      return preventSubmit;
+    }
 
   verifyPasswords = () => {
     const { password, confirmPassword } = this.state;
@@ -308,7 +304,7 @@ class Verification extends Component {
   render() {
     const { isLoading } = this.state;
     if (this.state.hasError) {
-      return <Redirect to='/' />;
+      return <Redirect to="/" />;
     }
     return (
       <div id="verification">
