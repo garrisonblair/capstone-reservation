@@ -35,6 +35,7 @@ class CustomFormInput extends Component {
 
 CustomFormInput.propTypes = {
   errormessage: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
 };
 
 export default CustomFormInput;

@@ -73,7 +73,8 @@ class RoomManager extends Component {
         <p>
           Click on the &apos;Add Room&apos; button to add a new room.
         </p>
-      </Message>);
+      </Message>
+    );
     if (showEmptyMessage && roomsList.length === 0) {
       result = message;
     }
@@ -102,7 +103,8 @@ class RoomManager extends Component {
                 key={room.id}
                 room={room}
                 syncRoomList={this.syncRooms}
-              />),
+              />
+            ),
           )}
         </Table.Body>
       </Table>

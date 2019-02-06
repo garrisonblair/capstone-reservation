@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon, Menu } from 'semantic-ui-react';
 import { SingleDatePicker } from 'react-dates';
-import * as moment from 'moment';
+import moment from 'moment';
 import './Calendar.scss';
 import 'react-dates/lib/css/_datepicker.css';
 import './react_dates_overrides.css';

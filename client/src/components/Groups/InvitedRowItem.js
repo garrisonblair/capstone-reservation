@@ -9,7 +9,15 @@ class InvitedRowItem extends Component {
     isLoading: false,
   }
 
+  componentDidMount() {
+    const { isLoadingForTesting } = this.props;
+    if (isLoadingForTesting) {
+      this.setState({ isLoading: isLoadingForTesting });
+    }
+  }
+
   handleDeletion = () => {
+    // For testing only
     this.setState({ isLoading: true });
     const { deleteFunction, selectedInvitation } = this.props;
     deleteFunction(selectedInvitation.id);
@@ -28,7 +36,6 @@ class InvitedRowItem extends Component {
         </List.Content>
         <List.Content floated="right">
           {isAdmin === true && isLoading === false ? <Button onClick={this.handleDeletion}>Remove</Button> : ''}
-          {/* {isLoading ? <Loader active inline /> : null} */}
         </List.Content>
         <Dimmer active={isLoading} inverted>
           <Loader />
@@ -43,6 +50,11 @@ InvitedRowItem.propTypes = {
   selectedInvitation: PropTypes.object.isRequired,
   deleteFunction: PropTypes.func.isRequired,
   isAdmin: PropTypes.bool.isRequired,
+  isLoadingForTesting: PropTypes.bool,
+};
+
+InvitedRowItem.defaultProps = {
+  isLoadingForTesting: undefined,
 };
 
 export default InvitedRowItem;
