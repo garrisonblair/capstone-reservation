@@ -7,6 +7,7 @@ class Privileges extends Component {
   state = {
     privileges: [],
     isLoading: false,
+    groups: [],
   }
 
   componentDidMount() {
@@ -17,6 +18,20 @@ class Privileges extends Component {
         if (r.status === 200) {
           this.setState({ privileges: r.data });
         }
+      });
+  }
+
+  getOwnerGroups = () => {
+    const ownerGroups = [{ key: 'me', value: 'me', text: 'me' }];
+    api.getMyGroups()
+      .then((r) => {
+        // eslint-disable-next-line array-callback-return
+        r.data.map((g) => {
+          ownerGroups.push({ key: g.id, value: g.id, text: `${g.name} (group)` });
+          this.setState({
+            groups: ownerGroups,
+          });
+        });
       });
   }
 
