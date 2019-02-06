@@ -23,5 +23,5 @@ urlpatterns = [
     path(r'group_invitation/<int:pk>/reject', RejectInvitation.as_view()),
     path(r'group_invitation/<int:pk>/revoke', RevokeInvitation.as_view()),
     path(r'cancel_request/<int:pk>', PrivilegeRequestDelete.as_view()),
-    path(r'group_privileges/<int:pk>', MyGroupPrivileges.as_view()),
+    path(r'group/<int:pk>/privileges', MyGroupPrivileges.as_view()),
 ]

@@ -348,6 +348,16 @@ function removeMembersFromGroup(groupId, members) {
   });
 }
 
+function getGroupPrivileges(groupId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/group/${groupId}/privileges`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function getLogEntries(params) {
   const headers = getTokenHeader();
   return axios({
@@ -573,6 +583,7 @@ const api = {
   inviteMembers,
   revokeInvitation,
   removeMembersFromGroup,
+  getGroupPrivileges,
   getLogEntries,
   getContentTypes,
   getUsers,
