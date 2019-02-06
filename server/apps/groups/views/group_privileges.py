@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
+
+from apps.accounts.models import PrivilegeCategory
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -150,3 +152,26 @@ class DenyPrivilegeRequest(APIView):
         group.owner.send_email(subject, message)
 
         return Response("Request Denied", status=status.HTTP_200_OK)
+
+
+class MyGroupPrivileges(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def get(self, request, pk):
+        user = User.cast_django_user(request.user)
+        try:
+            group = user.group_set.get(id=pk)
+        except Group.DoesNotExist:
+            return Response("Group does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        privilege_merger = group.get_privileges()
+
+        my_privileges = dict()
+
+        for field_name in PrivilegeCategory.get_parameter_names():
+            if group.privilege_category is None:
+                my_privileges[field_name] = ''
+            else:
+                my_privileges[field_name] = privilege_merger.get_parameter(field_name)
+
+        return Response(my_privileges, status=status.HTTP_200_OK)
