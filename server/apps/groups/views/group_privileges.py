@@ -157,21 +157,22 @@ class DenyPrivilegeRequest(APIView):
 class MyGroupPrivileges(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
 
-    def get(self, request, pk):
+    def get(self, request):
         user = User.cast_django_user(request.user)
-        try:
-            group = user.group_set.get(id=pk)
-        except Group.DoesNotExist:
-            return Response("Group does not exist", status=status.HTTP_400_BAD_REQUEST)
 
-        privilege_merger = group.get_privileges()
+        privileges = dict()
 
-        my_privileges = dict()
+        for group in user.group_set.all():
 
-        for field_name in PrivilegeCategory.get_parameter_names():
-            if group.privilege_category is None:
-                my_privileges[field_name] = ''
-            else:
-                my_privileges[field_name] = privilege_merger.get_parameter(field_name)
+            privilege_merger = group.get_privileges()
+            group_privileges = dict()
 
-        return Response(my_privileges, status=status.HTTP_200_OK)
+            for field_name in PrivilegeCategory.get_parameter_names():
+                if group.privilege_category is None:
+                    group_privileges[field_name] = ''
+                else:
+                    group_privileges[field_name] = privilege_merger.get_parameter(field_name)
+
+            privileges[group.name] = group_privileges
+
+        return Response(privileges, status=status.HTTP_200_OK)

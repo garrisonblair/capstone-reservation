@@ -46,9 +46,10 @@ class TestMyUserAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # self.assertEqual(response.data["max_days_until_booking"], 4)
-        self.assertEqual(response.data["max_num_days_with_bookings"], 5)
-        self.assertEqual(response.data["max_recurring_bookings"], 1)
-        self.assertEqual(response.data["max_num_bookings_for_date"], 6)
-        self.assertEqual(response.data["can_make_recurring_booking"], True)
-        self.assertEqual(response.data["booking_start_time"], datetime.time(8, 0))
-        self.assertEqual(response.data["booking_end_time"], datetime.time(23, 0))
+
+        self.assertEqual(response.data["me"]["max_num_days_with_bookings"], 5)
+        self.assertEqual(response.data["me"]["max_recurring_bookings"], 1)
+        self.assertEqual(response.data["me"]["max_num_bookings_for_date"], 6)
+        self.assertEqual(response.data["me"]["can_make_recurring_booking"], True)
+        self.assertEqual(response.data["me"]["booking_start_time"], datetime.time(8, 0))
+        self.assertEqual(response.data["me"]["booking_end_time"], datetime.time(23, 0))
