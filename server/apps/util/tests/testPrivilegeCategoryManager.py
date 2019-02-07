@@ -7,16 +7,19 @@ from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 class FakeLDAP:
     data = dict(
         username1=[
-            'memberOf: soen490, DC=Concordia',
-            'memberOf: soen284, DC=Concordia',
-            'memberOf: comp335, DC=Concordia',
-            'memberOf: phys202, DC=Concordia',
+            'CN=soen490,DC=Concordia',
+            'CN=soen284,DC=Concordia',
+            'CN=comp335,DC=Concordia',
+            'CN=phys202,DC=Concordia',
+            'CN=cse_ugrad,OU=_people_types,OU=_groups,OU=_accounts,OU=_encs,DC=ENCS,DC=concordia,DC=ca',
+
         ],
         username2=[
-            'memberOf: soen490, DC=Concordia',
-            'memberOf: soen311, DC=Concordia',
-            'memberOf: comp248, DC=Concordia',
-            'memberOf: comp390, DC=Concordia',
+            'CN=soen490,DC=Concordia',
+            'CN=soen311,DC=Concordia',
+            'CN=comp248,DC=Concordia',
+            'CN=comp390,DC=Concordia',
+            'CN=ece_mthesis,OU=_people_types,OU=_groups,OU=_accounts,OU=_encs,DC=ENCS,DC=concordia,DC=ca',
         ]
     )
 
@@ -58,6 +61,8 @@ class TestPrivilegeCategoryManager(TestCase):
         self.assertEqual(privileges1[0], self.category1)
         self.assertEqual(privileges1[1], self.category2)
         self.assertEqual(privileges1[2], self.category3)
+        self.assertEqual(self.user1.bookerprofile.program, 'cse')
+        self.assertEqual(self.user1.bookerprofile.graduate_level, 'ugrad')
 
         manager.assign_booker_privileges(self.user2, self.ldap)
 
@@ -65,21 +70,29 @@ class TestPrivilegeCategoryManager(TestCase):
         self.assertEqual(privileges2.count(), 2)
         self.assertEqual(privileges2[0], self.category1)
         self.assertEqual(privileges2[1], self.category2)
+        self.assertEqual(self.user2.bookerprofile.program, 'ece')
+        self.assertEqual(self.user2.bookerprofile.graduate_level, 'mthesis')
 
     def testAssignAllPrivilegesSuccess(self):
         manager = PrivilegeCategoryManager()
         manager.assign_all_booker_privileges(self.ldap)
+        self.user1.refresh_from_db()
+        self.user2.refresh_from_db()
 
         privileges1 = self.user1.bookerprofile.privilege_categories.all()
         self.assertEqual(privileges1.count(), 3)
         self.assertEqual(privileges1[0], self.category1)
         self.assertEqual(privileges1[1], self.category2)
         self.assertEqual(privileges1[2], self.category3)
+        self.assertEqual(self.user1.bookerprofile.program, 'cse')
+        self.assertEqual(self.user1.bookerprofile.graduate_level, 'ugrad')
 
         privileges2 = self.user2.bookerprofile.privilege_categories.all()
         self.assertEqual(privileges2.count(), 2)
         self.assertEqual(privileges2[0], self.category1)
         self.assertEqual(privileges2[1], self.category2)
+        self.assertEqual(self.user2.bookerprofile.program, 'ece')
+        self.assertEqual(self.user2.bookerprofile.graduate_level, 'mthesis')
 
     def testAssignPrivilegeLDAPUserDoesNotExist(self):
         self.user1.username = "wrong_username"
