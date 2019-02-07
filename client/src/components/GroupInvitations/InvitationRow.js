@@ -26,6 +26,14 @@ class InvitationRow extends Component {
           sweetAlert('Sucess', 'Invitation was accepted', 'success');
           syncMethod();
         }
+      })
+      .catch((error) => {
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Cannot Accept Invitation',
+          text: error.response.data,
+        });
       });
   }
 

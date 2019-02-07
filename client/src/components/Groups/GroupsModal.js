@@ -97,10 +97,20 @@ class GroupsModal extends Component {
         }
       })
       .catch((r) => {
-        sweetAlert(':(', 'Something went wrong. Please refresh.', 'error');
-        this.setState({ isLoading: false });
-        // eslint-disable-next-line no-console
-        console.log(r);
+        if (r.response.status === 401) {
+          this.setState({ isLoading: false });
+          sweetAlert.fire({
+            position: 'top',
+            type: 'error',
+            title: 'Cannot Invite Member',
+            text: r.response.data,
+          });
+        } else {
+          sweetAlert(':(', 'Something went wrong. Please refresh.', 'error');
+          this.setState({ isLoading: false });
+          // eslint-disable-next-line no-console
+          console.log(r);
+        }
       });
   }
 
