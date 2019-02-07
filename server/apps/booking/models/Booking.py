@@ -62,7 +62,6 @@ class Booking(models.Model, SubjectModel):
     observers = list()
 
     def save(self, *args, **kwargs):
-        print(self.bypass_validation)
         if not self.bypass_validation:
             self.validate_model()
 
