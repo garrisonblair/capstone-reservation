@@ -10,8 +10,7 @@ class ICSSerializer(abc.ABC):
     def get_date(self, entity):
         pass
 
-    def serialize(self, booking):
-
+    def create_description(self, booking):
         booker = booking.booker
         description = 'B: ' + booker.username + '\n'
 
@@ -21,6 +20,12 @@ class ICSSerializer(abc.ABC):
         if booking.group is not None:
             group = booking.group.name
             description = 'Group: ' + str(group)
+
+        return description
+
+    def serialize(self, booking):
+
+        description = self.create_description(booking)
 
         date = self.get_date(booking)
 
@@ -92,7 +97,7 @@ STATUS:TENTATIVE
 DTSTART:%s
 DTEND:%s
 END:VEVENT
-END:VCALENDAR""" % (str(booking.id), str(summary), str(description), str(dt_start), str(dt_end))
+END:VCALENDAR""" % (str(booking.id), str(description), str(description), str(dt_start), str(dt_end))
 
         return ics_file
 
@@ -104,6 +109,14 @@ class BookingICSSerializer(ICSSerializer):
 
 
 class CamponICSSerializer(ICSSerializer):
+
+    def create_description(self, booking):
+
+        description = super(CamponICSSerializer, self).create_description(booking)
+
+        description = "[CAMPON]\n" + description
+
+        return description
 
     def get_date(self, campon):
         return campon.camped_on_booking.date
