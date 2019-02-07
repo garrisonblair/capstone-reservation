@@ -55,13 +55,15 @@ class Booking(models.Model, SubjectModel):
                                           null=True)
 
     bypass_privileges = models.BooleanField(default=False)
+    bypass_validation = models.BooleanField(default=False)
 
     objects = BookingManager()
 
     observers = list()
 
     def save(self, *args, **kwargs):
-        self.validate_model()
+        if not self.bypass_validation:
+            self.validate_model()
 
         is_create = False
         if self.id is None:
