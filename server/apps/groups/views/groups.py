@@ -11,6 +11,7 @@ from apps.accounts.permissions.IsBooker import IsBooker
 from apps.groups.serializers.group import WriteGroupSerializer, ReadGroupSerializer
 from apps.groups.models.Group import Group
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+from apps.system_administration.models.system_settings import SystemSettings
 
 from ..models.GroupInvitation import GroupInvitation
 from ..serializers.group_invitation import ReadGroupInvitationSerializer
@@ -72,6 +73,11 @@ class InviteMembers(APIView):
 
         if group.owner.id != request.user.id:
             return Response("Cant modify this Group", status=status.HTTP_401_UNAUTHORIZED)
+
+        settings = SystemSettings.get_settings()
+        if settings.group_can_invite_after_privilege_set is False and group.privilege_category is not None:
+            return Response("You can no longer invite members, now that you have approved group privileges",
+                            status=status.HTTP_401_UNAUTHORIZED)
 
         members_to_invite = request.data["invited_bookers"]  # User.id list
 
