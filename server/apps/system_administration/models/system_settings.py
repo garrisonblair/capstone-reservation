@@ -20,6 +20,8 @@ class SystemSettings(models.Model):
 
     booking_edit_lock_timeout = models.DurationField(default=timedelta())
 
+    group_can_invite_after_privilege_set = models.BooleanField(default=True)
+
     tracker = FieldTracker()
 
     @staticmethod
