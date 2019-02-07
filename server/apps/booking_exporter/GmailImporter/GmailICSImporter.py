@@ -141,5 +141,9 @@ class GmailICSImporter:
         return room_name
 
     def get_username_from_message(self, message):
-        print(message)
-        return "f_daigl"
+        for header in message["headers"]:
+
+            if header["name"] == "From":
+                username = header["value"]
+
+        return username
