@@ -10,10 +10,10 @@ from apps.accounts.models.User import User
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.booking.models.Booking import Booking
-from apps.booking.models.Booking import BookingManager
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.CampOn import CampOn
-from apps.booking.serializers.booking import BookingSerializer, ReadBookingSerializer, MyBookingSerializer
+from apps.booking.serializers.booking import \
+    BookingSerializer, AdminBookingSerializer, ReadBookingSerializer, MyBookingSerializer
 from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
 from apps.booking.serializers.campon import ReadCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
@@ -60,21 +60,15 @@ class BookingCreate(APIView):
         else:
             data["booker"] = request.user.id
 
-        if not request.user.is_superuser:
-            data["bypass_privileges"] = False
+        if request.user.is_superuser:
+            serializer = AdminBookingSerializer(data=data)
+        else:
+            serializer = BookingSerializer(data=data)
 
         now = datetime.datetime.now()
 
-        serializer = BookingSerializer(data=data)
-
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        date = datetime.datetime.strptime(data["date"], '%Y-%m-%d').date()
-        start_time = datetime.datetime.strptime(data["start_time"], '%H:%M:%S').time()
-
-        if (date < now.date() or (date == now.date() and start_time < now.time())) and not request.user.is_superuser:
-            return Response("Booking can not be made in the past", status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             booking = serializer.save()

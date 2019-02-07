@@ -102,6 +102,9 @@ class Booking(models.Model, SubjectModel):
                                   date=self.date).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
 
+        if self.date < now.date() or (self.date == now.date() and self.start_time < now.time()):
+            raise ValidationError("Cant do that")
+
     def merge_with_neighbouring_bookings(self):
         settings = SystemSettings.get_settings()
 

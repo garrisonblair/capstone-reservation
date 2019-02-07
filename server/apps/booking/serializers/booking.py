@@ -9,7 +9,29 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time', 'bypass_privileges')
+        fields = ('id',
+                  'booker',
+                  'group',
+                  'room',
+                  'date',
+                  'start_time',
+                  'end_time')
+        read_only_fields = ('id',)
+
+
+class AdminBookingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Booking
+        fields = ('id',
+                  'booker',
+                  'group',
+                  'room',
+                  'date',
+                  'start_time',
+                  'end_time',
+                  'bypass_privileges',
+                  'bypass_validation')
         read_only_fields = ('id',)
 
 
