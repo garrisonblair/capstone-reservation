@@ -78,7 +78,7 @@ exports[`Show registration form 1`] = `
         </div>
       </div>
       <h2>
-        Welcome
+        Welcome 
         
       </h2>
       <form

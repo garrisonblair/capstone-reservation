@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Modal, Dropdown, Button, List, Icon,
+  Modal, Dropdown, Button, List, Icon, Segment,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
@@ -89,25 +89,37 @@ class BookerModal extends Component {
         </Modal.Header>
         <Modal.Content>
           <Modal.Description>
-            <h3>Full name:</h3>
-            {`${booker.last_name}, ${booker.first_name}`}
-            <h3>Email</h3>
-            {booker.email.length !== 0 ? booker.email : '[Empty]'}
-            <h3>Privileges</h3>
-            <div className="privilege-section">
-              <List divided className="booker-list">
-                {myPrivileges.map(
-                  p => this.renderPrivilegeRow(p),
-                )}
-              </List>
-              <Dropdown
-                placeholder="Privilege to add"
-                selection
-                onChange={this.handleDropdownChange}
-                options={dropdownOptions}
-              />
-              <Button onClick={this.handleAddPrivilegeClick} color="blue">Add Privilege</Button>
+            <div className="segment_container">
+              <Segment>
+                <h3>Full name:</h3>
+                {`${booker.last_name}, ${booker.first_name}`}
+                <h3>Email</h3>
+                {booker.email.length !== 0 ? booker.email : '[Empty]'}
+              </Segment>
+              <Segment>
+                <h3>Program Code</h3>
+                {booker.booker_profile.program}
+                <h3>Graduate Level</h3>
+                {booker.booker_profile.graduate_level}
+              </Segment>
             </div>
+            <Segment>
+              <h3>Privileges</h3>
+              <div className="privilege-section">
+                <List divided className="booker-list">
+                  {myPrivileges.map(
+                    p => this.renderPrivilegeRow(p),
+                  )}
+                </List>
+                <Dropdown
+                  placeholder="Privilege to add"
+                  selection
+                  onChange={this.handleDropdownChange}
+                  options={dropdownOptions}
+                />
+                <Button onClick={this.handleAddPrivilegeClick} color="blue">Add Privilege</Button>
+              </div>
+            </Segment>
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
