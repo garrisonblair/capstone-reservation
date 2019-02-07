@@ -1,6 +1,7 @@
 from apps.util import ldap_server
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.models.User import User
+import pdb
 
 
 class PrivilegeCategoryManager:
@@ -37,11 +38,18 @@ class PrivilegeCategoryManager:
             if category.related_course is None or category.related_course == "":
                 continue
             for course in courses:
-                course.lower()
+                course = course.lower()
                 if category.related_course in course:
                     booker.bookerprofile.privilege_categories.add(category)
-                elif "_people_types" in course:
-                    program_attributes = course[3:-77].split("_")
+                # checking for memberOf relation that contains program information
+                # it will also contain the '_people_types' string
+                # we find the string containing program information ('cn=X') and save the information
+                if "_people_types" in course:
+                    strings = course.split(",")
+                    for string in strings:
+                        if "cn" in string:
+                            program_attributes = string.split("=")[1].split("_")
+                            break
                     booker.bookerprofile.program = program_attributes[0]
                     booker.bookerprofile.graduate_level = program_attributes[1]
                     booker.bookerprofile.save()
