@@ -61,10 +61,8 @@ GroupsRowItem.propTypes = {
   group: PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
-    is_verified: PropTypes.bool.isRequired,
     owner: PropTypes.object.isRequired,
     privilege_category: PropTypes.number,
-    members: PropTypes.array.isRequired,
   }).isRequired,
   myUserId: PropTypes.number.isRequired,
 };

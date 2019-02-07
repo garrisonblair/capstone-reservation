@@ -166,7 +166,7 @@ class BookingInfoModal extends Component {
           {storage.getUser() ? this.renderForm(booking) : null}
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
-            {BookingInfoModal.checkSameUserOrAdmin(booking) ? <Button content="Delete" color="red" onClick={this.handleDelete} /> : null }
+            {BookingInfoModal.checkSameUserOrAdmin(booking) ? <Button content="Delete" color="red" onClick={this.handleDelete} /> : null}
           </div>
         </Modal.Description>
       </Modal.Content>
@@ -181,7 +181,8 @@ class BookingInfoModal extends Component {
           booking={booking}
           selectedRoomName={selectedRoomName}
           onCloseWithEditBooking={this.closeModalWithAction}
-        />);
+        />
+      );
     }
     if (BookingInfoModal.checkCamponPossible(booking)) {
       return (
@@ -189,7 +190,8 @@ class BookingInfoModal extends Component {
           booking={booking}
           selectedRoomName={selectedRoomName}
           onCloseWithCampOn={this.closeModalWithAction}
-        />);
+        />
+      );
     }
     return null;
   }
@@ -222,8 +224,8 @@ BookingInfoModal.propTypes = {
 };
 
 BookingInfoModal.defaultProps = {
-  onClose: () => {},
-  onCloseWithAction: () => {},
+  onClose: () => { },
+  onCloseWithAction: () => { },
   campons: null,
 };
 

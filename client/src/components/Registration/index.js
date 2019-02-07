@@ -57,12 +57,12 @@ class Registration extends Component {
         if (error.message.includes('302')) {
           sweetAlert(
             'You are already registered',
-            'A verification email has already been sent to your ENCS email. Please double check.',
+            'Your account already exists.',
             'warning',
           );
         } else if (error.message.includes('400')) {
           sweetAlert(
-            'Error',
+            'ENCS user not found',
             "We couldn't find this user in the system.",
             'error',
           );

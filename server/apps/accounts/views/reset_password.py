@@ -6,6 +6,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils import timezone
+from datetime import timedelta
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -39,6 +41,8 @@ class ResetPasswordView(APIView):
                 token = VerificationToken.objects.create(user=user)
             else:
                 token = VerificationToken.objects.get(user=user)
+                token.expiration = timezone.now() + timedelta(hours=1)
+                token.save()
 
             # Send email
             subject = 'Capstone Reservation - Reset your password'

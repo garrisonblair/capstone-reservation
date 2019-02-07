@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types,no-bitwise */
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
 import {
   Loader, Form, Button, Icon, Step,
@@ -47,56 +48,66 @@ class Verification extends Component {
           });
           localStorage.setItem('CapstoneReservationUser', JSON.stringify(response.data));
         })
-        .catch(() => {
-          sweetAlert(
-            ':(',
-            'something happened',
-            'error',
-          );
+        .catch((error) => {
+          this.setState({
+            hasError: true,
+          });
+          if (error.message.includes('400')) {
+            sweetAlert(
+              'Verification link does not exist',
+              'Link is expired.',
+              'error',
+            );
+          } else {
+            sweetAlert(
+              ':(',
+              'Unknown error',
+              'error',
+            );
+          }
         });
     }
   }
 
-  verifyEmail = () => {
-    const { secondaryEmail } = this.state;
-    let preventSubmit = false;
-    let errorMessageEmail = '';
+    verifyEmail = () => {
+      const { secondaryEmail } = this.state;
+      let preventSubmit = false;
+      let errorMessageEmail = '';
 
-    if (secondaryEmail !== '' && !secondaryEmail.match(getEmailRegex())) {
-      preventSubmit = true;
-      errorMessageEmail = 'Please enter a valid email.';
+      if (secondaryEmail !== '' && !secondaryEmail.match(getEmailRegex())) {
+        preventSubmit = true;
+        errorMessageEmail = 'Please enter a valid email.';
+      }
+
+      this.setState({
+        errorMessageEmail,
+      });
+
+      return preventSubmit;
     }
 
-    this.setState({
-      errorMessageEmail,
-    });
+    verifyBookerID = () => {
+      const { bookerID } = this.state;
+      let preventSubmit = false;
+      let errorMessageBookerID = '';
 
-    return preventSubmit;
-  }
+      if (bookerID.length === 0) {
+        preventSubmit = true;
+        errorMessageBookerID = 'Please enter your booker ID number';
+      } else if (bookerID.length !== 8) {
+        preventSubmit = true;
+        errorMessageBookerID = 'Field should have 8 digits';
+      } else if (!bookerID.match('^[0-9]*$')) {
+        preventSubmit = true;
+        errorMessageBookerID = 'Booker ID should have only digits';
+      }
+      this.setState({
+        bookerID,
+        errorMessageBookerID,
+      });
 
-  verifyBookerID = () => {
-    const { bookerID } = this.state;
-    let preventSubmit = false;
-    let errorMessageBookerID = '';
-
-    if (bookerID.length === 0) {
-      preventSubmit = true;
-      errorMessageBookerID = 'Please enter your booker ID number';
-    } else if (bookerID.length !== 8) {
-      preventSubmit = true;
-      errorMessageBookerID = 'Field should have 8 digits';
-    } else if (!bookerID.match('^[0-9]*$')) {
-      preventSubmit = true;
-      errorMessageBookerID = 'Booker ID should have only digits';
+      return preventSubmit;
     }
-
-    this.setState({
-      bookerID,
-      errorMessageBookerID,
-    });
-
-    return preventSubmit;
-  }
 
   verifyPasswords = () => {
     const { password, confirmPassword } = this.state;
@@ -232,7 +243,7 @@ class Verification extends Component {
         </Step.Group>
 
         <h2>
-          Welcome
+          Welcome&nbsp;
           {firstName}
         </h2>
         <Form>
@@ -291,7 +302,10 @@ class Verification extends Component {
   }
 
   render() {
-    const { isLoading } = this.state;
+    const { isLoading, hasError } = this.state;
+    if (hasError) {
+      return <Redirect to="/" />;
+    }
     return (
       <div id="verification">
         <div className="container">

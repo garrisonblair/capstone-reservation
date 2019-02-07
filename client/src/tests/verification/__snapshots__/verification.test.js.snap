@@ -78,7 +78,7 @@ exports[`Show registration form 1`] = `
         </div>
       </div>
       <h2>
-        Welcome 
+        Welcome
         
       </h2>
       <form
@@ -88,17 +88,20 @@ exports[`Show registration form 1`] = `
         <div
           className="field"
         >
-          <label>
+          <div
+            className="ui label"
+            onClick={[Function]}
+          >
             Enter Password:
-          </label>
+          </div>
           
           <div
             className="ui medium fluid left icon input"
             errormessage=""
-            title="Enter Password:"
           >
             <input
               onChange={[Function]}
+              title="Enter Password:"
               type="password"
             />
             <i
@@ -110,17 +113,20 @@ exports[`Show registration form 1`] = `
         <div
           className="field"
         >
-          <label>
+          <div
+            className="ui label"
+            onClick={[Function]}
+          >
             Confirm Password:
-          </label>
+          </div>
           
           <div
             className="ui medium fluid left icon input"
             errormessage=""
-            title="Confirm Password:"
           >
             <input
               onChange={[Function]}
+              title="Confirm Password:"
               type="password"
             />
             <i
@@ -132,23 +138,52 @@ exports[`Show registration form 1`] = `
         <div
           className="field"
         >
-          <label>
-            booker ID:
-          </label>
+          <div
+            className="ui label"
+            onClick={[Function]}
+          >
+            Concordia Student ID:
+          </div>
           
           <div
             className="ui medium fluid left icon input"
             errormessage=""
-            title="booker ID:"
           >
             <input
               onChange={[Function]}
               placeholder="12345678"
+              title="Concordia Student ID:"
               type="text"
             />
             <i
               aria-hidden="true"
               className="id card icon"
+            />
+          </div>
+        </div>
+        <div
+          className="field"
+        >
+          <div
+            className="ui label"
+            onClick={[Function]}
+          >
+            Secondary email (optional):
+          </div>
+          
+          <div
+            className="ui medium fluid left icon input"
+            errormessage=""
+          >
+            <input
+              onChange={[Function]}
+              placeholder="youremail@example.com"
+              title="Secondary email (optional):"
+              type="text"
+            />
+            <i
+              aria-hidden="true"
+              className="envelope icon"
             />
           </div>
         </div>
@@ -160,7 +195,6 @@ exports[`Show registration form 1`] = `
         <button
           className="ui small fluid icon button"
           onClick={[Function]}
-          role="button"
         >
           Save
         </button>

@@ -7,6 +7,7 @@ import storage from '../../utils/local-storage';
 function AdminRequired(InnerComponent) {
   class HOC extends Component {
     componentDidMount() {
+      // eslint-disable-next-line react/prop-types
       const { history } = this.props;
 
       if (!storage.getUser()) {

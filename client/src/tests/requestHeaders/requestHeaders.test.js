@@ -1,5 +1,4 @@
-import React from 'react';
-import { getTokenHeader } from '../../utils/requestHeaders';
+import getTokenHeader from '../../utils/requestHeaders';
 
 it('should expect "Token " with the stored token data', () => {
   const token = 'myTokenToTest';

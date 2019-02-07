@@ -88,10 +88,21 @@ exports[`Show registration 1`] = `
         <button
           className="ui small fluid icon button"
           onClick={[Function]}
-          role="button"
         >
           Send Email
         </button>
+      </div>
+    </div>
+    <div
+      className="ui inverted dimmer"
+      onClick={[Function]}
+    >
+      <div
+        className="content"
+      >
+        <div
+          className="ui loader"
+        />
       </div>
     </div>
   </div>
@@ -106,9 +117,102 @@ exports[`Show registration loader 1`] = `
     className="container"
   >
     <div>
+      <h1>
+        Registration
+      </h1>
       <div
-        className="ui large active centered inline loader"
-      />
+        className="ui mini two steps"
+      >
+        <div
+          className="active step"
+          onClick={[Function]}
+        >
+          <i
+            aria-hidden="true"
+            className="envelope icon"
+          />
+          <div
+            className="content"
+          >
+            <div
+              className="title"
+            >
+              Step 1
+            </div>
+            <div
+              className="description"
+            >
+              ENCS username verification
+            </div>
+          </div>
+        </div>
+        <div
+          className="step"
+          onClick={[Function]}
+        >
+          <i
+            aria-hidden="true"
+            className="cog icon"
+          />
+          <div
+            className="content"
+          >
+            <div
+              className="title"
+            >
+              Step 2
+            </div>
+            <div
+              className="description"
+            >
+              Account setup
+            </div>
+          </div>
+        </div>
+      </div>
+      <p>
+        Please enter your ENCS username. A validation will be sent to your ENCS email.
+      </p>
+      <div
+        className="field"
+      >
+        <div
+          className="ui small fluid left icon input"
+        >
+          <input
+            onChange={[Function]}
+            placeholder="ex. a_test"
+            type="text"
+          />
+          <i
+            aria-hidden="true"
+            className="user icon"
+          />
+        </div>
+      </div>
+      <div
+        className="field"
+      >
+        <br />
+        <button
+          className="ui small fluid icon button"
+          onClick={[Function]}
+        >
+          Send Email
+        </button>
+      </div>
+    </div>
+    <div
+      className="ui active transition visible inverted dimmer"
+      onClick={[Function]}
+    >
+      <div
+        className="content"
+      >
+        <div
+          className="ui loader"
+        />
+      </div>
     </div>
   </div>
 </div>

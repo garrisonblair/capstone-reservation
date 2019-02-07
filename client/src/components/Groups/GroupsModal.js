@@ -267,7 +267,8 @@ class GroupsModal extends Component {
                   value={newInvitation}
                 />
                 <Button onClick={this.addMemberToList} className="button-right">Invite</Button>
-              </div>) : ''
+              </div>
+            ) : ''
             }
           </FormField>
           {this.renderMembersList()}

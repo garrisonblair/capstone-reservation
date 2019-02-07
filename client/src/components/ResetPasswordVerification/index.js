@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types,no-bitwise */
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
 import {
   Loader, Form, Button, Icon, Step,
@@ -33,19 +34,32 @@ class ResetPasswordVerification extends Component {
     if (token) {
       api.verify(token)
         .then((response) => {
-          this.setState({
-            isLoading: false,
-            firstName: response.data.first_name,
-            userId: response.data.id,
-          });
-          localStorage.setItem('CapstoneReservationUser', JSON.stringify(response.data));
+          if (response.status === 200) {
+            this.setState({
+              isLoading: false,
+              firstName: response.data.first_name,
+              userId: response.data.id,
+            });
+            localStorage.setItem('CapstoneReservationUser', JSON.stringify(response.data));
+          }
         })
-        .catch(() => {
-          sweetAlert(
-            ':(',
-            'something happened',
-            'error',
-          );
+        .catch((error) => {
+          this.setState({
+            hasError: true,
+          });
+          if (error.message.includes('400')) {
+            sweetAlert(
+              'Verification link does not exist',
+              'Link is expired.',
+              'error',
+            );
+          } else {
+            sweetAlert(
+              ':(',
+              'Unknown error',
+              'error',
+            );
+          }
         });
     }
   }
@@ -163,7 +177,7 @@ class ResetPasswordVerification extends Component {
         </Step.Group>
 
         <h2>
-          Welcome
+          Welcome&nbsp;
           {firstName}
         </h2>
         <Form>
@@ -200,7 +214,10 @@ class ResetPasswordVerification extends Component {
   }
 
   render() {
-    const { isLoading } = this.state;
+    const { isLoading, hasError } = this.state;
+    if (hasError) {
+      return <Redirect to="/" />;
+    }
     return (
       <div id="resetPasswordVerification">
         <div className="container">

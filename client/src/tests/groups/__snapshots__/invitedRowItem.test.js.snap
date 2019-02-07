@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Shows row 1`] = `
+<div
+  className="item"
+  onClick={[Function]}
+  role="listitem"
+>
+  <div
+    className="left floated content"
+  >
+    <h3>
+      <i
+        aria-hidden="true"
+        className="envelope icon"
+      />
+      myUsername
+    </h3>
+  </div>
+  <div
+    className="right floated content"
+  >
+    
+  </div>
+  <div
+    className="ui inverted dimmer"
+    onClick={[Function]}
+  >
+    <div
+      className="content"
+    >
+      <div
+        className="ui loader"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Shows row as admin 1`] = `
+<div
+  className="item"
+  onClick={[Function]}
+  role="listitem"
+>
+  <div
+    className="left floated content"
+  >
+    <h3>
+      <i
+        aria-hidden="true"
+        className="envelope icon"
+      />
+      myUsername
+    </h3>
+  </div>
+  <div
+    className="right floated content"
+  >
+    <button
+      className="ui button"
+      onClick={[Function]}
+    >
+      Remove
+    </button>
+  </div>
+  <div
+    className="ui inverted dimmer"
+    onClick={[Function]}
+  >
+    <div
+      className="content"
+    >
+      <div
+        className="ui loader"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Shows row loading 1`] = `
+<div
+  className="item"
+  onClick={[Function]}
+  role="listitem"
+>
+  <div
+    className="left floated content"
+  >
+    <h3>
+      <i
+        aria-hidden="true"
+        className="envelope icon"
+      />
+      myUsername
+    </h3>
+  </div>
+  <div
+    className="right floated content"
+  >
+    
+  </div>
+  <div
+    className="ui active transition visible inverted dimmer"
+    onClick={[Function]}
+  >
+    <div
+      className="content"
+    >
+      <div
+        className="ui loader"
+      />
+    </div>
+  </div>
+</div>
+`;

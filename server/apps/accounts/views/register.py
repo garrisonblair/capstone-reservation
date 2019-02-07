@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils import timezone
+from datetime import timedelta
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -27,20 +29,20 @@ class RegisterView(APIView):
 
         # Non-verified user
         User = get_user_model()
+
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             pass
 
-        if user:
+        if user and user.is_active is True:
             return Response(status=status.HTTP_302_FOUND)
-
-        # New user from LDAP
-        connection = get_ldap_connection()
-        user = get_user(username=username)
+        elif not user:
+            # New user from LDAP
+            connection = get_ldap_connection()
+            user = get_user(username=username)
 
         if user:
-            print("New LDAP user")
             user.is_active = False
             user.save()
 
@@ -49,6 +51,8 @@ class RegisterView(APIView):
                 token = VerificationToken.objects.create(user=user)
             else:
                 token = VerificationToken.objects.get(user=user)
+                token.expiration = timezone.now() + timedelta(hours=1)
+                token.save()
 
             # Send email
             subject = 'Capstone Reservation - Verify your email!'
