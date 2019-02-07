@@ -12,8 +12,13 @@ import GroupInvitations from '../GroupInvitations';
 import AuthenticationRequired from '../HOC/AuthenticationRequired';
 import './Profile.scss';
 
-
 class Profile extends Component {
+  groupRef = React.createRef();
+
+  syncGroups = () => {
+    this.groupRef.current.syncGroups();
+  };
+
   render() {
     return (
       <div>
@@ -33,10 +38,10 @@ class Profile extends Component {
               <Privileges />
             </Segment>
             <Segment className="segment__groups">
-              <Groups />
+              <Groups ref={this.groupRef} />
             </Segment>
             <Segment className="segment__invitations">
-              <GroupInvitations />
+              <GroupInvitations syncGroups={this.syncGroups} />
             </Segment>
           </div>
         </div>

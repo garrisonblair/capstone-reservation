@@ -19,22 +19,23 @@ class InvitationRow extends Component {
   }
 
   handleAccept = () => {
-    const { invitation, syncMethod } = this.props;
+    const { invitation, syncMethod, syncGroups } = this.props;
     api.acceptInvitation(invitation.id)
       .then((r) => {
         if (r.status === 200) {
           sweetAlert('Sucess', 'Invitation was accepted', 'success');
           syncMethod();
+          syncGroups();
         }
-      })
-      .catch((error) => {
-        sweetAlert.fire({
-          position: 'top',
-          type: 'error',
-          title: 'Cannot Accept Invitation',
-          text: error.response.data,
-        });
       });
+    // .catch((error) => {
+    //   sweetAlert.fire({s
+    //     position: 'top',
+    //     type: 'error',
+    //     title: 'Cannot Accept Invitation',
+    //     text: error.response.data,
+    //   });
+    // });
   }
 
   hanleDecline = () => {
@@ -72,7 +73,11 @@ InvitationRow.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   invitation: PropTypes.object.isRequired,
   syncMethod: PropTypes.func.isRequired,
+  syncGroups: PropTypes.func,
 };
 
+InvitationRow.defaultProps = {
+  syncGroups: null,
+};
 
 export default InvitationRow;

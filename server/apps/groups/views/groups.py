@@ -123,3 +123,22 @@ class LeaveGroup(APIView):
         else:
             group.delete()
         return Response(status=status.HTTP_202_ACCEPTED)
+
+
+class RemoveMembers(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def post(self, request, pk):
+        group = Group.objects.get(id=pk)
+        if group.owner.id != request.user.id:
+            return Response("Can't modify this Group", status=status.HTTP_401_UNAUTHORIZED)
+        members_to_remove = request.data["members"]
+
+        for member_user_id in members_to_remove:
+            booker_to_remove = User.objects.get(id=member_user_id)
+            if booker_to_remove == group.owner:
+                continue
+            if group.members.filter(id=member_user_id).exists():
+                group.members.remove(booker_to_remove)
+        group.save()
+        return Response(WriteGroupSerializer(group).data, status=status.HTTP_202_ACCEPTED)
