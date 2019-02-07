@@ -44,7 +44,8 @@ class AcceptInvitation(APIView):
             return Response("Can't accept this invitation", status.HTTP_401_UNAUTHORIZED)
 
         settings = SystemSettings.get_settings()
-        if settings.group_can_invite_after_privilege_set is False and invitation.group.privilege_category is not None:
+        if settings.group_can_invite_after_privilege_set is False \
+                and not invitation.group.privilege_category.is_default:
             invitation.delete()
             return Response("You can no longer join this group, now that it has approved group privileges",
                             status=status.HTTP_401_UNAUTHORIZED)

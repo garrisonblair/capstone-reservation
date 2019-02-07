@@ -75,7 +75,7 @@ class InviteMembers(APIView):
             return Response("Cant modify this Group", status=status.HTTP_401_UNAUTHORIZED)
 
         settings = SystemSettings.get_settings()
-        if settings.group_can_invite_after_privilege_set is False and group.privilege_category is not None:
+        if settings.group_can_invite_after_privilege_set is False and not group.privilege_category.is_default:
             return Response("You can no longer invite members, now that you have approved group privileges",
                             status=status.HTTP_401_UNAUTHORIZED)
 
