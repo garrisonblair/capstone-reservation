@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, List, Dropdown, Loader, Dimmer,
+  Modal, Button, FormField, Input, List, Loader, Dimmer,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
 import InvitedRowItem from './InvitedRowItem';
 import MemberRowItem from './MemberRowItem';
 import RequestPrivilege from './RequestPrivilege';
 import './GroupsModal.scss';
+import UserSearch from '../ReusableComponents/UserSearch';
 
 class GroupsModal extends Component {
   state = {
@@ -256,7 +257,7 @@ class GroupsModal extends Component {
 
   renderModalContent = () => {
     const {
-      stateOptions, newInvitation, groupId, groupPrivilegeRequest,
+      groupId, groupPrivilegeRequest,
     } = this.state;
     const { isAdmin } = this.props;
     return (
@@ -269,13 +270,7 @@ class GroupsModal extends Component {
             </h3>
             {isAdmin ? (
               <div>
-                <Dropdown
-                  placeholder="Users"
-                  selection
-                  options={stateOptions}
-                  onChange={this.handleDropboxChange}
-                  value={newInvitation}
-                />
+                <UserSearch maxUsers={4} onSelect={this.handleDropboxChange} />
                 <Button onClick={this.addMemberToList} className="button-right">Invite</Button>
               </div>
             ) : ''
