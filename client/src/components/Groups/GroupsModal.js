@@ -116,7 +116,11 @@ class GroupsModal extends Component {
   }
 
   handleDropboxChange = (user) => {
-    this.setState({ newInvitation: user.id });
+    if (user === null) {
+      this.setState({ newInvitation: '' });
+    } else {
+      this.setState({ newInvitation: user.id });
+    }
   }
 
   handleLeaveGroup = () => {
