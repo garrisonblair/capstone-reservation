@@ -13,8 +13,10 @@ class ICSSerializer(abc.ABC):
     def serialize(self, booking):
 
         booker = booking.booker
-        description = 'B: ' + booker.username +\
-                      ' (' + booker.bookerprofile.program + ' ' + booker.bookerprofile.graduate_level + ')\n'
+        description = 'B: ' + booker.username + '\n'
+
+        if booker.bookerprofile.program or booker.bookerprofile.graduate_level:
+            description += ' (' + booker.bookerprofile.program + ' ' + booker.bookerprofile.graduate_level + ')\n'
 
         if booking.group is not None:
             group = booking.group.name

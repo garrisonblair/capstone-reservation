@@ -44,6 +44,7 @@ class GmailICSImporter:
 
             ics_file = self.get_message_ICS_attachment(message)
             room_name = self.get_room_from_message(message)
+            username = self.get_username_from_message(message)
 
             calendar = Calendar(ics_file)
             event = calendar.events[0]  # type: Event
@@ -59,7 +60,9 @@ class GmailICSImporter:
                               booker=booker,
                               date=start_time.date(),
                               start_time=start_time.time(),
-                              end_time=end_time.time())
+                              end_time=end_time.time(),
+                              note=username,
+                              display_note=True)
 
             booking.save()
             utils.log_model_change(booking, utils.ADDITION)
@@ -136,3 +139,7 @@ class GmailICSImporter:
         room_name = first_line.split(' ')[1]
 
         return room_name
+
+    def get_username_from_message(self, message):
+        print(message)
+        return "f_daigl"
