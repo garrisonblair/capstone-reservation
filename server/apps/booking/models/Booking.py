@@ -62,6 +62,7 @@ class Booking(models.Model, SubjectModel):
     observers = list()
 
     def save(self, *args, **kwargs):
+        print(self.bypass_validation)
         if not self.bypass_validation:
             self.validate_model()
 
@@ -101,9 +102,6 @@ class Booking(models.Model, SubjectModel):
                                   room=self.room,
                                   date=self.date).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
-
-        if self.date < now.date() or (self.date == now.date() and self.start_time < now.time()):
-            raise ValidationError("Cant do that")
 
     def merge_with_neighbouring_bookings(self):
         settings = SystemSettings.get_settings()

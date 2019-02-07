@@ -477,7 +477,7 @@ class ReservationDetailsModal extends Component {
     this.setState({ bypassPrivileges: data.checked });
   }
 
-  handleBypassPrivilegesChange = (event, data) => {
+  handleBypassValidationChange = (event, data) => {
     this.setState({ bypassValidation: data.checked });
   }
 
@@ -507,7 +507,7 @@ class ReservationDetailsModal extends Component {
           <Checkbox label="Bypass Privileges" onChange={this.handleBypassPrivilegesChange} />
         </div>
         <div className="modal-description">
-          <Checkbox label="Bypass Validation" onChange={this.handelBypassValidationChange} />
+          <Checkbox label="Bypass Validation" onChange={this.handleBypassValidationChange} />
         </div>
         <Divider />
       </div>

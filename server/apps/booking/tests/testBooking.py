@@ -14,9 +14,6 @@ from apps.accounts.exceptions import PrivilegeError
 from apps.util.mock_datetime import datetime_mock
 
 
-MOCK_DATETIME = datetime(2000, 1, 1, 12, 0, 0)
-
-
 class TestBooking(TestCase):
     def setUp(self):
         # Setup one booker
@@ -40,7 +37,6 @@ class TestBooking(TestCase):
         # Get current size of the bookings
         self.lengthOfBookings = len(Booking.objects.all())
 
-    @datetime_mock(MOCK_DATETIME)
     def testBookingCreation(self):
         booking = Booking(booker=self.booker,
                           room=self.room,
@@ -57,7 +53,6 @@ class TestBooking(TestCase):
         self.assertEqual(read_booking, booking)
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
 
-    @datetime_mock(MOCK_DATETIME)
     def testOverlappedStartTimeBooking(self):
         # Case with existing time 12:00 to 13:00, compare to 12:30 to 13:00
         start_time2 = datetime.strptime("12:30", "%H:%M").time()
@@ -79,7 +74,6 @@ class TestBooking(TestCase):
             booking2.save()
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
 
-    @datetime_mock(MOCK_DATETIME)
     def testOverlappedEndTimeBooking(self):
         # Case with existing time 12:00 to 13:00, compare to 11:30 to 12:30
         start_time3 = datetime.strptime("11:30", "%H:%M").time()
@@ -101,7 +95,6 @@ class TestBooking(TestCase):
             booking3.save()
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
 
-    @datetime_mock(MOCK_DATETIME)
     def testOverlappedSameTimeBooking(self):
         # Case with existing time 12:00 to 13:00, compare to 12:00 to 13:00
         booking = Booking(booker=self.booker,
@@ -120,7 +113,6 @@ class TestBooking(TestCase):
             booking4.save()
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
 
-    @datetime_mock(MOCK_DATETIME)
     def testPassEndTimeSameAsStartTimeBooking(self):
         # Case with existing time 12:00 to 13:00, compare to 11:00 to 12:00. No errors should be found
         start_time4 = datetime.strptime("11:00", "%H:%M").time()
@@ -139,7 +131,6 @@ class TestBooking(TestCase):
         booking5.save()
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 2)
 
-    @datetime_mock(MOCK_DATETIME)
     def testPassStartTimeSameAsEndTimeBooking(self):
         # Case with existing time 12:00 to 13:00, compare to 11:00 to 12:00. No errors should be found
         end_time4 = datetime.strptime("14:00", "%H:%M").time()
@@ -157,7 +148,6 @@ class TestBooking(TestCase):
         booking5.save()
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 2)
 
-    @datetime_mock(MOCK_DATETIME)
     def testFailWhenEndTimeBeforeStartTime(self):
         end_time = datetime.strptime("11:00", "%H:%M").time()
         booking = Booking(booker=self.booker,
@@ -173,7 +163,6 @@ class TestBooking(TestCase):
             return
         self.fail()
 
-    @datetime_mock(MOCK_DATETIME)
     def testMergeBookingExactMatchStart(self):
         self.activateMerging(0)
 
@@ -204,7 +193,6 @@ class TestBooking(TestCase):
 
         self.fail("Merged booking not deleted")
 
-    @datetime_mock(MOCK_DATETIME)
     def testMergeBookingExactMatchEnd(self):
         self.activateMerging(0)
 
@@ -235,7 +223,6 @@ class TestBooking(TestCase):
 
         self.fail("Merged booking not deleted")
 
-    @datetime_mock(MOCK_DATETIME)
     def testMergeBookingStartInThreshold(self):
         self.activateMerging(15)
 
@@ -266,7 +253,6 @@ class TestBooking(TestCase):
 
         self.fail("Merged booking not deleted")
 
-    @datetime_mock(MOCK_DATETIME)
     def testMergeBookingEndInThreshold(self):
         self.activateMerging(15)
 
@@ -297,7 +283,6 @@ class TestBooking(TestCase):
 
         self.fail("Merged booking not deleted")
 
-    @datetime_mock(MOCK_DATETIME)
     def testMergeBookingStartAndEnd(self):
         self.activateMerging(0)
 
@@ -337,7 +322,6 @@ class TestBooking(TestCase):
 
         self.fail("Merged booking not deleted")
 
-    @datetime_mock(MOCK_DATETIME)
     def testBypassPrivilegeBooking(self):
         call_command("loaddata", "apps/accounts/fixtures/privilege_categories.json")
 
@@ -380,7 +364,6 @@ class TestBooking(TestCase):
 
         self.assertTrue(True)
 
-    @datetime_mock(MOCK_DATETIME)
     def testGetBookingDuration(self):
         booking = Booking(booker=self.booker,
                           room=self.room,
