@@ -12,14 +12,13 @@ class ICSSerializer(abc.ABC):
 
     def serialize(self, booking):
 
-        booker_id = booking.booker.username
+        booker = booking.booker
+        description = 'B: ' + booker.username +\
+                      ' (' + booker.bookerprofile.program + ' ' + booker.bookerprofile.graduate_level + ')\n'
+
         if booking.group is not None:
             group = booking.group.name
-            summary = 'Booker: ' + str(booker_id) + ', ' + 'Group: ' + str(group)
-        else:
-            summary = 'Booker: ' + str(booker_id) + ', ' + 'Group: ' + 'None'
-
-        description = summary
+            description = 'Group: ' + str(group)
 
         date = self.get_date(booking)
 
