@@ -1,7 +1,7 @@
 import datetime
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APIRequestFactory, APIClient, force_authenticate
+from rest_framework.test import APIRequestFactory, force_authenticate
 
 from apps.accounts.models.User import User
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory

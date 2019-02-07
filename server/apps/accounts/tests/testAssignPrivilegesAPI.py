@@ -2,10 +2,8 @@ import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.test import APIRequestFactory, force_authenticate
 
-from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.views.assign_privileges import PrivilegeCategoriesAssignManual, PrivilegeCategoriesRemoveManual
 
