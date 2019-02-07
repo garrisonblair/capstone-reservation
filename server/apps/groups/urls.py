@@ -1,5 +1,5 @@
 from django.urls import path
-from .views.groups import GroupList, InviteMembers, GroupCreate, RemoveMembers, LeaveGroup
+from .views.groups import GroupList, InviteMembers, GroupCreate, LeaveGroup
 
 from .views.group_privileges import PrivilegeRequestList, PrivilegeRequestCreate, PrivilegeRequestDelete
 from .views.group_privileges import ApprovePrivilegeRequest, DenyPrivilegeRequest
@@ -8,7 +8,6 @@ from .views.group_invitations import GroupInvitationsList, AcceptInvitation, Rej
 
 urlpatterns = [
     path(r'group/<int:pk>/invite_members', InviteMembers.as_view()),
-    path(r'group/<int:pk>/remove_members', RemoveMembers.as_view()),
     path(r'group', GroupCreate.as_view()),
     path(r'groups', GroupList.as_view()),
     path(r'group/<int:pk>/leave_group', LeaveGroup.as_view()),

@@ -78,24 +78,6 @@ class GroupAPITest(TestCase):
         self.assertTrue(self.user in group.members.all())
         self.assertEqual(group.owner, self.user)
 
-    def testRemoveMember(self):
-        self.group1.members.add(self.user2)
-        self.group1.save()
-
-        request = self.factory.post("group/" + str(self.group1.id) + "/remove_members",
-                                    {
-                                        "members": [self.user2.id]
-                                    }, format="json")
-
-        force_authenticate(request, user=self.user)
-
-        response = RemoveMembers.as_view()(request, self.group1.id)
-
-        self.group1.refresh_from_db()
-        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
-        self.assertEqual(len(self.group1.members.all()), 1)
-        self.assertTrue(self.user_2 not in self.group1.members.all())
-
     def testInviteMembers(self):
         request = self.factory.post("group/1/invite_members",
                                     {
@@ -111,27 +93,6 @@ class GroupAPITest(TestCase):
             self.fail()
 
         self.assertTrue(True)
-
-    def testAttemptRemoveOwner(self):
-
-        self.group1 = Group(name="Group1", owner=self.user)
-        self.group1.save()
-        self.group1.members.add(self.user)
-        self.group1.save()
-
-        request = self.factory.post("group/" + str(self.group1.id) + "/remove_members",
-                                    {
-                                        "members": [self.user.id]
-                   }, format="json")
-
-        force_authenticate(request, user=self.user)
-
-        response = RemoveMembers.as_view()(request, self.group1.id)
-
-        self.group1.refresh_from_db()
-        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
-        self.assertEqual(len(self.group1.members.all()), 1)
-        self.assertTrue(self.user in self.group1.members.all())
 
     def testLeaveGroupNotOwner(self):
 
