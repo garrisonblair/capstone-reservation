@@ -29,7 +29,7 @@ while True:
                         })
                 if response and 200 >= response.status_code < 300:
                         logger.info("Request successful")
-                        LED.ligh_led(GREEN_PIN, 1)
+                        LED.light_led(GREEN_PIN, 1)
                 else:
                         logger.info("Request failed with status " + str(response.status_code))
                         LED.light_led(RED_PIN, 1)
