@@ -15,6 +15,8 @@ class BookerProfile(models.Model):
     booker_id = models.CharField(max_length=8, blank=True, unique=True, null=True)
     privilege_categories = models.ManyToManyField(PrivilegeCategory)
     secondary_email = models.EmailField(blank=True, default=None, null=True)
+    program = models.CharField(max_length=10, blank=True, null=True)
+    graduate_level = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self):
         return self.user.username + " profile"

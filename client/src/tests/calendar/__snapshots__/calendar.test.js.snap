@@ -68,7 +68,7 @@ exports[`Shows calendar 1`] = `
                     readOnly={false}
                     required={false}
                     type="text"
-                    value="02/04/2019"
+                    value="02/07/2019"
                   />
                   <p
                     className="DateInput_screenReaderMessage DateInput_screenReaderMessage_1"
@@ -87,7 +87,7 @@ exports[`Shows calendar 1`] = `
           onKeyDown={[Function]}
           role="presentation"
         >
-          Mon Feb 4th 2019
+          Thu Feb 7th 2019
         </span>
         <i
           aria-hidden="true"
