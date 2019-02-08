@@ -112,9 +112,15 @@ class CamponICSSerializer(ICSSerializer):
 
     def create_description(self, booking):
 
-        description = super(CamponICSSerializer, self).create_description(booking)
+        booker = booking.booker
+        description = 'B: ' + booker.username + '\n'
 
-        description = "[CAMPON]\n" + description
+        if booker.bookerprofile.program or booker.bookerprofile.graduate_level:
+            description += ' (' + booker.bookerprofile.program + ' ' + booker.bookerprofile.graduate_level + ')\n'
+
+        print(description)
+        description = "[CAMPON]" + description
+        print(description)
 
         return description
 

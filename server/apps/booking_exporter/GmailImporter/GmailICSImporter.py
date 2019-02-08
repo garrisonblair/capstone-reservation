@@ -142,7 +142,7 @@ class GmailICSImporter:
         return room_name
 
     def get_username_from_message(self, message):
-        for header in message["headers"]:
+        for header in message["payload"]["headers"]:
 
             if header["name"] == "From":
                 username = header["value"]
