@@ -11,6 +11,8 @@ from apps.accounts.models.User import User
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.exceptions import PrivilegeError
 
+from apps.util.mock_datetime import datetime_mock
+
 
 class TestBooking(TestCase):
     def setUp(self):
@@ -362,14 +364,6 @@ class TestBooking(TestCase):
 
         self.assertTrue(True)
 
-    def activateMerging(self, threshold):
-        settings = SystemSettings.get_settings()
-
-        settings.merge_adjacent_bookings = True
-        settings.merge_threshold_minutes = threshold
-
-        settings.save()
-
     def testGetBookingDuration(self):
         booking = Booking(booker=self.booker,
                           room=self.room,
@@ -378,3 +372,11 @@ class TestBooking(TestCase):
                           end_time=time(15, 0))
 
         self.assertEqual(booking.get_duration(), timedelta(hours=2))
+
+    def activateMerging(self, threshold):
+        settings = SystemSettings.get_settings()
+
+        settings.merge_adjacent_bookings = True
+        settings.merge_threshold_minutes = threshold
+
+        settings.save()
