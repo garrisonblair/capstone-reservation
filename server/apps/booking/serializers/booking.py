@@ -9,7 +9,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time', 'bypass_privileges')
+        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time', 'bypass_privileges', 'note', 'display_note')
         read_only_fields = ('id',)
 
 
@@ -19,7 +19,7 @@ class ReadBookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time')
+        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time', 'note', 'display_note')
         read_only_fields = ('id',)
 
 
@@ -31,5 +31,5 @@ class MyBookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time', 'recurring_booking')
+        fields = ('id', 'booker', 'group', 'room', 'date', 'start_time', 'end_time', 'recurring_booking', 'note', 'display_note')
         read_only_fields = ('id',)
