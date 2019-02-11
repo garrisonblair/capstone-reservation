@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 
 from ..models.Announcement import Announcement
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
-from apps.booking.serializers.announcement_serializer import AnnouncementSerializer
+from apps.booking.serializers.announcement import AnnouncementSerializer
 from apps.util import utils
 from apps.accounts.exceptions import PrivilegeError
 
@@ -47,7 +47,6 @@ class AnnouncementCreate(APIView):
 
         try:
             announcement = serializer.save()
-            announcement.save()
             utils.log_model_change(announcement, utils.ADDITION, request.user)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -5,10 +5,10 @@ from django.core.exceptions import ValidationError
 
 class Announcement(models.Model):
 
-    title = models.CharField(max_length=255)
-    content = models.TextField()
-    begin_date = models.DateField()
-    end_date = models.DateField()
+    title = models.CharField(max_length=255, blank=False, null=False)
+    content = models.TextField(blank=False, null=False)
+    begin_date = models.DateField(blank=False, null=False)
+    end_date = models.DateField(blank=False, null=False)
 
     def save(self, *args, **kwargs):
         self.validate_model()
@@ -17,3 +17,7 @@ class Announcement(models.Model):
     def validate_model(self):
         if self.begin_date > self.end_date:
             raise ValidationError("Begin date must be earlier then end date.")
+
+    def json_serialize(self):
+        from ..serializers.announcement import AnnouncementSerializer
+        return json.dumps(AnnouncementSerializer(self).data)

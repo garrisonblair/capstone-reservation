@@ -19,11 +19,11 @@ class TestAnnouncement(TestCase):
                                     begin_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
-        Created_announcement = Announcement.objects.last()
-        self.assertEqual(Created_announcement, announcement)
+        created_announcement = Announcement.objects.last()
+        self.assertEqual(created_announcement, announcement)
         self.assertEqual(len(Announcement.objects.all()), 1)
 
-    def testAnnouncementCreationFailed(self):
+    def testAnnouncementCreationBeginDatelaterThanEndDate(self):
         announcement = Announcement(title=self.title,
                                     content=self.content,
                                     begin_date=self.tomorrow,
@@ -31,5 +31,4 @@ class TestAnnouncement(TestCase):
 
         with self.assertRaises(ValidationError):
             announcement.save()
-            print(len(Announcement.objects.all()))
             self.assertEqual(len(Announcement.objects.all()), 0)
