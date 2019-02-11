@@ -46,6 +46,8 @@ class Booking(models.Model, SubjectModel):
                               blank=True, null=True)  # type: Group
     room = models.ForeignKey(Room,
                              on_delete=models.CASCADE)
+    note = models.CharField(max_length=255, blank=True, null=True)
+    display_note = models.BooleanField(default=False)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
