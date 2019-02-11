@@ -50,7 +50,8 @@ class ResetPasswordView(APIView):
 
             context = {
                 'verify_url': verify_url,
-                'expiration': token.expiration - datetime.timedelta(hours=4)
+                'expiration': token.expiration - datetime.timedelta(hours=4),
+                'first_name': user.first_name
             }
             html_message = render_to_string('password_reset.html', context)
             plain_message = strip_tags(html_message)

@@ -99,7 +99,7 @@ class InviteMembers(APIView):
             subject = "Capstone Room System: Group Invitation"
             message = "Hi {},\n"\
                       "You have been invited to the group {} by {}."\
-                      "Press on the link below to accept the invitation.".format(user.first_name,
+                      "Please go to your profile to accept the invitation.".format(user.first_name,
                                                                                  group.name,
                                                                                  group.owner.username)
 
