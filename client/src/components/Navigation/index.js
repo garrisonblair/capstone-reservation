@@ -149,7 +149,7 @@ class Navigation extends Component {
             Capstone
           </Menu.Item>
           <Menu.Item>
-            <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing">Feedback</a>
+            <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
           </Menu.Item>
           { showDate
             ? (
