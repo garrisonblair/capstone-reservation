@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-// import { Table, Segment } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 // import sweetAlert from 'sweetalert2';
 // import api from '../../../utils/api';
 // import './AnnouncementsTable.scss';
@@ -15,11 +15,28 @@ class AnnouncementsTable extends Component {
     }, {
       dataField: 'subject',
       text: 'mysubject',
+    }, {
+      dataField: 'text',
+      text: 'Text',
+    }, {
+      dataField: 'test',
+      isDummyField: true,
+      text: '',
+      // eslint-disable-next-line arrow-body-style
+      formatter: (cellContent, row) => {
+        return (
+          <Button color="red" icon="trash" onClick={() => this.handleOnClickDelete(row)} />
+        );
+      },
     }],
   }
 
   componentDidMount() {
     this.syncAnnouncements();
+  }
+
+  handleOnClickDelete = (row) => {
+    console.log(row);
   }
 
   syncAnnouncements = () => {

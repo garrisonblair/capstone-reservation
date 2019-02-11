@@ -18,6 +18,8 @@ class Announcements extends Component {
       <div id="announcements">
         <h1>Announcements</h1>
         <AddAnnouncementForm syncFunction={this.syncAnnouncements} />
+        <br />
+        <br />
         <AnnouncementsTable ref={this.announcementsTable} />
       </div>
     );
