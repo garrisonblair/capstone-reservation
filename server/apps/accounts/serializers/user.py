@@ -56,4 +56,4 @@ class BookerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BookerProfile
-        fields = ('id', 'booker_id', 'secondary_email', 'privilege_categories')
+        fields = ('id', 'booker_id', 'secondary_email', 'privilege_categories', 'program', 'graduate_level')
