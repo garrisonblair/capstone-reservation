@@ -402,7 +402,7 @@ class Cells extends Component {
           {Cells.getBookingDuration(booking) < 30 && orientation === 1
             ? <span>{booking.booker.username.substring(0, 4)}</span>
             : <span>{booking.booker.username.substring(0, 9)}</span>}
-          {booking.note ? Cells.renderNote(booking) : null}
+          {booking.display_note && booking.note ? Cells.renderNote(booking) : null}
         </span>
       );
     }

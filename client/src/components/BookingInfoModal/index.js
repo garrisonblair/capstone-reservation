@@ -61,6 +61,12 @@ class BookingInfoModal extends Component {
         show: nextProps.show,
       });
     }
+    if (nextProps.booking) {
+      this.setState({
+        note: nextProps.booking.note,
+        displayNote: nextProps.booking.display_note,
+      });
+    }
   }
 
   closeModal = () => {
@@ -235,7 +241,7 @@ class BookingInfoModal extends Component {
       <Form onSubmit={this.handleNoteSubmit}>
         <TextArea placeholder="Enter note" onChange={this.handleNoteEdit} defaultValue={booking.note} />
         <Checkbox toggle label="show" onChange={this.handleNoteDisplay} defaultChecked={booking.display_note} />
-        <Button type="submit">Add Note</Button>
+        <Button type="submit">Edit Note</Button>
       </Form>);
   }
 
