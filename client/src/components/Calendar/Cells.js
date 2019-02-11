@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Label, Popup } from 'semantic-ui-react';
+import { Label, Popup, Icon } from 'semantic-ui-react';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
@@ -402,6 +402,7 @@ class Cells extends Component {
           {Cells.getBookingDuration(booking) < 30 && orientation === 1
             ? <span>{booking.booker.username.substring(0, 4)}</span>
             : <span>{booking.booker.username.substring(0, 9)}</span>}
+          {booking.note ? Cells.renderNote(booking) : null}
         </span>
       );
     }
@@ -432,6 +433,10 @@ class Cells extends Component {
         {text}
       </span>
     );
+  }
+
+  static renderNote(booking) {
+    return <Popup trigger={<Icon name="attention" />} content={booking.note} />;
   }
 
   render() {
