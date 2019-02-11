@@ -7,6 +7,7 @@ import {
   Form,
   TextArea,
   Checkbox,
+  Message,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import CampOnForm from './CampOnForm';
@@ -203,7 +204,6 @@ class BookingInfoModal extends Component {
           </div>
           <div className="ui divider" />
           {storage.getUser() ? this.renderForm(booking) : null}
-          {this.renderNote(booking)}
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
             {BookingInfoModal.checkSameUserOrAdmin(booking) ? <Button content="Delete" color="red" onClick={this.handleDelete} /> : null}
@@ -237,6 +237,13 @@ class BookingInfoModal extends Component {
   }
 
   renderNote(booking) {
+    if (!BookingInfoModal.checkAdmin()) {
+      return (
+        <Message negative>
+          {booking.note}
+        </Message>
+      );
+    }
     return (
       <Form onSubmit={this.handleNoteSubmit}>
         <TextArea placeholder="Enter note" onChange={this.handleNoteEdit} defaultValue={booking.note} />
@@ -247,7 +254,7 @@ class BookingInfoModal extends Component {
 
   render() {
     const { show } = this.state;
-    const { selectedRoomName } = this.props;
+    const { selectedRoomName, booking } = this.props;
     return (
       <div id="reservation-details-modal">
         <Modal centered={false} size="tiny" open={show} onClose={this.closeModal}>
@@ -255,6 +262,8 @@ class BookingInfoModal extends Component {
             <Icon name="map marker alternate" />
             Room&nbsp;
             {selectedRoomName}
+            {(booking.display_note && booking.note) || BookingInfoModal.checkAdmin()
+              ? this.renderNote(booking) : null}
           </Modal.Header>
           {this.renderDescription()}
         </Modal>
