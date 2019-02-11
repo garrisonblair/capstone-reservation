@@ -111,14 +111,32 @@ class BookingInfoModal extends Component {
     });
   }
 
-  handleNoteEdit = (e, value) => this.setState({ note: value });
+  handleNoteEdit = (e, target) => this.setState({ note: target.value });
 
-  handleNoteDisplay = (e, value) => this.setState({ displayNote: value.checked });
+  handleNoteDisplay = (e, target) => this.setState({ displayNote: target.checked });
 
   handleNoteSubmit = () => {
     const { note, displayNote } = this.state;
-    console.log(note);
-    console.log(displayNote);
+    const { booking } = this.props;
+    const data = {
+      note,
+      display_note: displayNote,
+    };
+    api.updateBooking(booking.id, data)
+      .then(() => {
+        sweetAlert({
+          title: 'Success',
+          text: 'Note added',
+          type: 'success',
+        });
+      })
+      .catch((error) => {
+        sweetAlert(
+          'Adding note failed',
+          error.response.data,
+          'error',
+        );
+      });
   }
 
   renderCampons = () => {
@@ -148,7 +166,6 @@ class BookingInfoModal extends Component {
 
   renderDescription() {
     const { booking, campons } = this.props;
-    console.log(booking);
     const booker = !!booking.booker;
     return (
       <Modal.Content>
@@ -216,7 +233,7 @@ class BookingInfoModal extends Component {
   renderNote(booking) {
     return (
       <Form onSubmit={this.handleNoteSubmit}>
-        <TextArea placeholder="Enter note" onChange={this.handleNoteEdit} />
+        <TextArea placeholder="Enter note" onChange={this.handleNoteEdit} defaultValue={booking.note} />
         <Checkbox toggle label="show" onChange={this.handleNoteDisplay} defaultChecked={booking.display_note} />
         <Button type="submit">Add Note</Button>
       </Form>);
