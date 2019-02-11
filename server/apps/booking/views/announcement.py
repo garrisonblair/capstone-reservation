@@ -22,16 +22,21 @@ class AnnouncementList(ListAPIView):
         qs = super(AnnouncementList, self).get_queryset()
 
         # Filter by begin date
-        begin_date = self.request.GET.get('begin_date')
-        if begin_date:
-            qs = qs.filter(begin_date=begin_date)
-
-        # Filter by end date
-        end_date = self.request.GET.get('end_date')
-        if end_date:
-            qs = qs.filter(end_date=end_date)
+        date = self.request.GET.get('date')
+        if date:
+            qs = qs.filter(begin_date__lte=date, end_date__gte=date)
 
         return qs
+
+    def get(self, request):
+        try:
+            qs = self.get_queryset()
+            serializer = AnnouncementSerializer(qs, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            # print(str(e))
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class AnnouncementCreate(APIView):
@@ -59,20 +64,17 @@ class AnnouncementDelete(APIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
     serializer_class = AnnouncementSerializer
 
-    def post(self, request, pk):
+    def delete(self, request, pk):
 
         try:
             announcement = Announcement.objects.get(id=pk)
-        except announcement.DoesNotExist:
+        except Announcement.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        # Check user permissions
-        self.check_object_permissions(request, IsSuperUser)
-
+        utils.log_model_change(announcement, utils.DELETION, request.user)
         announcement.delete()
-        utils.log_model_change(announcement, utils.CHANGE, request.user)
 
-        return Response(status=status.Http_204)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AnnouncementUpdate(APIView):
@@ -83,18 +85,8 @@ class AnnouncementUpdate(APIView):
 
         try:
             announcement = Announcement.objects.get(id=pk)
-        except announcement.DoesNotExist:
+        except Announcement.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        data = request.data
-        if request.user.is_superuser and "admin_selected_user" in data:
-            data["booker"] = data["admin_selected_user"]
-            del data["admin_selected_user"]
-        else:
-            data["booker"] = request.user.id
-
-        if not request.user.is_superuser:
-            data["bypass_privileges"] = False
 
         data = request.data
 
@@ -111,5 +103,5 @@ class AnnouncementUpdate(APIView):
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        except ValidationError as error:
+        except (ValidationError, Exception) as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
