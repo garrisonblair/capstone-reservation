@@ -15,9 +15,5 @@ class Announcement(models.Model):
         super(Announcement, self).save(*args, **kwargs)
 
     def validate_model(self):
-        if self.end_data > self.begin_date:
+        if self.begin_date > self.end_date:
             raise ValidationError("Begin date must be earlier then end date.")
-
-    #def json_serialize(self):
-        #from ..serializers.booking import BookingSerializer
-        #return json.dumps(BookingSerializer(self).data)
