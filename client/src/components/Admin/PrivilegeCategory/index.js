@@ -105,7 +105,7 @@ class PrivilegeCategory extends Component {
           Add
         </Button>
         <Button icon labelPosition="left" primary size="small" onClick={this.handleAssignAllPrivileges}>
-          <Icon name="upload" />
+          <Icon name="users" />
           Assign All
         </Button>
       </div>
