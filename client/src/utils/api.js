@@ -541,6 +541,23 @@ function getRoomStatistics(startDate, endDate) {
   });
 }
 
+function createAnnouncement(subject, text, startDate, endDate) {
+  const headers = getTokenHeader();
+  const data = {
+    subject,
+    text,
+    startDate,
+    endDate,
+  };
+  return axios({
+    method: 'POST',
+    url: '',
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -588,6 +605,7 @@ const api = {
   rejectInvitation,
   denyPrivilegeRequest,
   getRoomStatistics,
+  createAnnouncement,
 };
 
 export default api;

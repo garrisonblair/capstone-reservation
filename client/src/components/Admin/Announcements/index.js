@@ -22,7 +22,7 @@ class Announcements extends Component {
     return (
       <div id="announcements">
         <h1>Announcements</h1>
-        <AddAnnouncementForm />
+        <AddAnnouncementForm syncFunction={this.syncAnnouncements} />
       </div>
     );
   }
