@@ -4,18 +4,13 @@ import AddAnnouncementForm from './AddAnnouncementForm';
 // import sweetAlert from 'sweetalert2';
 // import api from '../../../utils/api';
 import './Announcements.scss';
+import AnnouncementsTable from './AnnouncementsTable';
 
 class Announcements extends Component {
-  state = {
-    // announcements: [],
-  }
-
-  componentDidMount() {
-    this.syncAnnouncements();
-  }
+  announcementsTable = React.createRef();
 
   syncAnnouncements = () => {
-
+    this.announcementsTable.current.syncAnnouncements();
   }
 
   render() {
@@ -23,6 +18,7 @@ class Announcements extends Component {
       <div id="announcements">
         <h1>Announcements</h1>
         <AddAnnouncementForm syncFunction={this.syncAnnouncements} />
+        <AnnouncementsTable ref={this.announcementsTable} />
       </div>
     );
   }

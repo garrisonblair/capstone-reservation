@@ -558,6 +558,16 @@ function createAnnouncement(subject, text, startDate, endDate) {
   });
 }
 
+function getAllAnnouncements() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: '',
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -606,6 +616,7 @@ const api = {
   denyPrivilegeRequest,
   getRoomStatistics,
   createAnnouncement,
+  getAllAnnouncements,
 };
 
 export default api;
