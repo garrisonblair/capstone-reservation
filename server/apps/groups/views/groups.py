@@ -97,11 +97,11 @@ class InviteMembers(APIView):
                 created_invitations.append(invitation)
 
             subject = "Capstone Room System: Group Invitation"
-            message = "Hi {},\n"\
-                      "You have been invited to the group {} by {}."\
+            message = "Hi {},\n" \
+                      "You have been invited to the group {} by {}." \
                       "Please go to your profile to accept the invitation.".format(user.first_name,
-                                                                                 group.name,
-                                                                                 group.owner.username)
+                                                                                   group.name,
+                                                                                   group.owner.username)
 
             user.send_email(subject, message)
 
