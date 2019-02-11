@@ -4,6 +4,9 @@ import {
   Button,
   Icon,
   Modal,
+  Form,
+  TextArea,
+  Checkbox,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import CampOnForm from './CampOnForm';
@@ -48,6 +51,8 @@ class BookingInfoModal extends Component {
 
   state = {
     show: false,
+    note: '',
+    displayNote: false,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -106,6 +111,16 @@ class BookingInfoModal extends Component {
     });
   }
 
+  handleNoteEdit = (e, value) => this.setState({ note: value });
+
+  handleNoteDisplay = (e, value) => this.setState({ displayNote: value.checked });
+
+  handleNoteSubmit = () => {
+    const { note, displayNote } = this.state;
+    console.log(note);
+    console.log(displayNote);
+  }
+
   renderCampons = () => {
     const { campons } = this.props;
     const camponsInfo = [];
@@ -133,6 +148,7 @@ class BookingInfoModal extends Component {
 
   renderDescription() {
     const { booking, campons } = this.props;
+    console.log(booking);
     const booker = !!booking.booker;
     return (
       <Modal.Content>
@@ -164,6 +180,7 @@ class BookingInfoModal extends Component {
           </div>
           <div className="ui divider" />
           {storage.getUser() ? this.renderForm(booking) : null}
+          {this.renderNote(booking)}
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
             {BookingInfoModal.checkSameUserOrAdmin(booking) ? <Button content="Delete" color="red" onClick={this.handleDelete} /> : null}
@@ -194,6 +211,15 @@ class BookingInfoModal extends Component {
       );
     }
     return null;
+  }
+
+  renderNote(booking) {
+    return (
+      <Form onSubmit={this.handleNoteSubmit}>
+        <TextArea placeholder="Enter note" onChange={this.handleNoteEdit} />
+        <Checkbox toggle label="show" onChange={this.handleNoteDisplay} defaultChecked={booking.display_note} />
+        <Button type="submit">Add Note</Button>
+      </Form>);
   }
 
   render() {
