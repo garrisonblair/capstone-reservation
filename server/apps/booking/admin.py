@@ -9,7 +9,16 @@ import json
 
 
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'room', 'date', 'start_time', 'end_time', 'booker', 'group', 'recurring_booking', 'note', 'display_note')
+    list_display = ('id',
+                    'room',
+                    'date',
+                    'start_time',
+                    'end_time',
+                    'booker',
+                    'group',
+                    'recurring_booking',
+                    'note',
+                    'display_note')
 
     def log_addition(self, request, object, message):
         """

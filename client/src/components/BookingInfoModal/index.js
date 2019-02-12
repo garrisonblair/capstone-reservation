@@ -54,6 +54,7 @@ class BookingInfoModal extends Component {
     show: false,
     note: '',
     displayNote: false,
+    showOnCalendar: false,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -122,12 +123,15 @@ class BookingInfoModal extends Component {
 
   handleNoteDisplay = (e, target) => this.setState({ displayNote: target.checked });
 
+  handleShowOnCalendar = (e, target) => this.setState({ showOnCalendar: target.checked });
+
   handleNoteSubmit = () => {
-    const { note, displayNote } = this.state;
+    const { note, displayNote, showOnCalendar } = this.state;
     const { booking } = this.props;
     const data = {
       note,
       display_note: displayNote,
+      show_note_on_calendar: showOnCalendar,
     };
     api.updateBooking(booking.id, data)
       .then(() => {
@@ -247,7 +251,8 @@ class BookingInfoModal extends Component {
     return (
       <Form onSubmit={this.handleNoteSubmit}>
         <TextArea placeholder="Enter note" onChange={this.handleNoteEdit} defaultValue={booking.note} />
-        <Checkbox toggle label="show" onChange={this.handleNoteDisplay} defaultChecked={booking.display_note} />
+        <Checkbox toggle label="Show" onChange={this.handleNoteDisplay} defaultChecked={booking.display_note} />
+        <Checkbox toggle label="Show on calendar" onChange={this.handleShowOnCalendar} defaultChecked={booking.show_note_on_calendar} />
         <Button type="submit" primary className="note--button">Save Note</Button>
       </Form>);
   }

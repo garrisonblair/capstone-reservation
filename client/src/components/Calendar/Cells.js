@@ -396,6 +396,14 @@ class Cells extends Component {
 
   renderBookingText(booking) {
     const { orientation } = this.props;
+    let usernameDisplay = booking.booker.username;
+    if (booking.show_note_on_calendar) {
+      console.log(booking);
+      usernameDisplay = booking.note;
+    } else if (booking.group) {
+      usernameDisplay = booking.group.name;
+    }
+
     if (Cells.getBookingDuration(booking) >= 20) {
       return (
         <span>
@@ -406,8 +414,8 @@ class Cells extends Component {
             ? booking.end_time.substring(0, booking.end_time.length - 3) : booking.end_time}
           <br />
           {Cells.getBookingDuration(booking) < 30 && orientation === 1
-            ? <span>{booking.booker.username.substring(0, 4)}</span>
-            : <span>{booking.booker.username.substring(0, 9)}</span>}
+            ? <span>{usernameDisplay.substring(0, 4)}</span>
+            : <span>{usernameDisplay.substring(0, 9)}</span>}
           {booking.note && (booking.display_note || storage.checkAdmin())
             ? Cells.renderNote(booking) : null}
         </span>
