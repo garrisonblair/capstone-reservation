@@ -24,6 +24,7 @@ class MyPrivileges(APIView):
         user = User.cast_django_user(request.user)
         privilege_merger = user.get_privileges()
 
+        privileges = dict()
         my_privileges = dict()
 
         for field_name in PrivilegeCategory.get_parameter_names():
@@ -32,4 +33,19 @@ class MyPrivileges(APIView):
             else:
                 my_privileges[field_name] = privilege_merger.get_parameter(field_name)
 
-        return Response(my_privileges, status=status.HTTP_200_OK)
+            privileges["me"] = my_privileges
+
+        for group in user.group_set.all():
+
+            privilege_merger = group.get_privileges()
+            group_privileges = dict()
+
+            for field_name in PrivilegeCategory.get_parameter_names():
+                if group.privilege_category is None:
+                    group_privileges[field_name] = ''
+                else:
+                    group_privileges[field_name] = privilege_merger.get_parameter(field_name)
+
+            privileges[group.name] = group_privileges
+
+        return Response(privileges, status=status.HTTP_200_OK)

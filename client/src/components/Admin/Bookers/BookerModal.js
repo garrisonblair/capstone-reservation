@@ -65,6 +65,32 @@ class BookerModal extends Component {
       });
   }
 
+  handleAssignIndividualPrivileges = () => {
+    const { booker } = this.props;
+    sweetAlert.fire({
+      title: `Assign Privileges to ${booker.username}?`,
+      text: `This will assign privileges to ${booker.username} based on which courses they are taking`,
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, assign privileges!',
+    }).then((result) => {
+      if (result.value) {
+        api.assignIndividualPrivileges(booker.id)
+          .then(
+            sweetAlert.fire({
+              position: 'top',
+              type: 'success',
+              title: 'Completed',
+              text: `Privieges successfully assigned to ${booker.username}`,
+            }),
+          );
+        this.componentDidMount();
+      }
+    });
+  }
+
   renderPrivilegeRow = privilege => (
     <List.Item key={privilege.id}>
       <List.Content floated="right">
@@ -112,12 +138,20 @@ class BookerModal extends Component {
                   )}
                 </List>
                 <Dropdown
+                  className="dropdown"
                   placeholder="Privilege to add"
                   selection
                   onChange={this.handleDropdownChange}
                   options={dropdownOptions}
                 />
-                <Button onClick={this.handleAddPrivilegeClick} color="blue">Add Privilege</Button>
+                <Button icon labelPosition="left" primary size="small" onClick={this.handleAddPrivilegeClick} color="blue">
+                  <Icon name="plus" />
+                  Add Privilege
+                </Button>
+                <Button icon labelPosition="left" primary size="small" onClick={this.handleAssignIndividualPrivileges} color="blue">
+                  <Icon name="user" />
+                  Assign Automatic
+                </Button>
               </div>
             </Segment>
           </Modal.Description>

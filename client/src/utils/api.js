@@ -348,6 +348,16 @@ function removeMembersFromGroup(groupId, members) {
   });
 }
 
+function getGroupPrivileges(groupId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/group/${groupId}/privileges`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function getLogEntries(params) {
   const headers = getTokenHeader();
   return axios({
@@ -398,6 +408,26 @@ function addPrivilege(username, privilegeID) {
     url: `${settings.API_ROOT}/assign_privilege`,
     headers,
     data,
+    withCredentials: true,
+  });
+}
+
+function assignIndividualPrivileges(userId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/assign_privileges/${userId}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function assignAllPrivileges() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/assign_privileges`,
+    headers,
     withCredentials: true,
   });
 }
@@ -573,10 +603,13 @@ const api = {
   inviteMembers,
   revokeInvitation,
   removeMembersFromGroup,
+  getGroupPrivileges,
   getLogEntries,
   getContentTypes,
   getUsers,
   addPrivilege,
+  assignIndividualPrivileges,
+  assignAllPrivileges,
   removePrivilege,
   getBookers,
   requestPrivilege,

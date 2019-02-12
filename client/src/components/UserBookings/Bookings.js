@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Table, TableBody } from 'semantic-ui-react';
-import EmptySegment from './EmptySegment';
+import EmptySegment from '../EmptySegment';
 
 
 class Bookings extends Component {

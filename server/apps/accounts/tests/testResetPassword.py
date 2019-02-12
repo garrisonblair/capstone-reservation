@@ -1,5 +1,5 @@
 import responses
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.test.testcases import TestCase
 from rest_framework.test import APIClient

@@ -6,6 +6,7 @@ import {
   TableCell,
   Segment,
 } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 import AdminRequired from '../../HOC/AdminRequired';
 import AddPrivilegeModal from './AddPrivilegeModal';
@@ -51,6 +52,30 @@ class PrivilegeCategory extends Component {
     });
   }
 
+  handleAssignAllPrivileges = () => {
+    sweetAlert.fire({
+      title: 'Assign Privileges to all users?',
+      text: 'This will assign privileges to users based on which courses they are taking',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, assign privileges!',
+    }).then((result) => {
+      if (result.value) {
+        api.assignAllPrivileges()
+          .then(
+            sweetAlert.fire({
+              position: 'top',
+              type: 'success',
+              title: 'Completed',
+              text: 'Privieges successfully assigned',
+            }),
+          );
+      }
+    });
+  }
+
   handleDisplayPrivilege = (privilege) => {
     this.setState({
       showDetailsModal: true,
@@ -79,9 +104,9 @@ class PrivilegeCategory extends Component {
           <Icon name="plus" />
           Add
         </Button>
-        <Button icon labelPosition="left" primary size="small">
-          <Icon name="plus" />
-          Assign
+        <Button icon labelPosition="left" primary size="small" onClick={this.handleAssignAllPrivileges}>
+          <Icon name="users" />
+          Assign All
         </Button>
       </div>
     );

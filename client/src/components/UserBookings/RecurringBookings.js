@@ -4,7 +4,7 @@ import {
   Table,
   TableBody,
 } from 'semantic-ui-react';
-import EmptySegment from './EmptySegment';
+import EmptySegment from '../EmptySegment';
 
 
 class RecurringBookings extends Component {

@@ -6,6 +6,7 @@ from rest_framework import status
 from apps.accounts.permissions.IsBooker import IsBooker
 from rest_framework.permissions import IsAuthenticated
 
+from apps.system_administration.models.system_settings import SystemSettings
 from ..serializers.group_invitation import ReadGroupInvitationSerializer
 from ..models.GroupInvitation import GroupInvitation
 
@@ -41,6 +42,13 @@ class AcceptInvitation(APIView):
 
         if request.user.id != invitation.invited_booker.id:
             return Response("Can't accept this invitation", status.HTTP_401_UNAUTHORIZED)
+
+        settings = SystemSettings.get_settings()
+        if settings.group_can_invite_after_privilege_set is False \
+                and not invitation.group.privilege_category.is_default:
+            invitation.delete()
+            return Response("You can no longer join this group, now that it has approved group privileges",
+                            status=status.HTTP_401_UNAUTHORIZED)
 
         invitation.group.members.add(invitation.invited_booker)
         invitation.delete()

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Message, Segment } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 import api from '../../utils/api';
 import './GroupInvitations.scss';
 import InvitationRow from './InvitationRow';
@@ -27,6 +28,7 @@ class GroupInvitations extends Component {
 
   renderTable = () => {
     const { invitations } = this.state;
+    const { syncGroups } = this.props;
     return (
       <Table>
         <Table.Header>
@@ -38,7 +40,14 @@ class GroupInvitations extends Component {
         </Table.Header>
         <Table.Body>
           {invitations.map(
-            i => <InvitationRow invitation={i} syncMethod={this.syncInvitations} key={i.id} />,
+            i => (
+              <InvitationRow
+                invitation={i}
+                syncGroups={syncGroups}
+                syncMethod={this.syncInvitations}
+                key={i.id}
+              />
+            ),
           )}
         </Table.Body>
       </Table>
@@ -64,5 +73,14 @@ class GroupInvitations extends Component {
     );
   }
 }
+
+GroupInvitations.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  syncGroups: PropTypes.func,
+};
+
+GroupInvitations.defaultProps = {
+  syncGroups: null,
+};
 
 export default GroupInvitations;
