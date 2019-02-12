@@ -116,6 +116,7 @@ class Navigation extends Component {
         <Dropdown.Menu>
           <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
           {/* <Dropdown.Item icon="cog" text="Settings" /> */}
+          <Dropdown.Item icon="cog" text="Settings" onClick={() => history.push('settings')} />
         </Dropdown.Menu>
       </Dropdown>
     );
