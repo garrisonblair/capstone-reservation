@@ -9,6 +9,7 @@ import {
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
+import storage from '../../utils/local-storage';
 
 
 class Cells extends Component {
@@ -407,7 +408,8 @@ class Cells extends Component {
           {Cells.getBookingDuration(booking) < 30 && orientation === 1
             ? <span>{booking.booker.username.substring(0, 4)}</span>
             : <span>{booking.booker.username.substring(0, 9)}</span>}
-          {booking.display_note && booking.note ? Cells.renderNote(booking) : null}
+          {booking.note && (booking.display_note || storage.checkAdmin())
+            ? Cells.renderNote(booking) : null}
         </span>
       );
     }
