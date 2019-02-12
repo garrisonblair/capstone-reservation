@@ -250,9 +250,9 @@ class BookingInfoModal extends Component {
     }
     return (
       <Form onSubmit={this.handleNoteSubmit}>
-        <TextArea placeholder="Enter note" onChange={this.handleNoteEdit} defaultValue={booking.note} />
-        <Checkbox toggle label="Show" onChange={this.handleNoteDisplay} defaultChecked={booking.display_note} />
-        <Checkbox toggle label="Show on calendar" onChange={this.handleShowOnCalendar} defaultChecked={booking.show_note_on_calendar} />
+        <TextArea className="noteBox" placeholder="Enter note" onChange={this.handleNoteEdit} defaultValue={booking.note} />
+        <Checkbox className="toggle" toggle label="Show" onChange={this.handleNoteDisplay} defaultChecked={booking.display_note} />
+        <Checkbox className="toggle" toggle label="Show on calendar" onChange={this.handleShowOnCalendar} defaultChecked={booking.show_note_on_calendar} />
         <Button type="submit" primary className="note--button">Save Note</Button>
       </Form>);
   }
