@@ -27,15 +27,15 @@ class InvitationRow extends Component {
           syncMethod();
           syncGroups();
         }
+      })
+      .catch((error) => {
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Cannot Accept Invitation',
+          text: error.response.data,
+        });
       });
-    // .catch((error) => {
-    //   sweetAlert.fire({s
-    //     position: 'top',
-    //     type: 'error',
-    //     title: 'Cannot Accept Invitation',
-    //     text: error.response.data,
-    //   });
-    // });
   }
 
   hanleDecline = () => {
