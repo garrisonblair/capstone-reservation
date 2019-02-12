@@ -62,7 +62,7 @@ class GmailICSImporter:
                               start_time=start_time.time(),
                               end_time=end_time.time(),
                               note=username,
-                              display_note=True,
+                              show_note_on_calendar=True,
                               bypass_validation=True)
 
             booking.save()

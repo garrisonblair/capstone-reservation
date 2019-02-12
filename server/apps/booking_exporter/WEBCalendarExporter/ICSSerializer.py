@@ -12,14 +12,14 @@ class ICSSerializer(abc.ABC):
 
     def create_description(self, booking):
         booker = booking.booker
-        description = 'B: ' + booker.username + '\n'
+        description = 'B: ' + booker.username
 
         if booker.bookerprofile.program or booker.bookerprofile.graduate_level:
-            description += ' (' + booker.bookerprofile.program + ' ' + booker.bookerprofile.graduate_level + ')\n'
+            description += ' (' + booker.bookerprofile.program + ' ' + booker.bookerprofile.graduate_level + ')'
 
         if booking.group is not None:
             group = booking.group.name
-            description = 'Group: ' + str(group)
+            description += ', Group: ' + str(group)
 
         return description
 

@@ -54,8 +54,8 @@ class testWebCalendarExporter(TestCase):
 METHOD:PUBLISH
 BEGIN:VEVENT
 UID: 1
-SUMMARY:Booker: s_loc, Group: None
-DESCRIPTION:Booker: s_loc, Group: None
+SUMMARY:B: s_loc
+DESCRIPTION:B: s_loc
 CLASS:PUBLIC
 STATUS:TENTATIVE
 DTSTART:DTSTART:20181028T130000
@@ -70,8 +70,8 @@ END:VCALENDAR"""
 METHOD:PUBLISH
 BEGIN:VEVENT
 UID: 2
-SUMMARY:Booker: s_loc, Group: Test Group
-DESCRIPTION:Booker: s_loc, Group: Test Group
+SUMMARY:B: s_loc, Group: Test Group
+DESCRIPTION:B: s_loc, Group: Test Group
 CLASS:PUBLIC
 STATUS:TENTATIVE
 DTSTART:DTSTART:20181028T140000
