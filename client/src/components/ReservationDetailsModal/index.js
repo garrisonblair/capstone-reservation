@@ -29,6 +29,7 @@ class ReservationDetailsModal extends Component {
     updatedOwnerOptions: false,
     reservationProfiles: [],
     bypassPrivileges: false,
+    bypassValidation: false,
     adminSelectedUser: undefined,
     isLoading: false,
   }
@@ -78,6 +79,7 @@ class ReservationDetailsModal extends Component {
       startMinute: minute,
       adminSelectedUser: undefined,
       bypassPrivileges: false,
+      bypassValidation: false,
     });
     this.getDefaultEndTime(hour, minute);
   }
@@ -238,7 +240,14 @@ class ReservationDetailsModal extends Component {
 
     const { selectedDate, selectedRoomId, selectedRoomName } = this.props;
     const {
-      startHour, startMinute, endHour, endMinute, ownerValue, bypassPrivileges, adminSelectedUser,
+      startHour,
+      startMinute,
+      endHour,
+      endMinute,
+      ownerValue,
+      bypassPrivileges,
+      adminSelectedUser,
+      bypassValidation,
     } = this.state;
     // Handle time zone
     const tzoffset = (selectedDate).getTimezoneOffset() * 60000;
@@ -257,6 +266,10 @@ class ReservationDetailsModal extends Component {
 
     if (bypassPrivileges) {
       data.bypass_privileges = true;
+    }
+
+    if (bypassValidation) {
+      data.bypass_validation = true;
     }
 
     if (adminSelectedUser) {
@@ -464,6 +477,10 @@ class ReservationDetailsModal extends Component {
     this.setState({ bypassPrivileges: data.checked });
   }
 
+  handleBypassValidationChange = (event, data) => {
+    this.setState({ bypassValidation: data.checked });
+  }
+
   renderRecurringForm() {
     const panes = [
       { menuItem: 'Option 1', render: () => <Tab.Pane attached={false}>{this.renderRecurringBookingOption0()}</Tab.Pane> },
@@ -486,7 +503,12 @@ class ReservationDetailsModal extends Component {
           </h3>
         </div>
         <UserSearch maxUsers={2} onSelect={this.handleAdminUserSelect} />
-        <Checkbox label="Bypass Privileges" onChange={this.handleBypassPrivilegesChange} />
+        <div className="modal-description">
+          <Checkbox label="Bypass Privileges" onChange={this.handleBypassPrivilegesChange} />
+        </div>
+        <div className="modal-description">
+          <Checkbox label="Bypass Validation" onChange={this.handleBypassValidationChange} />
+        </div>
         <Divider />
       </div>
     );
