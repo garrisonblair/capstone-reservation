@@ -1,6 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Label, Popup, Icon } from 'semantic-ui-react';
+import {
+  Label,
+  Popup,
+  Icon,
+  Message,
+} from 'semantic-ui-react';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
@@ -436,7 +441,17 @@ class Cells extends Component {
   }
 
   static renderNote(booking) {
-    return <Popup trigger={<Icon name="attention" />} content={booking.note} />;
+    return (
+      <Popup
+        className="popup--note"
+        trigger={<Icon name="attention" />}
+        content={(
+          <Message negative>
+            {booking.note}
+          </Message>
+        )}
+      />
+    );
   }
 
   render() {

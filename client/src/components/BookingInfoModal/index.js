@@ -248,7 +248,7 @@ class BookingInfoModal extends Component {
       <Form onSubmit={this.handleNoteSubmit}>
         <TextArea placeholder="Enter note" onChange={this.handleNoteEdit} defaultValue={booking.note} />
         <Checkbox toggle label="show" onChange={this.handleNoteDisplay} defaultChecked={booking.display_note} />
-        <Button type="submit">Edit Note</Button>
+        <Button type="submit" primary className="note--button">Save Note</Button>
       </Form>);
   }
 
