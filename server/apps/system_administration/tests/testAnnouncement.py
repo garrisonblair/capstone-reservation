@@ -1,5 +1,5 @@
 from django.test import TestCase
-from apps.booking.models.Announcement import Announcement
+from apps.system_administration.models.Announcement import Announcement
 from datetime import datetime, timedelta
 
 from django.core.exceptions import ValidationError

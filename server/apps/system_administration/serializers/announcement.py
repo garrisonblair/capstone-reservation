@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models.Announcement import Announcement
+from apps.system_administration.models.Announcement import Announcement
 
 
 class AnnouncementSerializer(serializers.ModelSerializer):
