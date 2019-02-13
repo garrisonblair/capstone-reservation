@@ -42,7 +42,7 @@ class AnnouncementAPITest(TestCase):
         request = self.factory.post("/announcement", {
                                         "title": self.title,
                                         "content": self.content,
-                                        "begin_date": self.today,
+                                        "start_date": self.today,
                                         "end_date": self.tomorrow
                                     }, format="json")
         force_authenticate(request, user=self.admin)
@@ -55,7 +55,7 @@ class AnnouncementAPITest(TestCase):
         created_ann = anns[0]
         self.assertEqual(created_ann.title, self.title)
         self.assertEqual(created_ann.content, self.content)
-        self.assertEqual(created_ann.begin_date, self.today)
+        self.assertEqual(created_ann.start_date, self.today)
         self.assertEqual(created_ann.end_date, self.tomorrow)
 
         # LogEntry test
@@ -69,7 +69,7 @@ class AnnouncementAPITest(TestCase):
         request = self.factory.post("/announcement", {
                                         "title": self.title,
                                         "content": self.content,
-                                        "begin_date": self.tomorrow,
+                                        "start_date": self.tomorrow,
                                         "end_date": self.today
                                     }, format="json")
         force_authenticate(request, user=self.admin)
@@ -83,7 +83,7 @@ class AnnouncementAPITest(TestCase):
         request = self.factory.post("/announcement", {
                                         "title": self.title,
                                         "content": self.content,
-                                        "begin_date": self.tomorrow,
+                                        "start_date": self.tomorrow,
                                         "end_date": self.today
                                     }, format="json")
         force_authenticate(request, user=self.normal_user)
@@ -97,7 +97,7 @@ class AnnouncementAPITest(TestCase):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
@@ -121,7 +121,7 @@ class AnnouncementAPITest(TestCase):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
@@ -139,7 +139,7 @@ class AnnouncementAPITest(TestCase):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
@@ -157,7 +157,7 @@ class AnnouncementAPITest(TestCase):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
@@ -167,7 +167,7 @@ class AnnouncementAPITest(TestCase):
         request = self.factory.patch("/announcement", {
                                         "title": self.title,
                                         "content": "new content",
-                                        "begin_date": self.today,
+                                        "start_date": self.today,
                                         "end_date": self.tomorrow
                                     }, format="json")
         force_authenticate(request, user=self.admin)
@@ -180,7 +180,7 @@ class AnnouncementAPITest(TestCase):
         ann = anns[0]
         self.assertEqual(ann.title, self.title)
         self.assertEqual(ann.content, "new content")
-        self.assertEqual(ann.begin_date, self.today)
+        self.assertEqual(ann.start_date, self.today)
         self.assertEqual(ann.end_date, self.tomorrow)
 
         # LogEntry test
@@ -194,7 +194,7 @@ class AnnouncementAPITest(TestCase):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
@@ -204,7 +204,7 @@ class AnnouncementAPITest(TestCase):
         request = self.factory.patch("/announcement", {
                                         "title": self.title,
                                         "content": "new content",
-                                        "begin_date": self.tomorrow,
+                                        "start_date": self.tomorrow,
                                         "end_date": self.today
                                     }, format="json")
         force_authenticate(request, user=self.admin)
@@ -217,14 +217,14 @@ class AnnouncementAPITest(TestCase):
         ann = anns[0]
         self.assertEqual(ann.title, self.title)
         self.assertEqual(ann.content, self.content)
-        self.assertEqual(ann.begin_date, self.today)
+        self.assertEqual(ann.start_date, self.today)
         self.assertEqual(ann.end_date, self.tomorrow)
 
     def testAnnouncementAPIUpdateForbiddenUser(self):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
@@ -234,7 +234,7 @@ class AnnouncementAPITest(TestCase):
         request = self.factory.patch("/announcement", {
                                         "title": self.title,
                                         "content": "new content",
-                                        "begin_date": self.today,
+                                        "start_date": self.today,
                                         "end_date": self.tomorrow
                                     }, format="json")
         force_authenticate(request, user=self.normal_user)
@@ -247,14 +247,14 @@ class AnnouncementAPITest(TestCase):
         ann = anns[0]
         self.assertEqual(ann.title, self.title)
         self.assertEqual(ann.content, self.content)
-        self.assertEqual(ann.begin_date, self.today)
+        self.assertEqual(ann.start_date, self.today)
         self.assertEqual(ann.end_date, self.tomorrow)
 
     def testAnnouncementAPIUpdateWithIdNotFound(self):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
@@ -264,7 +264,7 @@ class AnnouncementAPITest(TestCase):
         request = self.factory.patch("/announcement", {
                                         "title": self.title,
                                         "content": "new content",
-                                        "begin_date": self.today,
+                                        "start_date": self.today,
                                         "end_date": self.tomorrow
                                     }, format="json")
         force_authenticate(request, user=self.admin)
@@ -277,20 +277,20 @@ class AnnouncementAPITest(TestCase):
         ann = anns[0]
         self.assertEqual(ann.title, self.title)
         self.assertEqual(ann.content, self.content)
-        self.assertEqual(ann.begin_date, self.today)
+        self.assertEqual(ann.start_date, self.today)
         self.assertEqual(ann.end_date, self.tomorrow)
 
     def testAnnouncementAPIGetAll(self):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
         announcement = Announcement(title="a2",
                                     content="new content",
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.today)
         announcement.save()
 
@@ -307,13 +307,13 @@ class AnnouncementAPITest(TestCase):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
         announcement = Announcement(title="a2",
                                     content="new content",
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.today)
         announcement.save()
 
@@ -332,13 +332,13 @@ class AnnouncementAPITest(TestCase):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
         announcement = Announcement(title="a2",
                                     content="new content",
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.today)
         announcement.save()
 
@@ -359,7 +359,7 @@ class AnnouncementAPITest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def testGetADayUrl(self):
-        response = self.client.get('/announcements', {'date':self.today})
+        response = self.client.get('/announcements', {'date': self.today})
         self.assertEqual(response.status_code, 200)
 
     def testCreateUrl(self):
@@ -368,7 +368,7 @@ class AnnouncementAPITest(TestCase):
         data = dict(
             title=self.title,
             content=self.content,
-            begin_date=self.today,
+            start_date=self.today,
             end_date=self.tomorrow
         )
         response = self.client.post('/announcement', data)
@@ -379,15 +379,14 @@ class AnnouncementAPITest(TestCase):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
 
-        response = self.client.patch('/announcement/1',
-                                {
+        response = self.client.patch('/announcement/1', {
                                     "title": self.title,
                                     "content": "new content",
-                                    "begin_date": self.today,
+                                    "start_date": self.today,
                                     "end_date": self.tomorrow
                                 }, content_type='application/json')
         self.assertEqual(response.status_code, 200)
@@ -397,7 +396,7 @@ class AnnouncementAPITest(TestCase):
 
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
         response = self.client.delete('/announcement/delete/1')

@@ -6,5 +6,5 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Announcement
-        fields = ('id', 'title', 'content', 'begin_date', 'end_date')
+        fields = ('id', 'title', 'content', 'start_date', 'end_date')
         read_only_fields = ('id',)

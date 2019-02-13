@@ -16,7 +16,7 @@ class TestAnnouncement(TestCase):
     def testAnnouncementCreation(self):
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.today,
+                                    start_date=self.today,
                                     end_date=self.tomorrow)
         announcement.save()
         created_announcement = Announcement.objects.last()
@@ -26,7 +26,7 @@ class TestAnnouncement(TestCase):
     def testAnnouncementCreationBeginDatelaterThanEndDate(self):
         announcement = Announcement(title=self.title,
                                     content=self.content,
-                                    begin_date=self.tomorrow,
+                                    start_date=self.tomorrow,
                                     end_date=self.today)
 
         with self.assertRaises(ValidationError):

@@ -172,7 +172,7 @@ class AnnouncementAdmin(admin.ModelAdmin):
         'id',
         'title',
         'content',
-        'begin_date',
+        'start_date',
         'end_date'
     )
 

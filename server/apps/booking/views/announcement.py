@@ -24,7 +24,7 @@ class AnnouncementList(ListAPIView):
         # Filter by begin date
         date = self.request.GET.get('date')
         if date:
-            qs = qs.filter(begin_date__lte=date, end_date__gte=date)
+            qs = qs.filter(start_date__lte=date, end_date__gte=date)
 
         return qs
 
