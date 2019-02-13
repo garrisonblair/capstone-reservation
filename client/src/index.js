@@ -19,6 +19,7 @@ import Settings from './components/Admin/Settings';
 import Bookers from './components/Admin/Bookers';
 import GroupPrivilegeRequest from './components/Admin/GroupPrivilegeRequest';
 import Profile from './components/Profile';
+import UserSettings from './components/UserSettings';
 
 if (settings.IS_PROD) {
   ReactGA.initialize(settings.gaTrackingID);
@@ -43,6 +44,7 @@ ReactDOM.render(
         <Route exact path="/admin/logs" render={() => <Admin menuType="logs" content={<BookingActivity />} />} />
         <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<Stats />} />} />
         <Route exact path="/profile" component={Profile} />
+        <Route exact path="/settings" component={UserSettings} />
         <Route exact path="/admin/bookers" render={() => <Admin menuType="bookers" content={<Bookers />} />} />
         <Route component={NotFound} />
       </Switch>
