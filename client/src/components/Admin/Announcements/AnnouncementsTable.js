@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
+import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import { Button } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
@@ -24,19 +25,29 @@ class AnnouncementsTable extends Component {
       {
         dataField: 'content',
         text: 'Text',
+        editor: {
+          type: Type.TEXTAREA,
+        },
       },
       {
         dataField: 'start_date',
         text: 'From',
+        editor: {
+          type: Type.DATE,
+        },
       },
       {
         dataField: 'end_date',
         text: 'To',
+        editor: {
+          type: Type.DATE,
+        },
       },
       {
         dataField: 'test',
         isDummyField: true,
         text: '',
+        editable: false,
         // eslint-disable-next-line arrow-body-style
         formatter: (cellContent, row) => {
           return (
@@ -83,7 +94,13 @@ class AnnouncementsTable extends Component {
     const { announcements, columns } = this.state;
     return (
       <div id="announcement-table">
-        <BootstrapTable keyField="id" data={announcements} columns={columns} />
+        <BootstrapTable
+          keyField="id"
+          data={announcements}
+          columns={columns}
+          cellEdit={cellEditFactory({ mode: 'dbclick', blurToSave: true })}
+          caption="Double click on cell to edit."
+        />
       </div>
     );
   }

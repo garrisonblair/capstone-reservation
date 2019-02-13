@@ -52,10 +52,6 @@ class AddAnnouncementForm extends Component {
       return;
     }
     const { syncFunction } = this.props;
-    console.log(subject);
-    console.log(text);
-    console.log(fromDate);
-    console.log(toDate);
     api.createAnnouncement(subject, text, fromDate, toDate)
       .then((r) => {
         if (r.status === 201) {
@@ -63,7 +59,6 @@ class AddAnnouncementForm extends Component {
           this.setState({ subject: '', text: '' });
           sweetAlert('Success', 'Announcement was successfully created.', 'success');
         }
-        console.log(r);
       });
   }
 
