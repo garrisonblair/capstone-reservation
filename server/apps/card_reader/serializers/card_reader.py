@@ -4,15 +4,17 @@ from apps.card_reader.models.card_reader import CardReader
 from apps.rooms.serializers.room import RoomSerializer
 
 
-class CardReaderSerializer(serializers.ModelSerializer):
+class ReadCardReaderSerializer(serializers.ModelSerializer):
 
-    room = serializers.SerializerMethodField()
+    room = RoomSerializer(required=False)
 
     class Meta:
         model = CardReader
         fields = '__all__'
 
-    def get_room(self, card_reader):
-        if card_reader.room:
-            return RoomSerializer(card_reader.room).data
-        return None
+
+class WriteCardReaderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CardReader
+        fields = '__all__'
