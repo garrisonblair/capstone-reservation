@@ -40,6 +40,14 @@ class AddAnnouncementForm extends Component {
       sweetAlert('Blocked', 'End date should be after start date.', 'warning');
       return false;
     }
+    if (fromDate.length === 0) {
+      sweetAlert('Blocked', 'Start date is not valid', 'warning');
+      return false;
+    }
+    if (toDate.length === 0) {
+      sweetAlert('Blocked', 'End date is not valid', 'warning');
+      return false;
+    }
 
     return true;
   }
@@ -48,6 +56,7 @@ class AddAnnouncementForm extends Component {
     const {
       subject, text, fromDate, toDate,
     } = this.state;
+    console.log(fromDate);
     if (!this.isFormValid()) {
       return;
     }
