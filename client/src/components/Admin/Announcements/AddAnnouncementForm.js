@@ -5,7 +5,7 @@ import {
   Form, TextArea, Button, Input,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
-// import api from '../../../utils/api';
+import api from '../../../utils/api';
 import './AddAnnouncementForm.scss';
 
 class AddAnnouncementForm extends Component {
@@ -52,27 +52,39 @@ class AddAnnouncementForm extends Component {
       return;
     }
     const { syncFunction } = this.props;
-    syncFunction();
     console.log(subject);
     console.log(text);
     console.log(fromDate);
     console.log(toDate);
-    // api.createAnnouncement(subject, text, fromDate, toDate)
-    //   .then((r) => {
-    //     if (r.status === 201) {
-    //       syncFunction();
-    //     }
-    //     console.log(r);
-    //   });
+    api.createAnnouncement(subject, text, fromDate, toDate)
+      .then((r) => {
+        if (r.status === 201) {
+          syncFunction();
+          this.setState({ subject: '', text: '' });
+          sweetAlert('Success', 'Announcement was successfully created.', 'success');
+        }
+        console.log(r);
+      });
   }
 
   render() {
-    const { fromDate, toDate } = this.state;
+    const {
+      fromDate, text, toDate, subject,
+    } = this.state;
     return (
       <div id="add-announcement-form">
         <Form>
-          <Input placeholder="Subject" className="subject-input" onChange={this.handleSubjectOnChange} />
-          <TextArea placeholder="Write announcement here" onChange={this.handleTextOnChange} />
+          <Input
+            placeholder="Subject"
+            className="subject-input"
+            onChange={this.handleSubjectOnChange}
+            value={subject}
+          />
+          <TextArea
+            placeholder="Write announcement here"
+            onChange={this.handleTextOnChange}
+            value={text}
+          />
         </Form>
         <div className="grid-container">
           <div className="from-date">

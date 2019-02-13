@@ -571,17 +571,17 @@ function getRoomStatistics(startDate, endDate) {
   });
 }
 
-function createAnnouncement(subject, text, startDate, endDate) {
+function createAnnouncement(title, content, startDate, endDate) {
   const headers = getTokenHeader();
   const data = {
-    subject,
-    text,
-    startDate,
-    endDate,
+    title,
+    content,
+    start_date: startDate,
+    end_date: endDate,
   };
   return axios({
     method: 'POST',
-    url: '',
+    url: `${settings.API_ROOT}/announcement`,
     headers,
     data,
     withCredentials: true,
@@ -592,7 +592,7 @@ function getAllAnnouncements() {
   const headers = getTokenHeader();
   return axios({
     method: 'GET',
-    url: '',
+    url: `${settings.API_ROOT}/announcements`,
     headers,
     withCredentials: true,
   });
