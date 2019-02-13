@@ -119,7 +119,9 @@ class BookingCancel(APIView):
 
         # Checks to see if booking to cancel has any campons otherwise simply deletes the booking
         if len(booking_campons) <= 0:
+            utils.log_model_change(booking, utils.DELETION, request.user)
             booking.delete()
+
         # Otherwise handles turning campons of original booking into campons for new booking and bookings if required
         else:
             # Sort list of campons by campon.id
@@ -210,7 +212,10 @@ class BookingRetrieveUpdateDestroy(APIView):
         if "bypass_privileges" in data and not request.user.is_superuser:
             del data["bypass_privileges"]
 
-        serializer = BookingSerializer(booking, data=data, partial=True)
+        if request.user.is_superuser:
+            serializer = AdminBookingSerializer(booking, data=data, partial=True)
+        else:
+            serializer = BookingSerializer(booking, data=data, partial=True)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

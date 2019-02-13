@@ -6,7 +6,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
-from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
+from django.contrib.admin.models import LogEntry, ContentType, ADDITION
 
 from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room

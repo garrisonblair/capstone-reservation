@@ -20,11 +20,19 @@ function saveOrientation(orientation) {
   localStorage.setItem('Orientation', orientation);
 }
 
+function checkAdmin() {
+  if (localStorage.getItem('CapstoneReservationUser')) {
+    return JSON.parse(localStorage.getItem('CapstoneReservationUser')).is_superuser;
+  }
+  return false;
+}
+
 const storage = {
   getUser,
   saveUser,
   getOrientation,
   saveOrientation,
+  checkAdmin,
 };
 
 export default storage;

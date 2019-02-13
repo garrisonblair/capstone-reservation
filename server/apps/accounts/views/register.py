@@ -59,7 +59,8 @@ class RegisterView(APIView):
             verify_url = "{}://{}/#/verify/{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
             context = {
                 'verify_url': verify_url,
-                'expiration': token.expiration - datetime.timedelta(hours=4)
+                'expiration': token.expiration - datetime.timedelta(hours=4),
+                'username': username
             }
             html_message = render_to_string('email.html', context)
             plain_message = strip_tags(html_message)

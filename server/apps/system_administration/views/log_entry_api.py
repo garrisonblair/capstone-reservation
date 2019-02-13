@@ -1,4 +1,3 @@
-from datetime import datetime
 from dateutil import parser as date_parser
 from rest_framework.views import APIView
 from rest_framework.response import Response

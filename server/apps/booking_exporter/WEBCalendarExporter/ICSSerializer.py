@@ -10,16 +10,22 @@ class ICSSerializer(abc.ABC):
     def get_date(self, entity):
         pass
 
-    def serialize(self, booking):
+    def create_description(self, booking):
+        booker = booking.booker
+        description = 'B: ' + booker.username
 
-        booker_id = booking.booker.username
+        if booker.bookerprofile.program or booker.bookerprofile.graduate_level:
+            description += ' (' + booker.bookerprofile.program + ' ' + booker.bookerprofile.graduate_level + ')'
+
         if booking.group is not None:
             group = booking.group.name
-            summary = 'Booker: ' + str(booker_id) + ', ' + 'Group: ' + str(group)
-        else:
-            summary = 'Booker: ' + str(booker_id) + ', ' + 'Group: ' + 'None'
+            description += ', Group: ' + str(group)
 
-        description = summary
+        return description
+
+    def serialize(self, booking):
+
+        description = self.create_description(booking)
 
         date = self.get_date(booking)
 
@@ -91,7 +97,7 @@ STATUS:TENTATIVE
 DTSTART:%s
 DTEND:%s
 END:VEVENT
-END:VCALENDAR""" % (str(booking.id), str(summary), str(description), str(dt_start), str(dt_end))
+END:VCALENDAR""" % (str(booking.id), str(description), str(description), str(dt_start), str(dt_end))
 
         return ics_file
 
@@ -103,6 +109,20 @@ class BookingICSSerializer(ICSSerializer):
 
 
 class CamponICSSerializer(ICSSerializer):
+
+    def create_description(self, booking):
+
+        booker = booking.booker
+        description = 'B: ' + booker.username + '\n'
+
+        if booker.bookerprofile.program or booker.bookerprofile.graduate_level:
+            description += ' (' + booker.bookerprofile.program + ' ' + booker.bookerprofile.graduate_level + ')\n'
+
+        print(description)
+        description = "[CAMPON]" + description
+        print(description)
+
+        return description
 
     def get_date(self, campon):
         return campon.camped_on_booking.date

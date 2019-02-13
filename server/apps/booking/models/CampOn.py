@@ -35,7 +35,25 @@ class CampOn(models.Model, SubjectModel):
     def save(self, *args, **kwargs):
         self.evaluate_privilege()
         self.validate_model()
-        super(CampOn, self).save(*args, **kwargs)
+        is_create = False
+        if self.id is None:
+            is_create = True
+        this = super(CampOn, self).save(*args, **kwargs)
+
+        if is_create:
+            self.object_created()
+        else:
+            self.object_updated()
+
+        return this
+
+    @property
+    def room(self):
+        return self.camped_on_booking.room
+
+    @property
+    def date(self):
+        return self.camped_on_booking.date
 
     def __str__(self):
         booking_id = ""
