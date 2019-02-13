@@ -107,6 +107,7 @@ class AnnouncementsTable extends Component {
     return (
       <div id="announcement-table">
         <BootstrapTable
+          noDataIndication="There are no announcements."
           keyField="id"
           data={announcements}
           columns={columns}
