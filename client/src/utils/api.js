@@ -598,6 +598,16 @@ function getAllAnnouncements() {
   });
 }
 
+function deleteAnnouncement(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'DELETE',
+    url: `${settings.API_ROOT}/announcement/delete/${id}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -650,6 +660,7 @@ const api = {
   getRoomStatistics,
   createAnnouncement,
   getAllAnnouncements,
+  deleteAnnouncement,
 };
 
 export default api;
