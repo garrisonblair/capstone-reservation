@@ -12,12 +12,16 @@ class AnnouncementsTable extends Component {
     announcements: [],
     columns: [
       {
-        dataField: 'id',
-        text: 'myId',
-      },
-      {
         dataField: 'title',
-        text: 'mysubject',
+        text: 'Title',
+        // eslint-disable-next-line arrow-body-style
+        formatter: (cell) => {
+          return (
+            <strong>
+              {cell}
+            </strong>
+          );
+        },
       },
       {
         dataField: 'content',

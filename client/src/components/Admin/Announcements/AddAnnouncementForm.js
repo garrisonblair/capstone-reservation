@@ -75,7 +75,7 @@ class AddAnnouncementForm extends Component {
       <div id="add-announcement-form">
         <Form>
           <Input
-            placeholder="Subject"
+            placeholder="Title"
             className="subject-input"
             onChange={this.handleSubjectOnChange}
             value={subject}
