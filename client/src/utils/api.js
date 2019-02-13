@@ -608,6 +608,24 @@ function deleteAnnouncement(id) {
   });
 }
 
+function updateAnnouncement(announcement) {
+  const headers = getTokenHeader();
+  const data = {
+    title: announcement.title,
+    content: announcement.content,
+    start_date: announcement.start_date,
+    end_date: announcement.end_date,
+  };
+
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/announcement/${announcement.id}`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -661,6 +679,7 @@ const api = {
   createAnnouncement,
   getAllAnnouncements,
   deleteAnnouncement,
+  updateAnnouncement,
 };
 
 export default api;

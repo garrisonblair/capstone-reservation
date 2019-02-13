@@ -35,12 +35,24 @@ class AnnouncementsTable extends Component {
         editor: {
           type: Type.DATE,
         },
+        // eslint-disable-next-line consistent-return
+        validator: (newValue, row) => {
+          if (new Date(newValue) > new Date(row.end_date)) {
+            return { valid: false, message: 'Start date should not be after end date.' };
+          }
+        },
       },
       {
         dataField: 'end_date',
         text: 'To',
         editor: {
           type: Type.DATE,
+        },
+        // eslint-disable-next-line consistent-return
+        validator: (newValue, row) => {
+          if (new Date(newValue) < new Date(row.end_date)) {
+            return { valid: false, message: 'End date should not be before start date.' };
+          }
         },
       },
       {
@@ -98,7 +110,12 @@ class AnnouncementsTable extends Component {
           keyField="id"
           data={announcements}
           columns={columns}
-          cellEdit={cellEditFactory({ mode: 'dbclick', blurToSave: true })}
+          cellEdit={
+            cellEditFactory({
+              mode: 'dbclick',
+              blurToSave: true,
+              afterSaveCell: (oldValue, newValue, row) => api.updateAnnouncement(row),
+            })}
           caption="Double click on cell to edit."
         />
       </div>
