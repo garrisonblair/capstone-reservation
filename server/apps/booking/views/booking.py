@@ -119,7 +119,9 @@ class BookingCancel(APIView):
 
         # Checks to see if booking to cancel has any campons otherwise simply deletes the booking
         if len(booking_campons) <= 0:
+            utils.log_model_change(booking, utils.DELETION, request.user)
             booking.delete()
+
         # Otherwise handles turning campons of original booking into campons for new booking and bookings if required
         else:
             # Sort list of campons by campon.id
