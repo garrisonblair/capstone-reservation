@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Message } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Cells from './Cells';
 import Header from './Header';
@@ -257,6 +257,9 @@ class Calendar extends Component {
           update={update}
         />
         <div className="calendar__container" key={1}>
+          <Message negative className="announcement">
+            <span>A message.</span>
+          </Message>
           <div className="calendar__wrapper" style={this.setStyle().wrapper}>
             <button type="button" className="button_orientation" onClick={() => this.changeOrientation()}><Icon name="exchange" /></button>
             <Header headerList={colList} type="column" name={colName} />
