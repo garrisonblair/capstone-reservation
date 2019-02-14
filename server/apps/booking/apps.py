@@ -11,8 +11,8 @@ class BookingConfig(AppConfig):
 
     expired_booking_checker_thread = None
 
-    def __init__(self, arg1):
-        super(BookingConfig, self).__init__(arg1)
+    def __init__(self, arg1, arg2):
+        super(BookingConfig, self).__init__(arg1, arg2)
         self.expired_booking_checker_thread = None
 
     def ready(self):
