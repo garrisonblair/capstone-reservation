@@ -227,3 +227,8 @@ body {
   animation-play-state:paused;
   -webkit-animation-play-state:paused;
 }
+
+.announcement>.close.icon {
+  left: 0.2em !important;
+  top: 0.2em !important;
+}
