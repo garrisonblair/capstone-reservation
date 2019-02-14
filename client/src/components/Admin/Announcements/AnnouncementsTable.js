@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import { Button } from 'semantic-ui-react';
+import { Button, Segment } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 import './AnnouncementsTable.scss';
 
 class AnnouncementsTable extends Component {
   state = {
+    isLoading: false,
     announcements: [],
     columns: [
       {
@@ -98,31 +99,34 @@ class AnnouncementsTable extends Component {
   }
 
   syncAnnouncements = () => {
+    this.setState({ isLoading: true });
     api.getAllAnnouncements()
       .then((r) => {
         if (r.status === 200) {
-          this.setState({ announcements: r.data });
+          this.setState({ announcements: r.data, isLoading: false });
         }
       });
   }
 
   render() {
-    const { announcements, columns } = this.state;
+    const { announcements, columns, isLoading } = this.state;
     return (
       <div id="announcement-table">
-        <BootstrapTable
-          noDataIndication="There are no announcements."
-          keyField="id"
-          data={announcements}
-          columns={columns}
-          cellEdit={
-            cellEditFactory({
-              mode: 'dbclick',
-              blurToSave: true,
-              afterSaveCell: (oldValue, newValue, row) => api.updateAnnouncement(row),
-            })}
-          caption="Double click on cell to edit."
-        />
+        <Segment loading={isLoading}>
+          <BootstrapTable
+            noDataIndication="There are no announcements."
+            keyField="id"
+            data={announcements}
+            columns={columns}
+            cellEdit={
+              cellEditFactory({
+                mode: 'dbclick',
+                blurToSave: true,
+                afterSaveCell: (oldValue, newValue, row) => api.updateAnnouncement(row),
+              })}
+            caption="Double click on cell to edit."
+          />
+        </Segment>
       </div>
     );
   }
