@@ -56,7 +56,6 @@ class AddAnnouncementForm extends Component {
     const {
       subject, text, fromDate, toDate,
     } = this.state;
-    console.log(fromDate);
     if (!this.isFormValid()) {
       return;
     }

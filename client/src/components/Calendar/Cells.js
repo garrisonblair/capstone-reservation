@@ -398,7 +398,6 @@ class Cells extends Component {
     const { orientation } = this.props;
     let usernameDisplay = booking.booker.username;
     if (booking.show_note_on_calendar) {
-      console.log(booking);
       usernameDisplay = booking.note;
     } else if (booking.group) {
       usernameDisplay = booking.group.name;
