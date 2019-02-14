@@ -70,4 +70,3 @@ class BookingExporterConfig(AppConfig):
         if self.importer_thread:
             self.importer_thread.cancel()
             self.importer_thread = None
-
