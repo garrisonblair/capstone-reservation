@@ -22,6 +22,10 @@ class SystemSettings(models.Model):
 
     group_can_invite_after_privilege_set = models.BooleanField(default=True)
 
+    # Setting to toggle the checking of expired bookings and the duration at which to check for them
+    check_for_expired_bookings = models.BooleanField(default=True)
+    check_expired_booking_frequency_seconds = models.PositiveIntegerField(default=30)
+
     tracker = FieldTracker()
 
     @staticmethod
