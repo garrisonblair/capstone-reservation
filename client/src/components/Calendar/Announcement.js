@@ -34,7 +34,13 @@ class Announcement extends Component {
       || moment(currentDate).isSame(a.start_date)
       || moment(currentDate).isSame(a.end_date)) {
         text.push(
-          `${a.title}: ${a.content}`,
+          <Message.Item>
+            <b>
+              {a.title}
+            </b>
+            :&nbsp;
+            {a.content}
+          </Message.Item>,
         );
       }
     });
@@ -46,8 +52,11 @@ class Announcement extends Component {
         onDismiss={this.handleDismiss}
         negative
         className="announcement"
-        list={text}
-      />
+      >
+        <Message.List>
+          {text}
+        </Message.List>
+      </Message>
     );
   }
 }
