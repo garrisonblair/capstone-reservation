@@ -14,7 +14,6 @@ from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.exceptions import PrivilegeError
 
-from apps.booking.serializers.booking import BookingSerializer
 from apps.system_administration.models.system_settings import SystemSettings
 
 from apps.util.SubjectModel import SubjectModel
@@ -206,6 +205,8 @@ class Booking(models.Model, SubjectModel):
     def delete_booking(self, request, pk):
 
         from apps.booking.models.CampOn import CampOn
+        from apps.booking.serializers.booking import BookingSerializer
+
         permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
         serializer_class = BookingSerializer
 
