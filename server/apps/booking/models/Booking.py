@@ -10,14 +10,18 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
+from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.exceptions import PrivilegeError
 from apps.booking.models.CampOn import CampOn
+from apps.booking.serializers.booking import BookingSerializer
 from apps.system_administration.models.system_settings import SystemSettings
 
 from apps.util.SubjectModel import SubjectModel
 from apps.util.AbstractBooker import AbstractBooker
 from apps.util import utils
 
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -200,7 +204,9 @@ class Booking(models.Model, SubjectModel):
                 - datetime.datetime.combine(date=datetime.date.today(), time=self.start_time))
 
     def delete_booking(self, request, pk):
-        Booking.delete_booking(self, request, pk)
+
+        permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+        serializer_class = BookingSerializer
 
         # Ensure that booking to be canceled exists
         try:
@@ -281,6 +287,7 @@ class Booking(models.Model, SubjectModel):
             first_campon.delete()
 
         return Response(status=status.HTTP_200_OK)
+
 
 def booking_key(val):
     return val.id

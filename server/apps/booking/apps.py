@@ -5,6 +5,7 @@ from apps.util import Logging
 
 logger = Logging.get_logger()
 
+
 class BookingConfig(AppConfig):
     name = 'apps.booking'
 
