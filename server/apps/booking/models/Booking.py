@@ -13,7 +13,7 @@ from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.exceptions import PrivilegeError
-from apps.booking.models.CampOn import CampOn
+
 from apps.booking.serializers.booking import BookingSerializer
 from apps.system_administration.models.system_settings import SystemSettings
 
@@ -205,6 +205,7 @@ class Booking(models.Model, SubjectModel):
 
     def delete_booking(self, request, pk):
 
+        from apps.booking.models.CampOn import CampOn
         permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
         serializer_class = BookingSerializer
 
@@ -212,7 +213,7 @@ class Booking(models.Model, SubjectModel):
         try:
             booking = Booking.objects.get(id=pk)
         except Booking.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            raise ValidationError("Selected booking to cancel does not exist")
 
         # Check user permissions
         self.check_object_permissions(request, booking.booker)
@@ -223,7 +224,7 @@ class Booking(models.Model, SubjectModel):
         timeout = now.time()
 
         if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
-            return Response("Can't cancel booking anymore.", status=status.HTTP_403_FORBIDDEN)
+            raise ValidationError("Selected booking cannot be canceled as booking has started")
 
         # Get all campons for this booking
         booking_id = booking.id
@@ -286,7 +287,7 @@ class Booking(models.Model, SubjectModel):
             # Finally delete the first campon as it is now a new booking
             first_campon.delete()
 
-        return Response(status=status.HTTP_200_OK)
+        return
 
 
 def booking_key(val):
