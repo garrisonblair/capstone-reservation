@@ -23,6 +23,9 @@ class Settings extends Component {
       merge_threshold_minutes: 0,
       booking_edit_lock_timeout: 0,
       group_can_invite_after_privilege_set: true,
+      check_for_expired_bookings_active = false,
+      check_for_expired_bookings_frequency_seconds = 30,
+      merge_threshold_minutes = 30
     },
   }
 
@@ -91,6 +94,33 @@ class Settings extends Component {
     });
   }
 
+  handleCheckForExpiredBookings = (e, data) => {
+    const { value } = data;
+    const { settings } = this.state;
+    settings.check_for_expired_bookings_active = checked;
+    this.setState({
+      settings,
+    });
+  }
+
+    handleCheckForExpireBookingFrequency = (e, data) => {
+    const { value } = data;
+    const { settings } = this.state;
+    settings.check_for_expired_bookings_frequency_seconds = value;
+    this.setState({
+      settings,
+    });
+  }
+
+    handleBookingExpirationThreshold = (e, data) => {
+    const { value } = data;
+    const { settings } = this.state;
+    settings.booking_time_to_expire_minutes = value;
+    this.setState({
+      settings,
+    });
+  }
+
   handleCloseLoginModal = () => {
     this.setState({ showLoginModal: false });
     this.getSettings();
@@ -127,6 +157,9 @@ class Settings extends Component {
       merge_threshold_minutes,
       booking_edit_lock_timeout,
       group_can_invite_after_privilege_set,
+      check_for_expired_bookings_active,
+      check_for_expired_bookings_frequency_seconds,
+      merge_threshold_minutes
     } = settings;
 
     return (
@@ -167,6 +200,24 @@ class Settings extends Component {
             label="Booking edit lock timeout"
             value={booking_edit_lock_timeout}
             onChange={this.handleBookingEditLock}
+          />
+          <Checkbox
+            className="settings_item"
+            label="Booking expiration toggle (boolean)"
+            checked={check_for_expired_bookings_active}
+            onChange={this.handleCheckForExpiredBookings}
+          />
+          <Input
+            className="settings_item"
+            label="Booking expiration check frequency (seconds)"
+            value={check_for_expired_bookings_frequency_seconds}
+            onChange={this.handleCheckForExpireBookingFrequency}
+          />
+          <Input
+            className="settings_item"
+            label="Time until booking expiration (minutes)"
+            value={booking_time_to_expire_minutes}
+            onChange={this.handleBookingExpirationThreshold}
           />
           <Divider />
           <h3>Groups</h3>

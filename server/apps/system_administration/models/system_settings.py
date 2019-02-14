@@ -22,9 +22,11 @@ class SystemSettings(models.Model):
 
     group_can_invite_after_privilege_set = models.BooleanField(default=True)
 
-    # Setting to toggle the checking of expired bookings and the duration at which to check for them
+    # Setting to toggle the checking of expired bookings, the duration at which to check for them, and the time that
+    # the admin sets at which a booking expires after reaching (in minutes)
     check_for_expired_bookings_active = models.BooleanField(default=True)
     check_for_expired_bookings_frequency_seconds = models.PositiveIntegerField(default=30)
+    booking_time_to_expire_minutes = models.PositiveIntegerField(default=30)
 
     tracker = FieldTracker()
 
@@ -63,6 +65,8 @@ class SystemSettings(models.Model):
 
             if self.check_for_expired_bookings_active:
                 booking_exporter_config.start_checking_for_expired_bookings()
+                # check_for_expired_bookings_frequency_seconds
+                # booking_time_to_expire
             else:
                 booking_exporter_config.stop_checking_for_expired_bookings()
 
