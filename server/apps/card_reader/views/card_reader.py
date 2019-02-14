@@ -13,6 +13,16 @@ class ListCardReaders(ListAPIView):
     permission_classes = (IsSuperUser,)
     serializer_class = ReadCardReaderSerializer
 
+    def get_queryset(self):
+
+        qs = CardReader.objects.all()
+
+        room = self.request.GET.get('room')
+        if room:
+            qs = qs.filter(room=room)
+
+        return qs
+
 
 class CardReaderCreateView(CreateAPIView):
 

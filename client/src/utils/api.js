@@ -214,6 +214,48 @@ function deleteRoom(id) {
   });
 }
 
+function getCardReaders(roomId) {
+  const headers = getTokenHeader();
+  let params = null;
+  if (roomId) {
+    params = {
+      room: roomId,
+    };
+  }
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/card_readers`,
+    headers,
+    params,
+    withCredentials: true,
+  });
+}
+
+function createCardReader(roomID) {
+  const headers = getTokenHeader();
+
+  const data = {
+    room: roomID,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/card_reader`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function deleteCardReader(cardReaderId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'DELETE',
+    url: `${settings.API_ROOT}/card_reader/${cardReaderId}/delete`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function getAdminSettings() {
   const headers = getTokenHeader();
   return axios({
@@ -591,6 +633,9 @@ const api = {
   createRoom,
   updateRoom,
   deleteRoom,
+  getCardReaders,
+  createCardReader,
+  deleteCardReader,
   getAdminSettings,
   updateAdminSettings,
   getPrivileges,

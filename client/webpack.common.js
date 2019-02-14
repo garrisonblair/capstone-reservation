@@ -19,7 +19,10 @@ module.exports = {
             loader: "babel-loader"
           },
           {
-            loader: "eslint-loader"
+            loader: "eslint-loader",
+            options: {
+              emitWarning: true,
+            }
           }
         ]
       },
