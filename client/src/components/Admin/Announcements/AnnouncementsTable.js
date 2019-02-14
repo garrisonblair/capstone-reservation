@@ -54,7 +54,7 @@ class AnnouncementsTable extends Component {
         },
         // eslint-disable-next-line consistent-return
         validator: (newValue, row) => {
-          if (new Date(newValue) < new Date(row.end_date)) {
+          if (new Date(newValue) < new Date(row.start_date)) {
             return { valid: false, message: 'End date should not be before start date.' };
           }
         },
