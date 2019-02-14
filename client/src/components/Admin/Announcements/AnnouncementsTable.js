@@ -5,6 +5,7 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import { Button } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
+import './AnnouncementsTable.scss';
 
 class AnnouncementsTable extends Component {
   state = {
@@ -59,6 +60,7 @@ class AnnouncementsTable extends Component {
         dataField: 'test',
         isDummyField: true,
         text: '',
+        align: 'center',
         editable: false,
         // eslint-disable-next-line arrow-body-style
         formatter: (cellContent, row) => {
