@@ -79,7 +79,7 @@ class BookingExporterConfig(AppConfig):
         settings = SystemSettings.get_settings()
 
         expired_booking_checker_thread = threading.Timer(settings.check_expired_booking_frequency_seconds,
-                                                         self.start_checking_expired_bookings)
+                                                         self.start_checking_for_expired_bookings_active)
         expired_booking_checker_thread.start()
         self.expired_booking_checker_thread = expired_booking_checker_thread
 
