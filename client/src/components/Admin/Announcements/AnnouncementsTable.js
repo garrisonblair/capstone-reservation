@@ -7,6 +7,7 @@ import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 import './AnnouncementsTable.scss';
 
+
 class AnnouncementsTable extends Component {
   state = {
     isLoading: false,

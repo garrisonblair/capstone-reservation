@@ -8,6 +8,7 @@ import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 import './AddAnnouncementForm.scss';
 
+
 class AddAnnouncementForm extends Component {
   state = {
     subject: '',
@@ -29,7 +30,7 @@ class AddAnnouncementForm extends Component {
       subject, text, fromDate, toDate,
     } = this.state;
     if (subject.length === 0) {
-      sweetAlert('Blocked', 'Please add a Subject.', 'warning');
+      sweetAlert('Blocked', 'Please add a title.', 'warning');
       return false;
     }
     if (text.length === 0) {

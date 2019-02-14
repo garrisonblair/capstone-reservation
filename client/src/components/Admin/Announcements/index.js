@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import AddAnnouncementForm from './AddAnnouncementForm';
-// import { Table, Segment } from 'semantic-ui-react';
-// import sweetAlert from 'sweetalert2';
-// import api from '../../../utils/api';
-import './Announcements.scss';
 import AnnouncementsTable from './AnnouncementsTable';
+import './Announcements.scss';
+
 
 class Announcements extends Component {
   announcementsTable = React.createRef();
