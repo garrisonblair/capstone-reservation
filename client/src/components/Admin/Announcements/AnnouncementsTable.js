@@ -15,20 +15,29 @@ class AnnouncementsTable extends Component {
       {
         dataField: 'title',
         text: 'Title',
-        // eslint-disable-next-line arrow-body-style
-        formatter: (cell) => {
-          return (
-            <strong>
-              {cell}
-            </strong>
-          );
+        validator: (newValue) => {
+          if (newValue.length === 0) {
+            return { valid: false, message: 'Field cannot be empty.' };
+          }
+          return true;
         },
+        formatter: cell => (
+          <strong>
+            {cell}
+          </strong>
+        ),
       },
       {
         dataField: 'content',
         text: 'Text',
         editor: {
           type: Type.TEXTAREA,
+        },
+        validator: (newValue) => {
+          if (newValue.length === 0) {
+            return { valid: false, message: 'Field cannot be empty.' };
+          }
+          return true;
         },
       },
       {
@@ -38,11 +47,14 @@ class AnnouncementsTable extends Component {
         editor: {
           type: Type.DATE,
         },
-        // eslint-disable-next-line consistent-return
         validator: (newValue, row) => {
           if (new Date(newValue) > new Date(row.end_date)) {
             return { valid: false, message: 'Start date should not be after end date.' };
           }
+          if (newValue.length === 0) {
+            return { valid: false, message: 'Field cannot be empty.' };
+          }
+          return true;
         },
       },
       {
@@ -52,11 +64,14 @@ class AnnouncementsTable extends Component {
         editor: {
           type: Type.DATE,
         },
-        // eslint-disable-next-line consistent-return
         validator: (newValue, row) => {
           if (new Date(newValue) < new Date(row.start_date)) {
             return { valid: false, message: 'End date should not be before start date.' };
           }
+          if (newValue.length === 0) {
+            return { valid: false, message: 'End date cannot be empty.' };
+          }
+          return true;
         },
       },
       {
@@ -65,12 +80,9 @@ class AnnouncementsTable extends Component {
         text: '',
         align: 'center',
         editable: false,
-        // eslint-disable-next-line arrow-body-style
-        formatter: (cellContent, row) => {
-          return (
-            <Button color="red" icon="trash" onClick={() => this.handleOnClickDelete(row)} />
-          );
-        },
+        formatter: (cellContent, row) => (
+          <Button color="red" icon="trash" onClick={() => this.handleOnClickDelete(row)} />
+        ),
       }],
   }
 
