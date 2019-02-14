@@ -33,6 +33,7 @@ class AnnouncementsTable extends Component {
       {
         dataField: 'start_date',
         text: 'From',
+        align: 'center',
         editor: {
           type: Type.DATE,
         },
@@ -46,6 +47,7 @@ class AnnouncementsTable extends Component {
       {
         dataField: 'end_date',
         text: 'To',
+        align: 'center',
         editor: {
           type: Type.DATE,
         },
