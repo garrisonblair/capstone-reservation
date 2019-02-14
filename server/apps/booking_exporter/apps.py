@@ -10,7 +10,6 @@ class BookingExporterConfig(AppConfig):
     name = 'apps.booking_exporter'
 
     importer_thread = None
-    expired_booking_checker_thread = None
 
     def __init__(self, arg1, arg2):
         super(BookingExporterConfig, self).__init__(arg1, arg2)
@@ -72,18 +71,3 @@ class BookingExporterConfig(AppConfig):
             self.importer_thread.cancel()
             self.importer_thread = None
 
-    def start_checking_for_expired_bookings(self):
-        from .GmailImporter.GmailICSImporter import GmailICSImporter
-        from apps.system_administration.models.system_settings import SystemSettings
-
-        settings = SystemSettings.get_settings()
-
-        expired_booking_checker_thread = threading.Timer(settings.check_expired_booking_frequency_seconds,
-                                                         self.start_checking_for_expired_bookings_active)
-        expired_booking_checker_thread.start()
-        self.expired_booking_checker_thread = expired_booking_checker_thread
-
-    def stop_checking_for_expired_bookings(self):
-        if self.expired_booking_checker_thread:
-            self.expired_booking_checker_thread.cancel()
-            self.expired_booking_checker_thread = None
