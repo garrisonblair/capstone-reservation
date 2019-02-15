@@ -95,6 +95,7 @@ class AddAnnouncementForm extends Component {
             From:
             <Input
               type="date"
+              className="date_input"
               onChange={this.handleFromDateOnChange}
               size="small"
               value={fromDate}
@@ -104,6 +105,7 @@ class AddAnnouncementForm extends Component {
             To:
             <Input
               type="date"
+              className="date_input"
               onChange={this.handleToDateOnChange}
               size="small"
               value={toDate}
