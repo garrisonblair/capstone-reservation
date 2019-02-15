@@ -9,8 +9,6 @@ from apps.accounts.exceptions import PrivilegeError
 from apps.booking.serializers.recurring_booking import RecurringBookingSerializer
 from apps.util import utils
 
-from ..serializers.booking import BookingSerializer
-
 
 class RecurringBookingCreate(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
@@ -19,11 +17,9 @@ class RecurringBookingCreate(APIView):
 
         recurring_booking_data = request.data
         recurring_booking_data["booker"] = request.user.id
-        print(request.data)
 
         serializer = RecurringBookingSerializer(data=recurring_booking_data)
         if not serializer.is_valid():
-            print(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:

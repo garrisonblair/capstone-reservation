@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views.booking import BookingCreate, BookingRetrieveUpdateDestroy, BookingViewMyBookings
+from .views.booking import BookingRetrieveUpdateDestroy, BookingViewMyBookings
 from .views.booking import BookingList, BookingCreate, BookingCancel
 from .views.campon import CampOnList
 from .views.campon import CampOnCreate

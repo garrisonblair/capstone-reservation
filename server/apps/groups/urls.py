@@ -1,5 +1,5 @@
 from django.urls import path
-from .views.groups import GroupList, InviteMembers, GroupCreate, RemoveMembers, LeaveGroup
+from .views.groups import GroupList, InviteMembers, GroupCreate, LeaveGroup, RemoveMembers
 
 from .views.group_privileges import PrivilegeRequestList, PrivilegeRequestCreate, PrivilegeRequestDelete
 from .views.group_privileges import ApprovePrivilegeRequest, DenyPrivilegeRequest

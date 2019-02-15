@@ -22,6 +22,7 @@ class Settings extends Component {
       merge_adjacent_bookings: false,
       merge_threshold_minutes: 0,
       booking_edit_lock_timeout: 0,
+      group_can_invite_after_privilege_set: true,
     },
   }
 
@@ -58,6 +59,15 @@ class Settings extends Component {
     const { checked } = data;
     const { settings } = this.state;
     settings.merge_adjacent_bookings = checked;
+    this.setState({
+      settings,
+    });
+  }
+
+  handleChangeGroupInvitations = (e, data) => {
+    const { checked } = data;
+    const { settings } = this.state;
+    settings.group_can_invite_after_privilege_set = checked;
     this.setState({
       settings,
     });
@@ -116,6 +126,7 @@ class Settings extends Component {
       merge_adjacent_bookings,
       merge_threshold_minutes,
       booking_edit_lock_timeout,
+      group_can_invite_after_privilege_set,
     } = settings;
 
     return (
@@ -151,11 +162,20 @@ class Settings extends Component {
             )
             : null
           }
+          <Divider />
           <Input
             className="settings_item"
             label="Booking edit lock timeout"
             value={booking_edit_lock_timeout}
             onChange={this.handleBookingEditLock}
+          />
+          <Divider />
+          <h3>Groups</h3>
+          <Checkbox
+            className="settings_item"
+            label="Allow group invitations after privilege validation"
+            checked={group_can_invite_after_privilege_set}
+            onChange={this.handleChangeGroupInvitations}
           />
           <Divider />
           <Button onClick={this.saveSettings}>

@@ -59,6 +59,10 @@ class Booking(models.Model, SubjectModel):
     bypass_privileges = models.BooleanField(default=False)
     bypass_validation = models.BooleanField(default=False)
 
+    note = models.CharField(max_length=255, blank=True, null=True)
+    display_note = models.BooleanField(default=False)
+    show_note_on_calendar = models.BooleanField(default=False)
+
     objects = BookingManager()
 
     observers = list()

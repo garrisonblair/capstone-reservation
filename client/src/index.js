@@ -20,6 +20,7 @@ import Bookers from './components/Admin/Bookers';
 import GroupPrivilegeRequest from './components/Admin/GroupPrivilegeRequest';
 import Profile from './components/Profile';
 import UserSettings from './components/UserSettings';
+import Announcements from './components/Admin/Announcements';
 
 if (settings.IS_PROD) {
   ReactGA.initialize(settings.gaTrackingID);
@@ -46,6 +47,7 @@ ReactDOM.render(
         <Route exact path="/profile" component={Profile} />
         <Route exact path="/settings" component={UserSettings} />
         <Route exact path="/admin/bookers" render={() => <Admin menuType="bookers" content={<Bookers />} />} />
+        <Route exact path="/admin/announcements" render={() => <Admin menuType="announcements" content={<Announcements />} />} />
         <Route component={NotFound} />
       </Switch>
     </div>

@@ -1,7 +1,6 @@
 import datetime
 
 from unittest import mock
-from unittest.mock import Mock
 
 from django.apps import apps
 from django.test.testcases import TestCase

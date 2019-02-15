@@ -9,9 +9,9 @@ import {
 
 class EmptySegment extends Component {
   render() {
-    const { message } = this.props;
+    const { message, loading } = this.props;
     return (
-      <Segment placeholder textAlign="center">
+      <Segment placeholder textAlign="center" loading={loading}>
         <Header icon>
           <Icon name="ban" />
           {message}
@@ -23,6 +23,11 @@ class EmptySegment extends Component {
 
 EmptySegment.propTypes = {
   message: PropTypes.string.isRequired,
+  loading: PropTypes.bool,
+};
+
+EmptySegment.defaultProps = {
+  loading: false,
 };
 
 export default EmptySegment;

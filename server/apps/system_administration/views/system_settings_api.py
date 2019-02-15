@@ -30,7 +30,6 @@ class SystemSettingsAPI(APIView):
 
         settings = SystemSettings.get_settings()
 
-        print(settings_updates)
         for key in settings_updates:
             if key == "booking_edit_lock_timeout":
                 duration_str = settings_updates[key]

@@ -1,3 +1,4 @@
+import json
 from django.contrib import admin
 from .models.CampOn import CampOn
 from .models.Booking import Booking, RecurringBooking
@@ -5,11 +6,19 @@ from .serializers.recurring_booking import RecurringBookingSerializer
 from .serializers.campon import CampOnSerializer
 from .serializers.booking import BookingSerializer
 from django.contrib.contenttypes.models import ContentType
-import json
 
 
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'room', 'date', 'start_time', 'end_time', 'booker', 'group', 'recurring_booking')
+    list_display = ('id',
+                    'room',
+                    'date',
+                    'start_time',
+                    'end_time',
+                    'booker',
+                    'group',
+                    'recurring_booking',
+                    'note',
+                    'display_note')
 
     def log_addition(self, request, object, message):
         """

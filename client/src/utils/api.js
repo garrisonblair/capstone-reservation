@@ -348,6 +348,16 @@ function removeMembersFromGroup(groupId, members) {
   });
 }
 
+function getGroupPrivileges(groupId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/group/${groupId}/privileges`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function getLogEntries(params) {
   const headers = getTokenHeader();
   return axios({
@@ -398,6 +408,26 @@ function addPrivilege(username, privilegeID) {
     url: `${settings.API_ROOT}/assign_privilege`,
     headers,
     data,
+    withCredentials: true,
+  });
+}
+
+function assignIndividualPrivileges(userId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/assign_privileges/${userId}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function assignAllPrivileges() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/assign_privileges`,
+    headers,
     withCredentials: true,
   });
 }
@@ -541,6 +571,61 @@ function getRoomStatistics(startDate, endDate) {
   });
 }
 
+function createAnnouncement(title, content, startDate, endDate) {
+  const headers = getTokenHeader();
+  const data = {
+    title,
+    content,
+    start_date: startDate,
+    end_date: endDate,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/announcement`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function getAllAnnouncements() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/announcements`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function deleteAnnouncement(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'DELETE',
+    url: `${settings.API_ROOT}/announcement/delete/${id}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function updateAnnouncement(announcement) {
+  const headers = getTokenHeader();
+  const data = {
+    title: announcement.title,
+    content: announcement.content,
+    start_date: announcement.start_date,
+    end_date: announcement.end_date,
+  };
+
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/announcement/${announcement.id}`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -573,10 +658,13 @@ const api = {
   inviteMembers,
   revokeInvitation,
   removeMembersFromGroup,
+  getGroupPrivileges,
   getLogEntries,
   getContentTypes,
   getUsers,
   addPrivilege,
+  assignIndividualPrivileges,
+  assignAllPrivileges,
   removePrivilege,
   getBookers,
   requestPrivilege,
@@ -588,6 +676,10 @@ const api = {
   rejectInvitation,
   denyPrivilegeRequest,
   getRoomStatistics,
+  createAnnouncement,
+  getAllAnnouncements,
+  deleteAnnouncement,
+  updateAnnouncement,
 };
 
 export default api;

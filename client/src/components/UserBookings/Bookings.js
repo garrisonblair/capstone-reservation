@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Table, TableBody } from 'semantic-ui-react';
-import EmptySegment from './EmptySegment';
+import EmptySegment from '../EmptySegment';
 
 
 class Bookings extends Component {
@@ -27,7 +27,6 @@ class Bookings extends Component {
   renderTableBody = () => {
     const { bookings } = this.props;
     let component = [];
-
     if (bookings.length === 0) {
       return component;
     }
@@ -48,7 +47,7 @@ class Bookings extends Component {
           {booking.end_time}
         </Table.Cell>
         <Table.Cell>
-          {booking.group}
+          {booking.group === null ? '' : booking.group.name}
         </Table.Cell>
       </Table.Row>
     ));

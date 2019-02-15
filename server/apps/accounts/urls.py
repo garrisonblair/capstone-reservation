@@ -30,7 +30,7 @@ urlpatterns = [
     path(r'my_privileges', MyPrivileges.as_view()),
 
     path(r'privilege_categories', PrivilegeCategoryList.as_view()),
-    path(r'my_privileges', MyPrivilegeCategoryList.as_view()),
+    # path(r'myprivilegecategorylist', MyPrivilegeCategoryList.as_view()),
     path(r'privilege_category', PrivilegeCategoryCreate.as_view()),
     path(r'privilege_category/<int:pk>', PrivilegeCategoryRetrieveUpdateDestroy.as_view()),
 
