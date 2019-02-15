@@ -63,7 +63,8 @@ class GmailICSImporter:
                               end_time=end_time.time(),
                               note=username,
                               show_note_on_calendar=True,
-                              bypass_validation=True)
+                              bypass_validation=True,
+                              bypass_privileges=True)
 
             booking.save()
             utils.log_model_change(booking, utils.ADDITION)
