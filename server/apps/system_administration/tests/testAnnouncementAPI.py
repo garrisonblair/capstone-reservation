@@ -1,6 +1,6 @@
 import json
 from django.test import TestCase
-from apps.booking.models.Announcement import Announcement
+from apps.system_administration.models.Announcement import Announcement
 from datetime import datetime, timedelta
 from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE, DELETION
 
@@ -10,9 +10,9 @@ from rest_framework.test import force_authenticate
 from django.test import Client
 
 from apps.accounts.models.User import User
-from apps.booking.serializers.announcement import AnnouncementSerializer
-
-from apps.booking.views.announcement import AnnouncementCreate, AnnouncementDelete, AnnouncementUpdate, AnnouncementList
+from apps.system_administration.serializers.announcement import AnnouncementSerializer
+from apps.system_administration.views.announcement import AnnouncementCreate, AnnouncementDelete
+from apps.system_administration.views.announcement import AnnouncementUpdate, AnnouncementList
 
 
 class AnnouncementAPITest(TestCase):
