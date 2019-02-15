@@ -8,6 +8,7 @@
   --cellsDivisionNum: 0;
   --opacity: 1;
   --pointerEvents: auto;
+  --calendarMarginTop: 65px;
 }
 
 $textColor: black;
@@ -32,7 +33,7 @@ body {
   pointer-events: var(--pointerEvents);
   // position: fixed;
   display: inline-grid;
-  margin-top: 65px;
+  margin-top: var(--calendarMarginTop);
   // padding: 20px;
   width: 100%;
   // height: 100%;
@@ -202,10 +203,12 @@ body {
 }
 
 .announcement {
-  margin: 0 auto;
+  // margin: 0 auto;
   // white-space: nowrap;
   // overflow: hidden;
-  position: absolute;
+  width: 98.2vw;
+  left: 5px;
+  position: sticky !important;
 }
 
 .announcement span {

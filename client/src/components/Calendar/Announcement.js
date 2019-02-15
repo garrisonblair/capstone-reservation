@@ -44,7 +44,7 @@ class Announcement extends Component {
         );
       }
     });
-    if (text === []) {
+    if (text.length === 0) {
       return null;
     }
     return (
