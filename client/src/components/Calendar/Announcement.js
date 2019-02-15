@@ -34,7 +34,7 @@ class Announcement extends Component {
       || moment(currentDate).isSame(a.start_date)
       || moment(currentDate).isSame(a.end_date)) {
         text.push(
-          <Message.Item>
+          <Message.Item key={a.id}>
             <b>
               {a.title}
             </b>
