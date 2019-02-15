@@ -27,7 +27,6 @@ class Bookings extends Component {
   renderTableBody = () => {
     const { bookings } = this.props;
     let component = [];
-
     if (bookings.length === 0) {
       return component;
     }
@@ -48,7 +47,7 @@ class Bookings extends Component {
           {booking.end_time}
         </Table.Cell>
         <Table.Cell>
-          {booking.group}
+          {booking.group === null ? '' : booking.group.name}
         </Table.Cell>
       </Table.Row>
     ));
