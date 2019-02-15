@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import Announcement from './Announcement';
 import Cells from './Cells';
 import Header from './Header';
 import Navigation from '../Navigation';
@@ -257,6 +258,7 @@ class Calendar extends Component {
           update={update}
         />
         <div className="calendar__container" key={1}>
+          <Announcement />
           <div className="calendar__wrapper" style={this.setStyle().wrapper}>
             <button type="button" className="button_orientation" onClick={() => this.changeOrientation()}><Icon name="exchange" /></button>
             <Header headerList={colList} type="column" name={colName} />
