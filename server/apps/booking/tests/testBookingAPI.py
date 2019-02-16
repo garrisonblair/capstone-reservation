@@ -525,7 +525,7 @@ class BookingAPITest(TestCase):
 
         bookings_after_cancel = len(Booking.objects.all())
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
 
     def testCancelBookingAfterBookingEnded(self):
@@ -541,7 +541,7 @@ class BookingAPITest(TestCase):
 
         bookings_after_cancel = len(Booking.objects.all())
 
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
 
     def testCancelBookingNoCamponsSuccess(self):

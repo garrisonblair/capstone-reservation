@@ -93,10 +93,9 @@ class BookingCancel(APIView):
     def post(self, request, pk):
         try:
             Booking.delete_booking(self, request, pk)
-            Response(status=status.HTTP_200_OK)
         except ValidationError as e:
             return Response(e.message, status.HTTP_400_BAD_REQUEST)
-        return
+        return Response(status=status.HTTP_200_OK)
 
 
 class BookingRetrieveUpdateDestroy(APIView):
