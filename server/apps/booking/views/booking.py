@@ -265,5 +265,28 @@ class BookingViewMyBookings(APIView):
         return Response(bookings, status=status.HTTP_200_OK)
 
 
+class BookingConfirmation(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
+
+    def post(self, request, pk):
+
+        try:
+            booking_to_confirm = Booking.objects.get(pk=pk)
+        except Booking.DoesNotExist:
+            return Response("Booking does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        self.check_object_permissions(request, booking_to_confirm.booker)
+
+        today = datetime.datetime.now()
+        time = today.time()
+        if booking_to_confirm.date == today.date() and\
+                booking_to_confirm.start_time <= time <= booking_to_confirm.end_time:
+            # TODO: Confirm Booking
+
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response("Can't confirm booking at this time", status=status.HTTP_400_BAD_REQUEST)
+
+
 def booking_key(val):
     return val.id

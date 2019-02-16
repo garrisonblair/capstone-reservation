@@ -22,6 +22,8 @@ class SystemSettings(models.Model):
 
     group_can_invite_after_privilege_set = models.BooleanField(default=True)
 
+    manual_booking_confirmation = models.BooleanField(default=False)
+
     tracker = FieldTracker()
 
     @staticmethod

@@ -131,6 +131,15 @@ function deleteBooking(id) {
   });
 }
 
+function confirmBooking(booking) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/booking/${booking.id}/confirm`,
+    headers,
+  });
+}
+
 function createRecurringBooking(data) {
   const headers = getTokenHeader();
   return axios({
@@ -639,6 +648,7 @@ const api = {
   createBooking,
   updateBooking,
   deleteBooking,
+  confirmBooking,
   createRecurringBooking,
   getCampOns,
   createCampOn,
