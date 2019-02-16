@@ -27,6 +27,7 @@ class SystemSettings(models.Model):
     check_for_expired_bookings_active = models.BooleanField(default=True)
     check_for_expired_bookings_frequency_seconds = models.PositiveIntegerField(default=30)
     booking_time_to_expire_minutes = models.PositiveIntegerField(default=30)
+    manual_booking_confirmation = models.BooleanField(default=False)
 
     tracker = FieldTracker()
 

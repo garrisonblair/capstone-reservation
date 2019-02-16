@@ -10,6 +10,7 @@ import {
   Message,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
+import moment from 'moment';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
 import storage from '../../utils/local-storage';
@@ -55,6 +56,13 @@ class BookingInfoModal extends Component {
     note: '',
     displayNote: false,
     showOnCalendar: false,
+  }
+
+  componentWillMount() {
+    api.getAdminSettings()
+      .then((response) => {
+        this.setState({ settings: response.data });
+      });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -150,6 +158,36 @@ class BookingInfoModal extends Component {
       });
   }
 
+  handleConfirm = () => {
+    const { booking } = this.props;
+    api.confirmBooking(booking)
+      .then(() => {
+        // TODO update state of booking to confirmed
+      });
+  }
+
+  checkDisplayConfirmation(booking) {
+    const { settings } = this.state;
+
+    if (settings && !settings.manual_booking_confirmation) {
+      return false;
+    }
+
+    if (!BookingInfoModal.checkSameUser(booking)) {
+      return false;
+    }
+
+    const now = moment();
+    const start = moment(`${booking.date} ${booking.start_time}`);
+    const end = moment(`${booking.date} ${booking.end_time}`);
+
+    if (now.isAfter(start) && now.isBefore(end)) {
+      return true;
+    }
+
+    return false;
+  }
+
   renderCampons = () => {
     const { campons } = this.props;
     const camponsInfo = [];
@@ -211,6 +249,7 @@ class BookingInfoModal extends Component {
           <div>
             <Button content="Close" secondary onClick={this.closeModal} />
             {BookingInfoModal.checkSameUserOrAdmin(booking) ? <Button content="Delete" color="red" onClick={this.handleDelete} /> : null}
+            {this.checkDisplayConfirmation(booking) ? <Button content="Confirm" onClick={this.handleConfirm} className="confirm--button" color="green" /> : null}
           </div>
         </Modal.Description>
       </Modal.Content>

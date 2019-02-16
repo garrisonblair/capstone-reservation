@@ -5,9 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.core.exceptions import ValidationError
 
-from ..models.Announcement import Announcement
+from apps.system_administration.models.Announcement import Announcement
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
-from apps.booking.serializers.announcement import AnnouncementSerializer
+from apps.system_administration.serializers.announcement import AnnouncementSerializer
 from apps.util import utils
 from apps.accounts.exceptions import PrivilegeError
 

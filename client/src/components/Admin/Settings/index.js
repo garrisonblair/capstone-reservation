@@ -195,6 +195,7 @@ class Settings extends Component {
             )
             : null
           }
+          <Divider />
           <Input
             className="settings_item"
             label="Booking edit lock timeout"
