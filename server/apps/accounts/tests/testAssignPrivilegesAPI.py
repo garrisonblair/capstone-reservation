@@ -152,7 +152,7 @@ class AssignPrivilegesTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(self.user1.bookerprofile.privilege_categories.count(), 1)
-        self.assertEqual(response.data, [1000])
+        self.assertEqual(response.data, ([1000], []))
 
     def testRemovePrivilegesWrongCategory(self):
         self.user1.bookerprofile.privilege_categories.add(self.category1)
@@ -170,7 +170,7 @@ class AssignPrivilegesTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.user1.bookerprofile.privilege_categories.count(), 2)
 
-    def testRemoveDefaultPrivilege(self):
+    def testRemoveLastDefaultPrivilege(self):
         self.user1.bookerprofile.privilege_categories.add(self.category2)
 
         body = {
@@ -182,7 +182,24 @@ class AssignPrivilegesTest(TestCase):
         force_authenticate(request, user=User.objects.get(username="admin"))
         response = PrivilegeCategoriesRemoveManual.as_view()(request)
 
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.user1.bookerprofile.privilege_categories.count(), 1)
+        self.assertEqual(response.data, ([], [self.user1.id]))
+
+    def testRemoveDefaultNotLastPrivilege(self):
+        self.user1.bookerprofile.privilege_categories.add(self.category1)
+        self.user1.bookerprofile.privilege_categories.add(self.category2)
+
+        body = {
+            "users": [self.user1.id],
+            "privilege_category": self.category2.id
+        }
+
+        request = self.factory.patch("/remove_privilege", body, format="json")
+        force_authenticate(request, user=User.objects.get(username="admin"))
+        response = PrivilegeCategoriesRemoveManual.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(self.user1.bookerprofile.privilege_categories.count(), 1)
 
     def testRemoveLastPrivilege(self):

@@ -76,24 +76,27 @@ class PrivilegeCategoriesRemoveManual(APIView):
 
         try:
             privilege_category = PrivilegeCategory.objects.get(id=category_id)
-            if privilege_category.is_default:
-                return Response("Default privilege category cannot be deleted",
-                                status=status.HTTP_405_METHOD_NOT_ALLOWED)
-            else:
-                default_category = PrivilegeCategory.objects.get(is_default=True)
+            is_default_category = privilege_category.is_default
+            default_category = PrivilegeCategory.objects.get(is_default=True)
         except PrivilegeCategory.DoesNotExist:
             return Response("Privilege category does not exist", status=status.HTTP_400_BAD_REQUEST)
 
         user_qs = User.objects.all()
         ids_do_not_exist = list()
+        last_category_is_default =list()
 
         for user_id in user_ids:
             try:
                 user = user_qs.get(id=user_id)
-                user.bookerprofile.privilege_categories.remove(privilege_category)
-                if len(user.bookerprofile.privilege_categories.all()) is 0:
-                    user.bookerprofile.privilege_categories.add(default_category)
+                if len(user.bookerprofile.privilege_categories.all()) is 1 and is_default_category is True:
+                    print("Last Category is default")
+                    last_category_is_default.append(user_id)
+                else:
+                    print("Remove category")
+                    user.bookerprofile.privilege_categories.remove(privilege_category)
+                    if len(user.bookerprofile.privilege_categories.all()) is 0:
+                        user.bookerprofile.privilege_categories.add(default_category)
             except User.DoesNotExist:
                 ids_do_not_exist.append(user_id)
 
-        return Response(ids_do_not_exist, status=status.HTTP_200_OK)
+        return Response((ids_do_not_exist, last_category_is_default), status=status.HTTP_200_OK)
