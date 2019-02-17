@@ -207,7 +207,7 @@ class BookingConfirmation(APIView):
         time = today.time()
         if booking_to_confirm.date == today.date() and\
                 booking_to_confirm.start_time <= time <= booking_to_confirm.end_time:
-            # TODO: Confirm Booking
+            booking_to_confirm.set_to_confirmed()
 
             return Response(status=status.HTTP_200_OK)
         else:

@@ -21,12 +21,14 @@ from apps.util.AbstractBooker import AbstractBooker
 from apps.util import utils
 
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
+
+
+from datetime import timedelta
 
 
 class BookingManager(models.Manager):
-    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking):
+    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking, expiration, confirmed):
+
         booking = self.create(
             booker=booker,
             group=group,
@@ -34,7 +36,9 @@ class BookingManager(models.Manager):
             date=date,
             start_time=start_time,
             end_time=end_time,
-            recurring_booking=recurring_booking
+            recurring_booking=recurring_booking,
+            expiration=expiration,
+            confirmed=confirmed
         )
 
         return booking
@@ -62,6 +66,8 @@ class Booking(models.Model, SubjectModel):
                                           on_delete=models.CASCADE,
                                           blank=True,
                                           null=True)
+    expiration = models.TimeField(blank=True, null=True)
+    confirmed = models.BooleanField(default=False)
 
     bypass_privileges = models.BooleanField(default=False)
     bypass_validation = models.BooleanField(default=False)
@@ -94,9 +100,10 @@ class Booking(models.Model, SubjectModel):
         return this
 
     def __str__(self):
-        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}, Recurring Booking: {}'\
+        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}, Recurring Booking: {},' \
+               ' Expiration: {}, Confirmed: {}'\
             .format(self.id, self.booker.username, self.room.name, self.date, self.start_time, self.end_time,
-                    self.recurring_booking)
+                    self.recurring_booking, self.expiration, self.confirmed)
 
     def validate_model(self):
         now = datetime.datetime.now()
@@ -289,6 +296,10 @@ class Booking(models.Model, SubjectModel):
             first_campon.delete()
 
         return
+
+    def set_to_confirmed(self):
+        self.confirmed = True
+        self.save()
 
 
 def booking_key(val):
