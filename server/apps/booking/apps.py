@@ -1,5 +1,6 @@
 import threading
 import os
+from datetime import datetime
 from django.apps import AppConfig
 from apps.util import Logging
 
@@ -29,6 +30,7 @@ class BookingConfig(AppConfig):
                 pass
 
     def start_checking_for_expired_bookings(self):
+        from apps.booking.models.Booking import Booking
         from apps.system_administration.models.system_settings import SystemSettings
 
         settings = SystemSettings.get_settings()
@@ -37,6 +39,15 @@ class BookingConfig(AppConfig):
                                                          self.start_checking_for_expired_bookings_active)
         expired_booking_checker_thread.start()
         self.expired_booking_checker_thread = expired_booking_checker_thread
+
+        current_date = datetime.now()
+        bookings_to_check = Booking.objects.filter(date=current_date, confirmed=False)
+        current_time = current_date.time()
+
+        for booking in bookings_to_check:
+            if booking.expiration > current_time:
+                booking.end_time = current_time
+                booking.save()
 
     def stop_checking_for_expired_bookings(self):
         if self.expired_booking_checker_thread:

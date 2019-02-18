@@ -66,8 +66,6 @@ class SystemSettings(models.Model):
 
             if self.check_for_expired_bookings_active:
                 booking_exporter_config.start_checking_for_expired_bookings()
-                # check_for_expired_bookings_frequency_seconds
-                # booking_time_to_expire
             else:
                 booking_exporter_config.stop_checking_for_expired_bookings()
 
