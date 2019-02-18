@@ -46,8 +46,7 @@ class BookingConfig(AppConfig):
 
         for booking in bookings_to_check:
             if booking.expiration > current_time:
-                booking.end_time = current_time
-                booking.save()
+                booking.delete_booking()
 
     def stop_checking_for_expired_bookings(self):
         if self.expired_booking_checker_thread:
