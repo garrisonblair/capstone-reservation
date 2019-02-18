@@ -24,7 +24,7 @@ class SystemSettings(models.Model):
 
     # Setting to toggle the checking of expired bookings, the duration at which to check for them, and the time that
     # the admin sets at which a booking expires after reaching (in minutes)
-    check_for_expired_bookings_active = models.BooleanField(default=True)
+    check_for_expired_bookings_active = models.BooleanField(default=False)
     check_for_expired_bookings_frequency_seconds = models.PositiveIntegerField(default=30)
     booking_time_to_expire_minutes = models.PositiveIntegerField(default=30)
     manual_booking_confirmation = models.BooleanField(default=False)
@@ -60,14 +60,6 @@ class SystemSettings(models.Model):
                 booking_exporter_config.start_importing_ics_bookings()
             else:
                 booking_exporter_config.stop_importing_ics_bookings()
-
-        if self.tracker.has_changed("check_for_expired_bookings_active"):
-            booking_exporter_config = apps.get_app_config("booking_exporter")
-
-            if self.check_for_expired_bookings_active:
-                booking_exporter_config.start_checking_for_expired_bookings()
-            else:
-                booking_exporter_config.stop_checking_for_expired_bookings()
 
         return this
 
