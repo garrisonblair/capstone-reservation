@@ -206,34 +206,14 @@ class Booking(models.Model, SubjectModel):
         return (datetime.datetime.combine(date=datetime.date.today(), time=self.end_time)
                 - datetime.datetime.combine(date=datetime.date.today(), time=self.start_time))
 
-    def delete_booking(self, request, pk):
-
+    def delete_booking(self):
         from apps.booking.models.CampOn import CampOn
-        from apps.booking.serializers.booking import BookingSerializer
 
-        permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
-        serializer_class = BookingSerializer
-
-        # Ensure that booking to be canceled exists
-        try:
-            booking = Booking.objects.get(id=pk)
-        except Booking.DoesNotExist:
-            raise ValidationError("Selected booking to cancel does not exist")
-
-        # Check user permissions
-        self.check_object_permissions(request, booking.booker)
-
-        # Check if Booking has ended and if it has, disable booking from being canceled
         now = datetime.datetime.now()
-        booking_end = booking.end_time
         timeout = now.time()
 
-        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
-            raise ValidationError("Selected booking cannot be canceled as booking has started")
-
         # Get all campons for this booking
-        booking_id = booking.id
-        booking_campons = list(CampOn.objects.filter(camped_on_booking__id=booking_id))
+        booking_campons = list(CampOn.objects.filter(camped_on_booking__id=self.id))
 
         # Remove any campons that have endtimes before current time
         for campon in booking_campons:
@@ -242,8 +222,7 @@ class Booking(models.Model, SubjectModel):
 
         # Checks to see if booking to cancel has any campons otherwise simply deletes the booking
         if len(booking_campons) <= 0:
-            utils.log_model_change(booking, utils.DELETION, request.user)
-            booking.delete()
+            self.delete()
 
         # Otherwise handles turning campons of original booking into campons for new booking and bookings if required
         else:
@@ -255,14 +234,14 @@ class Booking(models.Model, SubjectModel):
             # Turn first campon (which should be first created) into a booking
             new_booking = Booking(booker=first_campon.booker,
                                   group=None,
-                                  room=booking.room,
+                                  room=self.room,
                                   date=now.date(),
                                   start_time=first_campon.start_time,
                                   end_time=first_campon.end_time)
 
             # Delete previous booking in order to then save new_booking derived from first campon,
             # then delete first campon
-            booking.delete()
+            self.delete()
             new_booking.save()
             previous_campon = first_campon
 
@@ -279,7 +258,7 @@ class Booking(models.Model, SubjectModel):
                     difference_booking = Booking(
                         booker=campon.booker,
                         group=None,
-                        room=booking.room,
+                        room=self.room,
                         date=new_booking.date,
                         start_time=previous_campon.end_time,
                         end_time=campon.end_time)
