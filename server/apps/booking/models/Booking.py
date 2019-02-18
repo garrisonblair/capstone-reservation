@@ -23,9 +23,6 @@ from apps.util import utils
 from rest_framework.permissions import IsAuthenticated
 
 
-from datetime import timedelta
-
-
 class BookingManager(models.Manager):
     def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking, expiration, confirmed):
 
