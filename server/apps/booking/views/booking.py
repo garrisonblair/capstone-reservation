@@ -91,8 +91,28 @@ class BookingCancel(APIView):
     serializer_class = BookingSerializer
 
     def post(self, request, pk):
+
+        # Ensure that booking to be canceled exists
         try:
-            Booking.delete_booking(self, request, pk)
+            booking = Booking.objects.get(id=pk)
+        except Booking.DoesNotExist:
+            return Response("Selected booking to cancel does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        # Check user permissions
+        self.check_object_permissions(request, booking.booker)
+
+        # Check if Booking has ended and if it has, disable booking from being canceled
+        now = datetime.datetime.now()
+        booking_end = booking.end_time
+        timeout = now.time()
+
+        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
+            return Response("Selected booking cannot be canceled as booking has started",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            booking.delete_booking()
+            utils.log_model_change(booking, utils.DELETION, request.user)
         except ValidationError as e:
             return Response(e.message, status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
