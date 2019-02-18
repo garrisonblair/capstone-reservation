@@ -40,10 +40,13 @@ class TestRecurringBooking(TestCase):
         # Create date and times
         start = datetime.strptime("2019-10-01 12:00", "%Y-%m-%d %H:%M")
         end = datetime.strptime("2019-10-16 15:00", "%Y-%m-%d %H:%M")
+        expiration = datetime.strptime("2019-10-16 15:30", "%Y-%m-%d %H:%M")
         self.start_date = start.date()
         self.end_date = end.date()
         self.start_time = start.time()
         self.end_time = end.time()
+        self.expiration = expiration.time(),
+        self.confirmed = False
 
     def testRecurringBookingCreation(self):
         recurring_booking, conflicts = RecurringBooking.objects.create_recurring_booking(

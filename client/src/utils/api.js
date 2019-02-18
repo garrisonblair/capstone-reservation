@@ -131,6 +131,15 @@ function deleteBooking(id) {
   });
 }
 
+function confirmBooking(booking) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/booking/${booking.id}/confirm`,
+    headers,
+  });
+}
+
 function createRecurringBooking(data) {
   const headers = getTokenHeader();
   return axios({
@@ -210,6 +219,48 @@ function deleteRoom(id) {
     url: `${settings.API_ROOT}/room/${id}`,
     headers,
     data,
+    withCredentials: true,
+  });
+}
+
+function getCardReaders(roomId) {
+  const headers = getTokenHeader();
+  let params = null;
+  if (roomId) {
+    params = {
+      room: roomId,
+    };
+  }
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/card_readers`,
+    headers,
+    params,
+    withCredentials: true,
+  });
+}
+
+function createCardReader(roomID) {
+  const headers = getTokenHeader();
+
+  const data = {
+    room: roomID,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/card_reader`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function deleteCardReader(cardReaderId) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'DELETE',
+    url: `${settings.API_ROOT}/card_reader/${cardReaderId}/delete`,
+    headers,
     withCredentials: true,
   });
 }
@@ -639,6 +690,7 @@ const api = {
   createBooking,
   updateBooking,
   deleteBooking,
+  confirmBooking,
   createRecurringBooking,
   getCampOns,
   createCampOn,
@@ -646,6 +698,9 @@ const api = {
   createRoom,
   updateRoom,
   deleteRoom,
+  getCardReaders,
+  createCardReader,
+  deleteCardReader,
   getAdminSettings,
   updateAdminSettings,
   getPrivileges,

@@ -23,6 +23,10 @@ class Settings extends Component {
       merge_threshold_minutes: 0,
       booking_edit_lock_timeout: 0,
       group_can_invite_after_privilege_set: true,
+      check_for_expired_bookings_active: false,
+      check_for_expired_bookings_frequency_seconds: 30,
+      booking_time_to_expire_minutes: 30,
+      manual_booking_confirmation: false,
     },
   }
 
@@ -91,6 +95,42 @@ class Settings extends Component {
     });
   }
 
+  handleCheckForExpiredBookings = (e, data) => {
+    const { checked } = data;
+    const { settings } = this.state;
+    settings.check_for_expired_bookings_active = checked;
+    this.setState({
+      settings,
+    });
+  }
+
+  handleCheckForExpireBookingFrequency = (e, data) => {
+    const { value } = data;
+    const { settings } = this.state;
+    settings.check_for_expired_bookings_frequency_seconds = value;
+    this.setState({
+      settings,
+    });
+  }
+
+  handleManualBookingConfirmation = (e, data) => {
+    const { checked } = data;
+    const { settings } = this.state;
+    settings.manual_booking_confirmation = checked;
+    this.setState({
+      settings,
+    });
+  }
+
+  handleBookingExpirationThreshold = (e, data) => {
+    const { value } = data;
+    const { settings } = this.state;
+    settings.booking_time_to_expire_minutes = value;
+    this.setState({
+      settings,
+    });
+  }
+
   handleCloseLoginModal = () => {
     this.setState({ showLoginModal: false });
     this.getSettings();
@@ -127,6 +167,10 @@ class Settings extends Component {
       merge_threshold_minutes,
       booking_edit_lock_timeout,
       group_can_invite_after_privilege_set,
+      check_for_expired_bookings_active,
+      check_for_expired_bookings_frequency_seconds,
+      booking_time_to_expire_minutes,
+      manual_booking_confirmation,
     } = settings;
 
     return (
@@ -168,6 +212,32 @@ class Settings extends Component {
             label="Booking edit lock timeout"
             value={booking_edit_lock_timeout}
             onChange={this.handleBookingEditLock}
+          />
+          <Divider />
+          <h3>Booking Confirmations and Card Readers</h3>
+          <Checkbox
+            className="settings_item"
+            label="Bookings expire"
+            checked={check_for_expired_bookings_active}
+            onChange={this.handleCheckForExpiredBookings}
+          />
+          <Input
+            className="settings_item"
+            label="Booking expiration frequency (seconds)"
+            value={check_for_expired_bookings_frequency_seconds}
+            onChange={this.handleCheckForExpireBookingFrequency}
+          />
+          <Input
+            className="settings_item"
+            label="Time until bookings expire (minutes)"
+            value={booking_time_to_expire_minutes}
+            onChange={this.handleBookingExpirationThreshold}
+          />
+          <Checkbox
+            className="settings_item"
+            label="Allow confirmation from within application"
+            checked={manual_booking_confirmation}
+            onChange={this.handleManualBookingConfirmation}
           />
           <Divider />
           <h3>Groups</h3>
