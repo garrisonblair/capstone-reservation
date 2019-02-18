@@ -87,7 +87,7 @@ class PrivilegeCategoriesRemoveManual(APIView):
             try:
                 user = user_qs.get(id=user_id)
                 user.bookerprofile.privilege_categories.remove(privilege_category)
-                if len(user.bookerprofile.privilege_categories.all()) is 0:
+                if user.bookerprofile.privilege_categories.count() is 0:
                     user.bookerprofile.privilege_categories.add(default_category)
             except User.DoesNotExist:
                 ids_do_not_exist.append(user_id)
