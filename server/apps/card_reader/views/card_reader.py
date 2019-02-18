@@ -5,12 +5,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
+from apps.accounts.models.User import User
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from apps.booking.models.Booking import Booking
 from apps.card_reader.models.card_reader import CardReader
 from apps.card_reader.serializers.card_reader import ReadCardReaderSerializer, WriteCardReaderSerializer
 from apps.system_administration.models.system_settings import SystemSettings
-from datetime import datetime
+import datetime
 
 from django.core.exceptions import ValidationError
 
@@ -52,20 +53,23 @@ class CardReaderDeleteView(DestroyAPIView):
 
 
 class CardReaderConfirmBookingView(APIView):
+    permission_classes = ()
 
-    def post(self, request, pk):
+    def post(self, request):
         try:
 
             settings = SystemSettings.get_settings()
 
             data = request.data
-            secret_key = data['secret_key']
+            secret_key = data['device_id']
+            student_id = data['card_id']
+
             card_reader = CardReader.objects.get(secret_key=secret_key)
             room = card_reader.room
-            # TODO: Figure out best way to get booker based on studentID
-            booker = User.objects.get(pk=pk)
 
-            if settings.check_for_expired_bookings_active is False or secret_key != self.secret_key:
+            booker = User.objects.get(bookerprofile__booker_id=student_id)
+
+            if not settings.check_for_expired_bookings_active:
                 return
             else:
                 # Required parameters to find bookings for a booker/room/card-reader combination for a specific day
