@@ -152,7 +152,7 @@ class AssignPrivilegesTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(self.user1.bookerprofile.privilege_categories.count(), 1)
-        self.assertEqual(response.data, ([1000], []))
+        self.assertEqual(response.data, [1000])
 
     def testRemovePrivilegesWrongCategory(self):
         self.user1.bookerprofile.privilege_categories.add(self.category1)
@@ -184,7 +184,7 @@ class AssignPrivilegesTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(self.user1.bookerprofile.privilege_categories.count(), 1)
-        self.assertEqual(response.data, ([], [self.user1.id]))
+        self.assertEqual(self.user1.bookerprofile.privilege_categories.last(), self.category2)
 
     def testRemoveDefaultNotLastPrivilege(self):
         self.user1.bookerprofile.privilege_categories.add(self.category1)
