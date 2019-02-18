@@ -8,5 +8,5 @@ urlpatterns = [
     path(r'card_reader', CardReaderCreateView.as_view()),
     path(r'card_reader/<int:pk>', CardReaderUpdateView.as_view()),
     path(r'card_reader/<int:pk>/delete', CardReaderDeleteView.as_view()),
-    path(r'card_reader/<int:pk>/confirm', CardReaderConfirmBookingView.as_view())
+    path(r'card_reader/card_read', CardReaderConfirmBookingView.as_view())
 ]
