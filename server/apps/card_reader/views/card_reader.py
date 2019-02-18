@@ -76,7 +76,7 @@ class CardReaderConfirmBookingView(APIView):
                 bookings = Booking.objects.filter(room=room, booker=booker, date=today)
 
                 # Filter out bookings to find current booking in case user has multiple bookings in same room in one day
-                # Ensures booking start is before current time, booking end and booking expiration are after current time
+                # Ensures booking start is before current time, booking end / booking expiration are after current time
                 for booking in bookings:
                     if (booking.end_time > now > booking.start_time) and booking.expiration > now:
                         booking.set_to_confirmed()
