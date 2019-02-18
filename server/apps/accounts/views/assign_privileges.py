@@ -76,6 +76,7 @@ class PrivilegeCategoriesRemoveManual(APIView):
 
         try:
             privilege_category = PrivilegeCategory.objects.get(id=category_id)
+            default_category = PrivilegeCategory.objects.get(is_default=True)
         except PrivilegeCategory.DoesNotExist:
             return Response("Privilege category does not exist", status=status.HTTP_400_BAD_REQUEST)
 
@@ -86,6 +87,8 @@ class PrivilegeCategoriesRemoveManual(APIView):
             try:
                 user = user_qs.get(id=user_id)
                 user.bookerprofile.privilege_categories.remove(privilege_category)
+                if user.bookerprofile.privilege_categories.count() is 0:
+                    user.bookerprofile.privilege_categories.add(default_category)
             except User.DoesNotExist:
                 ids_do_not_exist.append(user_id)
 
