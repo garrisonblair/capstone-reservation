@@ -26,15 +26,14 @@ class NotificationModal extends Component {
   render() {
     const { rooms } = this.state;
     console.log(rooms);
-    const { show, onClose } = this.props;
+    const { onClose } = this.props;
     return (
-      <Modal open={show} onClose={onClose}>
+      <Modal open onClose={onClose}>
         <Modal.Header>
           Header
         </Modal.Header>
         <Modal.Content>
           <Modal.Description>
-
           </Modal.Description>
         </Modal.Content>
       </Modal>
@@ -45,7 +44,6 @@ class NotificationModal extends Component {
 
 
 NotificationModal.propTypes = {
-  show: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 

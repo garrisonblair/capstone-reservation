@@ -192,7 +192,9 @@ class Navigation extends Component {
             onClose={this.closeLogin}
           />
         </Menu>
-        <NotificationModal show={showNotificationModal} onClose={this.closeNotificationModal} />
+        {showNotificationModal ? (
+          <NotificationModal onClose={this.closeNotificationModal} />
+        ) : null}
       </div>
     );
   }
