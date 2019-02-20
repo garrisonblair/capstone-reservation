@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable prefer-const */
@@ -6,14 +5,13 @@
 /* eslint-disable jsx-a11y/label-has-for */
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
-import Navigation from '../Navigation';
 import {
   Button,
   Form,
-  // Icon,
   Segment,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
+import Navigation from '../Navigation';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 import AuthenticationRequired from '../HOC/AuthenticationRequired';
@@ -32,10 +30,12 @@ class Profile extends Component {
   componentDidMount() {
     api.getUser(storage.getUser().id)
       .then((response) => {
-        const {
+        let {
           booker_id: studentID,
           secondary_email: secondaryEmail,
         } = response.data.booker_profile;
+        studentID = studentID === null ? '' : studentID;
+        secondaryEmail = secondaryEmail === null ? '' : secondaryEmail;
         this.setState({ studentID, secondaryEmail });
       });
   }
@@ -65,23 +65,23 @@ class Profile extends Component {
       secondary_email: secondaryEmail,
     };
     console.log(data);
-
+    console.log(storage.getUser().id);
     api.updateUser(storage.getUser().id, data)
       .then(() => {
         console.log('THEN');
         sweetAlert(
           'Settings',
-          'Settings recorded successfully',
+          'Profile saved successfully',
           'success',
         );
+      })
+      .catch(() => {
+        sweetAlert(
+          ':(',
+          'There was an error.',
+          'error',
+        );
       });
-    //   .catch(() => {
-    //     sweetAlert(
-    //       ':(',
-    //       'There was an error.',
-    //       'error',
-    //     );
-    //   });
   }
 
   render() {
