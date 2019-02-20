@@ -53,8 +53,8 @@ class NotificationCreate(APIView):
 
         try:
             notification = serializer.save()
-        except ValidationError as error:
-            return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError:
+            return Response("Range start must be before end", status=status.HTTP_400_BAD_REQUEST)
 
         result = notification.check_all_room_availability()
         if not result:
