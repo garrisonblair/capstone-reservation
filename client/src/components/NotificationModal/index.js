@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Modal,
+  Modal, Input, FormField,
 } from 'semantic-ui-react';
+import moment from 'moment';
 import api from '../../utils/api';
 import './NotificationModal.scss';
 
 
 class NotificationModal extends Component {
   state = {
-    // startTime: '',
-    // endTime: '',
+    date: moment().format('YYYY-MM-DD'),
+    startTime: moment(new Date()).format('hh:mm'),
+    endTime: moment(new Date()).format('hh:mm'),
     rooms: [],
   }
 
@@ -23,17 +25,35 @@ class NotificationModal extends Component {
       });
   }
 
+  renderRoomsCheckbox = () => {
+    // const { rooms}
+  }
+
   render() {
-    const { rooms } = this.state;
+    const {
+      rooms, startTime, endTime, date,
+    } = this.state;
     console.log(rooms);
     const { onClose } = this.props;
     return (
       <Modal open onClose={onClose}>
         <Modal.Header>
-          Header
+          Create a notification
         </Modal.Header>
         <Modal.Content>
           <Modal.Description>
+            <FormField>
+              Date:
+              <Input type="date" value={date} />
+            </FormField>
+            <FormField>
+              Start time:
+              <Input type="time" size="small" icon="calendar alternate outline" value={startTime} />
+            </FormField>
+            <FormField>
+              End time:
+              <Input type="time" size="small" icon="calendar alternate" value={endTime} />
+            </FormField>
           </Modal.Description>
         </Modal.Content>
       </Modal>
