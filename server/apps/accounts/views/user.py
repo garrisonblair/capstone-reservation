@@ -48,8 +48,19 @@ class BookerList(ListAPIView):
         return qs
 
 
-class UserUpdate(APIView):
+class UserRetrieveUpdate(APIView):
     permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
+
+    def get(self, request, pk):
+        user = None
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Check permissions
+        self.check_object_permissions(request, user)
+        return Response(UserSerializer(user).data)
 
     def patch(self, request, pk):
         username = request.data.get('username')
@@ -86,7 +97,7 @@ class UserUpdate(APIView):
             user.password = make_password(password)  # Hash password
 
         booker = BookerProfile.objects.get(user_id=user.id)
-        # Add booker ID only if it's a new user
+
         if booker_id:
             booker.booker_id = booker_id
 
