@@ -62,6 +62,10 @@ class Navigation extends Component {
     }
   }
 
+  handleClickNotify = () => {
+    console.log('clicked');
+  }
+
   closeLogin = () => {
     this.setState({ showLogin: false });
   }
@@ -130,10 +134,16 @@ class Navigation extends Component {
 
     const user = storage.getUser();
     const component = (
-      <Menu.Item className="navigation__user">
-        <Icon name="user" />
-        {`Logged in as ${user.username}`}
-      </Menu.Item>
+      <React.Fragment>
+        <Menu.Item className="navigation__user">
+          <Icon name="user" />
+          {`Logged in as ${user.username}`}
+        </Menu.Item>
+        <Menu.Item onClick={this.handleClickNotify}>
+          <Icon name="bell" />
+          Notify
+        </Menu.Item>
+      </React.Fragment>
     );
     return component;
   }
@@ -151,7 +161,7 @@ class Navigation extends Component {
           <Menu.Item>
             <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
           </Menu.Item>
-          { showDate
+          {showDate
             ? (
               <SelectedDate
                 changeDate={this.handleChangeDate}
@@ -190,9 +200,9 @@ Navigation.propTypes = {
 
 Navigation.defaultProps = {
   showDate: false,
-  changeDate: () => {},
-  onOpenDatePicker: () => {},
-  onCloseDatePicker: () => {},
+  changeDate: () => { },
+  onOpenDatePicker: () => { },
+  onCloseDatePicker: () => { },
 };
 
 export default withRouter(Navigation);
