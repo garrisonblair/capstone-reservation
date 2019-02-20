@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Modal, Input, FormField, Icon, Button,
+  Modal, Input, FormField, Icon, Button, Checkbox,
 } from 'semantic-ui-react';
 import moment from 'moment';
-// import api from '../../utils/api';
 import sweetAlert from 'sweetalert2';
+import api from '../../utils/api';
 import './NotificationModal.scss';
 
 
@@ -14,16 +14,17 @@ class NotificationModal extends Component {
     date: moment().format('YYYY-MM-DD'),
     startTime: moment(new Date()).format('HH:mm'),
     endTime: moment(new Date()).format('HH:mm'),
-    // rooms: [],
+    rooms: [],
+    // selectedRooms: [],
   }
 
   componentDidMount() {
-    // api.getRooms()
-    //   .then((r) => {
-    //     if (r.status === 200) {
-    //       this.setState({ rooms: r.data });
-    //     }
-    //   });
+    api.getRooms()
+      .then((r) => {
+        if (r.status === 200) {
+          this.setState({ rooms: r.data });
+        }
+      });
   }
 
   renderRoomsCheckbox = () => {
@@ -44,7 +45,6 @@ class NotificationModal extends Component {
 
   verifyForm = () => {
     const { date, startTime, endTime } = this.state;
-    console.log();
     if (date.length === 0) {
       sweetAlert('Blocked', 'The date cannot be empty.', 'warning');
       return false;
@@ -76,9 +76,13 @@ class NotificationModal extends Component {
     }
   }
 
+  handleCheckboxChange = (e, data) => {
+    console.log(data);
+  }
+
   render() {
     const {
-      startTime, endTime, date,
+      startTime, endTime, date, rooms,
     } = this.state;
     const { onClose } = this.props;
     return (
@@ -115,6 +119,10 @@ class NotificationModal extends Component {
                 onChange={this.handleOnChangeEndTime}
               />
             </FormField>
+            <h4>Rooms:</h4>
+            <div className="grid-container">
+              {rooms.map(r => <Checkbox label={r.name} key={r.id} onChange={this.handleCheckboxChange} />)}
+            </div>
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
