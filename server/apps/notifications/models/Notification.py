@@ -1,10 +1,13 @@
 import datetime
 from django.db import models
 from rest_framework.exceptions import ValidationError
+
+from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 
 
 class Notification(models.Model):
+    booker = models.ForeignKey(User, on_delete=models.CASCADE)  # type: User
     rooms = models.ManyToManyField(to=Room, related_name='notifications')
     date = models.DateField()
     range_start = models.TimeField()

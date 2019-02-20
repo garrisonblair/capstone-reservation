@@ -10,6 +10,9 @@ from apps.rooms.models.Room import Room
 class TestNotification(TestCase):
 
     def setUp(self):
+        self.user = User(username="user")
+        self.user.save()
+
         self.room1 = Room(name="Room1", capacity=1, number_of_computers=1)
         self.room1.save()
         self.booker = User(username="username")
@@ -52,6 +55,7 @@ class TestNotification(TestCase):
 
     def testNotificationRoomAvailabilitySuccess(self):
         notification = Notification(
+            booker=self.user,
             date=datetime.date(2020, 1, 1),
             range_start=datetime.time(11, 0, 0),
             range_end=datetime.time(16, 0, 0),
@@ -77,6 +81,7 @@ class TestNotification(TestCase):
         )
         booking.save()
         notification = Notification(
+            booker=self.user,
             date=datetime.date(2020, 1, 1),
             range_start=datetime.time(11, 0, 0),
             range_end=datetime.time(16, 0, 0),
@@ -95,6 +100,7 @@ class TestNotification(TestCase):
 
     def testNotificationRoomAvailabilityFailure(self):
         notification = Notification(
+            booker=self.user,
             date=datetime.date(2020, 1, 1),
             range_start=datetime.time(11, 0, 0),
             range_end=datetime.time(16, 0, 0),
@@ -108,6 +114,7 @@ class TestNotification(TestCase):
 
     def testNotificationRoomAvailabilityMultipleRoomsSuccess(self):
         notification = Notification(
+            booker=self.user,
             date=datetime.date(2020, 1, 1),
             range_start=datetime.time(11, 0, 0),
             range_end=datetime.time(16, 0, 0),
@@ -126,6 +133,7 @@ class TestNotification(TestCase):
 
     def testNotificationRoomAvailabilityMultipleRoomsFailure(self):
         notification = Notification(
+            booker=self.user,
             date=datetime.date(2020, 1, 1),
             range_start=datetime.time(11, 0, 0),
             range_end=datetime.time(16, 0, 0),
