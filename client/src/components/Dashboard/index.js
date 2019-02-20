@@ -10,9 +10,9 @@ import UserBookings from '../UserBookings';
 import Groups from '../Groups';
 import GroupInvitations from '../GroupInvitations';
 import AuthenticationRequired from '../HOC/AuthenticationRequired';
-import './Profile.scss';
+import './Dashboard.scss';
 
-class Profile extends Component {
+class Dashboard extends Component {
   groupRef = React.createRef();
 
   syncGroups = () => {
@@ -23,7 +23,7 @@ class Profile extends Component {
     return (
       <div>
         <Navigation />
-        <div className="profile">
+        <div className="dashboard">
           <h1> Profile </h1>
           <div className="segment__container top">
             <Segment className="segment__user">
@@ -50,4 +50,4 @@ class Profile extends Component {
   }
 }
 
-export default AuthenticationRequired(Profile);
+export default AuthenticationRequired(Dashboard);
