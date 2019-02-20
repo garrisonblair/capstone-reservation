@@ -13,14 +13,14 @@ import {
   // Icon,
   Segment,
 } from 'semantic-ui-react';
-// import api from '../../utils/api';
-// import storage from '../../utils/local-storage';
+import sweetAlert from 'sweetalert2';
+import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import AuthenticationRequired from '../HOC/AuthenticationRequired';
 import './Profile.scss';
 
 
 class Profile extends Component {
-
   state = {
     secondaryEmail: '',
     studentID: '',
@@ -29,17 +29,63 @@ class Profile extends Component {
     confirmNewPassword: '',
   }
 
+  componentDidMount() {
+    api.getUser(storage.getUser().id)
+      .then((response) => {
+        const {
+          booker_id: studentID,
+          secondary_email: secondaryEmail,
+        } = response.data.booker_profile;
+        this.setState({ studentID, secondaryEmail });
+      });
+  }
+
   handleInputChange = (field, event) => {
     this.setState({ [field]: event.target.value });
   }
 
   updateProfile = () => {
     let { secondaryEmail, studentID } = this.state;
-    console.log(secondaryEmail);
-    console.log(studentID);
+    let preventSubmit = false;
+    if (secondaryEmail === null || secondaryEmail === '' || secondaryEmail.length === 0) {
+      preventSubmit = true;
+    }
+
+    if (studentID === null || studentID === '' || studentID.length === 0) {
+      preventSubmit = true;
+    }
+
+    if (preventSubmit === true) {
+      console.log('PREVENT SUBMIT');
+      return;
+    }
+
+    const data = {
+      booker_id: studentID,
+      secondary_email: secondaryEmail,
+    };
+    console.log(data);
+
+    api.updateUser(storage.getUser().id, data)
+      .then(() => {
+        console.log('THEN');
+        sweetAlert(
+          'Settings',
+          'Settings recorded successfully',
+          'success',
+        );
+      });
+    //   .catch(() => {
+    //     sweetAlert(
+    //       ':(',
+    //       'There was an error.',
+    //       'error',
+    //     );
+    //   });
   }
 
   render() {
+    const { secondaryEmail, studentID } = this.state;
     return (
       <div>
         <Navigation />
@@ -48,10 +94,18 @@ class Profile extends Component {
             <h1> Profile </h1>
             <Form>
               <Form.Field>
-                <Form.Input label="Secondary Email" onChange={(e) => { this.handleInputChange('secondaryEmail', e); }} />
+                <Form.Input
+                  label="Secondary Email"
+                  value={secondaryEmail}
+                  onChange={(e) => { this.handleInputChange('secondaryEmail', e); }}
+                />
               </Form.Field>
               <Form.Field>
-                <Form.Input label="Student ID" onChange={(e) => { this.handleInputChange('studentID', e); }} />
+                <Form.Input
+                  label="Student ID"
+                  value={studentID}
+                  onChange={(e) => { this.handleInputChange('studentID', e); }}
+                />
               </Form.Field>
               <Button primary onClick={this.updateProfile}> Update profile </Button>
             </Form>

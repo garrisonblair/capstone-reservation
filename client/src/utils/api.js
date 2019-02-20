@@ -1,7 +1,6 @@
 import axios from 'axios';
 import settings from '../config/settings';
 import getTokenHeader from './requestHeaders';
-import storage from './local-storage';
 
 
 function register(username) {
