@@ -15,20 +15,17 @@ class NotificationModal extends Component {
     startTime: moment(new Date()).format('HH:mm'),
     endTime: moment(new Date()).format('HH:mm'),
     rooms: [],
-    // selectedRooms: [],
   }
 
   componentDidMount() {
+    const { rooms } = this.state;
     api.getRooms()
       .then((r) => {
         if (r.status === 200) {
-          this.setState({ rooms: r.data });
+          r.data.map(d => rooms.push({ id: d.id, name: d.name, checked: false }));
+          this.setState({ rooms });
         }
       });
-  }
-
-  renderRoomsCheckbox = () => {
-    // const { rooms}
   }
 
   handleOnChangeDate = (e, data) => {
@@ -77,7 +74,26 @@ class NotificationModal extends Component {
   }
 
   handleCheckboxChange = (e, data) => {
-    console.log(data);
+    const { rooms } = this.state;
+    const i = rooms.findIndex(r => r.id === data.value);
+    rooms[i].checked = data.checked;
+    this.setState({ rooms });
+  }
+
+  handleOnClickCheckAll = () => {
+    const { rooms } = this.state;
+    for (let i = 0; i < rooms.length; i += 1) {
+      rooms[i].checked = true;
+    }
+    this.setState({ rooms });
+  }
+
+  handleOnClickClearAll = () => {
+    const { rooms } = this.state;
+    for (let i = 0; i < rooms.length; i += 1) {
+      rooms[i].checked = false;
+    }
+    this.setState({ rooms });
   }
 
   render() {
@@ -120,13 +136,15 @@ class NotificationModal extends Component {
               />
             </FormField>
             <h4>Rooms:</h4>
-            <Checkbox label="All rooms" />
+            <Button onClick={this.handleOnClickCheckAll}>Check all</Button>
+            <Button onClick={this.handleOnClickClearAll}>Clear all</Button>
             <div className="grid-container">
               {rooms.map(r => (
                 <Checkbox
                   label={r.name}
                   key={r.id}
                   value={r.id}
+                  checked={r.checked}
                   onChange={this.handleCheckboxChange}
                 />
               ))}
