@@ -44,6 +44,7 @@ class BookingConfig(AppConfig):
         bookings_to_check = Booking.objects.filter(date=current_date, confirmed=False)
         current_time = current_date.time()
 
+        # Ensure that current time has passed expiration time
         for booking in bookings_to_check:
             if booking.expiration < current_time:
                 booking.delete_booking()
