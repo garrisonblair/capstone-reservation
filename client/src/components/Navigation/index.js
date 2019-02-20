@@ -13,12 +13,14 @@ import Login from '../Login';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 import './Navigation.scss';
+import NotificationModal from '../NotificationModal';
 
 
 class Navigation extends Component {
   state = {
     showLogin: false,
     update: false,
+    showNotificationModal: false,
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -63,11 +65,15 @@ class Navigation extends Component {
   }
 
   handleClickNotify = () => {
-    console.log('clicked');
+    this.setState({ showNotificationModal: true });
   }
 
   closeLogin = () => {
     this.setState({ showLogin: false });
+  }
+
+  closeNotificationModal = () => {
+    this.setState({ showNotificationModal: false });
   }
 
   handleChangeDate = (date) => {
@@ -149,7 +155,7 @@ class Navigation extends Component {
   }
 
   render() {
-    const { showLogin } = this.state;
+    const { showLogin, showNotificationModal } = this.state;
     const { showDate } = this.props;
 
     return (
@@ -186,6 +192,7 @@ class Navigation extends Component {
             onClose={this.closeLogin}
           />
         </Menu>
+        <NotificationModal show={showNotificationModal} onClose={this.closeNotificationModal} />
       </div>
     );
   }
