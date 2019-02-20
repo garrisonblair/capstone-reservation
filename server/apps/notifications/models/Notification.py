@@ -1,8 +1,6 @@
 import datetime
 from django.db import models
 from rest_framework.exceptions import ValidationError
-import pdb
-
 from apps.rooms.models.Room import Room
 
 
@@ -30,6 +28,8 @@ class Notification(models.Model):
     def check_room_availability(self, room):
         room_bookings_for_range = self.get_room_bookings_for_range(room)
         best_result = datetime.timedelta()
+        start = None
+        end = None
         for i in range(0, room_bookings_for_range.count() - 1):
             range_end = room_bookings_for_range[i + 1].start_time
             range_start = room_bookings_for_range[i].end_time
