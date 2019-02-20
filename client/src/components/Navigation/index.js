@@ -112,9 +112,10 @@ class Navigation extends Component {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
     const component = (
-      <Dropdown item text="Settings">
+      <Dropdown item text="User">
         <Dropdown.Menu>
           <Dropdown.Item icon="th" text="Dashboard" onClick={() => history.push('dashboard')} />
+          <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
           {/* <Dropdown.Item icon="cog" text="Settings" /> */}
         </Dropdown.Menu>
       </Dropdown>

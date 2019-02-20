@@ -17,8 +17,10 @@ import BookingActivity from './components/Admin/Logs/BookingActivity';
 import Settings from './components/Admin/Settings';
 import Bookers from './components/Admin/Bookers';
 import GroupPrivilegeRequest from './components/Admin/GroupPrivilegeRequest';
-import Dashboard from './components/Dashboard';
 import Announcements from './components/Admin/Announcements';
+import Dashboard from './components/Dashboard';
+import Profile from './components/Profile';
+
 
 if (settings.IS_PROD) {
   ReactGA.initialize(settings.gaTrackingID);
@@ -41,9 +43,10 @@ ReactDOM.render(
         <Route exact path="/admin/rooms" render={() => <Admin menuType="rooms" content={<RoomManager />} />} />
         <Route exact path="/admin/logs" render={() => <Admin menuType="logs" content={<BookingActivity />} />} />
         <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<Stats />} />} />
-        <Route exact path="/dashboard" component={Dashboard} />
         <Route exact path="/admin/bookers" render={() => <Admin menuType="bookers" content={<Bookers />} />} />
         <Route exact path="/admin/announcements" render={() => <Admin menuType="announcements" content={<Announcements />} />} />
+        <Route exact path="/dashboard" component={Dashboard} />
+        <Route exact path="/profile" component={Profile} />
         <Route component={NotFound} />
       </Switch>
     </div>
