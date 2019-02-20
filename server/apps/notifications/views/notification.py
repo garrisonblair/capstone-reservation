@@ -49,6 +49,8 @@ class NotificationCreate(APIView):
 
         serializer = NotificationSerializer(data=data)
         if not serializer.is_valid():
+            print(serializer.data)
+            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -62,7 +64,7 @@ class NotificationCreate(APIView):
 
         available_room = dict()
         available_room["room"] = result[0].id
-        available_room["start_time"] = result[1].time
-        available_room["end_time"] = result[2].times
+        available_room["start_time"] = result[1]
+        available_room["end_time"] = result[2]
 
         return Response(available_room, status=status.HTTP_200_OK)

@@ -118,7 +118,7 @@ class TestNotification(TestCase):
             date=datetime.date(2020, 1, 1),
             range_start=datetime.time(11, 0, 0),
             range_end=datetime.time(16, 0, 0),
-            minimum_booking_time=datetime.timedelta(hours=3)
+            minimum_booking_time=datetime.timedelta(hours=4)
         )
         notification.save()
         notification.rooms.add(self.room1, self.room2)
