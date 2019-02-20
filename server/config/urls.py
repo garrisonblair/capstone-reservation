@@ -13,6 +13,7 @@ urlpatterns = [
     path(r'', include('apps.groups.urls')),
     path(r'', include('apps.statistics.urls')),
     path(r'', include('apps.card_reader.urls')),
+    path(r'', include('apps.notifications.urls')),
     path('admin/', admin.site.urls),
     path(r'api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path(r'', include_docs_urls(title='Capstone'))
