@@ -120,8 +120,16 @@ class NotificationModal extends Component {
               />
             </FormField>
             <h4>Rooms:</h4>
+            <Checkbox label="All rooms" />
             <div className="grid-container">
-              {rooms.map(r => <Checkbox label={r.name} key={r.id} onChange={this.handleCheckboxChange} />)}
+              {rooms.map(r => (
+                <Checkbox
+                  label={r.name}
+                  key={r.id}
+                  value={r.id}
+                  onChange={this.handleCheckboxChange}
+                />
+              ))}
             </div>
           </Modal.Description>
         </Modal.Content>
