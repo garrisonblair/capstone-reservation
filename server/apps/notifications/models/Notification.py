@@ -24,7 +24,7 @@ class Notification(models.Model):
 
     def get_room_bookings_for_range(self, room):
         room_bookings_for_range = room.get_bookings(start_date=self.date, end_date=self.date).filter(
-            start_time__lt=self.range_end, end_time__gt=self.range_start).order_by('start_time')
+            start_time__lte=self.range_end, end_time__gte=self.range_start).order_by('start_time')
         return room_bookings_for_range
 
     def check_room_availability(self, room):
@@ -34,7 +34,6 @@ class Notification(models.Model):
             range_end = room_bookings_for_range[i + 1].start_time
             range_start = room_bookings_for_range[i].end_time
             free = datetime.datetime.combine(self.date, range_end) - datetime.datetime.combine(self.date, range_start)
-            # pdb.set_trace()
             if free >= self.minimum_booking_time and free >= best_result:
                 best_result = free
                 start = range_start
@@ -42,3 +41,26 @@ class Notification(models.Model):
         if best_result == datetime.timedelta():
             return False
         return start, end
+
+    def check_all_room_availability(self):
+        best_room = None
+        best_start = self.range_end
+        best_end = self.range_start
+        for room in self.rooms.all():
+            result = self.check_room_availability(room)
+            if not result:
+                continue
+
+            start = result[0]
+            end = result[1]
+            current = datetime.datetime.combine(self.date, end) - datetime.datetime.combine(self.date, start)
+            best = datetime.datetime.combine(self.date, best_end) - datetime.datetime.combine(self.date, best_start)
+
+            if current > best:
+                best_room = room
+                best_start = start
+                best_end = end
+
+        if best_room is None:
+            return False
+        return best_room, best_start, best_end
