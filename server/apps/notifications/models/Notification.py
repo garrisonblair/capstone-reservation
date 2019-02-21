@@ -59,7 +59,10 @@ class Notification(models.Model):
                 end = range_end
         if best_result == datetime.timedelta():
             return False
-        return start, end
+        available = dict()
+        available["start_time"] = start
+        available["end_time"] = end
+        return available
 
     def check_all_room_availability(self):
         best_room = None
@@ -72,8 +75,8 @@ class Notification(models.Model):
             if not result:
                 continue
 
-            start = result[0]
-            end = result[1]
+            start = result["start_time"]
+            end = result["end_time"]
             current = datetime.datetime.combine(self.date, end) - datetime.datetime.combine(self.date, start)
             best = datetime.datetime.combine(self.date, best_end) - datetime.datetime.combine(self.date, best_start)
 
@@ -84,7 +87,13 @@ class Notification(models.Model):
 
         if best_room is None:
             return False
-        return best_room, best_start, best_end
+
+        available_room = dict()
+        available_room["room"] = best_room.id
+        available_room["start_time"] = best_start
+        available_room["end_time"] = best_end
+
+        return available_room
 
     def check_and_notify(self, room):
         if room not in self.rooms.all():
@@ -94,8 +103,8 @@ class Notification(models.Model):
         if not result:
             return
 
-        start_time = result[0]
-        end_time = result[0]
+        start_time = result["start_time"]
+        end_time = result["end_time"]
         subject = "Room available to book!"
         message = "Hello {}!\n" \
                   "Room {} has become available to book on {} from to {} to {}.\n" \

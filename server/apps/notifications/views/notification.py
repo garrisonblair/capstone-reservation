@@ -58,14 +58,9 @@ class NotificationCreate(APIView):
         except ValidationError:
             return Response("Range start must be before end", status=status.HTTP_400_BAD_REQUEST)
 
-        result = notification.check_all_room_availability()
-        if not result:
+        available_room = notification.check_all_room_availability()
+        if not available_room:
             return Response("Notification request was successfully created", status=status.HTTP_201_CREATED)
-
-        available_room = dict()
-        available_room["room"] = result[0].id
-        available_room["start_time"] = result[1]
-        available_room["end_time"] = result[2]
 
         return Response(available_room, status=status.HTTP_200_OK)
 
