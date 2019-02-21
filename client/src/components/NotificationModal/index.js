@@ -121,8 +121,7 @@ class NotificationModal extends Component {
 
   handleCheckboxChange = (e, data) => {
     const { rooms } = this.state;
-    const i = rooms.findIndex(r => r.id === data.value);
-    rooms[i].checked = data.checked;
+    rooms[data.value].checked = data.checked;
     this.setState({ rooms });
   }
 
@@ -217,11 +216,11 @@ class NotificationModal extends Component {
               <Button onClick={this.handleOnClickClearAll}>Clear all</Button>
             </div>
             <div className="grid-container">
-              {rooms.map(r => (
+              {rooms.map((r, index) => (
                 <Checkbox
                   label={r.name}
                   key={r.id}
-                  value={r.id}
+                  value={index}
                   checked={r.checked}
                   onChange={this.handleCheckboxChange}
                 />
