@@ -13,8 +13,6 @@ class BookingExporterConfig(AppConfig):
         super(BookingExporterConfig, self).__init__(arg1, arg2)
         self.web_calendar_exporter = None
 
-        print(os.path.dirname(os.path.abspath(__file__)))
-
     def ready(self):
         from apps.system_administration.models.system_settings import SystemSettings
         if os.environ.get('RUN_MAIN', None) == 'true':
