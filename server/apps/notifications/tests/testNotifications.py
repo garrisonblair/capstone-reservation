@@ -68,8 +68,8 @@ class TestNotification(TestCase):
         if not result:
             self.fail()
 
-        self.assertEqual(result[0], datetime.time(12, 0, 0))
-        self.assertEqual(result[1], datetime.time(15, 0, 0))
+        self.assertEqual(result["start_time"], datetime.time(12, 0, 0))
+        self.assertEqual(result["end_time"], datetime.time(15, 0, 0))
 
     def testNotificationRoomAvailabilitySuccessMultipleOptions(self):
         booking = Booking(
@@ -95,8 +95,8 @@ class TestNotification(TestCase):
             self.fail()
 
         # Longest available range will be returned
-        self.assertEqual(result[0], datetime.time(14, 0, 0))
-        self.assertEqual(result[1], datetime.time(15, 0, 0))
+        self.assertEqual(result["start_time"], datetime.time(14, 0, 0))
+        self.assertEqual(result["end_time"], datetime.time(15, 0, 0))
 
     def testNotificationRoomAvailabilityFailure(self):
         notification = Notification(
@@ -127,9 +127,9 @@ class TestNotification(TestCase):
         if not result:
             self.fail()
 
-        self.assertEqual(result[0], self.room2)
-        self.assertEqual(result[1], datetime.time(12, 0, 0))
-        self.assertEqual(result[2], datetime.time(16, 0, 0))
+        self.assertEqual(result["room"], self.room2.id)
+        self.assertEqual(result["start_time"], datetime.time(12, 0, 0))
+        self.assertEqual(result["end_time"], datetime.time(16, 0, 0))
 
     def testNotificationRoomAvailabilityMultipleRoomsFailure(self):
         notification = Notification(
@@ -160,6 +160,6 @@ class TestNotification(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         body = "Hello user!\n" \
-               "Room Room1 has become available to book on Wednesday, January 01 2020 from to 12:00 to 12:00.\n" \
+               "Room Room1 has become available to book on Wednesday, January 01 2020 from to 12:00 to 15:00.\n" \
                "Visit the calendar to make a booking."
         self.assertEqual(mail.outbox[0].body, body)

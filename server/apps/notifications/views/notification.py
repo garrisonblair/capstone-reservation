@@ -8,12 +8,12 @@ from rest_framework import status
 from apps.accounts.models.User import User
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.notifications.models.Notification import Notification
-from apps.notifications.sertializers.notification import NotificationSerializer
+from apps.notifications.sertializers.notification import WriteNotificationSerializer, ReadNotificationSerializer
 
 
 class NotificationList(ListAPIView):
     permission_classes = (IsBooker, IsAuthenticated)
-    serializer_class = NotificationSerializer
+    serializer_class = ReadNotificationSerializer
     queryset = Notification.objects.all()
 
     def get_queryset(self):
@@ -36,21 +36,21 @@ class NotificationList(ListAPIView):
 
 class NotificationCreate(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
-    serializer_class = NotificationSerializer
+    serializer_class = WriteNotificationSerializer
 
     def post(self, request):
         data = request.data
 
         try:
             user = User.objects.get(id=request.user.id)
-            data["booker"] = user.id
         except User.DoesNotExist as error:
             return Response(error.messages, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = NotificationSerializer(data=data)
+        if not data["booker"] == user.id and not request.user.is_superuser:
+            return Response("You can only create notifications for yourself", status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = WriteNotificationSerializer(data=data)
         if not serializer.is_valid():
-            print(serializer.data)
-            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -58,14 +58,9 @@ class NotificationCreate(APIView):
         except ValidationError:
             return Response("Range start must be before end", status=status.HTTP_400_BAD_REQUEST)
 
-        result = notification.check_all_room_availability()
-        if not result:
+        available_room = notification.check_all_room_availability()
+        if not available_room:
             return Response("Notification request was successfully created", status=status.HTTP_201_CREATED)
-
-        available_room = dict()
-        available_room["room"] = result[0].id
-        available_room["start_time"] = result[1]
-        available_room["end_time"] = result[2]
 
         return Response(available_room, status=status.HTTP_200_OK)
 
