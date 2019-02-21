@@ -5,7 +5,8 @@ from rest_framework import status
 
 from apps.accounts.models.User import User
 from apps.booking.models.Booking import Booking
-from apps.notifications.views.notification import NotificationCreate
+from apps.notifications.models.Notification import Notification
+from apps.notifications.views.notification import NotificationCreate, NotificationDelete
 from apps.rooms.models.Room import Room
 
 
@@ -14,12 +15,12 @@ class NotificationAPITest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
 
-        self.user = User(username="user")
+        self.user = User.objects.create_user(username="user")
         self.user.save()
 
         self.room1 = Room(name="Room1", capacity=1, number_of_computers=1)
         self.room1.save()
-        self.booker = User(username="username")
+        self.booker = User.objects.create_user(username="username")
         self.booker.save()
         self.booking1 = Booking(
             room=self.room1,
@@ -93,3 +94,36 @@ class NotificationAPITest(TestCase):
         response = NotificationCreate.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def testNotificationDeleteSuccess(self):
+        notification = Notification(
+            booker=self.user,
+            date=datetime.date(2020, 1, 1),
+            range_start=datetime.time(11, 0, 0),
+            range_end=datetime.time(16, 0, 0),
+            minimum_booking_time=datetime.timedelta(hours=3)
+        )
+        notification.save()
+
+        request = self.factory.patch("notifications/{}/delete".format(notification.id), {}, format="json")
+
+        force_authenticate(request, user=self.user)
+
+        self.assertEqual(Notification.objects.count(), 1)
+
+        response = NotificationDelete.as_view()(request, notification.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Notification.objects.count(), 0)
+
+    def testNotificationDeleteFailure(self):
+        request = self.factory.patch("notifications/{}/delete".format(1), {}, format="json")
+
+        force_authenticate(request, user=self.user)
+
+        self.assertEqual(Notification.objects.count(), 0)
+
+        response = NotificationDelete.as_view()(request, 1)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(Notification.objects.count(), 0)

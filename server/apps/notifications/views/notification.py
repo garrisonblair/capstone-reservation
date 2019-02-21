@@ -68,3 +68,19 @@ class NotificationCreate(APIView):
         available_room["end_time"] = result[2]
 
         return Response(available_room, status=status.HTTP_200_OK)
+
+
+class NotificationDelete(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def patch(self, request, pk):
+        try:
+            notification = Notification.objects.get(id=pk)
+        except Notification.DoesNotExist:
+            return Response("Notification not found", status=status.HTTP_404_NOT_FOUND)
+
+        if not notification.booker == request.user and not request.user.is_superuser:
+            return Response("You are not authorized to delete this notification", status=status.HTTP_401_UNAUTHORIZED)
+
+        notification.delete()
+        return Response("Notification Deleted", status=status.HTTP_200_OK)
