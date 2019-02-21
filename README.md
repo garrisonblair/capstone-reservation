@@ -149,6 +149,23 @@ This will create an user to access to the Django administration interface
     python3 manage.py runserver 0.0.0.0:8000
 ```
 
+### Celery Setup
+Celery is used to schedule asynchronous tasks such as sending emails.
+You must have [RabbitMQ](http://www.rabbitmq.com/) running.
+
+To run a worker use the following command:
+
+```
+  celery -A config worker -l info
+```
+
+To run the beat scheduler for periodic tasks, use the following command:
+
+```
+  celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+```
+
+
 ### React Client Setup
 
 - Follow the steps to install yarn on [https://yarnpkg.com/en/docs/install](https://yarnpkg.com/en/docs/install)
