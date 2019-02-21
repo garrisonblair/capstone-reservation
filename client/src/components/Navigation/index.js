@@ -13,12 +13,14 @@ import Login from '../Login';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 import './Navigation.scss';
+import NotificationModal from '../NotificationModal';
 
 
 class Navigation extends Component {
   state = {
     showLogin: false,
     update: false,
+    showNotificationModal: false,
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -62,8 +64,16 @@ class Navigation extends Component {
     }
   }
 
+  handleClickNotify = () => {
+    this.setState({ showNotificationModal: true });
+  }
+
   closeLogin = () => {
     this.setState({ showLogin: false });
+  }
+
+  closeNotificationModal = () => {
+    this.setState({ showNotificationModal: false });
   }
 
   handleChangeDate = (date) => {
@@ -130,16 +140,22 @@ class Navigation extends Component {
 
     const user = storage.getUser();
     const component = (
-      <Menu.Item className="navigation__user">
-        <Icon name="user" />
-        {`Logged in as ${user.username}`}
-      </Menu.Item>
+      <React.Fragment>
+        <Menu.Item className="navigation__user">
+          <Icon name="user" />
+          {`Logged in as ${user.username}`}
+        </Menu.Item>
+        <Menu.Item onClick={this.handleClickNotify}>
+          <Icon name="bell" />
+          Notify
+        </Menu.Item>
+      </React.Fragment>
     );
     return component;
   }
 
   render() {
-    const { showLogin } = this.state;
+    const { showLogin, showNotificationModal } = this.state;
     const { showDate } = this.props;
 
     return (
@@ -151,7 +167,7 @@ class Navigation extends Component {
           <Menu.Item>
             <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
           </Menu.Item>
-          { showDate
+          {showDate
             ? (
               <SelectedDate
                 changeDate={this.handleChangeDate}
@@ -176,6 +192,9 @@ class Navigation extends Component {
             onClose={this.closeLogin}
           />
         </Menu>
+        {showNotificationModal ? (
+          <NotificationModal onClose={this.closeNotificationModal} />
+        ) : null}
       </div>
     );
   }
@@ -190,9 +209,9 @@ Navigation.propTypes = {
 
 Navigation.defaultProps = {
   showDate: false,
-  changeDate: () => {},
-  onOpenDatePicker: () => {},
-  onCloseDatePicker: () => {},
+  changeDate: () => { },
+  onOpenDatePicker: () => { },
+  onCloseDatePicker: () => { },
 };
 
 export default withRouter(Navigation);

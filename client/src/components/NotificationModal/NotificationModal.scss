@@ -1,0 +1,16 @@
+#notification-modal{
+  .label{
+    font-weight: bold;
+    font-size: 15px;
+  }
+  .grid-container{
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
+  input{
+    margin-left: 8px;
+  }
+  label{
+    margin-bottom: 8px;
+  }
+}
