@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Modal, Input, FormField, Icon, Button, Checkbox,
+  Modal, Input, FormField, Icon, Button, Checkbox, Dimmer, Loader,
 } from 'semantic-ui-react';
 import moment from 'moment';
 import sweetAlert from 'sweetalert2';
@@ -18,12 +18,19 @@ class NotificationModal extends Component {
     minBookingTimeHours: 0,
     minBookingTimeMinutes: 30,
     rooms: [],
+    isLoading: false,
   }
 
   componentDidMount() {
+    this.syncRooms();
+  }
+
+  syncRooms = () => {
     const { rooms } = this.state;
+    this.setState({ isLoading: true });
     api.getRooms()
       .then((r) => {
+        this.setState({ isLoading: false });
         if (r.status === 200) {
           r.data.map(d => rooms.push({ id: d.id, name: d.name, checked: true }));
           this.setState({ rooms });
@@ -73,10 +80,15 @@ class NotificationModal extends Component {
       sweetAlert('Blocked', 'Minimum booking time cannot be less than 30min.', 'warning');
       return false;
     }
-    // if (minBookingTimeHours > 8) {
-    //   sweetAlert('Blocked', 'Minimum time cannot be negative', 'warning');
-    //   return false;
-    // }
+    const rangeDuration = moment.duration(moment(endTime, 'hh:mm').diff(moment(startTime, 'hh:mm')));
+    const minBookingDuration = moment.duration({
+      hours: minBookingTimeHours,
+      minutes: minBookingTimeMinutes,
+    });
+    if (rangeDuration < minBookingDuration) {
+      sweetAlert('Blocked', 'Range duration is less than minimum booking duration.', 'warning');
+      return false;
+    }
 
     return true;
   }
@@ -85,22 +97,25 @@ class NotificationModal extends Component {
     const {
       date, startTime, endTime, minBookingTimeHours, minBookingTimeMinutes, rooms,
     } = this.state;
-
+    const { onClose } = this.props;
     if (!this.verifyForm()) {
       return;
     }
+    this.setState({ isLoading: true });
     const selectedRooms = [];
     const minTime = `${minBookingTimeHours}:${minBookingTimeMinutes}:00`;
     rooms.filter(r => r.checked === true).map(r => selectedRooms.push(r.id));
-    console.log(storage.getUser());
-    console.log(selectedRooms);
-    console.log(date);
-    console.log(startTime);
-    console.log(endTime);
-    console.log(minTime);
     api.postNotification(storage.getUser().id, selectedRooms, date, startTime, endTime, minTime)
       .then((r) => {
-        console.log(r);
+        this.setState({ isLoading: false });
+        if (r.status === 201) {
+          sweetAlert('Success', 'Notification was created', 'success');
+          onClose();
+        }
+      })
+      .catch((e) => {
+        this.setState({ isLoading: false });
+        sweetAlert('Blocked', e.response.data[0], 'warning');
       });
   }
 
@@ -129,7 +144,7 @@ class NotificationModal extends Component {
 
   render() {
     const {
-      startTime, endTime, date, rooms, minBookingTimeHours, minBookingTimeMinutes,
+      startTime, endTime, date, rooms, minBookingTimeHours, minBookingTimeMinutes, isLoading,
     } = this.state;
     const { onClose } = this.props;
     return (
@@ -154,7 +169,7 @@ class NotificationModal extends Component {
               <div className="grid-top">
                 <div>
                   <Icon name="clock outline" size="big" />
-                  <span className="label">Start time:</span>
+                  <span className="label">Range start time:</span>
                 </div>
                 <Input
                   type="time"
@@ -164,8 +179,8 @@ class NotificationModal extends Component {
               </div>
               <div className="grid-top">
                 <div>
-                  <Icon name="calendar alternate outline" size="big" />
-                  <span className="label">End time:</span>
+                  <Icon name="clock" size="big" />
+                  <span className="label">Range end time:</span>
                 </div>
                 <Input
                   type="time"
@@ -218,6 +233,9 @@ class NotificationModal extends Component {
           <Button color="blue" onClick={this.handleSubmit}>Submit</Button>
           <Button onClick={onClose}>Close</Button>
         </Modal.Actions>
+        <Dimmer active={isLoading} inverted>
+          <Loader />
+        </Dimmer>
       </Modal>
 
     );
