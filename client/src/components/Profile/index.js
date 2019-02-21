@@ -81,8 +81,73 @@ class Profile extends Component {
       });
   }
 
+  updatePassword = () => {
+    const { oldPassword, newPassword, confirmNewPassword } = this.state;
+    let preventSubmit = false;
+
+    if (oldPassword === null || oldPassword === '' || oldPassword.length === 0) {
+      preventSubmit = true;
+    }
+
+    if (newPassword === null || newPassword === '' || newPassword.length === 0) {
+      preventSubmit = true;
+    }
+
+    if (confirmNewPassword === null || confirmNewPassword === '' || confirmNewPassword.length === 0) {
+      preventSubmit = true;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      preventSubmit = true;
+      sweetAlert(
+        ':(',
+        'Password do not match.',
+        'error',
+      );
+    }
+
+    if (preventSubmit) {
+      return;
+    }
+
+    const data = {
+      old_password: oldPassword,
+      new_password: newPassword,
+    };
+
+    api.updateUser(storage.getUser().id, data)
+      .then(() => {
+        sweetAlert(
+          'Password Update',
+          'Password updated successfully',
+          'success',
+        )
+          .then(() => {
+            this.setState({
+              oldPassword: '',
+              newPassword: '',
+              confirmNewPassword: '',
+            });
+          });
+      })
+      .catch(() => {
+        sweetAlert(
+          ':(',
+          'There was an error.',
+          'error',
+        );
+      });
+  }
+
   render() {
-    const { secondaryEmail, studentID } = this.state;
+    const {
+      secondaryEmail,
+      studentID,
+      oldPassword,
+      newPassword,
+      confirmNewPassword,
+    } = this.state;
+
     return (
       <div>
         <Navigation />
@@ -101,6 +166,7 @@ class Profile extends Component {
                 <Form.Input
                   label="Student ID"
                   type="number"
+                  min="0"
                   value={studentID}
                   onChange={(e) => { this.handleInputChange('studentID', e); }}
                 />
@@ -112,15 +178,30 @@ class Profile extends Component {
             <h1> Update Password </h1>
             <Form>
               <Form.Field>
-                <Form.Input label="Old password" type="password" />
+                <Form.Input
+                  label="Old password"
+                  type="password"
+                  value={oldPassword}
+                  onChange={(e) => { this.handleInputChange('oldPassword', e); }}
+                />
               </Form.Field>
               <Form.Field>
-                <Form.Input label="New password" type="password" />
+                <Form.Input
+                  label="New password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => { this.handleInputChange('newPassword', e); }}
+                />
               </Form.Field>
               <Form.Field>
-                <Form.Input label="Confirm new password" type="password" />
+                <Form.Input
+                  label="Confirm new password"
+                  type="password"
+                  value={confirmNewPassword}
+                  onChange={(e) => { this.handleInputChange('confirmNewPassword', e); }}
+                />
               </Form.Field>
-              <Button primary> Update password </Button>
+              <Button primary onClick={this.updatePassword}> Update password </Button>
             </Form>
           </Segment>
         </div>
