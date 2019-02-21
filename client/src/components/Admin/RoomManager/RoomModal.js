@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, Divider, Icon,
+  Modal, Button, FormField, Input, Divider,
 } from 'semantic-ui-react';
 import api from '../../../utils/api';
 import './RoomModal.scss';
@@ -171,7 +171,6 @@ class RoomModal extends Component {
       numOfComputers,
       cardReader,
     } = this.state;
-    console.log(cardReader);
     return (
       <Modal centered={false} size="tiny" open={show} id="room-modal" onClose={onClose}>
         <Modal.Header>
