@@ -1,9 +1,5 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/no-unused-state */
 /* eslint-disable prefer-const */
-/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/label-has-for */
-/* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import {
   Button,
