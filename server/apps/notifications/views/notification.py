@@ -43,14 +43,14 @@ class NotificationCreate(APIView):
 
         try:
             user = User.objects.get(id=request.user.id)
-            data["booker"] = user.id
         except User.DoesNotExist as error:
             return Response(error.messages, status=status.HTTP_404_NOT_FOUND)
 
+        if not data["booker"] == user.id and not request.user.is_superuser:
+            return Response("You can only create notifications for yourself", status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = WriteNotificationSerializer(data=data)
         if not serializer.is_valid():
-            print(serializer.data)
-            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
