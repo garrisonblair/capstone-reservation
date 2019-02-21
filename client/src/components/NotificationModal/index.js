@@ -14,6 +14,8 @@ class NotificationModal extends Component {
     date: moment().format('YYYY-MM-DD'),
     startTime: moment(new Date()).format('HH:mm'),
     endTime: moment(new Date()).format('HH:mm'),
+    minBookingTimeHours: 0,
+    minBookingTimeMinutes: 0,
     rooms: [],
   }
 
@@ -28,17 +30,15 @@ class NotificationModal extends Component {
       });
   }
 
-  handleOnChangeDate = (e, data) => {
-    this.setState({ date: data.value });
-  }
+  handleOnChangeDate = (e, data) => { this.setState({ date: data.value }); }
 
-  handleOnChangeStartTime = (e, data) => {
-    this.setState({ startTime: data.value });
-  }
+  handleOnChangeStartTime = (e, data) => { this.setState({ startTime: data.value }); }
 
-  handleOnChangeEndTime = (e, data) => {
-    this.setState({ endTime: data.value });
-  }
+  handleOnChangeEndTime = (e, data) => { this.setState({ endTime: data.value }); }
+
+  handleOnChangeMinHour = (e, data) => { console.log(data); };
+
+  handleOnChangeMinMinute = () => { }
 
   verifyForm = () => {
     const { date, startTime, endTime } = this.state;
@@ -98,7 +98,7 @@ class NotificationModal extends Component {
 
   render() {
     const {
-      startTime, endTime, date, rooms,
+      startTime, endTime, date, rooms, minBookingTimeHours, minBookingTimeMinutes,
     } = this.state;
     const { onClose } = this.props;
     return (
@@ -135,9 +135,33 @@ class NotificationModal extends Component {
                 onChange={this.handleOnChangeEndTime}
               />
             </FormField>
+            <FormField className="min-booking-time">
+              <br />
+              <span className="label">Minimum booking time:</span>
+              <br />
+              <Input
+                type="number"
+                defaultValue={minBookingTimeHours}
+                min="0"
+                max="8"
+                onChange={this.handleOnChangeMinHour}
+              />
+              <span className="label">hours</span>
+              <Input
+                type="number"
+                size="tiny"
+                min="0"
+                max="59"
+                defaultValue={minBookingTimeMinutes}
+              // onChange={this.handleOnChangeEndTime}
+              />
+              <span className="label">minutes</span>
+            </FormField>
             <h4>Rooms:</h4>
-            <Button onClick={this.handleOnClickCheckAll}>Check all</Button>
-            <Button onClick={this.handleOnClickClearAll}>Clear all</Button>
+            <div className="buttons-field">
+              <Button onClick={this.handleOnClickCheckAll}>Check all</Button>
+              <Button onClick={this.handleOnClickClearAll}>Clear all</Button>
+            </div>
             <div className="grid-container">
               {rooms.map(r => (
                 <Checkbox
