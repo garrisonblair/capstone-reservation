@@ -113,13 +113,13 @@ class Navigation extends Component {
     const { history } = this.props;
     const user = storage.getUser();
     const component = (
-      <Dropdown pointing item text="User">
+      <Dropdown pointing item text={`${user.username}`}>
         <Dropdown.Menu style={{ left: 'auto', right: 0 }}>
-          <Dropdown.Header>
+          {/* <Dropdown.Header>
             <Icon name="user" />
             {`Logged in as ${user.username}`}
           </Dropdown.Header>
-          <Dropdown.Divider />
+          <Dropdown.Divider /> */}
           <Dropdown.Item icon="th" text="Dashboard" onClick={() => history.push('dashboard')} />
           <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
         </Dropdown.Menu>
