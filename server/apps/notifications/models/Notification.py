@@ -47,10 +47,12 @@ class Notification(models.Model):
         best_result = datetime.timedelta()
         start = None
         end = None
+        # For each slot with no bookings, check if it is longer than the minimum range required to book
         for i in range(0, room_bookings_for_range.count() - 1):
             range_end = room_bookings_for_range[i + 1].start_time
             range_start = room_bookings_for_range[i].end_time
             free = datetime.datetime.combine(self.date, range_end) - datetime.datetime.combine(self.date, range_start)
+            # If there are multiple solutions, we take the longest one
             if free >= self.minimum_booking_time and free >= best_result:
                 best_result = free
                 start = range_start
@@ -63,6 +65,8 @@ class Notification(models.Model):
         best_room = None
         best_start = self.range_end
         best_end = self.range_start
+        # For each room we check if it has an available slot
+        # If there is more than one room with a slot, we take the one with the longest slot
         for room in self.rooms.all():
             result = self.check_room_availability(room)
             if not result:
