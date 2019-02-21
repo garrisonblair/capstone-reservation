@@ -417,6 +417,8 @@ class Cells extends Component {
             : <span>{usernameDisplay.substring(0, 9)}</span>}
           {booking.note && (booking.display_note || storage.checkAdmin())
             ? Cells.renderNote(booking) : null}
+
+          {booking.confirmed ? <div style={{ marginTop: '5px' }}><Icon name="check circle" /></div> : null}
         </span>
       );
     }
@@ -450,10 +452,11 @@ class Cells extends Component {
   }
 
   static renderNote(booking) {
+    console.log(booking.confirmed);
     return (
       <Popup
         className="popup--note"
-        trigger={<Icon name="attention" />}
+        trigger={(<Icon name="attention" />)}
         content={(
           <Message negative>
             {booking.note}
