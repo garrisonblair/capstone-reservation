@@ -47,7 +47,7 @@ class NotificationCreate(APIView):
             return Response(error.messages, status=status.HTTP_404_NOT_FOUND)
 
         if not data["booker"] == user.id and not request.user.is_superuser:
-            return Response("You can only create notifications for yourself", status=status.HTTP_401_UNAUTHORIZED)
+            return Response("You can only create notifications for yourself", status=status.HTTP_403_FORBIDDEN)
 
         serializer = WriteNotificationSerializer(data=data)
         if not serializer.is_valid():
@@ -75,7 +75,7 @@ class NotificationDelete(APIView):
             return Response("Notification not found", status=status.HTTP_404_NOT_FOUND)
 
         if not notification.booker == request.user and not request.user.is_superuser:
-            return Response("You are not authorized to delete this notification", status=status.HTTP_401_UNAUTHORIZED)
+            return Response("You are not authorized to delete this notification", status=status.HTTP_403_FORBIDDEN)
 
         notification.delete()
         return Response("Notification Deleted", status=status.HTTP_200_OK)
