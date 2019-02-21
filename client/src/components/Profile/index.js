@@ -56,7 +56,6 @@ class Profile extends Component {
     }
 
     if (preventSubmit === true) {
-      console.log('PREVENT SUBMIT');
       return;
     }
 
@@ -64,13 +63,11 @@ class Profile extends Component {
       booker_id: studentID,
       secondary_email: secondaryEmail,
     };
-    console.log(data);
-    console.log(storage.getUser().id);
+
     api.updateUser(storage.getUser().id, data)
       .then(() => {
-        console.log('THEN');
         sweetAlert(
-          'Settings',
+          'Profile',
           'Profile saved successfully',
           'success',
         );
@@ -103,6 +100,7 @@ class Profile extends Component {
               <Form.Field>
                 <Form.Input
                   label="Student ID"
+                  type="number"
                   value={studentID}
                   onChange={(e) => { this.handleInputChange('studentID', e); }}
                 />
