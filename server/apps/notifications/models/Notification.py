@@ -33,6 +33,8 @@ class Notification(models.Model):
             raise ValidationError("Start of range must be before end of range")
         start = datetime.datetime.combine(self.date, self.range_start)
         end = datetime.datetime.combine(self.date, self.range_end)
+        if self.minimum_booking_time < datetime.timedelta(minutes=30):
+            raise ValidationError("Minimum booking time has to be at least 30 minutes")
         range_duration = end - start
         if range_duration < self.minimum_booking_time:
             raise ValidationError("Minimum booking duration can not be longer than duration range")
