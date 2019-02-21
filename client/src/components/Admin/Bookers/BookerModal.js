@@ -78,14 +78,15 @@ class BookerModal extends Component {
     }).then((result) => {
       if (result.value) {
         api.assignIndividualPrivileges(booker.id)
-          .then(
+          .then((response) => {
+            this.setState({ myPrivileges: response.data });
             sweetAlert.fire({
               position: 'top',
               type: 'success',
               title: 'Completed',
               text: `Privieges successfully assigned to ${booker.username}`,
-            }),
-          );
+            });
+          });
         this.componentDidMount();
       }
     });
