@@ -4,6 +4,7 @@ import datetime
 from django.db import models
 from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
+from apps.notifications.models.Notification import Notification
 from apps.rooms.models.Room import Room
 from ..models.RecurringBooking import RecurringBooking
 from django.db.models import Q
@@ -270,6 +271,8 @@ class Booking(models.Model, SubjectModel):
                 previous_campon = campon
             # Finally delete the first campon as it is now a new booking
             first_campon.delete()
+
+        Notification.objects.notify(self.date, self.room)
 
         return
 

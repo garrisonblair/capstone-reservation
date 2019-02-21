@@ -17,6 +17,7 @@ from apps.booking.serializers.booking import \
 from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
 from apps.booking.serializers.campon import ReadCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
+from apps.notifications.models.Notification import Notification
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
 
@@ -175,6 +176,9 @@ class BookingRetrieveUpdateDestroy(APIView):
             update_booking.save()
 
             utils.log_model_change(update_booking, utils.CHANGE, request.user)
+
+            Notification.objects.notify(update_booking.date, update_booking.room)
+
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except ValidationError as error:
