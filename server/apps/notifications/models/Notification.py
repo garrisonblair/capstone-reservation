@@ -6,6 +6,13 @@ from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 
 
+class NotificationManager(models.Manager):
+    def notify(self, date, room):
+        notifications_for_date = self.filter(date=date)
+        for notification in notifications_for_date:
+            notification.check_and_notify(room)
+
+
 class Notification(models.Model):
     booker = models.ForeignKey(User, on_delete=models.CASCADE)  # type: User
     rooms = models.ManyToManyField(to=Room, related_name='notifications')
@@ -13,6 +20,8 @@ class Notification(models.Model):
     range_start = models.TimeField()
     range_end = models.TimeField()
     minimum_booking_time = models.DurationField()
+
+    objects = NotificationManager()
 
     def save(self, *args, **kwargs):
         self.validate_model()
@@ -67,3 +76,24 @@ class Notification(models.Model):
         if best_room is None:
             return False
         return best_room, best_start, best_end
+
+    def check_and_notify(self, room):
+        if room not in self.rooms.all():
+            return
+
+        result = self.check_room_availability(room)
+        if not result:
+            return
+
+        start_time = result[0]
+        end_time = result[0]
+        subject = "Room available to book!"
+        message = "Hello {}!\n" \
+                  "Room {} has become available to book on {} from to {} to {}.\n" \
+                  "Visit the calendar to make a booking.".format(self.booker.username,
+                                                                 room.name,
+                                                                 self.date.strftime("%A, %B %d %Y"),
+                                                                 start_time.strftime("%H:%M"),
+                                                                 end_time.strftime("%H:%M")
+                                                                 )
+        self.booker.send_email(subject, message)

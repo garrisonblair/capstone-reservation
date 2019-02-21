@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from apps.rooms.serializers.room import RoomSerializer
 from ..models.Notification import Notification
 
 

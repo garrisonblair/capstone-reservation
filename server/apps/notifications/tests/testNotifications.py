@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.core import mail
 import datetime
 
 from apps.accounts.models.User import User
@@ -8,14 +9,13 @@ from apps.rooms.models.Room import Room
 
 
 class TestNotification(TestCase):
-
     def setUp(self):
-        self.user = User(username="user")
+        self.user = User.objects.create_user(username="user", email="user@email.com")
         self.user.save()
 
         self.room1 = Room(name="Room1", capacity=1, number_of_computers=1)
         self.room1.save()
-        self.booker = User(username="username")
+        self.booker = User.objects.create_user(username="username", email="username@email.com")
         self.booker.save()
         self.booking1 = Booking(
             room=self.room1,
@@ -144,3 +144,22 @@ class TestNotification(TestCase):
         result = notification.check_all_room_availability()
 
         self.assertEqual(False, result)
+
+    def testNotifyAvailableRoom(self):
+        notification = Notification(
+            booker=self.user,
+            date=datetime.date(2020, 1, 1),
+            range_start=datetime.time(11, 0, 0),
+            range_end=datetime.time(16, 0, 0),
+            minimum_booking_time=datetime.timedelta(hours=3)
+        )
+        notification.save()
+        notification.rooms.add(self.room1, self.room2)
+
+        Notification.objects.notify(datetime.date(2020, 1, 1), self.room1)
+        self.assertEqual(len(mail.outbox), 1)
+
+        body = "Hello user!\n" \
+               "Room Room1 has become available to book on Wednesday, January 01 2020 from to 12:00 to 12:00.\n" \
+               "Visit the calendar to make a booking."
+        self.assertEqual(mail.outbox[0].body, body)
