@@ -72,8 +72,9 @@ class UserRetrieveUpdate(APIView):
         is_staff = request.data.get('is_staff')
         is_superuser = request.data.get('is_superuser')
         booker_id = request.data.get('booker_id')
-
         secondary_email = request.data.get('secondary_email')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
 
         user = None
         try:
@@ -95,6 +96,13 @@ class UserRetrieveUpdate(APIView):
 
         if password:
             user.password = make_password(password)  # Hash password
+
+        if old_password and not user.check_password(old_password):
+            print("WRONG OLD PASSWORD")
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if old_password and new_password:
+            user.password = make_password(new_password)
 
         booker = BookerProfile.objects.get(user_id=user.id)
 
