@@ -149,9 +149,13 @@ class BookingRetrieveUpdateDestroy(APIView):
         settings = SystemSettings.get_settings()
         timeout = (now + settings.booking_edit_lock_timeout).time()
 
-        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking.start_time):
-            if not request.user.is_superuser:
-                return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
+        # time = datetime.datetime.strptime(data["start_time"], "%H:%M").time()
+        # pdb.set_trace()
+
+        if not datetime.datetime.strptime(data["start_time"], "%H:%M").time() == booking.start_time:
+            if now.date() > booking.date or (now.date() == booking.date and timeout >= booking.start_time):
+                if not request.user.is_superuser:
+                    return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
         data["booker"] = booking.booker.id
