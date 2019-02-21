@@ -2,6 +2,8 @@ from django.contrib.auth.models import User as DjangoUser
 from django.core import mail
 from django.conf import settings
 
+from ..tasks import send_email
+
 from apps.util.AbstractBooker import AbstractBooker
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeMerger
@@ -27,6 +29,8 @@ class User(DjangoUser, AbstractBooker):
         return self.booking_set
 
     def send_email(self, subject, message, send_to_primary=False):
+        print("User send email")
+        send_email.delay()
 
         recipient_list = list()
         if self.bookerprofile.secondary_email and not send_to_primary:
