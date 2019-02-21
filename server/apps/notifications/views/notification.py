@@ -1,4 +1,4 @@
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -55,8 +55,8 @@ class NotificationCreate(APIView):
 
         try:
             notification = serializer.save()
-        except ValidationError:
-            return Response("Range start must be before end", status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as error:
+            return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
 
         available_room = notification.check_all_room_availability()
         if not available_room:
