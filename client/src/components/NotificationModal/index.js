@@ -5,6 +5,7 @@ import {
 } from 'semantic-ui-react';
 import moment from 'moment';
 import sweetAlert from 'sweetalert2';
+import storage from '../../utils/local-storage';
 import api from '../../utils/api';
 import './NotificationModal.scss';
 
@@ -15,7 +16,7 @@ class NotificationModal extends Component {
     startTime: moment(new Date()).format('HH:mm'),
     endTime: moment(new Date()).format('HH:mm'),
     minBookingTimeHours: 0,
-    minBookingTimeMinutes: 0,
+    minBookingTimeMinutes: 30,
     rooms: [],
   }
 
@@ -24,7 +25,7 @@ class NotificationModal extends Component {
     api.getRooms()
       .then((r) => {
         if (r.status === 200) {
-          r.data.map(d => rooms.push({ id: d.id, name: d.name, checked: false }));
+          r.data.map(d => rooms.push({ id: d.id, name: d.name, checked: true }));
           this.setState({ rooms });
         }
       });
@@ -36,12 +37,14 @@ class NotificationModal extends Component {
 
   handleOnChangeEndTime = (e, data) => { this.setState({ endTime: data.value }); }
 
-  handleOnChangeMinHour = (e, data) => { console.log(data); };
+  handleOnChangeMinHour = (e, data) => { this.setState({ minBookingTimeHours: data.value }); };
 
-  handleOnChangeMinMinute = () => { }
+  handleOnChangeMinMinute = (e, data) => { this.setState({ minBookingTimeMinutes: data.value }); }
 
   verifyForm = () => {
-    const { date, startTime, endTime } = this.state;
+    const {
+      date, startTime, endTime, minBookingTimeHours, minBookingTimeMinutes, rooms,
+    } = this.state;
     if (date.length === 0) {
       sweetAlert('Blocked', 'The date cannot be empty.', 'warning');
       return false;
@@ -58,19 +61,47 @@ class NotificationModal extends Component {
       sweetAlert('Blocked', 'End time must be after start time.', 'warning');
       return false;
     }
+    if (minBookingTimeHours < 0 || minBookingTimeMinutes < 0) {
+      sweetAlert('Blocked', 'Minimum time cannot be negative', 'warning');
+      return false;
+    }
+    if (!rooms.some(r => r.checked === true)) {
+      sweetAlert('Blocked', 'You have to choose at least a room.', 'warning');
+      return false;
+    }
+    if (minBookingTimeMinutes < 30 && minBookingTimeHours === 0) {
+      sweetAlert('Blocked', 'Minimum booking time cannot be less than 30min.', 'warning');
+      return false;
+    }
+    // if (minBookingTimeHours > 8) {
+    //   sweetAlert('Blocked', 'Minimum time cannot be negative', 'warning');
+    //   return false;
+    // }
 
     return true;
   }
 
   handleSubmit = () => {
-    const { date, startTime, endTime } = this.state;
+    const {
+      date, startTime, endTime, minBookingTimeHours, minBookingTimeMinutes, rooms,
+    } = this.state;
+
+    if (!this.verifyForm()) {
+      return;
+    }
+    const selectedRooms = [];
+    const minTime = `${minBookingTimeHours}:${minBookingTimeMinutes}:00`;
+    rooms.filter(r => r.checked === true).map(r => selectedRooms.push(r.id));
+    console.log(storage.getUser());
+    console.log(selectedRooms);
     console.log(date);
     console.log(startTime);
     console.log(endTime);
-
-    if (!this.verifyForm()) {
-      // return;
-    }
+    console.log(minTime);
+    api.postNotification(storage.getUser().id, selectedRooms, date, startTime, endTime, minTime)
+      .then((r) => {
+        console.log(r);
+      });
   }
 
   handleCheckboxChange = (e, data) => {
@@ -102,39 +133,47 @@ class NotificationModal extends Component {
     } = this.state;
     const { onClose } = this.props;
     return (
-      <Modal open onClose={onClose} size="tiny" centered={false} id="notification-modal">
+      <Modal open onClose={onClose} size="small" centered={false} id="notification-modal">
         <Modal.Header>
           <h1>Create a notification</h1>
         </Modal.Header>
-        <Modal.Content>
+        <Modal.Content scrolling>
           <Modal.Description>
-            <FormField>
-              <Icon name="calendar alternate outline" size="big" />
-              <span className="label">Date:</span>
-              <Input
-                type="date"
-                defaultValue={date}
-                onChange={this.handleOnChangeDate}
-              />
-            </FormField>
-            <FormField>
-              <Icon name="clock outline" size="big" />
-              <span className="label">Start time:</span>
-              <Input
-                type="time"
-                defaultValue={startTime}
-                onChange={this.handleOnChangeStartTime}
-              />
-            </FormField>
-            <FormField>
-              <Icon name="clock" size="big" />
-              <span className="label">End time:</span>
-              <Input
-                type="time"
-                defaultValue={endTime}
-                onChange={this.handleOnChangeEndTime}
-              />
-            </FormField>
+            <div className="grid-container">
+              <div className="grid-top">
+                <div>
+                  <Icon name="calendar alternate outline" size="big" />
+                  <span className="label">Date:</span>
+                </div>
+                <Input
+                  type="date"
+                  defaultValue={date}
+                  onChange={this.handleOnChangeDate}
+                />
+              </div>
+              <div className="grid-top">
+                <div>
+                  <Icon name="clock outline" size="big" />
+                  <span className="label">Start time:</span>
+                </div>
+                <Input
+                  type="time"
+                  defaultValue={startTime}
+                  onChange={this.handleOnChangeStartTime}
+                />
+              </div>
+              <div className="grid-top">
+                <div>
+                  <Icon name="calendar alternate outline" size="big" />
+                  <span className="label">End time:</span>
+                </div>
+                <Input
+                  type="time"
+                  defaultValue={endTime}
+                  onChange={this.handleOnChangeEndTime}
+                />
+              </div>
+            </div>
             <FormField className="min-booking-time">
               <br />
               <span className="label">Minimum booking time:</span>
@@ -146,14 +185,14 @@ class NotificationModal extends Component {
                 max="8"
                 onChange={this.handleOnChangeMinHour}
               />
-              <span className="label">hours</span>
+              <span className="label hour-label">hours</span>
               <Input
                 type="number"
                 size="tiny"
                 min="0"
                 max="59"
                 defaultValue={minBookingTimeMinutes}
-              // onChange={this.handleOnChangeEndTime}
+                onChange={this.handleOnChangeMinMinute}
               />
               <span className="label">minutes</span>
             </FormField>

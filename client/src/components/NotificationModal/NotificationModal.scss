@@ -3,19 +3,24 @@
     font-weight: bold;
     font-size: 15px;
   }
+  .top-grid{
+    display: grid;
+    grid-template-rows: auto, auto;
+  }
   .grid-container{
     display: grid;
     grid-template-columns: auto auto auto;
   }
-  input{
-    margin-left: 8px;
-  }
   label{
     margin-bottom: 8px;
   }
+
   .min-booking-time{
     .label{
       margin-left: 7px;
+    }
+    .hour-label{
+      margin-right: 5px;
     }
   }
   .buttons-field{
