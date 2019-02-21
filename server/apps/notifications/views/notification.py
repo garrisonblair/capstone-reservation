@@ -8,12 +8,12 @@ from rest_framework import status
 from apps.accounts.models.User import User
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.notifications.models.Notification import Notification
-from apps.notifications.sertializers.notification import NotificationSerializer
+from apps.notifications.sertializers.notification import WriteNotificationSerializer, ReadNotificationSerializer
 
 
 class NotificationList(ListAPIView):
     permission_classes = (IsBooker, IsAuthenticated)
-    serializer_class = NotificationSerializer
+    serializer_class = ReadNotificationSerializer
     queryset = Notification.objects.all()
 
     def get_queryset(self):
@@ -36,7 +36,7 @@ class NotificationList(ListAPIView):
 
 class NotificationCreate(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
-    serializer_class = NotificationSerializer
+    serializer_class = WriteNotificationSerializer
 
     def post(self, request):
         data = request.data
@@ -47,7 +47,7 @@ class NotificationCreate(APIView):
         except User.DoesNotExist as error:
             return Response(error.messages, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = NotificationSerializer(data=data)
+        serializer = WriteNotificationSerializer(data=data)
         if not serializer.is_valid():
             print(serializer.data)
             print(serializer.errors)
