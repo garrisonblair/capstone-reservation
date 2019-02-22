@@ -4,13 +4,11 @@ from django.core.exceptions import ValidationError
 from apps.accounts.exceptions import PrivilegeError
 from django.db import models
 from django.db.models import Q
-from rest_framework import serializers
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.rooms.models.Room import Room
 from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
-from apps.system_administration.models.system_settings import SystemSettings
 from apps.util.AbstractBooker import AbstractBooker
 from datetime import timedelta, datetime
 
@@ -18,10 +16,6 @@ from datetime import timedelta, datetime
 class RecurringBookingManager(models.Manager):
     def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, group,
                                  booker, skip_conflicts):
-
-        settings = SystemSettings.get_settings()
-        dt = datetime.combine(start_date, start_time) + timedelta(minutes=settings.booking_time_to_expire_minutes)
-        expiration = datetime.strptime(str(dt.time()), '%H:%M:%S').time()
 
         recurring_booking = self.create(
             start_date=start_date,
@@ -47,7 +41,6 @@ class RecurringBookingManager(models.Manager):
                     start_time=recurring_booking.booking_start_time,
                     end_time=recurring_booking.booking_end_time,
                     recurring_booking=recurring_booking,
-                    expiration=expiration,
                     confirmed=False
                 )
                 recurring_booking.booking_set.add(booking)
