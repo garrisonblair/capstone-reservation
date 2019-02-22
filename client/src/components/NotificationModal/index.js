@@ -109,7 +109,7 @@ class NotificationModal extends Component {
       .then((r) => {
         this.setState({ isLoading: false });
         if (r.status === 201) {
-          sweetAlert('Success', 'Notification was created', 'success');
+          sweetAlert('Success', 'We will send you an e-mail if a room becomes available in the specified range', 'success');
           onClose();
         }
       })
