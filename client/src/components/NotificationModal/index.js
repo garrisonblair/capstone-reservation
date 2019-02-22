@@ -109,6 +109,13 @@ class NotificationModal extends Component {
       .then((r) => {
         this.setState({ isLoading: false });
         if (r.status === 200) {
+          const { room, start_time: st, end_time: et } = r.data;
+          sweetAlert(
+            'Available room found',
+            `Room ${room} is free between ${moment(st, 'hh:mm:ss').format('hh:mm A')} and ${moment(et, 'hh:mm:ss').format('hh:mm A')}.`,
+            'info',
+          );
+        } else if (r.status === 201) {
           sweetAlert('Success', 'We will send you an e-mail if a room becomes available in the specified range', 'success');
           onClose();
         }
@@ -143,7 +150,8 @@ class NotificationModal extends Component {
 
   render() {
     const {
-      startTime, endTime, date, rooms, minBookingTimeHours, minBookingTimeMinutes, isLoading,
+      startTime, endTime, date, rooms,
+      minBookingTimeHours, minBookingTimeMinutes, isLoading,
     } = this.state;
     const { onClose } = this.props;
     return (
@@ -256,7 +264,6 @@ class NotificationModal extends Component {
           <Loader />
         </Dimmer>
       </Modal>
-
     );
   }
 }
