@@ -49,6 +49,13 @@ class Notification(models.Model):
         best_result = datetime.timedelta()
         start = None
         end = None
+
+        if room_bookings_for_range.count() == 0:
+            available = dict()
+            available["start_time"] = self.range_start
+            available["end_time"] = self.range_end
+            return available
+
         # For each slot with no bookings, check if it is longer than the minimum range required to book
         for i in range(0, room_bookings_for_range.count() - 1):
             range_end = room_bookings_for_range[i + 1].start_time
