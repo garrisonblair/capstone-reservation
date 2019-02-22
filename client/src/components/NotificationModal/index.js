@@ -108,7 +108,7 @@ class NotificationModal extends Component {
     api.postNotification(storage.getUser().id, selectedRooms, date, startTime, endTime, minTime)
       .then((r) => {
         this.setState({ isLoading: false });
-        if (r.status === 201) {
+        if (r.status === 200) {
           sweetAlert('Success', 'We will send you an e-mail if a room becomes available in the specified range', 'success');
           onClose();
         }
@@ -175,6 +175,7 @@ class NotificationModal extends Component {
                     type="time"
                     defaultValue={startTime}
                     onChange={this.handleOnChangeStartTime}
+                    step="600"
                   />
                 </center>
               </Segment>
@@ -187,6 +188,7 @@ class NotificationModal extends Component {
                     type="time"
                     defaultValue={endTime}
                     onChange={this.handleOnChangeEndTime}
+                    step="600"
                   />
                 </center>
               </Segment>
@@ -209,6 +211,7 @@ class NotificationModal extends Component {
                       className="time-input"
                       type="number"
                       size="tiny"
+                      step="10"
                       min="0"
                       max="59"
                       defaultValue={minBookingTimeMinutes}
