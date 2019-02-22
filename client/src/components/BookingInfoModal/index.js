@@ -56,9 +56,12 @@ class BookingInfoModal extends Component {
     note: '',
     displayNote: false,
     showOnCalendar: false,
+    booking: undefined,
   }
 
   componentWillMount() {
+    const { booking } = this.props;
+    this.setState({ booking });
     api.getAdminSettings()
       .then((response) => {
         this.setState({ settings: response.data });
@@ -75,6 +78,7 @@ class BookingInfoModal extends Component {
       this.setState({
         note: nextProps.booking.note,
         displayNote: nextProps.booking.display_note,
+        booking: nextProps.booking,
       });
     }
   }
@@ -134,8 +138,12 @@ class BookingInfoModal extends Component {
   handleShowOnCalendar = (e, target) => this.setState({ showOnCalendar: target.checked });
 
   handleNoteSubmit = () => {
-    const { note, displayNote, showOnCalendar } = this.state;
-    const { booking } = this.props;
+    const {
+      note,
+      displayNote,
+      showOnCalendar,
+      booking,
+    } = this.state;
     const data = {
       note,
       display_note: displayNote,
@@ -159,10 +167,11 @@ class BookingInfoModal extends Component {
   }
 
   handleConfirm = () => {
-    const { booking } = this.props;
+    const { booking } = this.state;
     api.confirmBooking(booking)
       .then(() => {
-        // TODO update state of booking to confirmed
+        booking.confirmed = true;
+        this.setState({ booking });
       });
   }
 
@@ -170,6 +179,10 @@ class BookingInfoModal extends Component {
     const { settings } = this.state;
 
     if (settings && !settings.manual_booking_confirmation) {
+      return false;
+    }
+
+    if (booking.confirmed) {
       return false;
     }
 
@@ -214,7 +227,8 @@ class BookingInfoModal extends Component {
   }
 
   renderDescription() {
-    const { booking, campons } = this.props;
+    const { booking } = this.state;
+    const { campons } = this.props;
     const booker = !!booking.booker;
     return (
       <Modal.Content>

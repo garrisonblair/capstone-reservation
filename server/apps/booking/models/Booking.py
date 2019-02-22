@@ -24,7 +24,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class BookingManager(models.Manager):
-    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking, expiration, confirmed):
+    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking, confirmed):
 
         booking = self.create(
             booker=booker,
@@ -34,7 +34,6 @@ class BookingManager(models.Manager):
             start_time=start_time,
             end_time=end_time,
             recurring_booking=recurring_booking,
-            expiration=expiration,
             confirmed=confirmed
         )
 
@@ -63,7 +62,7 @@ class Booking(models.Model, SubjectModel):
                                           on_delete=models.CASCADE,
                                           blank=True,
                                           null=True)
-    expiration = models.TimeField(blank=True, null=True)
+    expiration_base = models.TimeField(blank=True, null=True)
     confirmed = models.BooleanField(default=False)
 
     bypass_privileges = models.BooleanField(default=False)
@@ -77,6 +76,12 @@ class Booking(models.Model, SubjectModel):
 
     observers = list()
 
+    def get_expiration(self):
+        settings = SystemSettings.get_settings()
+
+        return (datetime.datetime.combine(datetime.date.today(), self.expiration_base) +
+                datetime.timedelta(minutes=settings.booking_time_to_expire_minutes)).time()
+
     def save(self, *args, **kwargs):
         if not self.bypass_validation:
             self.validate_model()
@@ -84,6 +89,7 @@ class Booking(models.Model, SubjectModel):
         is_create = False
         if self.id is None:
             is_create = True
+            self.expiration_base = self.start_time
 
         if not self.bypass_privileges:
             self.evaluate_privilege(is_create)
@@ -98,9 +104,9 @@ class Booking(models.Model, SubjectModel):
 
     def __str__(self):
         return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}, Recurring Booking: {},' \
-               ' Expiration: {}, Confirmed: {}'\
+               ' Confirmed: {}'\
             .format(self.id, self.booker.username, self.room.name, self.date, self.start_time, self.end_time,
-                    self.recurring_booking, self.expiration, self.confirmed)
+                    self.recurring_booking, self.confirmed)
 
     def validate_model(self):
         now = datetime.datetime.now()
