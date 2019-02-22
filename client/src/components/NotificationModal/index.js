@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Modal, Input, FormField, Icon, Button, Checkbox, Dimmer, Loader,
+  Modal, Input, FormField, Button, Checkbox, Dimmer, Loader, Segment,
 } from 'semantic-ui-react';
 import moment from 'moment';
 import sweetAlert from 'sweetalert2';
@@ -14,7 +14,7 @@ class NotificationModal extends Component {
   state = {
     date: moment().format('YYYY-MM-DD'),
     startTime: moment(new Date()).format('HH:mm'),
-    endTime: moment(new Date()).format('HH:mm'),
+    endTime: moment(new Date()).add(30, 'minutes').format('HH:mm'),
     minBookingTimeHours: 0,
     minBookingTimeMinutes: 30,
     rooms: [],
@@ -150,82 +150,99 @@ class NotificationModal extends Component {
     return (
       <Modal open onClose={onClose} size="small" centered={false} id="notification-modal">
         <Modal.Header>
-          <h1>Create a notification</h1>
+          <h1><center>Notify me when rooms become available</center></h1>
         </Modal.Header>
         <Modal.Content scrolling>
           <Modal.Description>
-            <div className="grid-container">
-              <div className="grid-top">
-                <div>
-                  <Icon name="calendar alternate outline" size="big" />
-                  <span className="label">Date:</span>
-                </div>
-                <Input
-                  type="date"
-                  defaultValue={date}
-                  onChange={this.handleOnChangeDate}
-                />
-              </div>
-              <div className="grid-top">
-                <div>
-                  <Icon name="clock outline" size="big" />
-                  <span className="label">Range start time:</span>
-                </div>
-                <Input
-                  type="time"
-                  defaultValue={startTime}
-                  onChange={this.handleOnChangeStartTime}
-                />
-              </div>
-              <div className="grid-top">
-                <div>
-                  <Icon name="clock" size="big" />
-                  <span className="label">Range end time:</span>
-                </div>
-                <Input
-                  type="time"
-                  defaultValue={endTime}
-                  onChange={this.handleOnChangeEndTime}
-                />
-              </div>
+            <div className="segment__grid top">
+              <Segment>
+                <center>
+                  <div>
+                    <span className="label">Date</span>
+                  </div>
+                  <Input
+                    type="date"
+                    defaultValue={date}
+                    onChange={this.handleOnChangeDate}
+                  />
+                </center>
+              </Segment>
+              <Segment>
+                <center>
+                  <div>
+                    <span className="label">Range Start</span>
+                  </div>
+                  <Input
+                    type="time"
+                    defaultValue={startTime}
+                    onChange={this.handleOnChangeStartTime}
+                  />
+                </center>
+              </Segment>
+              <Segment>
+                <center>
+                  <div>
+                    <span className="label">Range End</span>
+                  </div>
+                  <Input
+                    type="time"
+                    defaultValue={endTime}
+                    onChange={this.handleOnChangeEndTime}
+                  />
+                </center>
+              </Segment>
             </div>
             <FormField className="min-booking-time">
-              <br />
-              <span className="label">Minimum booking time:</span>
-              <br />
-              <Input
-                type="number"
-                defaultValue={minBookingTimeHours}
-                min="0"
-                max="8"
-                onChange={this.handleOnChangeMinHour}
-              />
-              <span className="label hour-label">hours</span>
-              <Input
-                type="number"
-                size="tiny"
-                min="0"
-                max="59"
-                defaultValue={minBookingTimeMinutes}
-                onChange={this.handleOnChangeMinMinute}
-              />
-              <span className="label">minutes</span>
+              <div className="segment__grid middle">
+                <Segment>
+                  <center>
+                    <span className="label">Book for at least</span>
+                    <Input
+                      className="time-input"
+                      type="number"
+                      defaultValue={minBookingTimeHours}
+                      min="0"
+                      max="8"
+                      onChange={this.handleOnChangeMinHour}
+                    />
+                    <span className="label hour-label">hours and</span>
+                    <Input
+                      className="time-input"
+                      type="number"
+                      size="tiny"
+                      min="0"
+                      max="59"
+                      defaultValue={minBookingTimeMinutes}
+                      onChange={this.handleOnChangeMinMinute}
+                    />
+                    <span className="label">minutes</span>
+                  </center>
+                </Segment>
+              </div>
             </FormField>
-            <h4>Rooms:</h4>
-            <div className="buttons-field">
-              <Button onClick={this.handleOnClickCheckAll}>Check all</Button>
-              <Button onClick={this.handleOnClickClearAll}>Clear all</Button>
-            </div>
-            <div className="grid-container">
-              {rooms.map(r => (
-                <Checkbox
-                  label={r.name}
-                  key={r.id}
-                  value={r.id}
-                  checked={r.checked}
-                  onChange={this.handleCheckboxChange}
-                />
-              ))}
+            <div className="segment__grid bottom">
+              <Segment>
+                <center>
+                  <h4 className="room-title">Rooms</h4>
+                </center>
+                <div className="grid-container">
+                  {rooms.map(r => (
+                    <Checkbox
+                      label={r.name}
+                      key={r.id}
+                      value={r.id}
+                      checked={r.checked}
+                      onChange={this.handleCheckboxChange}
+                    />
+                  ))}
+                </div>
+                <center>
+                  <div className="buttons-field">
+                    <Button onClick={this.handleOnClickCheckAll}>Select All</Button>
+                    <Button onClick={this.handleOnClickClearAll}>Clear All</Button>
+                  </div>
+                </center>
+              </Segment>
             </div>
           </Modal.Description>
         </Modal.Content>

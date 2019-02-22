@@ -147,7 +147,7 @@ class Navigation extends Component {
         </Menu.Item>
         <Menu.Item onClick={this.handleClickNotify}>
           <Icon name="bell" />
-          Notify
+          Free Rooms
         </Menu.Item>
       </React.Fragment>
     );
