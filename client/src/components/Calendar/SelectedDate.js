@@ -31,9 +31,7 @@ class SelectedDate extends Component {
     this.setState({ date });
     const d = date.format('YYYY-MM-DD').split('-');
     const selectedDate = new Date();
-    selectedDate.setFullYear(parseInt(d[0], 10));
-    selectedDate.setMonth(parseInt(d[1], 10) - 1);
-    selectedDate.setDate(parseInt(d[2], 10));
+    selectedDate.setFullYear(parseInt(d[0], 10), parseInt(d[1], 10) - 1, parseInt(d[2], 10));
     changeDate(selectedDate);
   }
 
