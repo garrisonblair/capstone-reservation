@@ -317,6 +317,17 @@ function createPrivilege(data) {
   });
 }
 
+function updatePrivilege(id, data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/privilege_category/${id}`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 function getMyGroups() {
   const headers = getTokenHeader();
   return axios({
@@ -706,6 +717,7 @@ const api = {
   getPrivileges,
   getMyPrivileges,
   createPrivilege,
+  updatePrivilege,
   getMyGroups,
   createGroup,
   addMembersToGroup,
