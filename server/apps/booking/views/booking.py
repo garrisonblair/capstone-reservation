@@ -107,8 +107,9 @@ class BookingCancel(APIView):
         timeout = now.time()
 
         if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
-            return Response("Selected booking cannot be canceled as booking has started",
-                            status=status.HTTP_400_BAD_REQUEST)
+            if not request.user.is_superuser:
+                return Response("Selected booking cannot be canceled as booking has started",
+                                status=status.HTTP_400_BAD_REQUEST)
 
         try:
             booking.delete_booking()

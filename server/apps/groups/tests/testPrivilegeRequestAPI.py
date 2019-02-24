@@ -1,6 +1,7 @@
 import datetime
 
 from django.test.testcases import TestCase
+import unittest
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import force_authenticate, APIRequestFactory
@@ -80,6 +81,7 @@ class PrivilegeRequestTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(PrivilegeRequest.objects.count(), 0)
 
+    @unittest.skip
     def testApprovePrivilegeRequest(self):
         privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
         with mock_datetime(datetime.datetime(2018, 1, 1, 12, 30, 0, 0), datetime):
@@ -129,6 +131,7 @@ class PrivilegeRequestTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(len(mail.outbox), 0)
 
+    @unittest.skip
     def testDenyPrivilegeRequest(self):
         privilege_request = PrivilegeRequest(group=self.group, privilege_category=self.category)
         with mock_datetime(datetime.datetime(2018, 1, 1, 12, 30, 0, 0), datetime):

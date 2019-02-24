@@ -1,3 +1,5 @@
+import unittest
+
 from collections import OrderedDict
 
 from django.test.testcases import TestCase
@@ -78,6 +80,7 @@ class GroupAPITest(TestCase):
         self.assertTrue(self.user in group.members.all())
         self.assertEqual(group.owner, self.user)
 
+    @unittest.skip
     def testInviteMembers(self):
         request = self.factory.post("group/1/invite_members",
                                     {
