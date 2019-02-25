@@ -194,4 +194,3 @@ class RecurringBookingEdit(APIView):
                 return Response(e.message, status.HTTP_400_BAD_REQUEST)
 
             return Response(status=status.HTTP_200_OK)
-
