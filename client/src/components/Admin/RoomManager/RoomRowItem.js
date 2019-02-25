@@ -63,11 +63,7 @@ class RoomRowItem extends Component {
           <Button icon="edit" onClick={this.openModal} />
           <Button icon="trash" onClick={this.handleDeleteRoom} />
         </Table.Cell>
-        <RoomModal
-          show={openModal}
-          selectedRoom={room}
-          onClose={this.closeModal}
-        />
+        {openModal ? <RoomModal selectedRoom={room} show onClose={this.closeModal} /> : null}
       </Table.Row>
     );
   }

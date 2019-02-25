@@ -70,8 +70,8 @@ class RoomModal extends Component {
 
   handleSubmit = () => {
     // eslint-disable-next-line object-curly-newline
-    const { roomID, roomCapacity, numOfComputers, onClose } = this.state;
-    const { selectedRoom } = this.props;
+    const { roomID, roomCapacity, numOfComputers } = this.state;
+    const { selectedRoom, onClose } = this.props;
     // Leaves the method if verification doesn't succeed
     if (!this.verifyModalForm()) {
       return;
