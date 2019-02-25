@@ -452,7 +452,6 @@ class Cells extends Component {
   }
 
   static renderNote(booking) {
-    console.log(booking.confirmed);
     return (
       <Popup
         className="popup--note"
