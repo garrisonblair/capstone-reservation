@@ -64,8 +64,6 @@ class EditPrivilegeModal extends Component {
   }
 
   handleParentPrivilegeChange = (e, data) => {
-    console.log(e);
-    console.log(data.value);
     this.setState({
       parent: data.value,
     });
@@ -80,14 +78,13 @@ class EditPrivilegeModal extends Component {
     const { onClose } = this.props;
     const data = {
       name,
+      related_course: course,
+      can_make_recurring_booking: recurringBookingPermission,
+      is_default: isDefault,
     };
 
     if (parent) {
       data.parent_category = parent;
-    }
-
-    if (course) {
-      data.related_course = course;
     }
 
     if (maxDaysUntilBooking) {
@@ -104,14 +101,6 @@ class EditPrivilegeModal extends Component {
 
     if (maxRecurringBookings) {
       data.max_recurring_bookings = maxRecurringBookings;
-    }
-
-    if (recurringBookingPermission) {
-      data.can_make_recurring_booking = recurringBookingPermission;
-    }
-
-    if (isDefault) {
-      data.is_default = isDefault;
     }
 
     if (bookingStartTime) {
@@ -205,9 +194,8 @@ class EditPrivilegeModal extends Component {
         <Form.Field>
           <Input
             fluid
+            label="Name"
             size="small"
-            icon="text cursor"
-            iconPosition="left"
             placeholder="Name"
             value={name}
             onChange={e => this.handleInputChange('name', e)}
@@ -233,9 +221,8 @@ class EditPrivilegeModal extends Component {
         <Form.Field>
           <Input
             fluid
+            label="Related Course"
             size="small"
-            icon="text cursor"
-            iconPosition="left"
             placeholder="Related Course"
             value={course}
             onChange={e => this.handleInputChange('course', e)}
@@ -245,8 +232,7 @@ class EditPrivilegeModal extends Component {
           <Input
             fluid
             size="small"
-            icon="sort"
-            iconPosition="left"
+            label="Max Days Until Booking"
             placeholder="Max Days Until Booking"
             type="number"
             min="0"
@@ -258,8 +244,7 @@ class EditPrivilegeModal extends Component {
           <Input
             fluid
             size="small"
-            icon="sort"
-            iconPosition="left"
+            label="Max Bookings per day"
             placeholder="Max Bookings per day"
             type="number"
             min="0"
@@ -271,8 +256,7 @@ class EditPrivilegeModal extends Component {
           <Input
             fluid
             size="small"
-            icon="sort"
-            iconPosition="left"
+            label="Max days with bookings"
             placeholder="Max days with bookings"
             type="number"
             min="0"
@@ -291,8 +275,7 @@ class EditPrivilegeModal extends Component {
           <Input
             fluid
             size="small"
-            icon="sort"
-            iconPosition="left"
+            label="Max Recurring Bookings"
             placeholder="Max Recurring Bookings"
             type="number"
             min="0"
@@ -327,9 +310,9 @@ class EditPrivilegeModal extends Component {
   render() {
     const { show, onClose } = this.props;
     return (
-      <Modal className="privilege-modal" open={show} onClose={onClose}>
+      <Modal className="privilege-modal edit" open={show} onClose={onClose}>
         <Header>
-          <Icon name="plus" />
+          <Icon name="edit" />
           {' '}
           Edit Privilege
         </Header>
