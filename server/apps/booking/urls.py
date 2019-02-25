@@ -7,6 +7,7 @@ from .views.campon import CampOnList
 from .views.campon import CampOnCreate
 from .views.recurring_booking import RecurringBookingCreate
 
+
 urlpatterns = [
     path(r'bookings', BookingList.as_view()),
     path(r'booking', BookingCreate.as_view()),
