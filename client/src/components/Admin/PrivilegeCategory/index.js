@@ -10,6 +10,7 @@ import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 import AdminRequired from '../../HOC/AdminRequired';
 import AddPrivilegeModal from './AddPrivilegeModal';
+import EditPrivilegeModal from './EditPrivilegeModal';
 import PrivilegeDetailsModal from './PrivilegeDetailsModal';
 import '../Admin.scss';
 
@@ -20,6 +21,7 @@ class PrivilegeCategory extends Component {
     privileges: [],
     privilege: {},
     showAddPrivilegeModal: false,
+    showEditPrivilegeModal: false,
     showDetailsModal: false,
     isLoading: false,
   }
@@ -83,10 +85,27 @@ class PrivilegeCategory extends Component {
     });
   }
 
+  handleEditPrivilege = (privilege) => {
+    this.setState({
+      privilege,
+    }, () => {
+      this.setState({
+        showEditPrivilegeModal: true,
+      });
+    });
+  }
+
   handleOnCloseAddPrivilegeModal = () => {
     this.getPrivileges();
     this.setState({
       showAddPrivilegeModal: false,
+    });
+  }
+
+  handleOnCloseEditPrivilegeModal = () => {
+    this.getPrivileges();
+    this.setState({
+      showEditPrivilegeModal: false,
     });
   }
 
@@ -135,6 +154,14 @@ class PrivilegeCategory extends Component {
           >
             <Icon name="eye" />
           </Button>
+          <Button
+            icon
+            primary
+            size="small"
+            onClick={() => this.handleEditPrivilege(privilege)}
+          >
+            <Icon name="edit" />
+          </Button>
         </TableCell>
       </Table.Row>
     ));
@@ -167,6 +194,7 @@ class PrivilegeCategory extends Component {
         privilege,
         privileges,
         showAddPrivilegeModal,
+        showEditPrivilegeModal,
         showDetailsModal,
         isLoading,
       } = this.state;
@@ -180,6 +208,12 @@ class PrivilegeCategory extends Component {
             privileges={privileges}
             show={showAddPrivilegeModal}
             onClose={this.handleOnCloseAddPrivilegeModal}
+          />
+          <EditPrivilegeModal
+            privilege={privilege}
+            privileges={privileges}
+            show={showEditPrivilegeModal}
+            onClose={this.handleOnCloseEditPrivilegeModal}
           />
           <PrivilegeDetailsModal
             privilege={privilege}
