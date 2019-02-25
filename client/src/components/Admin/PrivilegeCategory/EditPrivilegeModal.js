@@ -78,14 +78,11 @@ class EditPrivilegeModal extends Component {
     const { onClose } = this.props;
     const data = {
       name,
+      parent_category: parent,
       related_course: course,
       can_make_recurring_booking: recurringBookingPermission,
       is_default: isDefault,
     };
-
-    if (parent) {
-      data.parent_category = parent;
-    }
 
     if (maxDaysUntilBooking) {
       data.max_days_until_booking = maxDaysUntilBooking;
