@@ -111,11 +111,17 @@ class Navigation extends Component {
     }
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
+    const user = storage.getUser();
     const component = (
-      <Dropdown item text="Account">
-        <Dropdown.Menu>
+      <Dropdown pointing item text={`${user.username}`}>
+        <Dropdown.Menu style={{ left: 'auto', right: 0 }}>
+          {/* <Dropdown.Header>
+            <Icon name="user" />
+            {`Logged in as ${user.username}`}
+          </Dropdown.Header>
+          <Dropdown.Divider /> */}
+          <Dropdown.Item icon="th" text="Dashboard" onClick={() => history.push('dashboard')} />
           <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
-          {/* <Dropdown.Item icon="cog" text="Settings" /> */}
         </Dropdown.Menu>
       </Dropdown>
     );
@@ -161,7 +167,6 @@ class Navigation extends Component {
             )
             : null}
           <Menu.Menu position="right" inverted="true" className="navigation__container">
-            {this.renderLoggedInInfo()}
             {this.renderAdminSettings()}
             {this.renderAccountDropDown()}
             <Menu.Item

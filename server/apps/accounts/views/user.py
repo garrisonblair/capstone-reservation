@@ -48,8 +48,19 @@ class BookerList(ListAPIView):
         return qs
 
 
-class UserUpdate(APIView):
+class UserRetrieveUpdate(APIView):
     permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
+
+    def get(self, request, pk):
+        user = None
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Check permissions
+        self.check_object_permissions(request, user)
+        return Response(UserSerializer(user).data)
 
     def patch(self, request, pk):
         username = request.data.get('username')
@@ -61,8 +72,9 @@ class UserUpdate(APIView):
         is_staff = request.data.get('is_staff')
         is_superuser = request.data.get('is_superuser')
         booker_id = request.data.get('booker_id')
-
         secondary_email = request.data.get('secondary_email')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
 
         user = None
         try:
@@ -85,8 +97,15 @@ class UserUpdate(APIView):
         if password:
             user.password = make_password(password)  # Hash password
 
+        if old_password and not user.check_password(old_password):
+            print("WRONG OLD PASSWORD")
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if old_password and new_password:
+            user.password = make_password(new_password)
+
         booker = BookerProfile.objects.get(user_id=user.id)
-        # Add booker ID only if it's a new user
+
         if booker_id:
             booker.booker_id = booker_id
 

@@ -4,7 +4,6 @@ import ReactGA from 'react-ga';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import settings from './config/settings';
 import Home from './components/Home';
-// import Login from './components/Login';
 import NotFound from './components/NotFound';
 import Registration from './components/Registration';
 import ResetPassword from './components/ResetPassword';
@@ -18,8 +17,10 @@ import BookingActivity from './components/Admin/Logs/BookingActivity';
 import Settings from './components/Admin/Settings';
 import Bookers from './components/Admin/Bookers';
 import GroupPrivilegeRequest from './components/Admin/GroupPrivilegeRequest';
-import Profile from './components/Profile';
 import Announcements from './components/Admin/Announcements';
+import Dashboard from './components/Dashboard';
+import Profile from './components/Profile';
+
 
 if (settings.IS_PROD) {
   ReactGA.initialize(settings.gaTrackingID);
@@ -30,7 +31,6 @@ ReactDOM.render(
     <div>
       <Switch>
         <Route exact path="/" component={Home} />
-        {/* <Route exact path="/login" component={Login} /> */}
         <Route exact path="/registration" component={Registration} />
         <Route exact path="/resetPassword" component={ResetPassword} />
         <Route exact path="/verify/:token" component={Verification} />
@@ -43,9 +43,10 @@ ReactDOM.render(
         <Route exact path="/admin/rooms" render={() => <Admin menuType="rooms" content={<RoomManager />} />} />
         <Route exact path="/admin/logs" render={() => <Admin menuType="logs" content={<BookingActivity />} />} />
         <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<Stats />} />} />
-        <Route exact path="/profile" component={Profile} />
         <Route exact path="/admin/bookers" render={() => <Admin menuType="bookers" content={<Bookers />} />} />
         <Route exact path="/admin/announcements" render={() => <Admin menuType="announcements" content={<Announcements />} />} />
+        <Route exact path="/dashboard" component={Dashboard} />
+        <Route exact path="/profile" component={Profile} />
         <Route component={NotFound} />
       </Switch>
     </div>

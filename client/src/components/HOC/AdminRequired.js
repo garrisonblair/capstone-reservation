@@ -15,7 +15,7 @@ function AdminRequired(InnerComponent) {
         return;
       }
 
-      api.getMyUser()
+      api.getUser(storage.getUser().id)
         .then((response) => {
           const { data } = response;
           if (!data.is_superuser) {

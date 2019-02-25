@@ -63,11 +63,11 @@ function verify(token) {
   });
 }
 
-function getMyUser() {
+function getUser(id) {
   const headers = getTokenHeader();
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/me`,
+    url: `${settings.API_ROOT}/user/${id}`,
     headers,
   });
 }
@@ -683,7 +683,7 @@ const api = {
   login,
   logout,
   verify,
-  getMyUser,
+  getUser,
   updateUser,
   getBookings,
   getUserBookings,
