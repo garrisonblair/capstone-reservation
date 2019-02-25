@@ -156,8 +156,11 @@ You must have [RabbitMQ](http://www.rabbitmq.com/) running.
 To run a worker use the following command:
 
 ```
-  celery -A config worker -l info
+  celery -A config worker -l info --concurrency=1
 ```
+The concurrency parameter is important if you are using the ICS export feature.
+This will limit how fast tasks will be completed so if ICS exporting is not used that parameter should be excluded
+
 
 To run the beat scheduler for periodic tasks, use the following command:
 
