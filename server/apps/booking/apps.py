@@ -42,13 +42,11 @@ class BookingConfig(AppConfig):
                                     period=IntervalSchedule.SECONDS)
 
         interval.save()
-        print("here")
 
         task = PeriodicTask(name=self.expired_booking_checker_task_name,
                             task="apps.booking.tasks.check_expired_bookings",
                             interval=interval)
 
-        print("jere")
         try:
             task.save()
         except Exception as e:
