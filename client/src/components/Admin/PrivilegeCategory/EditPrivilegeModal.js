@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-console */
+/* eslint-disable max-len */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOMServer from 'react-dom/server';
@@ -15,36 +16,38 @@ class EditPrivilegeModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      privilegeID: props.privilege.id,
-      name: props.privilege.name,
-      parent: props.privilege.parent_category,
-      course: props.privilege.related_course,
-      maxDaysUntilBooking: props.privilege.max_days_until_booking,
-      maxBookingsPerDay: props.privilege.max_num_bookings_for_date,
-      maxDaysWithBookings: props.privilege.max_num_days_with_bookings,
-      maxRecurringBookings: props.privilege.max_recurring_bookings,
-      recurringBookingPermission: props.privilege.can_make_recurring_booking,
-      isDefault: props.privilege.is_default,
-      bookingStartTime: props.privilege.booking_start_time,
-      bookingEndTime: props.privilege.booking_end_time,
+      privilegeID: '',
+      name: '',
+      parent: '',
+      course: '',
+      maxDaysUntilBooking: 0,
+      maxBookingsPerDay: 0,
+      maxDaysWithBookings: 0,
+      maxRecurringBookings: 0,
+      recurringBookingPermission: false,
+      isDefault: false,
+      bookingStartTime: '08:00:00',
+      bookingEndTime: '23:00:00',
     };
   }
 
-  static getDerivedStateFromProps(props, state) {
-    return {
-      privilegeID: state.privilegeID || props.privilege.id,
-      name: state.name || props.privilege.name,
-      parent: state.parent || props.privilege.parent_category,
-      course: state.course || props.privilege.related_course,
-      maxDaysUntilBooking: state.maxDaysUntilBooking || props.privilege.max_days_until_booking,
-      maxBookingsPerDay: state.maxBookingsPerDay || props.privilege.max_num_bookings_for_date,
-      maxDaysWithBookings: state.maxDaysWithBookings || props.privilege.max_num_days_with_bookings,
-      maxRecurringBookings: state.maxRecurringBookings || props.privilege.max_recurring_bookings,
-      recurringBookingPermission: state.recurringBookingPermission || props.privilege.can_make_recurring_booking,
-      isDefault: state.isDefault || props.privilege.is_default,
-      bookingStartTime: state.bookingStartTime || props.privilege.booking_start_time,
-      bookingEndTime: state.bookingEndTime || props.privilege.booking_end_time,
-    };
+  componentWillReceiveProps(nextProps) {
+    if (nextProps !== this.props) {
+      this.setState({
+        privilegeID: nextProps.privilege.id,
+        name: nextProps.privilege.name,
+        parent: nextProps.privilege.parent_category ? nextProps.privilege.parent_category.id : '',
+        course: nextProps.privilege.related_course,
+        maxDaysUntilBooking: nextProps.privilege.max_days_until_booking,
+        maxBookingsPerDay: nextProps.privilege.max_num_bookings_for_date,
+        maxDaysWithBookings: nextProps.privilege.max_num_days_with_bookings,
+        maxRecurringBookings: nextProps.privilege.max_recurring_bookings,
+        recurringBookingPermission: nextProps.privilege.can_make_recurring_booking,
+        isDefault: nextProps.privilege.is_default,
+        bookingStartTime: nextProps.privilege.booking_start_time,
+        bookingEndTime: nextProps.privilege.booking_end_time,
+      });
+    }
   }
 
   handleInputChange = (state, e) => {
@@ -61,6 +64,8 @@ class EditPrivilegeModal extends Component {
   }
 
   handleParentPrivilegeChange = (e, data) => {
+    console.log(e);
+    console.log(data.value);
     this.setState({
       parent: data.value,
     });
@@ -128,6 +133,21 @@ class EditPrivilegeModal extends Component {
         )
           .then(() => {
             onClose();
+
+            // Reset states
+            this.setState({
+              name: '',
+              parent: '',
+              course: '',
+              maxDaysUntilBooking: 0,
+              maxBookingsPerDay: 0,
+              maxDaysWithBookings: 0,
+              maxRecurringBookings: 0,
+              recurringBookingPermission: false,
+              isDefault: false,
+              bookingStartTime: '08:00:00',
+              bookingEndTime: '23:00:00',
+            });
           });
       })
       .catch((error) => {
@@ -206,7 +226,8 @@ class EditPrivilegeModal extends Component {
             search
             selection
             options={privilegeOptions}
-            onChange={this.handleParentPrivilegeChange}
+            defaultValue={parent}
+            onChange={(event, data) => { this.handleParentPrivilegeChange(event, data); }}
           />
         </Form.Field>
         <Form.Field>

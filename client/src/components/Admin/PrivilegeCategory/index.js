@@ -20,6 +20,7 @@ class PrivilegeCategory extends Component {
   state = {
     privileges: [],
     privilege: {},
+    parent: '',
     showAddPrivilegeModal: false,
     showEditPrivilegeModal: false,
     showDetailsModal: false,
@@ -87,6 +88,7 @@ class PrivilegeCategory extends Component {
 
   handleEditPrivilege = (privilege) => {
     this.setState({
+      parent: privilege.parent_category ? privilege.parent_category.id : '',
       privilege,
     }, () => {
       this.setState({
@@ -192,6 +194,7 @@ class PrivilegeCategory extends Component {
     const
       {
         privilege,
+        parent,
         privileges,
         showAddPrivilegeModal,
         showEditPrivilegeModal,
@@ -211,6 +214,7 @@ class PrivilegeCategory extends Component {
           />
           <EditPrivilegeModal
             privilege={privilege}
+            parent={parent}
             privileges={privileges}
             show={showEditPrivilegeModal}
             onClose={this.handleOnCloseEditPrivilegeModal}
