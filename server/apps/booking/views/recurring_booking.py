@@ -58,7 +58,7 @@ class RecurringBookingCancel(APIView):
         try:
             booking = Booking.objects.get(id=pk)
         except RecurringBooking.DoesNotExist:
-            return Response("Selected recurring booking to cancel does not exist", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Selected booking to cancel does not exist", status=status.HTTP_400_BAD_REQUEST)
 
         # Check user permissions
         self.check_object_permissions(request, booking.booker)
@@ -115,6 +115,83 @@ class RecurringBookingCancel(APIView):
             return Response(status=status.HTTP_200_OK)
 
 
+class RecurringBookingEdit(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+    serializer_class = RecurringBookingSerializer
 
+    def post(self, request, pk):
 
+        # Ensure that recurring booking to be modifed exists
+        try:
+            booking = Booking.objects.get(id=pk)
+        except RecurringBooking.DoesNotExist:
+            return Response("Selected booking to cancel does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        # Check user permissions
+        self.check_object_permissions(request, booking.booker)
+
+        edit_all_instances = request.data['edit_ all_instances']
+
+        # Check if Booking has ended and if it has, disable booking from being modified
+        now = datetime.datetime.now()
+        booking_end = booking.end_time
+        timeout = now.time()
+
+        data = request.data
+
+        if not edit_all_instances:
+
+            if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
+                if not request.user.is_superuser:
+                    return Response("Selected booking cannot be modified as booking has started",
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                booking.room = data["room"]
+                booking.date = data["date"]
+                booking.start_time = data["start_time"]
+                booking.end_time = data["end_time"]
+                booking.save()
+                utils.log_model_change(booking, utils.CHANGE, request.user)
+            except ValidationError as e:
+                return Response(e.message, status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
+
+        else:
+            # Gets the parent recurring booking
+            associated_recurring_booking = booking.recurring_booking
+
+            # Checks if current selected recurring booking has started or not yet and handles accordingly
+            if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
+                if not request.user.is_superuser:
+                    return Response("Selected booking cannot be canceled as booking has started",
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                # Updates the indicated booking
+                booking.room = data["room"]
+                booking.date = data["date"]
+                booking.start_time = data["start_time"]
+                booking.end_time = data["end_time"]
+                booking.save()
+                utils.log_model_change(booking, utils.CHANGE, request.user)
+
+                # Gets all bookings associated to the indicated booking
+                all_associated_booking_instances = Booking.objects.get(recurring_booking=associated_recurring_booking)
+
+                for associated_booking in all_associated_booking_instances:
+
+                    # If the date of the recurring booking is after the current indicated booking date, try to update
+                    if associated_booking.date > now.date():
+                        booking.room = data["room"]
+                        booking.date = data["date"]
+                        booking.start_time = data["start_time"]
+                        booking.end_time = data["end_time"]
+                        booking.save()
+                        utils.log_model_change(booking, utils.CHANGE, request.user)
+
+            except ValidationError as e:
+                return Response(e.message, status.HTTP_400_BAD_REQUEST)
+
+            return Response(status=status.HTTP_200_OK)
 
