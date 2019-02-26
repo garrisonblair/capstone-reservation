@@ -14,7 +14,7 @@ from apps.booking.models.Booking import Booking
 from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
 
-from apps.booking.views.recurring_booking import RecurringBookingCreate
+from apps.booking.views.recurring_booking import RecurringBookingCreate, RecurringBookingCancel
 
 from apps.booking.serializers.recurring_booking import RecurringBookingSerializer
 from apps.booking.serializers.booking import BookingSerializer
@@ -237,3 +237,97 @@ class BookingAPITest(TestCase):
         response = RecurringBookingCreate.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, [self.start_date])
+
+    def testCancelRecurringBookingAllInstancesSuccess(self):
+
+        start1 = datetime.strptime("2019-10-01 12:00", "%Y-%m-%d %H:%M")
+        end1 = datetime.strptime("2019-10-15 15:00", "%Y-%m-%d %H:%M")
+        start_date1 = start1.date()
+        end_date1 = end1.date()
+        start_time1 = start1.time()
+        end_time1 = end1.time()
+
+        start2 = datetime.strptime("2019-10-08 12:00", "%Y-%m-%d %H:%M")
+        end2 = datetime.strptime("2019-10-08 15:00", "%Y-%m-%d %H:%M")
+        start_date2 = start2.date()
+        end_date2 = end2.date()
+        start_time2 = start2.time()
+        end_time2 = end2.time()
+
+        start3 = datetime.strptime("2019-10-15 12:00", "%Y-%m-%d %H:%M")
+        end3 = datetime.strptime("2019-10-15 15:00", "%Y-%m-%d %H:%M")
+        start_date3 = start3.date()
+        end_date3 = end3.date()
+        start_time3 = start3.time()
+        end_time3 = end3.time()
+
+        recurring_booking = RecurringBooking(
+            start_date=start_date1,
+            end_date=end_date1,
+            booking_start_time=start_time1,
+            booking_end_time=end_time1,
+            room=self.room,
+            group=None,
+            booker=self.user1,
+            skip_conflicts=True
+        ).save()
+
+        recurring_booking = RecurringBooking.objects.get(start_date=start_date1,
+                                                         end_date=end_date1,
+                                                         booking_start_time=start_time1,
+                                                         booking_end_time=end_time1,
+                                                         room=self.room,
+                                                         group=None,
+                                                         booker=self.user1,
+                                                         skip_conflicts=True)
+
+        booking1 = Booking(
+            booker=self.user1,
+            room=self.room,
+            date=self.start_date,
+            start_time=start_time1,
+            end_time=end_time1,
+            recurring_booking=recurring_booking,
+            confirmed=False
+        ).save()
+
+        booking2 = Booking(
+            booker=self.user1,
+            room=self.room,
+            date=start_date2,
+            start_time=start_time2,
+            end_time=end_time2,
+            recurring_booking=recurring_booking,
+            confirmed=False
+        ).save()
+
+        booking3 = Booking(
+            booker=self.user1,
+            room=self.room,
+            date=start_date3,
+            start_time=start_time3,
+            end_time=end_time3,
+            recurring_booking=recurring_booking,
+            confirmed=False
+        ).save()
+
+        bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
+        self.assertEqual(bookings.count(), 3)
+
+        earliest_booking = bookings[0]
+        for booking in bookings:
+            if booking.id < earliest_booking.id:
+                earliest_booking = booking
+
+        request = self.factory.post("booking/" + str(earliest_booking.id) + "/cancel_recurring_booking",
+                                    {
+                                        "delete_all_instances": True,
+                                    }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        response = RecurringBookingCancel.as_view()(request, earliest_booking.id)
+        bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(bookings.count(), 0)
