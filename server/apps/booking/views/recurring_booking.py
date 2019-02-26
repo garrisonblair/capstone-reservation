@@ -100,8 +100,8 @@ class RecurringBookingCancel(APIView):
                 utils.log_model_change(booking, utils.DELETION, request.user)
 
                 # Gets all bookings associated to the indicated booking
-                all_associated_booking_instances = Booking.objects.all().filter(recurring_booking=
-                                                                                associated_recurring_booking)
+                all_associated_booking_instances = Booking.objects.all()\
+                    .filter(recurring_booking=associated_recurring_booking)
 
                 for associated_booking in all_associated_booking_instances:
 
@@ -177,7 +177,8 @@ class RecurringBookingEdit(APIView):
                 utils.log_model_change(booking, utils.CHANGE, request.user)
 
                 # Gets all bookings associated to the indicated booking
-                all_associated_booking_instances = Booking.objects.all().filter(recurring_booking=associated_recurring_booking)
+                all_associated_booking_instances = Booking.objects.all()\
+                    .filter(recurring_booking=associated_recurring_booking)
 
                 for associated_booking in all_associated_booking_instances:
 
