@@ -63,6 +63,7 @@ if (user) {
     .then(() => {
       renderPage();
     })
+    .catch(() => {
       localStorage.removeItem('CapstoneReservationUser');
       renderPage();
     });
