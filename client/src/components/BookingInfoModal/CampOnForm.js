@@ -121,7 +121,7 @@ class CampOnForm extends Component {
           position: 'top',
           type: 'error',
           title: 'Reservation failed',
-          text: error.message.data,
+          text: error.response.data,
         });
       });
   }
