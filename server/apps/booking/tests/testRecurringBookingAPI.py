@@ -506,6 +506,7 @@ class BookingAPITest(TestCase):
         bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
 
         earliest_booking = bookings[0]
+
         for booking in bookings:
             if booking.id < earliest_booking.id:
                 earliest_booking = booking
@@ -516,38 +517,33 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(booking1.start_time, start_time1)
         self.assertEqual(booking1.end_time, end_time1)
-        self.assertEqual(booking1.room, self.room)
+        self.assertEqual(booking1.room.id, self.room.id)
         self.assertEqual(booking1.date, start_date1)
 
         self.assertEqual(booking2.start_time, start_time2)
         self.assertEqual(booking2.end_time, end_time2)
-        self.assertEqual(booking2.room, self.room)
+        self.assertEqual(booking2.room.id, self.room.id)
         self.assertEqual(booking2.date, start_date2)
 
         self.assertEqual(booking3.start_time, start_time3)
         self.assertEqual(booking3.end_time, end_time3)
-        self.assertEqual(booking3.room, self.room)
+        self.assertEqual(booking3.room.id, self.room.id)
         self.assertEqual(booking3.date, start_date3)
 
-        edited_start_time = datetime.strptime("2019-10-08 12:00", "%Y-%m-%d %H:%M")
-        edited_end_time = datetime.strptime("2019-10-08 15:00", "%Y-%m-%d %H:%M")
-        edited_date = edited_start_time.date()
-        edited_room = Room.objects.get(name="H833-18")
+        edited_start = datetime.strptime("2019-10-08 12:00", "%Y-%m-%d %H:%M")
+        edited_end = datetime.strptime("2019-10-08 15:00", "%Y-%m-%d %H:%M")
+        edited_date = edited_start.date()
+        edited_start_time = edited_start.time()
+        edited_end_time = edited_end.time()
 
-        # earliest_booking = bookings[0]
-        # for booking in bookings:
-        #     if booking.id < earliest_booking.id:
-        #         earliest_booking = booking
-        #
-        # edited_room = self.room2
+        edited_room = Room.objects.get(name="H833-17")
 
         request = self.factory.post("booking/" + str(earliest_booking.id) + "/edit_recurring_booking",
                                     {
                                         "edit_all_instances": True,
-                                        "room": self.room2,
-                                        "date": edited_date,
-                                        "start_time": edited_start_time,
-                                        "end_time": edited_end_time
+                                        "room": edited_room.id,
+                                        "start_time": str(edited_start_time)[:5],
+                                        "end_time": str(edited_end_time)[:5]
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -560,17 +556,15 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(booking1.start_time, edited_start_time)
         self.assertEqual(booking1.end_time, edited_end_time)
-        self.assertEqual(booking1.room, edited_room)
-        self.assertEqual(booking1.date, edited_date)
+        self.assertEqual(booking1.room.id, edited_room.id)
 
         self.assertEqual(booking2.start_time, edited_start_time)
         self.assertEqual(booking2.end_time, edited_end_time)
-        self.assertEqual(booking2.room, edited_room)
-        self.assertEqual(booking2.date, edited_date)
+        self.assertEqual(booking2.room.id, edited_room.id)
 
         self.assertEqual(booking3.start_time, edited_start_time)
         self.assertEqual(booking3.end_time, edited_end_time)
-        self.assertEqual(booking3.room, edited_room)
+        self.assertEqual(booking3.room.id, edited_room.id)
 
     def testEditRecurringBookingSingleInstanceSuccess(self):
 
@@ -667,10 +661,13 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking3.room, self.room)
         self.assertEqual(booking3.date, start_date3)
 
-        edited_start_time = datetime.strptime("2019-10-08 12:00", "%Y-%m-%d %H:%M")
-        edited_end_time = datetime.strptime("2019-10-08 15:00", "%Y-%m-%d %H:%M")
-        edited_date = edited_start_time.date()
-        edited_room = Room.objects.get(name="H833-18")
+        edited_start = datetime.strptime("2019-10-02 12:00", "%Y-%m-%d %H:%M")
+        edited_end = datetime.strptime("2019-10-02 15:00", "%Y-%m-%d %H:%M")
+        edited_date = edited_start.date()
+        edited_start_time = edited_start.time()
+        edited_end_time = edited_end.time()
+
+        edited_room = Room.objects.get(name="H833-17")
 
         earliest_booking = bookings[0]
         for booking in bookings:
@@ -680,20 +677,21 @@ class BookingAPITest(TestCase):
         request = self.factory.post("booking/" + str(earliest_booking.id) + "/edit_recurring_booking",
                                     {
                                         "edit_all_instances": False,
-                                        "room": edited_room,
+                                        "room": edited_room.id,
+                                        "start_time": str(edited_start_time)[:5],
+                                        "end_time": str(edited_end_time)[:5],
                                         "date": edited_date,
-                                        "start_time": edited_start_time,
-                                        "end_time": edited_end_time
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
 
         response = RecurringBookingEdit.as_view()(request, earliest_booking.id)
-        bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
+        booking1 = Booking.objects.get(id=earliest_booking.id)
+
         self.assertEqual(bookings.count(), 3)
 
         self.assertEqual(booking1.start_time, edited_start_time)

@@ -126,7 +126,7 @@ class RecurringBookingEdit(APIView):
         try:
             booking = Booking.objects.get(id=pk)
         except RecurringBooking.DoesNotExist:
-            return Response("Selected booking to cancel does not exist", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Selected booking to edit does not exist", status=status.HTTP_400_BAD_REQUEST)
 
         # Check user permissions
         self.check_object_permissions(request, booking.booker)
@@ -148,10 +148,14 @@ class RecurringBookingEdit(APIView):
                                     status=status.HTTP_400_BAD_REQUEST)
 
             try:
-                booking.room = data["room"]
-                booking.date = data["date"]
-                booking.start_time = data["start_time"]
-                booking.end_time = data["end_time"]
+                if "room" in data:
+                    booking.room.id = data["room"]
+                if "date" in data:
+                    booking.date = data["date"]
+                if "start_time" in data:
+                    booking.start_time = data["start_time"]
+                if "end_time" in data:
+                    booking.end_time = data["end_time"]
                 booking.save()
                 utils.log_model_change(booking, utils.CHANGE, request.user)
             except ValidationError as e:
@@ -165,30 +169,27 @@ class RecurringBookingEdit(APIView):
             # Checks if current selected recurring booking has started or not yet and handles accordingly
             if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
                 if not request.user.is_superuser:
-                    return Response("Selected booking cannot be canceled as booking has started",
+                    return Response("Selected booking cannot be modified as booking has started",
                                     status=status.HTTP_400_BAD_REQUEST)
 
             try:
-                # Updates the indicated booking
-                booking.room = data["room"]
-                booking.date = data["date"]
-                booking.start_time = data["start_time"]
-                booking.end_time = data["end_time"]
-                booking.save()
-                utils.log_model_change(booking, utils.CHANGE, request.user)
-
                 # Gets all bookings associated to the indicated booking
                 all_associated_booking_instances = Booking.objects.all()\
                     .filter(recurring_booking=associated_recurring_booking)
 
+                # Iterates through associated bookings and makes the adjustment
                 for associated_booking in all_associated_booking_instances:
 
                     # If the date of the recurring booking is after the current indicated booking date, try to update
                     if associated_booking.date > now.date():
-                        booking.room = data["room"]
-                        booking.date = data["date"]
-                        booking.start_time = data["start_time"]
-                        booking.end_time = data["end_time"]
+                        if "room" in data:
+                            booking.room.id = data["room"]
+                        if "date" in data and not edit_all_instances:
+                            booking.date = data["date"]
+                        if "start_time" in data:
+                            booking.start_time = data["start_time"]
+                        if "end_time" in data:
+                            booking.end_time = data["end_time"]
                         booking.save()
                         utils.log_model_change(booking, utils.CHANGE, request.user)
 
