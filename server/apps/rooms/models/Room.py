@@ -1,3 +1,4 @@
+import json
 from django.db import models
 from django.core.exceptions import ValidationError
 
@@ -34,7 +35,6 @@ class Room(models.Model):
         return this
 
     def validate_model(self):
-
         name = self.name
         capacity = self.capacity
         number_of_computers = self.number_of_computers
@@ -63,6 +63,10 @@ class Room(models.Model):
 
     def get_observers(self):
         return Room.observers
+
+    def json_serialize(self):
+        from ..serializers.room import RoomSerializer
+        return json.dumps(RoomSerializer(self).data)
 
     def get_bookings(self, start_date=None, end_date=None):
         bookings = self.booking_set
