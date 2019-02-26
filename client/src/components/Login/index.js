@@ -84,6 +84,9 @@ class Login extends Component {
         <Modal.Content>
           <Modal.Description className="login__container__main__form-wrapper">
             {/* <Form onSubmit={this.handleLogin}> */}
+            <p className="info-text">
+              This is not your ENCS password. If you have not already, you need to register.
+            </p>
             <Form.Field>
               <Input
                 fluid
