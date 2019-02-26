@@ -40,7 +40,7 @@ class UserList(APIView):
         return users
 
     def get(self, request):
-        keyword = self.request.query_params.get("search_text")
+        keyword = self.request.query_params.get("keyword")
         is_superuser = self.request.query_params.get("is_superuser")
         is_staff = self.request.query_params.get("is_staff")
         is_active = self.request.query_params.get("is_active")

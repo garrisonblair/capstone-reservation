@@ -21,7 +21,8 @@ class TestUserAPI(TestCase):
                                                last_name='2',
                                                email='admin2@email.com',
                                                password='admin',
-                                               is_superuser=True)
+                                               is_superuser=True,
+                                               is_active=False)
         self.admin2.save()
 
         self.staff = User.objects.create_user(username='staff1',
@@ -59,9 +60,82 @@ class TestUserAPI(TestCase):
         force_authenticate(request, user=self.admin)
         response = UserList.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 6)
 
     def testGetAllUsersNotAdmin(self):
         request = self.factory.get("/users", format="json")
         force_authenticate(request, user=self.staff)
         response = UserList.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def testSearchedByKeyword(self):
+        json = {
+            "keyword": "user"
+        }
+        request = self.factory.get("/users", json, format="json")
+        force_authenticate(request, user=self.admin)
+        response = UserList.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def testSearchedByKeywordNonExist(self):
+        json = {
+            "keyword": "string"
+        }
+        request = self.factory.get("/users", json, format="json")
+        force_authenticate(request, user=self.admin)
+        response = UserList.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def testSearchedByIsSuperUser(self):
+        json = {
+            "is_superuser": True
+        }
+        request = self.factory.get("/users", json, format="json")
+        force_authenticate(request, user=self.admin)
+        response = UserList.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def testSearchedByIsStaff(self):
+        json = {
+            "is_staff": True
+        }
+        request = self.factory.get("/users", json, format="json")
+        force_authenticate(request, user=self.admin)
+        response = UserList.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def testSearchedByIsActive(self):
+        json = {
+            "is_active": True
+        }
+        request = self.factory.get("/users", json, format="json")
+        force_authenticate(request, user=self.admin)
+        response = UserList.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 5)
+
+    def testSearchedByIsActiveAndIsSuperuser(self):
+        json = {
+            "is_superuser": True,
+            "is_active": True
+        }
+        request = self.factory.get("/users", json, format="json")
+        force_authenticate(request, user=self.admin)
+        response = UserList.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def testSearchedByIsActiveAndHasKeyword(self):
+        json = {
+            "keyword": "user",
+            "is_active": True
+        }
+        request = self.factory.get("/users", json, format="json")
+        force_authenticate(request, user=self.admin)
+        response = UserList.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
