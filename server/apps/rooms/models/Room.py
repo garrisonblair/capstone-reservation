@@ -34,9 +34,14 @@ class Room(models.Model):
     observers = list()
 
     def __str__(self):
-        return '{}, Capacity: {}, Number of computers: {}'.format(
-            self.name, self.capacity, self.number_of_computers
-        )
+        return '{}, ' \
+               'Capacity: {}, ' \
+               'Number of computers: {}, ' \
+               'Available: {}, ' \
+               'Unavailable start time: {}, ' \
+               'Unavailable end time: {}'\
+            .format(self.name, self.capacity, self.number_of_computers,
+                    self.available, self.unavailable_start_time, self.unavailable_end_time)
 
     def save(self, *args, **kwargs):
 
@@ -77,6 +82,9 @@ class Room(models.Model):
 
         if not self.unavailable_end_time and self.unavailable_start_time:
             raise ValidationError("Unavailable end time must have a corresponding start time")
+
+        if self.unavailable_start_time and self.unavailable_end_time and self.available is True:
+                raise ValidationError("Unavailable period is not needed if the room is available")
 
         if self.unavailable_start_time and self.unavailable_end_time:
             if self.unavailable_start_time >= self.unavailable_end_time:
