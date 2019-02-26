@@ -62,6 +62,9 @@ class Login extends Component {
           position: 'top',
           type: 'success',
           title: 'Logged in',
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
         });
         this.closeModal();
       })
