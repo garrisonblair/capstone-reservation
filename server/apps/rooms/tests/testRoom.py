@@ -32,6 +32,7 @@ class TestRoom(TestCase):
         room.save()
 
         read_room = Room.objects.all().get(name=name)
-        room_str = "Room 1, Capacity: 7, Number of computers: 2"
+        room_str = "Room 1, Capacity: 7, Number of computers: 2, " \
+                   "Available: True, Unavailable_start_time: None, Unavailable_end_time: None"
 
         self.assertEqual(room_str, read_room.__str__())
