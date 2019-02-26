@@ -11,6 +11,7 @@ from apps.accounts.exceptions import PrivilegeError
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.Booking import Booking
 from apps.booking.serializers.recurring_booking import RecurringBookingSerializer
+from apps.rooms.serializers.room import RoomSerializer
 from apps.util import utils
 
 
@@ -130,7 +131,7 @@ class RecurringBookingEdit(APIView):
         # Check user permissions
         self.check_object_permissions(request, booking.booker)
 
-        edit_all_instances = request.data['edit_ all_instances']
+        edit_all_instances = request.data['edit_all_instances']
 
         # Check if Booking has ended and if it has, disable booking from being modified
         now = datetime.datetime.now()
