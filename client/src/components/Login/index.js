@@ -80,7 +80,7 @@ class Login extends Component {
   render() {
     const { show } = this.state;
     return (
-      <Modal closeIcon open={show} onClose={this.closeModal} className="login__container" centered={false}>
+      <Modal open={show} onClose={this.closeModal} className="login__container" centered={false}>
         <Modal.Header>
           <h1 className="login__container__header__title"> Login </h1>
         </Modal.Header>
