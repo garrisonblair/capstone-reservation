@@ -3,11 +3,20 @@ from django.core.exceptions import ValidationError
 
 
 class RoomManager(models.Manager):
-    def create_room(self, name, capacity, number_of_computers):
+    def create_room(self,
+                    name,
+                    capacity,
+                    number_of_computers,
+                    available=True,
+                    unavailable_start_time=None,
+                    unavailable_end_time=None):
         room = self.create(
             name=name,
             capacity=capacity,
-            number_of_computers=number_of_computers
+            number_of_computers=number_of_computers,
+            available=available,
+            unavailable_start_time=unavailable_start_time,
+            unavailable_end_time=unavailable_end_time,
         )
 
         return room
@@ -17,6 +26,10 @@ class Room(models.Model):
     name = models.CharField(max_length=50, blank=False, unique=True)
     capacity = models.PositiveIntegerField(blank=False, null=False, default=0)
     number_of_computers = models.PositiveIntegerField(blank=False, null=False, default=0)
+    available = models.BooleanField(default=True)
+    unavailable_start_time = models.DateTimeField(blank=True, null=True)
+    unavailable_end_time = models.DateTimeField(blank=True, null=True)
+
 
     objects = RoomManager()
 
@@ -60,6 +73,16 @@ class Room(models.Model):
 
         if (number_of_computers % 1) != 0:
             raise ValidationError("Invalid Number of computers. Please enter a positive integer value or zero")
+
+        if not self.unavailable_start_time and self.unavailable_end_time:
+            raise ValidationError("Unavailable start time must have a corresponding end time")
+
+        if not self.unavailable_end_time and self.unavailable_start_time:
+            raise ValidationError("Unavailable end time must have a corresponding start time")
+
+        if self.unavailable_start_time and self.unavailable_end_time:
+            if self.unavailable_start_time >= self.unavailable_end_time:
+                raise ValidationError("Unavailable start time must be less than end time")
 
     def get_observers(self):
         return Room.observers
