@@ -182,6 +182,10 @@ class RecurringBookingEdit(APIView):
                             booking.room.id = data["room"]
                         if "date" in data and not edit_all_instances:
                             booking.date = data["date"]
+                        else:
+                            return Response("Cannot change all bookings in series to same date. Please change date of "
+                                            "single instance of booking rather than entire series.",
+                                            status=status.HTTP_400_BAD_REQUEST)
                         if "start_time" in data:
                             booking.start_time = data["start_time"]
                         if "end_time" in data:
