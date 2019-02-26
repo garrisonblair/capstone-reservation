@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from datetime import timedelta
 
 from apps.rooms.models.Room import Room
@@ -101,13 +101,24 @@ class TestRoom(TestCase):
         with self.assertRaises(ValidationError):
             room.save()
 
-    def testRoomCreationStartTimeLaterThanEndTime(self):
+    def testRoomCreationSameStartEndDateTime(self):
         name = "Room 1"
         capacity = 7
         number_of_computers = 2
 
         room = Room(name=name, capacity=capacity, number_of_computers=number_of_computers,
                     available=False, unavailable_start_time=self.today, unavailable_end_time=self.today)
+
+        with self.assertRaises(ValidationError):
+            room.save()
+
+    def testRoomCreationStartTimeLaterThanEndTime(self):
+        name = "Room 1"
+        capacity = 7
+        number_of_computers = 2
+
+        room = Room(name=name, capacity=capacity, number_of_computers=number_of_computers,
+                    available=False, unavailable_start_time=self.tomorrow, unavailable_end_time=self.today)
 
         with self.assertRaises(ValidationError):
             room.save()

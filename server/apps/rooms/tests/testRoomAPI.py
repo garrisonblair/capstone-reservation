@@ -1,4 +1,7 @@
 from django.test.testcases import TestCase
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from datetime import timedelta
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
@@ -42,6 +45,10 @@ class RoomAPITest(TestCase):
                                start_time="12:00",
                                end_time="16:00")
         self.booking.save()
+
+        self.today = timezone.now()
+        self.tomorrow = timezone.now() + timedelta(1)
+        self.tomorrow = self.tomorrow
 
     def testGetAllRooms(self):
         request = self.factory.get("/rooms")
@@ -247,6 +254,68 @@ class RoomAPITest(TestCase):
         self.assertEqual(room.capacity, 4)
         self.assertEqual(room.number_of_computers, 2)
 
+    def testRoomCreateRoomWithAvailable(self):
+        request = self.factory.post("/room",
+                                    {
+                                        "name": 'H833-100',
+                                        "capacity": 4,
+                                        "number_of_computers": 2,
+                                        "available": False
+                                    }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
+        response = RoomCreate.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(number_of_rooms_before + 1, number_of_rooms_after)
+
+        room = Room.objects.get(name='H833-100')
+
+        self.assertEqual(room.name, 'H833-100')
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, 2)
+        self.assertEqual(room.available, False)
+
+    def testRoomCreateRoomWithAvailableAndUnavailableTime(self):
+        request = self.factory.post("/room",
+                                    {
+                                        "name": 'H833-100',
+                                        "capacity": 4,
+                                        "number_of_computers": 2,
+                                        "available": False,
+                                        "unavailable_start_time": self.today,
+                                        "unavailable_end_time": self.tomorrow
+                                    }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+
+        rooms_before = Room.objects.all()
+        number_of_rooms_before = len(rooms_before)
+
+        response = RoomCreate.as_view()(request)
+
+        rooms_after = Room.objects.all()
+        number_of_rooms_after = len(rooms_after)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(number_of_rooms_before + 1, number_of_rooms_after)
+
+        room = Room.objects.get(name='H833-100')
+
+        self.assertEqual(room.name, 'H833-100')
+        self.assertEqual(room.capacity, 4)
+        self.assertEqual(room.number_of_computers, 2)
+        self.assertEqual(room.available, False)
+        self.assertEqual(room.unavailable_start_time, self.today)
+        self.assertEqual(room.unavailable_end_time, self.tomorrow)
+
     def testRoomUpdateValidNumberOfComputers(self):
         request = self.factory.patch("/room",
                                      {
@@ -376,3 +445,70 @@ class RoomAPITest(TestCase):
         instances_of_deleted_room_after = len(Room.objects.filter(id=self.room1.id))
 
         self.assertEqual(instances_of_deleted_room_before, instances_of_deleted_room_after)
+
+    def testUpdateAvailable(self):
+        room = Room.objects.get(id=self.room1.id)
+        self.assertEqual(room.available, True)
+
+        request = self.factory.patch("/room",
+                                     {
+                                        "available": False
+                                     }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = RoomRetrieveUpdateDestroy.as_view()(request, pk=self.room1.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        room = Room.objects.get(id=self.room1.id)
+        self.assertEqual(room.available, False)
+
+    def testUpdateAvailableWithDateTime(self):
+        room = Room.objects.get(id=self.room1.id)
+        self.assertEqual(room.available, True)
+
+        request = self.factory.patch("/room",
+                                     {
+                                        "available": False,
+                                        "unavailable_start_time": self.today,
+                                        "unavailable_end_time": self.tomorrow
+                                     }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+        response = RoomRetrieveUpdateDestroy.as_view()(request, pk=self.room1.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        room = Room.objects.get(id=self.room1.id)
+        self.assertEqual(room.available, False)
+
+    def testUpdateAvailableTrueWithDateTime(self):
+        room = Room.objects.get(id=self.room1.id)
+        self.assertEqual(room.available, True)
+
+        request = self.factory.patch("/room",
+                                     {
+                                        "unavailable_start_time": self.today,
+                                        "unavailable_end_time": self.tomorrow
+                                     }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+        with self.assertRaises(ValidationError):
+            response = RoomRetrieveUpdateDestroy.as_view()(request, pk=self.room1.id)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def testUpdateUnavailableWithSameDataTime(self):
+        room = Room.objects.get(id=self.room1.id)
+        self.assertEqual(room.available, True)
+
+        request = self.factory.patch("/room",
+                                     {
+                                        "available": False,
+                                        "unavailable_start_time": self.today,
+                                        "unavailable_end_time": self.today
+                                     }, format="json")
+
+        force_authenticate(request, user=User.objects.get(username="john"))
+        with self.assertRaises(ValidationError):
+            response = RoomRetrieveUpdateDestroy.as_view()(request, pk=self.room1.id)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
