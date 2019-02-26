@@ -96,10 +96,6 @@ class RecurringBookingCancel(APIView):
                                     status=status.HTTP_400_BAD_REQUEST)
 
             try:
-                # Deletes the indicated booking
-                booking.delete_booking()
-                utils.log_model_change(booking, utils.DELETION, request.user)
-
                 # Gets all bookings associated to the indicated booking
                 all_associated_booking_instances = Booking.objects.all()\
                     .filter(recurring_booking=associated_recurring_booking)
