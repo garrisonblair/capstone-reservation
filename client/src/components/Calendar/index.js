@@ -52,7 +52,7 @@ class Calendar extends Component {
     this.getRooms();
     this.setHours();
 
-    this.interval = setInterval(() => this.getBookings, 10000);
+    this.interval = setInterval(() => this.getBookings(), 60000);
   }
 
   componentWillUnmount() {
