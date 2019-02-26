@@ -52,13 +52,19 @@ class RoomAPITest(TestCase):
                 "id": 1,
                 "name": "H833-17",
                 "capacity": 4,
-                "number_of_computers": 1
+                "number_of_computers": 1,
+                "available": True,
+                "unavailable_start_time": None,
+                "unavailable_end_time": None,
             },
             {
                 "id": 2,
                 "name": "H833-03",
                 "capacity": 8,
-                "number_of_computers": 2
+                "number_of_computers": 2,
+                "available": True,
+                "unavailable_start_time": None,
+                "unavailable_end_time": None,
             }
         ]
 
@@ -78,7 +84,10 @@ class RoomAPITest(TestCase):
                 "id": 2,
                 "name": "H833-03",
                 "capacity": 8,
-                "number_of_computers": 2
+                "number_of_computers": 2,
+                "available": True,
+                "unavailable_start_time": None,
+                "unavailable_end_time": None,
             }
         ]
 
