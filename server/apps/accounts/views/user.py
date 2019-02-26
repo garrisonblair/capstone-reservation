@@ -19,7 +19,7 @@ class UserList(APIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
     serializer_class = UserSerializer
 
-    def get_queryset(self, keyword, is_superuser, is_staff, is_active):
+    def get_queryset(self, keyword=None, is_superuser=None, is_staff=None, is_active=None):
         users = User.objects.all()
 
         if keyword is not None:
@@ -39,7 +39,7 @@ class UserList(APIView):
 
         return users
 
-    def get(self):
+    def get(self, request):
         keyword = self.request.query_params.get("search_text")
         is_superuser = self.request.query_params.get("is_superuser")
         is_staff = self.request.query_params.get("is_staff")

@@ -33,11 +33,11 @@ class TestUserAPI(TestCase):
         self.staff.save()
 
         self.staff2 = User.objects.create_user(username='staff2',
-                                              first_name='staff',
-                                              last_name='2',
-                                              email='staff2@email.com',
-                                              password='staff',
-                                              is_staff=True)
+                                               first_name='staff',
+                                               last_name='2',
+                                               email='staff2@email.com',
+                                               password='staff',
+                                               is_staff=True)
         self.staff2.save()
 
         self.user = User.objects.create_user(username='user',
