@@ -4,6 +4,7 @@ from django.db.models import Q
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -14,21 +15,44 @@ from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
-class UserList(ListAPIView):
-    permission_class = IsAuthenticated
-    queryset = User.objects.all()
+class UserList(APIView):
+    permission_classes = (IsAuthenticated, IsSuperUser)
     serializer_class = UserSerializer
 
-    def get_queryset(self):
-        search_term = self.request.query_params.get("search_text")
-        users = super(UserList, self).get_queryset()
+    def get_queryset(self, keyword, is_superuser, is_staff, is_active):
+        users = User.objects.all()
 
-        if search_term is not None:
-            users = users.filter(Q(username__contains=search_term) |
-                                 Q(first_name__contains=search_term) |
-                                 Q(last_name__contains=search_term))
+        if keyword is not None:
+            users = users.filter(Q(username__contains=keyword) |
+                                 Q(first_name__contains=keyword) |
+                                 Q(last_name__contains=keyword) |
+                                 Q(email__contains=keyword))
+
+        if is_superuser is not None:
+            users = users.filter(is_superuser=is_superuser)
+
+        if is_staff is not None:
+            users = users.filter(is_staff=is_staff)
+
+        if is_active is not None:
+            users = users.filter(is_active=is_active)
 
         return users
+
+    def get(self):
+        keyword = self.request.query_params.get("search_text")
+        is_superuser = self.request.query_params.get("is_superuser")
+        is_staff = self.request.query_params.get("is_staff")
+        is_active = self.request.query_params.get("is_active")
+
+        try:
+            qs = self.get_queryset(keyword, is_superuser, is_staff, is_active)
+            serializer = UserSerializer(qs, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class BookerList(ListAPIView):
