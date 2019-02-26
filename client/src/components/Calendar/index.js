@@ -51,10 +51,13 @@ class Calendar extends Component {
     this.getBookings();
     this.getRooms();
     this.setHours();
+
+    this.interval = setInterval(() => this.getBookings(), 60000);
   }
 
   componentWillUnmount() {
     document.body.style.backgroundColor = 'white';
+    clearInterval(this.interval);
   }
 
   /*
