@@ -59,7 +59,7 @@ class RecurringBookingCancel(APIView):
         try:
             booking = Booking.objects.get(id=pk)
         except Booking.DoesNotExist as e:
-            return Response(e.message, status=status.HTTP_400_BAD_REQUEST)
+            return Response('Booking does not exist.', status=status.HTTP_400_BAD_REQUEST)
 
         # Check user permissions
         self.check_object_permissions(request, booking.booker)
