@@ -17,7 +17,7 @@ from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
-class UserList(APIView, AbstractPaginatedView):
+class UserList(ListAPIView, AbstractPaginatedView):
     permission_classes = (IsAuthenticated, IsSuperUser)
     serializer_class = UserSerializer
     pagination_class = LimitOffsetPagination
