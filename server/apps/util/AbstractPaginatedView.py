@@ -1,6 +1,9 @@
-
+from rest_framework.permissions import IsAuthenticated
+from apps.accounts.permissions.IsSuperUser import IsSuperUser
 
 class AbstractPaginatedView:
+    permission_classes = (IsAuthenticated, IsSuperUser)
+
     @property
     def paginator(self):
         """

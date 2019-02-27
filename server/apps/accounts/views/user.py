@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.pagination import LimitOffsetPagination
+from apps.util.AbstractPaginatedView import AbstractPaginatedView
 
 from apps.accounts.permissions.IsBooker import IsBooker
 from ..models.BookerProfile import BookerProfile
@@ -15,9 +17,10 @@ from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
-class UserList(APIView):
+class UserList(APIView, AbstractPaginatedView):
     permission_classes = (IsAuthenticated, IsSuperUser)
     serializer_class = UserSerializer
+    pagination_class = LimitOffsetPagination
 
     def get_queryset(self, keyword=None, is_superuser=None, is_staff=None, is_active=None):
         users = User.objects.all()
@@ -47,8 +50,13 @@ class UserList(APIView):
 
         try:
             qs = self.get_queryset(keyword, is_superuser, is_staff, is_active)
-            serializer = UserSerializer(qs, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            page = self.paginate_queryset(qs)
+            if page is not None:
+                serializer = UserSerializer(page, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                serializer = UserSerializer(qs, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as e:
             print(e)
