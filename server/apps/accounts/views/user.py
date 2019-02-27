@@ -22,8 +22,12 @@ class UserList(ListAPIView, AbstractPaginatedView):
     serializer_class = UserSerializer
     pagination_class = LimitOffsetPagination
 
-    def get_queryset(self, keyword=None, is_superuser=None, is_staff=None, is_active=None):
+    def get_queryset(self):
         users = User.objects.all()
+        keyword = self.request.query_params.get("keyword")
+        is_superuser = self.request.query_params.get("is_superuser")
+        is_staff = self.request.query_params.get("is_staff")
+        is_active = self.request.query_params.get("is_active")
 
         if keyword is not None:
             users = users.filter(Q(username__contains=keyword) |
@@ -43,13 +47,8 @@ class UserList(ListAPIView, AbstractPaginatedView):
         return users
 
     def get(self, request):
-        keyword = self.request.query_params.get("keyword")
-        is_superuser = self.request.query_params.get("is_superuser")
-        is_staff = self.request.query_params.get("is_staff")
-        is_active = self.request.query_params.get("is_active")
-
         try:
-            qs = self.get_queryset(keyword, is_superuser, is_staff, is_active)
+            qs = self.get_queryset()
             page = self.paginate_queryset(qs)
             if page is not None:
                 serializer = UserSerializer(page, many=True)
