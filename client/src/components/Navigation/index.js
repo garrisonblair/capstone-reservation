@@ -51,6 +51,9 @@ class Navigation extends Component {
             position: 'top',
             type: 'success',
             title: 'Logged out',
+            toast: true,
+            showConfirmButton: false,
+            timer: 2000,
           });
           this.setState({ showLogin: false });
           if (history.location.pathname !== '/') {

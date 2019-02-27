@@ -269,7 +269,7 @@ function getAdminSettings() {
   const headers = getTokenHeader();
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/settings`,
+    url: `${settings.API_ROOT}/getSettings`,
     headers,
     withCredentials: true,
   });

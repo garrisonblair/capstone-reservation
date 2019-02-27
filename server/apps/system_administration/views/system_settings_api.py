@@ -13,17 +13,20 @@ from ..models.system_settings import SystemSettings
 from ..serializers.system_settings_serializer import SystemSettingSerializer
 
 
-class SystemSettingsAPI(APIView):
+class ReadSystemSettings(APIView):
+    permission_classes = ()
 
     def get(self, request):
 
         settings = SystemSettings.get_settings()
-
         serializer = SystemSettingSerializer(settings)
 
         return Response(serializer.data, status.HTTP_200_OK)
 
-    @permission_classes((IsAuthenticated, IsOwnerOrAdmin))
+
+class SystemSettingsAPI(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
+
     def patch(self, request):
 
         settings_updates = dict(request.data)

@@ -106,24 +106,22 @@ class CampOnForm extends Component {
     };
     api.createCampOn(data)
       .then(() => {
+        this.closeModalWithCampOn();
         sweetAlert.fire({
           position: 'top',
           type: 'success',
-          title: 'Completed',
-          text: 'Your campon was successful',
-        })
-          .then((result) => {
-            if (result.value) {
-              this.closeModalWithCampOn();
-            }
-          });
+          title: 'Your campon was successful',
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
+        });
       })
       .catch((error) => {
         sweetAlert.fire({
           position: 'top',
           type: 'error',
           title: 'Reservation failed',
-          text: error.message.data,
+          text: error.response.data,
         });
       });
   }
