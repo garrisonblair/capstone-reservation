@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
+from rest_framework.generics import ListAPIView
 from django.contrib.admin.models import LogEntry
 from django.db.models.query import QuerySet
 
@@ -13,19 +14,19 @@ from ..serializers.log_entry_serializer import LogEntrySerializer
 
 
 @permission_classes((IsAuthenticated,))
-class LogEntryView(APIView, AbstractPaginatedView):
+class LogEntryView(ListAPIView):
 
     pagination_class = LimitOffsetPagination
+    serializer_class = LogEntrySerializer
 
-    def get(self, request):
-
+    def get_queryset(self):
         # Get query params
-        start_datetime = request.GET.get("from")  # Datetime string
-        end_datetime = request.GET.get("to")  # Datetime string
+        start_datetime = self.request.GET.get("from")  # Datetime string
+        end_datetime = self.request.GET.get("to")  # Datetime string
 
-        model_id = request.GET.get("content_type_id")  # model content type id
-        object_id = request.GET.get("object_id")  # object id
-        user_id = request.GET.get("user_id")  # user id
+        model_id = self.request.GET.get("content_type_id")  # model content type id
+        object_id = self.request.GET.get("object_id")  # object id
+        user_id = self.request.GET.get("user_id")  # user id
 
         log_entries = LogEntry.objects.all()  # type: QuerySet
 
@@ -51,10 +52,4 @@ class LogEntryView(APIView, AbstractPaginatedView):
         except Exception as exception:
             return Response(exception.message, status=status.HTTP_400_BAD_REQUEST)
 
-        page = self.paginate_queryset(log_entries)
-        if page is not None:
-            serializer = LogEntrySerializer(page, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            serializer = LogEntrySerializer(log_entries, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        return log_entries

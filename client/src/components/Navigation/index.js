@@ -41,6 +41,11 @@ class Navigation extends Component {
     }
   }
 
+  handleForDisplay = () => {
+    const { history } = this.props;
+    history.push('/forDisplay');
+  }
+
   handleLogin = () => {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
@@ -148,8 +153,8 @@ class Navigation extends Component {
   }
 
   render() {
-    const { showLogin } = this.state;
-    const { showDate } = this.props;
+    const { showLogin, update } = this.state;
+    const { showDate, forDisplay } = this.props;
 
     return (
       <div className="navigation">
@@ -160,12 +165,21 @@ class Navigation extends Component {
           <Menu.Item>
             <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
           </Menu.Item>
+          { storage.checkAdmin() ? (
+            <Menu.Item className="navigation__forDisplay" onClick={this.handleForDisplay}>
+              For Display
+            </Menu.Item>
+          )
+            : null
+          }
           { showDate
             ? (
               <SelectedDate
                 changeDate={this.handleChangeDate}
                 onOpenDatePicker={this.onOpenDatePicker}
                 onCloseDatePicker={this.onCloseDatePicker}
+                forDisplay={forDisplay}
+                update={update}
               />
             )
             : null}
@@ -194,6 +208,7 @@ Navigation.propTypes = {
   changeDate: PropTypes.func,
   onOpenDatePicker: PropTypes.func,
   onCloseDatePicker: PropTypes.func,
+  forDisplay: PropTypes.bool,
 };
 
 Navigation.defaultProps = {
@@ -201,6 +216,7 @@ Navigation.defaultProps = {
   changeDate: () => {},
   onOpenDatePicker: () => {},
   onCloseDatePicker: () => {},
+  forDisplay: false,
 };
 
 export default withRouter(Navigation);

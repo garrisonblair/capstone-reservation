@@ -4,6 +4,7 @@ import ReactGA from 'react-ga';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import settings from './config/settings';
 import Home from './components/Home';
+import HomeDisplay from './components/HomeDisplay';
 import NotFound from './components/NotFound';
 import Registration from './components/Registration';
 import ResetPassword from './components/ResetPassword';
@@ -29,6 +30,7 @@ function renderPage() {
       <div>
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route exact path="/forDisplay" component={HomeDisplay} />
           <Route exact path="/registration" component={Registration} />
           <Route exact path="/resetPassword" component={ResetPassword} />
           <Route exact path="/verify/:token" component={Verification} />
