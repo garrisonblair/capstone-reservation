@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import {
   Segment,
 } from 'semantic-ui-react';
+import withTracker from '../HOC/withTracker';
 import Navigation from '../Navigation';
 import UserInfo from '../UserInfo';
 import Privileges from '../Privileges';
@@ -50,4 +51,4 @@ class Dashboard extends Component {
   }
 }
 
-export default AuthenticationRequired(Dashboard);
+export default withTracker(AuthenticationRequired(Dashboard));
