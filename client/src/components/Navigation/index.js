@@ -12,6 +12,7 @@ import SelectedDate from '../Calendar/SelectedDate';
 import Login from '../Login';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
+import moment from 'moment';
 import './Navigation.scss';
 
 
@@ -155,6 +156,21 @@ class Navigation extends Component {
   render() {
     const { showLogin, update } = this.state;
     const { showDate, forDisplay } = this.props;
+
+    if (forDisplay) {
+      return (
+        <div className="navigation">
+          <Menu inverted fixed="top" className="navigation__bar">
+            <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
+              Capstone
+            </Menu.Item>
+            <Menu.Item>
+              {moment().format('ddd MMM Do YYYY')}
+            </Menu.Item>
+          </Menu>
+        </div>
+      );
+    }
 
     return (
       <div className="navigation">
