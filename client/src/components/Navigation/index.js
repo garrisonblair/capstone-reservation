@@ -41,6 +41,11 @@ class Navigation extends Component {
     }
   }
 
+  handleForDisplay = () => {
+    const { history } = this.props;
+    history.push('/forDisplay');
+  }
+
   handleLogin = () => {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
@@ -160,6 +165,13 @@ class Navigation extends Component {
           <Menu.Item>
             <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
           </Menu.Item>
+          { storage.checkAdmin() ? (
+            <Menu.Item className="navigation__forDisplay" onClick={this.handleForDisplay}>
+              For Display
+            </Menu.Item>
+          )
+            : null
+          }
           { showDate
             ? (
               <SelectedDate
