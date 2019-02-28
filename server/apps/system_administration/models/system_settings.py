@@ -25,6 +25,7 @@ class SystemSettings(models.Model):
     # Setting to toggle the checking of expired bookings, the duration at which to check for them, and the time that
     # the admin sets at which a booking expires after reaching (in minutes)
     check_for_expired_bookings_active = models.BooleanField(default=False)
+    campons_refutable = models.BooleanField(default=False)
     check_for_expired_bookings_frequency_seconds = models.PositiveIntegerField(default=30)
     booking_time_to_expire_minutes = models.PositiveIntegerField(default=30)
     manual_booking_confirmation = models.BooleanField(default=False)

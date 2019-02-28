@@ -42,6 +42,7 @@ class CampOn(models.Model, SubjectModel):
 
         if is_create:
             self.object_created()
+
         else:
             self.object_updated()
 
