@@ -8,6 +8,7 @@ import {
   Icon,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
+import moment from 'moment';
 import SelectedDate from '../Calendar/SelectedDate';
 import Login from '../Login';
 import api from '../../utils/api';
@@ -154,13 +155,31 @@ class Navigation extends Component {
 
   render() {
     const { showLogin, update } = this.state;
-    const { showDate, forDisplay } = this.props;
+    const { showDate, forDisplay, history } = this.props;
+
+    if (forDisplay) {
+      return (
+        <div className="navigation">
+          <Menu inverted fixed="top" className="navigation__bar">
+            <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
+              Capstone
+            </Menu.Item>
+            <Menu.Item>
+              {moment().format('ddd MMM Do YYYY')}
+            </Menu.Item>
+          </Menu>
+        </div>
+      );
+    }
 
     return (
       <div className="navigation">
         <Menu inverted fixed="top" className="navigation__bar">
           <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
-            Capstone
+            {history.location.pathname === '/'
+              ? 'Capstone'
+              : <Icon name="arrow left" size="large" color="black" />
+            }
           </Menu.Item>
           <Menu.Item>
             <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
