@@ -1,5 +1,7 @@
 import datetime
+
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,7 +16,7 @@ from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.CampOn import CampOn
 from apps.booking.serializers.booking import \
     BookingSerializer, AdminBookingSerializer, ReadBookingSerializer, MyBookingSerializer
-from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
+from apps.booking.serializers.recurring_booking import MyRecurringBookingSerializer
 from apps.booking.serializers.campon import ReadCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
 from apps.util import utils
@@ -150,7 +152,6 @@ class BookingRetrieveUpdateDestroy(APIView):
         timeout = (now + settings.booking_edit_lock_timeout).time()
 
         # time = datetime.datetime.strptime(data["start_time"], "%H:%M").time()
-        # pdb.set_trace()
 
         if "start_time" in data:
             if not datetime.datetime.strptime(data["start_time"], "%H:%M").time() == booking.start_time:
@@ -209,9 +210,17 @@ class BookingViewMyBookings(APIView):
         recurring_bookings = RecurringBooking.objects.filter(booker=user)
         campons = CampOn.objects.filter(booker=user)
 
+        # Insert standard_bookings and recurring_bookings made by groups that user is in
+        for group in user.group_set.all():
+            group_standard_bookings = group.get_active_non_recurring_bookings()
+            standard_bookings = standard_bookings | group_standard_bookings
+
+            group_recurring_bookings = RecurringBooking.objects.filter(~Q(booker=user), group=group)
+            recurring_bookings = recurring_bookings | group_recurring_bookings
+
         # Add serialized lists of booking types to dictionary associated with type key
         bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
-        bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
+        bookings["recurring_bookings"] = MyRecurringBookingSerializer(recurring_bookings, many=True).data
         bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
 
         return Response(bookings, status=status.HTTP_200_OK)
