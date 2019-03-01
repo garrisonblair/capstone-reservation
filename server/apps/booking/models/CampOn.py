@@ -17,7 +17,7 @@ class CampOn(models.Model, SubjectModel):
     camped_on_booking = models.ForeignKey(Booking,
                                           on_delete=models.SET_NULL,
                                           null=True,
-                                          related_name="camp_ons")
+                                          related_name="campons")
 
     generated_booking = models.ForeignKey(Booking,
                                           on_delete=models.SET_NULL,
