@@ -17,6 +17,7 @@ class CamponCreateListener(ModelObserver):
             booker = campon.camped_on_booking.booker
 
             campon.camped_on_booking.expiration_base = datetime.now().time()
+            campon.camped_on_booking.confirmed = False
             campon.camped_on_booking.save()
             utils.log_model_change(campon, utils.CHANGE)
 

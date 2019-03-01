@@ -57,3 +57,4 @@ class TestCamponCreateListener(TestCase):
                                   microsecond=exp_base.microsecond)
 
         self.assertAlmostEqual(now, exp_base_datetime, delta=timedelta(seconds=1))
+        self.assertFalse(campon.camped_on_booking.confirmed)
