@@ -24,7 +24,7 @@ class UserList(ListAPIView, AbstractPaginatedView):
 
     def get_queryset(self):
         users = User.objects.all()
-        keyword = self.request.query_params.get("keyword")
+        keyword = self.request.query_params.get("search_term")
         is_superuser = self.request.query_params.get("is_superuser")
         is_staff = self.request.query_params.get("is_staff")
         is_active = self.request.query_params.get("is_active")
