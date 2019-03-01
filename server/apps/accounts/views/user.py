@@ -12,14 +12,14 @@ from apps.util.AbstractPaginatedView import AbstractPaginatedView
 
 from apps.accounts.permissions.IsBooker import IsBooker
 from ..models.BookerProfile import BookerProfile
-from ..serializers.user import UserSerializer, BookerProfileSerializer
+from ..serializers.user import UserSerializer, BookerProfileSerializer, PublicUserSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
 class UserList(ListAPIView, AbstractPaginatedView):
-    permission_classes = (IsAuthenticated, IsSuperUser)
-    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)
+    serializer_class = PublicUserSerializer
     pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
@@ -44,22 +44,12 @@ class UserList(ListAPIView, AbstractPaginatedView):
         if is_active is not None:
             users = users.filter(is_active=is_active)
 
+        if self.request.user.is_superuser:
+            self.serializer_class = UserSerializer
+        else:
+            self.serializer_class = PublicUserSerializer
+
         return users
-
-    def get(self, request):
-        try:
-            qs = self.get_queryset()
-            page = self.paginate_queryset(qs)
-            if page is not None:
-                serializer = UserSerializer(page, many=True)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                serializer = UserSerializer(qs, many=True)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            print(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class BookerList(ListAPIView):
