@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Button } from 'semantic-ui-react';
+import { Table, Button, Icon } from 'semantic-ui-react';
 import BookerModal from './BookerModal';
 
 
@@ -34,6 +34,12 @@ class BookerRow extends Component {
         </Table.Cell>
         <Table.Cell textAlign="center">
           {booker.email}
+        </Table.Cell>
+        <Table.Cell textAlign="center">
+          {booker.is_superuser ? <Icon name="check circle" color="green" /> : <Icon name="times circle" color="red" />}
+        </Table.Cell>
+        <Table.Cell textAlign="center">
+          {booker.is_active ? <Icon name="check circle" color="green" /> : <Icon name="times circle" color="red" />}
         </Table.Cell>
         <Table.Cell>
           <Button icon="edit" className="edit-button" onClick={this.onClickEditButton} />
