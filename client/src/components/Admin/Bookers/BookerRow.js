@@ -22,6 +22,7 @@ class BookerRow extends Component {
 
   render() {
     const { booker } = this.props;
+    console.log(booker);
     const { openModal } = this.state;
     return (
       <Table.Row key={booker.username}>
@@ -30,6 +31,9 @@ class BookerRow extends Component {
         </Table.Cell>
         <Table.Cell textAlign="center">
           {`${booker.first_name} ${booker.last_name}`}
+        </Table.Cell>
+        <Table.Cell textAlign="center">
+          {booker.email}
         </Table.Cell>
         <Table.Cell>
           <Button icon="edit" className="edit-button" onClick={this.onClickEditButton} />

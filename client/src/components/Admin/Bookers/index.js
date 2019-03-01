@@ -73,9 +73,10 @@ class Bookers extends Component {
                 <Table.HeaderCell textAlign="center">
                   Full name
                 </Table.HeaderCell>
-                <Table.HeaderCell>
-                  {}
+                <Table.HeaderCell textAlign="center">
+                  Email
                 </Table.HeaderCell>
+                <Table.HeaderCell />
               </Table.Row>
             </Table.Header>
             <Table.Body>
