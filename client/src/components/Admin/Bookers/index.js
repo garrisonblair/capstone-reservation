@@ -12,7 +12,7 @@ class Bookers extends Component {
     bookers: [],
     isLoading: false,
     activePage: 1,
-    totalPages: 8,
+    totalPages: 0,
     dropdownOptions: [
       { text: 'Any', value: 'Any' },
       { text: 'Yes', value: true },
@@ -84,11 +84,13 @@ class Bookers extends Component {
               ))}
             </Table.Body>
           </Table>
-          <Pagination
-            defaultActivePage={activePage}
-            totalPages={totalPages}
-            onPageChange={this.handlePaginationChange}
-          />
+          {totalPages !== 0 ? (
+            <Pagination
+              defaultActivePage={activePage}
+              totalPages={totalPages}
+              onPageChange={this.handlePaginationChange}
+            />
+          ) : null}
         </Segment>
       </div>
     );
