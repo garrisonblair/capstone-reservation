@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { Component } from 'react';
 import {
-  Table, Segment, Pagination, Form, Button, Dropdown,
+  Table, Segment, Pagination, Form, Button, Dropdown, Message,
 } from 'semantic-ui-react';
 import './Bookers.scss';
 import api from '../../../utils/api';
@@ -167,6 +167,14 @@ class Bookers extends Component {
               ))}
             </Table.Body>
           </Table>
+          {bookers.length === 0 ? (
+            <Message>
+              <Message.Header>Empty list</Message.Header>
+              <p>
+                No bookers correspond to the specifications.
+              </p>
+            </Message>
+          ) : null}
           {totalPages !== 0 ? (
             <Pagination
               activePage={activePage}
