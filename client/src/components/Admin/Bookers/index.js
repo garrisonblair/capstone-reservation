@@ -26,7 +26,10 @@ class Bookers extends Component {
   }
 
   componentDidMount() {
-    // this.syncBookers();
+    const {
+      searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff, activePage,
+    } = this.state;
+    this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff);
   }
 
   syncBookers = (valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff) => {
@@ -42,7 +45,6 @@ class Bookers extends Component {
     this.setState({ isLoading: true });
     api.getUsers(valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff)
       .then((r) => {
-        console.log(r);
         this.setState({ isLoading: false });
         if (r.status === 200) {
           this.setState({
@@ -57,7 +59,6 @@ class Bookers extends Component {
     const {
       searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff,
     } = this.state;
-    // console.log(activePage);
     this.setState({ activePage });
     this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff);
   }
@@ -69,6 +70,15 @@ class Bookers extends Component {
   handleSuperUserOnChange = (e, { value }) => { this.setState({ valueSuperUser: value }); }
 
   handleStaffOnChange = (e, { value }) => { this.setState({ valueStaff: value }); }
+
+  handleResetOnClick = () => {
+    this.setState({
+      valueActive: 'Any',
+      valueSearch: '',
+      valueStaff: 'Any',
+      valueSuperUser: 'Any',
+    });
+  }
 
   render() {
     const {
@@ -87,9 +97,15 @@ class Bookers extends Component {
             <Form.Select fluid label="Staff" options={dropdownOptions} value={valueStaff} onChange={this.handleStaffOnChange} />
           </Form.Group>
           <Button
-            onClick={() => this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff)}
+            color="blue"
+            onClick={() => this.syncBookers(
+              valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff,
+            )}
           >
             Search
+          </Button>
+          <Button onClick={this.handleResetOnClick}>
+            Reset
           </Button>
         </Form>
         <Segment loading={isLoading}>
@@ -119,7 +135,14 @@ class Bookers extends Component {
             </Table.Header>
             <Table.Body>
               {bookers.map(b => (
-                <BookerRow booker={b} key={b.id} syncBookers={this.syncBookers} />
+                <BookerRow
+                  booker={b}
+                  key={b.id}
+                  syncBookers={() => this.syncBookers(
+                    valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff,
+                  )
+                  }
+                />
               ))}
             </Table.Body>
           </Table>

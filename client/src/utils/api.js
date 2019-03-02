@@ -451,7 +451,6 @@ function getUsers(searchText, searchLimit, pageNumber, isActive, isSuperUser, is
   if (isStaff !== undefined) { params.is_staff = isStaff ? 'True' : 'False'; }
   if (searchLimit !== undefined) { params.limit = searchLimit; }
   if (pageNumber !== undefined) { params.offset = pageNumber - 1; }
-  console.log(params);
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
