@@ -85,6 +85,10 @@ class CardReaderConfirmBookingView(APIView):
                     if (booking.end_time > now > booking.start_time) and booking.get_expiration() > now:
                         booking.set_to_confirmed()
 
+                        if settings.campons_refutable and booking.confirmed:
+                            for campon in booking.campons:
+                                campon.delete()
+
         except ValidationError as e:
             return Response(e.message, status.HTTP_400_BAD_REQUEST)
 
