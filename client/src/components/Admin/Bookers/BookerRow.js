@@ -22,7 +22,6 @@ class BookerRow extends Component {
 
   render() {
     const { booker } = this.props;
-    console.log(booker);
     const { openModal } = this.state;
     return (
       <Table.Row key={booker.username}>
@@ -37,6 +36,9 @@ class BookerRow extends Component {
         </Table.Cell>
         <Table.Cell textAlign="center">
           {booker.is_superuser ? <Icon name="check circle" color="green" /> : <Icon name="times circle" color="red" />}
+        </Table.Cell>
+        <Table.Cell textAlign="center">
+          {booker.is_staff ? <Icon name="check circle" color="green" /> : <Icon name="times circle" color="red" />}
         </Table.Cell>
         <Table.Cell textAlign="center">
           {booker.is_active ? <Icon name="check circle" color="green" /> : <Icon name="times circle" color="red" />}

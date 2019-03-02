@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { Component } from 'react';
 import {
   Table, Segment, Pagination, Form, Button,
@@ -19,49 +20,77 @@ class Bookers extends Component {
       { text: 'No', value: false }],
     valueActive: 'Any',
     valueSuperUser: 'Any',
+    valueStaff: 'Any',
+    valueSearch: '',
+    searchLimit: 5,
   }
 
   componentDidMount() {
-    this.syncBookers();
+    // this.syncBookers();
   }
 
-  syncBookers = () => {
+  syncBookers = (valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff) => {
+    if (isActive === 'Any') {
+      isActive = undefined;
+    }
+    if (isSuperUser === 'Any') {
+      isSuperUser = undefined;
+    }
+    if (isStaff === 'Any') {
+      isStaff = undefined;
+    }
     this.setState({ isLoading: true });
-    api.getUsers()
+    api.getUsers(valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff)
       .then((r) => {
+        console.log(r);
         this.setState({ isLoading: false });
         if (r.status === 200) {
-          this.setState({ bookers: r.data });
+          this.setState({
+            bookers: r.data.results,
+            totalPages: Math.ceil(r.data.count / searchLimit),
+          });
         }
       });
   }
 
-  handlePaginationChange = (e, data) => {
-    console.log(data.activePage);
+  handlePaginationChange = (e, { activePage }) => {
+    const {
+      searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff,
+    } = this.state;
+    // console.log(activePage);
+    this.setState({ activePage });
+    this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff);
   }
 
-  handleSearchOnChange = (e, data) => {
-    console.log(data.value);
-  }
+  handleSearchOnChange = (e, { value }) => { this.setState({ valueSearch: value }); }
 
   handleActiveOnChange = (e, { value }) => { this.setState({ valueActive: value }); }
 
   handleSuperUserOnChange = (e, { value }) => { this.setState({ valueSuperUser: value }); }
 
+  handleStaffOnChange = (e, { value }) => { this.setState({ valueStaff: value }); }
+
   render() {
     const {
-      bookers, isLoading, activePage, totalPages, dropdownOptions, valueActive, valueSuperUser,
+      bookers, isLoading, activePage, totalPages,
+      dropdownOptions, valueActive, valueSuperUser,
+      valueStaff, valueSearch, searchLimit,
     } = this.state;
     return (
       <div id="bookers">
         <h1>Bookers</h1>
         <Form>
           <Form.Group widths="equal">
-            <Form.Input fluid label="Search" icon="search" />
+            <Form.Input fluid label="Search" icon="search" onChange={this.handleSearchOnChange} value={valueSearch} />
             <Form.Select fluid label="Super User" options={dropdownOptions} value={valueSuperUser} onChange={this.handleSuperUserOnChange} />
             <Form.Select fluid label="Active" options={dropdownOptions} value={valueActive} onChange={this.handleActiveOnChange} />
+            <Form.Select fluid label="Staff" options={dropdownOptions} value={valueStaff} onChange={this.handleStaffOnChange} />
           </Form.Group>
-          <Button>Search</Button>
+          <Button
+            onClick={() => this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff)}
+          >
+            Search
+          </Button>
         </Form>
         <Segment loading={isLoading}>
           <Table>
@@ -78,6 +107,9 @@ class Bookers extends Component {
                 </Table.HeaderCell>
                 <Table.HeaderCell textAlign="center">
                   Super User
+                </Table.HeaderCell>
+                <Table.HeaderCell textAlign="center">
+                  Staff
                 </Table.HeaderCell>
                 <Table.HeaderCell textAlign="center">
                   Active
