@@ -114,6 +114,8 @@ class Booking(models.Model, SubjectModel):
             self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
         if not isinstance(self.end_time, datetime.time):
             self.end_time = datetime.datetime.strptime(self.end_time, "%H:%M").time()
+        if not isinstance(self.date, datetime.date):
+            self.date = datetime.datetime.strptime(self.date, "%Y-%m-%d").date()
 
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
@@ -124,6 +126,18 @@ class Booking(models.Model, SubjectModel):
                                   room=self.room,
                                   date=self.date).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
+
+        start_date_time = datetime.datetime.combine(self.date, self.start_time)
+        end_date_time = datetime.datetime.combine(self.date, self.end_time)
+
+        if self.room.available is False and self.room.unavailable_start_time > end_date_time:
+            raise ValidationError("Room is unavailable at this booking period.")
+
+        if self.room.available is False and self.room.unavailable_end_time < start_date_time:
+            raise ValidationError("Room is unavailable at this booking period.")
+
+        if self.room.available is False and not self.room.unavailable_start_time and not self.room.unavailable_end_time:
+            raise ValidationError("Room is unavailable to be booked")
 
     def merge_with_neighbouring_bookings(self):
         settings = SystemSettings.get_settings()
