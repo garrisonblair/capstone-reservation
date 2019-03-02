@@ -51,6 +51,16 @@ class UserSerializerLogin(UserSerializer):
         return token.key
 
 
+class PublicUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id',
+                  'username',
+                  'first_name',
+                  'last_name')
+
+
 class BookerProfileSerializer(serializers.ModelSerializer):
     privilege_categories = PrivilegeCategorySerializer(many=True)
 

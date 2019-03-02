@@ -380,3 +380,25 @@ class TestBooking(TestCase):
         settings.merge_threshold_minutes = threshold
 
         settings.save()
+
+    def testBookingCreationUnavailableRoom(self):
+
+        room1 = Room(name="R100", capacity=1, number_of_computers=1, available=False)
+        room1.save()
+
+        booking = Booking(booker=self.booker,
+                          room=room1,
+                          date=self.date,
+                          start_time=self.start_time,
+                          end_time=self.end_time)
+        with self.assertRaises(ValidationError):
+            booking.save()
+
+        self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings)
+
+        with self.assertRaises(Booking.DoesNotExist):
+            Booking.objects.get(booker=self.booker,
+                                room=room1,
+                                date=self.date,
+                                start_time=self.start_time,
+                                end_time=self.end_time)
