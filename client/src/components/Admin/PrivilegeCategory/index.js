@@ -71,8 +71,10 @@ class PrivilegeCategory extends Component {
             sweetAlert.fire({
               position: 'top',
               type: 'success',
-              title: 'Completed',
-              text: 'Privieges successfully assigned',
+              title: 'Privieges successfully assigned',
+              toast: true,
+              showConfirmButton: false,
+              timer: 2000,
             }),
           );
       }

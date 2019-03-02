@@ -8,6 +8,7 @@ import {
   Icon,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
+import moment from 'moment';
 import SelectedDate from '../Calendar/SelectedDate';
 import Login from '../Login';
 import api from '../../utils/api';
@@ -41,6 +42,11 @@ class Navigation extends Component {
     }
   }
 
+  handleForDisplay = () => {
+    const { history } = this.props;
+    history.push('/forDisplay');
+  }
+
   handleLogin = () => {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
@@ -51,6 +57,9 @@ class Navigation extends Component {
             position: 'top',
             type: 'success',
             title: 'Logged out',
+            toast: true,
+            showConfirmButton: false,
+            timer: 2000,
           });
           this.setState({ showLogin: false });
           if (history.location.pathname !== '/') {
@@ -145,24 +154,51 @@ class Navigation extends Component {
   }
 
   render() {
-    const { showLogin } = this.state;
-    const { showDate } = this.props;
+    const { showLogin, update } = this.state;
+    const { showDate, forDisplay, history } = this.props;
+
+    if (forDisplay) {
+      return (
+        <div className="navigation">
+          <Menu inverted fixed="top" className="navigation__bar">
+            <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
+              Capstone
+            </Menu.Item>
+            <Menu.Item>
+              {moment().format('ddd MMM Do YYYY')}
+            </Menu.Item>
+          </Menu>
+        </div>
+      );
+    }
 
     return (
       <div className="navigation">
         <Menu inverted fixed="top" className="navigation__bar">
           <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
-            Capstone
+            {history.location.pathname === '/'
+              ? 'Capstone'
+              : <Icon name="arrow left" size="large" color="black" />
+            }
           </Menu.Item>
           <Menu.Item>
             <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
           </Menu.Item>
+          { storage.checkAdmin() ? (
+            <Menu.Item className="navigation__forDisplay" onClick={this.handleForDisplay}>
+              For Display
+            </Menu.Item>
+          )
+            : null
+          }
           { showDate
             ? (
               <SelectedDate
                 changeDate={this.handleChangeDate}
                 onOpenDatePicker={this.onOpenDatePicker}
                 onCloseDatePicker={this.onCloseDatePicker}
+                forDisplay={forDisplay}
+                update={update}
               />
             )
             : null}
@@ -191,6 +227,7 @@ Navigation.propTypes = {
   changeDate: PropTypes.func,
   onOpenDatePicker: PropTypes.func,
   onCloseDatePicker: PropTypes.func,
+  forDisplay: PropTypes.bool,
 };
 
 Navigation.defaultProps = {
@@ -198,6 +235,7 @@ Navigation.defaultProps = {
   changeDate: () => {},
   onOpenDatePicker: () => {},
   onCloseDatePicker: () => {},
+  forDisplay: false,
 };
 
 export default withRouter(Navigation);

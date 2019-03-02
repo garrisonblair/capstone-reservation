@@ -48,7 +48,7 @@ class RecurringBookings extends Component {
           {booking.booking_end_time}
         </Table.Cell>
         <Table.Cell>
-          {booking.group}
+          {booking.group === null ? '' : booking.group.name}
         </Table.Cell>
       </Table.Row>
     ));

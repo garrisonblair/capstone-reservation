@@ -51,10 +51,13 @@ class Calendar extends Component {
     this.getBookings();
     this.getRooms();
     this.setHours();
+
+    this.interval = setInterval(() => this.refreshPage(), 60000);
   }
 
   componentWillUnmount() {
     document.body.style.backgroundColor = 'white';
+    clearInterval(this.interval);
   }
 
   /*
@@ -163,6 +166,18 @@ class Calendar extends Component {
    * HELPER METHOD
    */
 
+  refreshPage = () => {
+    const { forDisplay } = this.props;
+    const { update } = this.state;
+    if (forDisplay) {
+      this.setState({
+        update: !update,
+        selectedDate: new Date(),
+      });
+    }
+    this.getBookings();
+  }
+
   changeDate = (date) => {
     this.setState({ selectedDate: date }, () => {
       this.getBookings();
@@ -237,6 +252,7 @@ class Calendar extends Component {
       hoursDivisionNum,
       update,
     } = this.state;
+    const { forDisplay } = this.props;
     let colList = roomsList;
     let colName = 'room';
     let rowList = hoursList;
@@ -256,6 +272,7 @@ class Calendar extends Component {
           onOpenDatePicker={Calendar.onOpenDatePicker}
           onCloseDatePicker={Calendar.onCloseDatePicker}
           update={update}
+          forDisplay={forDisplay}
         />
         <div className="calendar__container" key={1}>
           <Announcement />
@@ -287,12 +304,14 @@ Calendar.propTypes = {
   propsTestingBookings: PropTypes.instanceOf(Object),
   propsTestingCampOns: PropTypes.instanceOf(Object),
   propsTestingRooms: PropTypes.instanceOf(Object),
+  forDisplay: PropTypes.bool,
 };
 
 Calendar.defaultProps = {
   propsTestingBookings: null,
   propsTestingCampOns: null,
   propsTestingRooms: null,
+  forDisplay: false,
 };
 
 export default Calendar;

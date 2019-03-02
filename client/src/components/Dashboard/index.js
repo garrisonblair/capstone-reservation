@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import {
   Segment,
 } from 'semantic-ui-react';
+import withTracker from '../HOC/withTracker';
 import Navigation from '../Navigation';
 import UserInfo from '../UserInfo';
 import Privileges from '../Privileges';
@@ -24,7 +25,7 @@ class Dashboard extends Component {
       <div>
         <Navigation />
         <div className="dashboard">
-          <h1> Profile </h1>
+          <h1 className="title"><center> Dashboard </center></h1>
           <div className="segment__container top">
             <Segment className="segment__user">
               <UserInfo />
@@ -50,4 +51,4 @@ class Dashboard extends Component {
   }
 }
 
-export default AuthenticationRequired(Dashboard);
+export default withTracker(AuthenticationRequired(Dashboard));
