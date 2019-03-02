@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { Component } from 'react';
 import {
-  Table, Segment, Pagination, Form, Button,
+  Table, Segment, Pagination, Form, Button, Dropdown,
 } from 'semantic-ui-react';
 import './Bookers.scss';
 import api from '../../../utils/api';
@@ -71,6 +71,16 @@ class Bookers extends Component {
 
   handleStaffOnChange = (e, { value }) => { this.setState({ valueStaff: value }); }
 
+  handleLimitOnChange = (e, { value }) => { this.setState({ searchLimit: value }); }
+
+  handleSearchOnClick = () => {
+    const {
+      searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff,
+    } = this.state;
+    this.setState({ activePage: 1 });
+    this.syncBookers(valueSearch, searchLimit, 1, valueActive, valueSuperUser, valueStaff);
+  }
+
   handleResetOnClick = () => {
     this.setState({
       valueActive: 'Any',
@@ -96,12 +106,23 @@ class Bookers extends Component {
             <Form.Select fluid label="Active" options={dropdownOptions} value={valueActive} onChange={this.handleActiveOnChange} />
             <Form.Select fluid label="Staff" options={dropdownOptions} value={valueStaff} onChange={this.handleStaffOnChange} />
           </Form.Group>
-          <Button
-            color="blue"
-            onClick={() => this.syncBookers(
-              valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff,
-            )}
-          >
+          Table maximum size:
+          <Dropdown
+            className="table-max-size"
+            options={[
+              { text: 5, value: 5 },
+              { text: 10, value: 10 },
+              { text: 20, value: 20 },
+              { text: 40, value: 40 },
+            ]}
+            selection
+            compact
+            value={searchLimit}
+            onChange={this.handleLimitOnChange}
+          />
+          <br />
+          <br />
+          <Button color="blue" onClick={this.handleSearchOnClick}>
             Search
           </Button>
           <Button onClick={this.handleResetOnClick}>
@@ -148,7 +169,7 @@ class Bookers extends Component {
           </Table>
           {totalPages !== 0 ? (
             <Pagination
-              defaultActivePage={activePage}
+              activePage={activePage}
               totalPages={totalPages}
               onPageChange={this.handlePaginationChange}
             />
