@@ -21,14 +21,12 @@ class GroupsModal extends Component {
     groupMembers: [],
     newInvitations: [],
     newInvitation: '',
-    stateOptions: [],
     groupPrivilegeRequest: null,
     isLoading: false,
   }
 
   componentDidMount() {
     const { selectedGroup } = this.props;
-    const { stateOptions } = this.state;
     if (selectedGroup !== null) {
       this.setState({
         groupId: selectedGroup.id,
@@ -44,17 +42,6 @@ class GroupsModal extends Component {
           this.setState({ groupOwner: r.data });
         });
     }
-
-    // get all users and add them to the dropbox
-    api.getUsers()
-      .then((r2) => {
-        r2.data.map(b => stateOptions.push({
-          key: b.id, value: b.id, text: b.username,
-        }));
-        this.setState({
-          stateOptions,
-        });
-      });
   }
 
   verifyModalForm = () => {
