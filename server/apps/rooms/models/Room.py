@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.core.exceptions import ValidationError
 
@@ -55,6 +56,15 @@ class Room(models.Model):
         capacity = self.capacity
         number_of_computers = self.number_of_computers
         id = self.id
+
+        if self.unavailable_start_time:
+            if not isinstance(self.unavailable_start_time, datetime.datetime):
+                self.unavailable_start_time = \
+                    datetime.datetime.strptime(self.unavailable_start_time, "%Y-%m-%d %H:%M")
+        if self.unavailable_end_time:
+            if not isinstance(self.unavailable_end_time, datetime.datetime):
+                self.unavailable_end_time = \
+                    datetime.datetime.strptime(self.unavailable_end_time, "%Y-%m-%d %H:%M")
 
         if name is '':
             raise ValidationError("Room id cannot be empty. Please enter room id")

@@ -129,13 +129,11 @@ class Booking(models.Model, SubjectModel):
 
         start_date_time = datetime.datetime.combine(self.date, self.start_time)
         end_date_time = datetime.datetime.combine(self.date, self.end_time)
+        room_unavailable_start = self.room.unavailable_start_time
+        room_unavailable_end = self.room.unavailable_end_time
 
-        if self.room.available is False and self.room.unavailable_start_time:
-            if self.room.unavailable_start_time > end_date_time:
-                raise ValidationError("Room is unavailable at this booking period.")
-
-        if self.room.available is False and self.room.unavailable_end_time:
-            if self.room.unavailable_end_time < start_date_time:
+        if self.room.available is False and room_unavailable_start and room_unavailable_end:
+            if room_unavailable_end > start_date_time and end_date_time > room_unavailable_start:
                 raise ValidationError("Room is unavailable at this booking period.")
 
         if self.room.available is False and not self.room.unavailable_start_time and not self.room.unavailable_end_time:
