@@ -34,11 +34,7 @@ class BookerRow extends Component {
         <Table.Cell>
           <Button icon="edit" className="edit-button" onClick={this.onClickEditButton} />
         </Table.Cell>
-        <BookerModal
-          show={openModal}
-          booker={booker}
-          onClose={this.closeModal}
-        />
+        {openModal ? <BookerModal show booker={booker} onClose={this.closeModal} /> : null}
       </Table.Row>
     );
   }

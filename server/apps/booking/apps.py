@@ -10,6 +10,8 @@ logger = Logging.get_logger()
 class BookingConfig(AppConfig):
     name = 'apps.booking'
 
+    expired_booking_checker_task_name = "check_expired_bookings_task"
+
     expired_booking_checker_thread = None
 
     def __init__(self, arg1, arg2):
@@ -18,6 +20,7 @@ class BookingConfig(AppConfig):
 
     def ready(self):
         from apps.system_administration.models.system_settings import SystemSettings
+        from apps.booking import tasks
         if os.environ.get('RUN_MAIN', None) == 'true':
             try:
                 settings = SystemSettings.get_settings()
@@ -30,25 +33,29 @@ class BookingConfig(AppConfig):
                 pass
 
     def start_checking_for_expired_bookings(self):
-        from apps.booking.models.Booking import Booking
         from apps.system_administration.models.system_settings import SystemSettings
+        from django_celery_beat.schedulers import PeriodicTask, IntervalSchedule
 
         settings = SystemSettings.get_settings()
 
-        expired_booking_checker_thread = threading.Timer(settings.check_expired_booking_frequency_seconds,
-                                                         self.start_checking_for_expired_bookings_active)
-        expired_booking_checker_thread.start()
-        self.expired_booking_checker_thread = expired_booking_checker_thread
+        interval = IntervalSchedule(every=settings.check_for_expired_bookings_frequency_seconds,
+                                    period=IntervalSchedule.SECONDS)
 
-        current_date = datetime.now()
-        bookings_to_check = Booking.objects.filter(date=current_date, confirmed=False)
-        current_time = current_date.time()
+        interval.save()
 
-        for booking in bookings_to_check:
-            if booking.expiration > current_time:
-                booking.delete_booking()
+        task = PeriodicTask(name=self.expired_booking_checker_task_name,
+                            task="apps.booking.tasks.check_expired_bookings",
+                            interval=interval)
+
+        try:
+            task.save()
+        except Exception as e:
+            print(e)
 
     def stop_checking_for_expired_bookings(self):
-        if self.expired_booking_checker_thread:
-            self.expired_booking_checker_thread.cancel()
-            self.expired_booking_checker_thread = None
+        from django_celery_beat.schedulers import PeriodicTask
+        try:
+            task = PeriodicTask.objects.get(name=self.expired_booking_checker_task_name)
+            task.delete()
+        except Exception:
+            pass

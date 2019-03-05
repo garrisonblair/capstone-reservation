@@ -53,17 +53,6 @@ class RoomManager extends Component {
       });
   }
 
-  renderRoomModal() {
-    const { selectedRoom } = this.state;
-    return (
-      <RoomModal
-        show
-        onClose={this.closeRoomModal}
-        selectedRoom={selectedRoom}
-      />
-    );
-  }
-
   renderNoRoomList = () => {
     const { showEmptyMessage, roomsList } = this.state;
     let result = '';
@@ -112,7 +101,7 @@ class RoomManager extends Component {
   }
 
   render() {
-    const { showModal, isLoading } = this.state;
+    const { showModal, isLoading, selectedRoom } = this.state;
     return (
       <div id="room-management">
         <h1>Manage Rooms</h1>
@@ -120,7 +109,9 @@ class RoomManager extends Component {
           <Button onClick={this.showRoomModal}>Add new room</Button>
           {this.renderTable()}
           {this.renderNoRoomList()}
-          {showModal ? this.renderRoomModal() : ''}
+          {showModal ? (
+            <RoomModal show onClose={this.closeRoomModal} selectedRoom={selectedRoom} />
+          ) : null}
         </Segment>
       </div>
     );

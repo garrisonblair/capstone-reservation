@@ -82,8 +82,12 @@ class CardReaderConfirmBookingView(APIView):
                 # Filter out bookings to find current booking in case user has multiple bookings in same room in one day
                 # Ensures booking start is before current time, booking end / booking expiration are after current time
                 for booking in bookings:
-                    if (booking.end_time > now > booking.start_time) and booking.expiration > now:
+                    if (booking.end_time > now > booking.start_time) and booking.get_expiration() > now:
                         booking.set_to_confirmed()
+
+                        if settings.campons_refutable and booking.confirmed:
+                            for campon in booking.campons:
+                                campon.delete()
 
         except ValidationError as e:
             return Response(e.message, status.HTTP_400_BAD_REQUEST)

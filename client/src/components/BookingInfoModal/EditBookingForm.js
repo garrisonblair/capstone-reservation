@@ -71,18 +71,15 @@ class EditBookingForm extends Component {
     api.updateBooking(booking.id, data)
       .then(() => {
         this.setState({ isLoading: false });
-
+        this.closeModalWithEditBooking();
         sweetAlert.fire({
           position: 'top',
           type: 'success',
-          title: 'Completed',
-          text: 'Booking was successfully updated.',
-        })
-          .then((result) => {
-            if (result.value) {
-              this.closeModalWithEditBooking();
-            }
-          });
+          title: 'Booking was successfully updated.',
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
+        });
       })
       .catch((error) => {
         this.setState({ isLoading: false });

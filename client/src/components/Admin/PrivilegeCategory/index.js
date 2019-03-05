@@ -10,6 +10,7 @@ import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 import AdminRequired from '../../HOC/AdminRequired';
 import AddPrivilegeModal from './AddPrivilegeModal';
+import EditPrivilegeModal from './EditPrivilegeModal';
 import PrivilegeDetailsModal from './PrivilegeDetailsModal';
 import '../Admin.scss';
 
@@ -19,7 +20,9 @@ class PrivilegeCategory extends Component {
   state = {
     privileges: [],
     privilege: {},
+    parent: '',
     showAddPrivilegeModal: false,
+    showEditPrivilegeModal: false,
     showDetailsModal: false,
     isLoading: false,
   }
@@ -68,8 +71,10 @@ class PrivilegeCategory extends Component {
             sweetAlert.fire({
               position: 'top',
               type: 'success',
-              title: 'Completed',
-              text: 'Privieges successfully assigned',
+              title: 'Privieges successfully assigned',
+              toast: true,
+              showConfirmButton: false,
+              timer: 2000,
             }),
           );
       }
@@ -83,10 +88,28 @@ class PrivilegeCategory extends Component {
     });
   }
 
+  handleEditPrivilege = (privilege) => {
+    this.setState({
+      parent: privilege.parent_category ? privilege.parent_category.id : '',
+      privilege,
+    }, () => {
+      this.setState({
+        showEditPrivilegeModal: true,
+      });
+    });
+  }
+
   handleOnCloseAddPrivilegeModal = () => {
     this.getPrivileges();
     this.setState({
       showAddPrivilegeModal: false,
+    });
+  }
+
+  handleOnCloseEditPrivilegeModal = () => {
+    this.getPrivileges();
+    this.setState({
+      showEditPrivilegeModal: false,
     });
   }
 
@@ -135,6 +158,14 @@ class PrivilegeCategory extends Component {
           >
             <Icon name="eye" />
           </Button>
+          <Button
+            icon
+            primary
+            size="small"
+            onClick={() => this.handleEditPrivilege(privilege)}
+          >
+            <Icon name="edit" />
+          </Button>
         </TableCell>
       </Table.Row>
     ));
@@ -165,8 +196,10 @@ class PrivilegeCategory extends Component {
     const
       {
         privilege,
+        parent,
         privileges,
         showAddPrivilegeModal,
+        showEditPrivilegeModal,
         showDetailsModal,
         isLoading,
       } = this.state;
@@ -180,6 +213,13 @@ class PrivilegeCategory extends Component {
             privileges={privileges}
             show={showAddPrivilegeModal}
             onClose={this.handleOnCloseAddPrivilegeModal}
+          />
+          <EditPrivilegeModal
+            privilege={privilege}
+            parent={parent}
+            privileges={privileges}
+            show={showEditPrivilegeModal}
+            onClose={this.handleOnCloseEditPrivilegeModal}
           />
           <PrivilegeDetailsModal
             privilege={privilege}

@@ -1,5 +1,8 @@
-import PropTypes from 'prop-types';
+/* eslint-disable react/prop-types */
+/* eslint-disable no-console */
+/* eslint-disable max-len */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ReactDOMServer from 'react-dom/server';
 import {
   Button, Checkbox, Dropdown, Form, Header, Icon, Input, Modal, FormField,
@@ -9,9 +12,42 @@ import api from '../../../utils/api';
 import './AddPrivilegeModal.scss';
 
 
-class AddPrivilegeModal extends Component {
-  state = {
-    name: '',
+class EditPrivilegeModal extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      privilegeID: '',
+      name: '',
+      parent: '',
+      course: '',
+      maxDaysUntilBooking: 0,
+      maxBookingsPerDay: 0,
+      maxDaysWithBookings: 0,
+      maxRecurringBookings: 0,
+      recurringBookingPermission: false,
+      isDefault: false,
+      bookingStartTime: '08:00:00',
+      bookingEndTime: '23:00:00',
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps !== this.props) {
+      this.setState({
+        privilegeID: nextProps.privilege.id,
+        name: nextProps.privilege.name,
+        parent: nextProps.privilege.parent_category ? nextProps.privilege.parent_category.id : '',
+        course: nextProps.privilege.related_course,
+        maxDaysUntilBooking: nextProps.privilege.max_days_until_booking,
+        maxBookingsPerDay: nextProps.privilege.max_num_bookings_for_date,
+        maxDaysWithBookings: nextProps.privilege.max_num_days_with_bookings,
+        maxRecurringBookings: nextProps.privilege.max_recurring_bookings,
+        recurringBookingPermission: nextProps.privilege.can_make_recurring_booking,
+        isDefault: nextProps.privilege.is_default,
+        bookingStartTime: nextProps.privilege.booking_start_time,
+        bookingEndTime: nextProps.privilege.booking_end_time,
+      });
+    }
   }
 
   handleInputChange = (state, e) => {
@@ -35,22 +71,18 @@ class AddPrivilegeModal extends Component {
 
   handleSubmit = () => {
     const {
-      name, parent, course, maxDaysUntilBooking,
+      name, privilegeID, parent, course, maxDaysUntilBooking,
       maxBookingsPerDay, maxDaysWithBookings, maxRecurringBookings, recurringBookingPermission,
       isDefault, bookingStartTime, bookingEndTime,
     } = this.state;
     const { onClose } = this.props;
     const data = {
       name,
+      parent_category: parent,
+      related_course: course,
+      can_make_recurring_booking: recurringBookingPermission,
+      is_default: isDefault,
     };
-
-    if (parent) {
-      data.parent_category = parent;
-    }
-
-    if (course) {
-      data.related_course = course;
-    }
 
     if (maxDaysUntilBooking) {
       data.max_days_until_booking = maxDaysUntilBooking;
@@ -68,14 +100,6 @@ class AddPrivilegeModal extends Component {
       data.max_recurring_bookings = maxRecurringBookings;
     }
 
-    if (recurringBookingPermission) {
-      data.can_make_recurring_booking = recurringBookingPermission;
-    }
-
-    if (isDefault) {
-      data.is_default = isDefault;
-    }
-
     if (bookingStartTime) {
       data.booking_start_time = bookingStartTime;
     }
@@ -84,7 +108,9 @@ class AddPrivilegeModal extends Component {
       data.booking_end_time = bookingEndTime;
     }
 
-    api.createPrivilege(data)
+    console.log(data);
+
+    api.updatePrivilege(privilegeID, data)
       .then(() => {
         sweetAlert(
           'Completed',
@@ -143,7 +169,9 @@ class AddPrivilegeModal extends Component {
   renderForm() {
     const { privileges } = this.props;
     const {
-      recurringBookingPermission, isDefault, bookingStartTime, bookingEndTime,
+      name, parent, course, maxDaysUntilBooking,
+      maxBookingsPerDay, maxDaysWithBookings, maxRecurringBookings, recurringBookingPermission,
+      isDefault, bookingStartTime, bookingEndTime,
     } = this.state;
 
     const privilegeOptions = privileges.map(privilege => ({
@@ -163,10 +191,10 @@ class AddPrivilegeModal extends Component {
         <Form.Field>
           <Input
             fluid
+            label="Name"
             size="small"
-            icon="text cursor"
-            iconPosition="left"
             placeholder="Name"
+            value={name}
             onChange={e => this.handleInputChange('name', e)}
           />
         </Form.Field>
@@ -183,16 +211,17 @@ class AddPrivilegeModal extends Component {
             search
             selection
             options={privilegeOptions}
-            onChange={this.handleParentPrivilegeChange}
+            defaultValue={parent}
+            onChange={(event, data) => { this.handleParentPrivilegeChange(event, data); }}
           />
         </Form.Field>
         <Form.Field>
           <Input
             fluid
+            label="Related Course"
             size="small"
-            icon="text cursor"
-            iconPosition="left"
-            placeholder="Related Course "
+            placeholder="Related Course"
+            value={course}
             onChange={e => this.handleInputChange('course', e)}
           />
         </Form.Field>
@@ -200,11 +229,11 @@ class AddPrivilegeModal extends Component {
           <Input
             fluid
             size="small"
-            icon="sort"
-            iconPosition="left"
+            label="Max Days Until Booking"
             placeholder="Max Days Until Booking"
             type="number"
             min="0"
+            value={maxDaysUntilBooking}
             onChange={e => this.handleInputChange('maxDaysUntilBooking', e)}
           />
         </Form.Field>
@@ -212,11 +241,11 @@ class AddPrivilegeModal extends Component {
           <Input
             fluid
             size="small"
-            icon="sort"
-            iconPosition="left"
+            label="Max Bookings per day"
             placeholder="Max Bookings per day"
             type="number"
             min="0"
+            value={maxBookingsPerDay}
             onChange={e => this.handleInputChange('maxBookingsPerDay', e)}
           />
         </Form.Field>
@@ -224,11 +253,11 @@ class AddPrivilegeModal extends Component {
           <Input
             fluid
             size="small"
-            icon="sort"
-            iconPosition="left"
+            label="Max days with bookings"
             placeholder="Max days with bookings"
             type="number"
             min="0"
+            value={maxDaysWithBookings}
             onChange={e => this.handleInputChange('maxDaysWithBookings', e)}
           />
         </Form.Field>
@@ -243,11 +272,11 @@ class AddPrivilegeModal extends Component {
           <Input
             fluid
             size="small"
-            icon="sort"
-            iconPosition="left"
+            label="Max Recurring Bookings"
             placeholder="Max Recurring Bookings"
             type="number"
             min="0"
+            value={maxRecurringBookings}
             onChange={e => this.handleInputChange('maxRecurringBookings', e)}
           />
         </Form.Field>
@@ -278,18 +307,18 @@ class AddPrivilegeModal extends Component {
   render() {
     const { show, onClose } = this.props;
     return (
-      <Modal className="privilege-modal" open={show} onClose={onClose}>
+      <Modal className="privilege-modal edit" open={show} onClose={onClose}>
         <Header>
-          <Icon name="plus" />
+          <Icon name="edit" />
           {' '}
-          Add Privilege
+          Edit Privilege
         </Header>
         <div className="privilege-modal__container">
           {this.renderForm()}
           <div className="ui divider" />
           <Form.Field>
             <Button fluid size="small" icon onClick={this.handleSubmit}>
-              Add
+              Update
             </Button>
           </Form.Field>
         </div>
@@ -298,16 +327,16 @@ class AddPrivilegeModal extends Component {
   }
 }
 
-AddPrivilegeModal.propTypes = {
+EditPrivilegeModal.propTypes = {
   onClose: PropTypes.func,
   privileges: PropTypes.instanceOf(Array),
   show: PropTypes.bool,
 };
 
-AddPrivilegeModal.defaultProps = {
+EditPrivilegeModal.defaultProps = {
   onClose: () => {},
   privileges: [],
   show: false,
 };
 
-export default AddPrivilegeModal;
+export default EditPrivilegeModal;

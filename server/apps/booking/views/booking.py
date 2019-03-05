@@ -1,5 +1,7 @@
 import datetime
+
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,7 +16,7 @@ from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.CampOn import CampOn
 from apps.booking.serializers.booking import \
     BookingSerializer, AdminBookingSerializer, ReadBookingSerializer, MyBookingSerializer
-from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
+from apps.booking.serializers.recurring_booking import MyRecurringBookingSerializer
 from apps.booking.serializers.campon import ReadCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
 from apps.notifications.models.Notification import Notification
@@ -108,8 +110,9 @@ class BookingCancel(APIView):
         timeout = now.time()
 
         if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
-            return Response("Selected booking cannot be canceled as booking has started",
-                            status=status.HTTP_400_BAD_REQUEST)
+            if not request.user.is_superuser:
+                return Response("Selected booking cannot be canceled as booking has started",
+                                status=status.HTTP_400_BAD_REQUEST)
 
         try:
             booking.delete_booking()
@@ -149,9 +152,13 @@ class BookingRetrieveUpdateDestroy(APIView):
         settings = SystemSettings.get_settings()
         timeout = (now + settings.booking_edit_lock_timeout).time()
 
-        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking.start_time):
-            if not request.user.is_superuser:
-                return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
+        # time = datetime.datetime.strptime(data["start_time"], "%H:%M").time()
+
+        if "start_time" in data:
+            if not datetime.datetime.strptime(data["start_time"], "%H:%M").time() == booking.start_time:
+                if now.date() > booking.date or (now.date() == booking.date and timeout >= booking.start_time):
+                    if not request.user.is_superuser:
+                        return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
         data["booker"] = booking.booker.id
@@ -207,9 +214,17 @@ class BookingViewMyBookings(APIView):
         recurring_bookings = RecurringBooking.objects.filter(booker=user)
         campons = CampOn.objects.filter(booker=user)
 
+        # Insert standard_bookings and recurring_bookings made by groups that user is in
+        for group in user.group_set.all():
+            group_standard_bookings = group.get_active_non_recurring_bookings()
+            standard_bookings = standard_bookings | group_standard_bookings
+
+            group_recurring_bookings = RecurringBooking.objects.filter(~Q(booker=user), group=group)
+            recurring_bookings = recurring_bookings | group_recurring_bookings
+
         # Add serialized lists of booking types to dictionary associated with type key
         bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
-        bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
+        bookings["recurring_bookings"] = MyRecurringBookingSerializer(recurring_bookings, many=True).data
         bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
 
         return Response(bookings, status=status.HTTP_200_OK)

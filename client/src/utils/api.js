@@ -63,11 +63,11 @@ function verify(token) {
   });
 }
 
-function getMyUser() {
+function getUser(id) {
   const headers = getTokenHeader();
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/me`,
+    url: `${settings.API_ROOT}/user/${id}`,
     headers,
   });
 }
@@ -269,7 +269,7 @@ function getAdminSettings() {
   const headers = getTokenHeader();
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/settings`,
+    url: `${settings.API_ROOT}/getSettings`,
     headers,
     withCredentials: true,
   });
@@ -311,6 +311,17 @@ function createPrivilege(data) {
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/privilege_category`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function updatePrivilege(id, data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/privilege_category/${id}`,
     headers,
     data,
     withCredentials: true,
@@ -702,7 +713,7 @@ const api = {
   login,
   logout,
   verify,
-  getMyUser,
+  getUser,
   updateUser,
   getBookings,
   getUserBookings,
@@ -725,6 +736,7 @@ const api = {
   getPrivileges,
   getMyPrivileges,
   createPrivilege,
+  updatePrivilege,
   getMyGroups,
   createGroup,
   addMembersToGroup,

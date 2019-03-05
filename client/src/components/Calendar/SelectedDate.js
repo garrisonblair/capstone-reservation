@@ -12,6 +12,17 @@ class SelectedDate extends Component {
   state = {
     focusDate: false,
     date: moment(),
+    update: false,
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.update !== state.update && props.forDisplay) {
+      return {
+        update: props.update,
+        date: moment(),
+      };
+    }
+    return null;
   }
 
   handleClickNextDate = () => {
@@ -31,9 +42,7 @@ class SelectedDate extends Component {
     this.setState({ date });
     const d = date.format('YYYY-MM-DD').split('-');
     const selectedDate = new Date();
-    selectedDate.setFullYear(parseInt(d[0], 10));
-    selectedDate.setDate(parseInt(d[2], 10));
-    selectedDate.setMonth(parseInt(d[1], 10) - 1);
+    selectedDate.setFullYear(parseInt(d[0], 10), parseInt(d[1], 10) - 1, parseInt(d[2], 10));
     changeDate(selectedDate);
   }
 
@@ -51,6 +60,7 @@ class SelectedDate extends Component {
 
   render() {
     const { date, focusDate } = this.state;
+
     return (
       <Menu.Item position="right" className="menu--date">
         <Icon
