@@ -62,15 +62,9 @@ class TestUserAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 6)
 
-    def testGetAllUsersNotAdmin(self):
-        request = self.factory.get("/users", format="json")
-        force_authenticate(request, user=self.staff)
-        response = UserList.as_view()(request)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
     def testSearchedByKeyword(self):
         json = {
-            "keyword": "user"
+            "search_term": "user"
         }
         request = self.factory.get("/users", json, format="json")
         force_authenticate(request, user=self.admin)
@@ -80,7 +74,7 @@ class TestUserAPI(TestCase):
 
     def testSearchedByKeywordNonExist(self):
         json = {
-            "keyword": "string"
+            "search_term": "string"
         }
         request = self.factory.get("/users", json, format="json")
         force_authenticate(request, user=self.admin)
@@ -131,7 +125,7 @@ class TestUserAPI(TestCase):
 
     def testSearchedByIsActiveAndHasKeyword(self):
         json = {
-            "keyword": "user",
+            "search_term": "user",
             "is_active": True
         }
         request = self.factory.get("/users", json, format="json")

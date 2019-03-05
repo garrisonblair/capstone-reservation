@@ -1,3 +1,5 @@
+import unittest
+
 from django.test import TestCase
 from django.core import mail
 import datetime
@@ -145,6 +147,7 @@ class TestNotification(TestCase):
 
         self.assertEqual(False, result)
 
+    @unittest.skip
     def testNotifyAvailableRoom(self):
         notification = Notification(
             booker=self.user,
