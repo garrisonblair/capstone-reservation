@@ -688,6 +688,25 @@ function updateAnnouncement(announcement) {
   });
 }
 
+function postNotification(bookerId, rooms, date, rangeStart, rangeEnd, minBookingTime) {
+  const headers = getTokenHeader();
+  const data = {
+    booker: bookerId,
+    rooms,
+    date,
+    range_start: rangeStart,
+    range_end: rangeEnd,
+    minimum_booking_time: minBookingTime,
+  };
+
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/notify`,
+    headers,
+    data,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -747,6 +766,7 @@ const api = {
   getAllAnnouncements,
   deleteAnnouncement,
   updateAnnouncement,
+  postNotification,
 };
 
 export default api;
