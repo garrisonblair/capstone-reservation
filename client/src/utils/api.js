@@ -441,7 +441,7 @@ function getContentTypes() {
   });
 }
 
-function getUsers(searchText, searchLimit, pageNumber, isActive, isSuperUser, isStaff) {
+function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaff) {
   const headers = getTokenHeader();
 
   const params = {};
@@ -450,7 +450,7 @@ function getUsers(searchText, searchLimit, pageNumber, isActive, isSuperUser, is
   if (isSuperUser !== undefined) { params.is_superuser = isSuperUser ? 'True' : 'False'; }
   if (isStaff !== undefined) { params.is_staff = isStaff ? 'True' : 'False'; }
   if (searchLimit !== undefined) { params.limit = searchLimit; }
-  if (pageNumber !== undefined) { params.offset = pageNumber - 1; }
+  if (offset !== undefined) { params.offset = offset; }
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,

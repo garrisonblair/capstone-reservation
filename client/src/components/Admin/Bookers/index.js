@@ -29,7 +29,7 @@ class Bookers extends Component {
     const {
       searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff, activePage,
     } = this.state;
-    this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff);
+    this.syncBookers(valueSearch, searchLimit, ((activePage * searchLimit) - searchLimit), valueActive, valueSuperUser, valueStaff);
   }
 
   syncBookers = (valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff) => {
@@ -60,7 +60,8 @@ class Bookers extends Component {
       searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff,
     } = this.state;
     this.setState({ activePage });
-    this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff);
+    const offset = ((activePage * searchLimit) - searchLimit);
+    this.syncBookers(valueSearch, searchLimit, offset, valueActive, valueSuperUser, valueStaff);
   }
 
   handleSearchOnChange = (e, { value }) => { this.setState({ valueSearch: value }); }
@@ -78,7 +79,7 @@ class Bookers extends Component {
       searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff,
     } = this.state;
     this.setState({ activePage: 1 });
-    this.syncBookers(valueSearch, searchLimit, 1, valueActive, valueSuperUser, valueStaff);
+    this.syncBookers(valueSearch, searchLimit, 0, valueActive, valueSuperUser, valueStaff);
   }
 
   handleResetOnClick = () => {
