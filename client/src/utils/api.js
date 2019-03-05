@@ -441,15 +441,16 @@ function getContentTypes() {
   });
 }
 
-function getUsers(searchText) {
+function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaff) {
   const headers = getTokenHeader();
 
   const params = {};
-
-  if (searchText) {
-    params.search_text = searchText;
-  }
-
+  if (searchText !== undefined) { params.search_term = searchText; }
+  if (isActive !== undefined) { params.is_active = isActive ? 'True' : 'False'; }
+  if (isSuperUser !== undefined) { params.is_superuser = isSuperUser ? 'True' : 'False'; }
+  if (isStaff !== undefined) { params.is_staff = isStaff ? 'True' : 'False'; }
+  if (searchLimit !== undefined) { params.limit = searchLimit; }
+  if (offset !== undefined) { params.offset = offset; }
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
