@@ -5,7 +5,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
 
-from apps.system_administration.views.system_settings_api import SystemSettingsAPI
+from apps.system_administration.views.system_settings_api import SystemSettingsAPI, ReadSystemSettings
 from apps.system_administration.models.system_settings import SystemSettings
 
 
@@ -22,9 +22,9 @@ class TestSettingsAPI(TestCase):
 
         settings = SystemSettings.get_settings()
 
-        request = self.factory.get("/settings")
+        request = self.factory.get("/getSettings")
         force_authenticate(request, self.user)
-        response = SystemSettingsAPI().as_view()(request)
+        response = ReadSystemSettings().as_view()(request)
 
         response_data = response.data
         self.assertEqual(response.data["variant"], settings.variant)

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input,
+  Modal, Button, FormField, Input, Divider,
 } from 'semantic-ui-react';
 import api from '../../../utils/api';
 import './RoomModal.scss';
@@ -21,8 +21,19 @@ class RoomModal extends Component {
         roomID: selectedRoom.name,
         roomCapacity: selectedRoom.capacity,
         numOfComputers: selectedRoom.number_of_computers,
+        cardReader: null,
       });
     }
+
+
+    api.getCardReaders(selectedRoom.id)
+      .then((response) => {
+        if (response.data.length > 0) {
+          this.setState({
+            cardReader: response.data[0],
+          });
+        }
+      });
   }
 
   verifyModalForm = () => {
@@ -59,8 +70,8 @@ class RoomModal extends Component {
 
   handleSubmit = () => {
     // eslint-disable-next-line object-curly-newline
-    const { roomID, roomCapacity, numOfComputers, onClose } = this.state;
-    const { selectedRoom } = this.props;
+    const { roomID, roomCapacity, numOfComputers } = this.state;
+    const { selectedRoom, onClose } = this.props;
     // Leaves the method if verification doesn't succeed
     if (!this.verifyModalForm()) {
       return;
@@ -100,9 +111,66 @@ class RoomModal extends Component {
     }
   }
 
+  handleCardReaderDelete = () => {
+    const { cardReader } = this.state;
+    api.deleteCardReader(cardReader.id)
+      .then(() => {
+        this.setState({ cardReader: undefined });
+      })
+      .catch(() => {
+        sweetAlert(':(', 'Card reader could not be deleted', 'error');
+      });
+  }
+
+  handleGenerateCardReaderKey = () => {
+    const { selectedRoom } = this.props;
+    api.createCardReader(selectedRoom.id)
+      .then((response) => {
+        this.setState({ cardReader: response.data });
+      })
+      .catch(() => {
+        sweetAlert(':(', 'Card reader key could not be generated', 'error');
+      });
+  }
+
+  renderCardReader = () => {
+    const { cardReader } = this.state;
+
+    return (
+      <div>
+        <h3>
+          Card Reader UUID:
+        </h3>
+        <div>
+          <Input
+            className="uuid_field"
+            value={cardReader.secret_key}
+          />
+          <Button
+            className="cardReaderDelete"
+            onClick={this.handleCardReaderDelete}
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  renderCreateCardReader = () => (
+    <Button onClick={this.handleGenerateCardReaderKey}>
+      Generate Card Reader Key
+    </Button>
+  );
+
   render() {
     const { show, onClose, selectedRoom } = this.props;
-    const { roomCapacity, roomID, numOfComputers } = this.state;
+    const {
+      roomCapacity,
+      roomID,
+      numOfComputers,
+      cardReader,
+    } = this.state;
     return (
       <Modal centered={false} size="tiny" open={show} id="room-modal" onClose={onClose}>
         <Modal.Header>
@@ -134,6 +202,10 @@ class RoomModal extends Component {
                 onChange={this.handleNumberOfComputersOnChange}
                 value={numOfComputers}
               />
+            </FormField>
+            <Divider />
+            <FormField>
+              { cardReader ? this.renderCardReader() : this.renderCreateCardReader()}
             </FormField>
             <br />
             <br />

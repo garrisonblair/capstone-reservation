@@ -54,7 +54,8 @@ class ReadBookingSerializer(serializers.ModelSerializer):
                   'end_time',
                   'note',
                   'display_note',
-                  'show_note_on_calendar')
+                  'show_note_on_calendar',
+                  'confirmed')
         read_only_fields = ('id',)
 
 
@@ -75,5 +76,6 @@ class MyBookingSerializer(serializers.ModelSerializer):
                   'end_time',
                   'recurring_booking',
                   'note',
-                  'display_note')
+                  'display_note',
+                  'confirmed')
         read_only_fields = ('id',)

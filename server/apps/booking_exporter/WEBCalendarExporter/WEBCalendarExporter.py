@@ -2,6 +2,7 @@ import requests
 
 from ..BookingExporter import BookingExporter
 from .ICSSerializer import ICSSerializerFactory
+import apps.booking_exporter.tasks as tasks
 
 from apps.system_administration.models.system_settings import SystemSettings
 
@@ -28,6 +29,7 @@ class WEBCalendarExporter(BookingExporter):
         self.session = request_session
 
         self.logged_in = False
+        self.cookies = None
 
     # Gets authorization Cookies
     def login(self):
@@ -45,13 +47,17 @@ class WEBCalendarExporter(BookingExporter):
         pass
 
     def export_file(self, booking, file_content):
+        file_content = file_content.strip()
 
         file = {"FileName": ("booking.ics", file_content)}
         data = {"ImportType": "ICAL",
                 "exc_private": "1",
                 "overwrite": "Y",
                 "calUser": booking.room.externalroomid.external_id}
-        response = self.session.post(self.IMPORT_HANDLER_URL, files=file, data=data)
+
+        response = self.session.post(self.IMPORT_HANDLER_URL,
+                                     files=file,
+                                     data=data)
 
         if self.NOT_AUTHORIZED_MESSAGE in response.text:
             logger.error("WebCalendar .ics Upload failed.")
@@ -78,10 +84,11 @@ class WEBCalendarExporter(BookingExporter):
     # ClassObserver
 
     def subject_created(self, subject):
-        self.backup_booking(subject)
+        # self.backup_booking(subject)
+        tasks.exportICSFile.delay(subject.id)
 
     def subject_updated(self, subject):
-        self.backup_booking(subject)
+        tasks.exportICSFile.delay(subject.id)
 
     def subject_deleted(self, subject):
         pass

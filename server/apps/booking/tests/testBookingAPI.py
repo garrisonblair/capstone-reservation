@@ -257,8 +257,8 @@ class BookingAPITest(TestCase):
         request = self.factory.patch("/booking", {
                                         "room": 2,
                                         "date": "2018-10-7",
-                                        "start_time": "14:00:00",
-                                        "end_time": "16:00:00"
+                                        "start_time": "14:00",
+                                        "end_time": "16:00"
                                     },
                                    format="json")
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -294,8 +294,8 @@ class BookingAPITest(TestCase):
                                         "booker": "44444444",
                                         "room": 2,
                                         "date": "2018-10-7",
-                                        "start_time": "14:00:00",
-                                        "end_time": "16:00:00"
+                                        "start_time": "14:00",
+                                        "end_time": "16:00"
                                     },
                                    format="json")
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -363,8 +363,8 @@ class BookingAPITest(TestCase):
         request = self.factory.patch("/booking", {
                                         "room": 2,
                                         "date": "2018-10-7",
-                                        "start_time": "14:00:00",
-                                        "end_time": "16:00:00"
+                                        "start_time": "14:00",
+                                        "end_time": "16:00"
                                     },
                                    format="json")
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -400,8 +400,8 @@ class BookingAPITest(TestCase):
         request = self.factory.patch("/booking", {
                                         "room": 2,
                                         "date": "2018-10-7",
-                                        "start_time": "13:30:00",
-                                        "end_time": "15:00:00"
+                                        "start_time": "13:30",
+                                        "end_time": "15:00"
                                     },
                                    format="json")
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -417,7 +417,7 @@ class BookingAPITest(TestCase):
         booking.save()
 
         request = self.factory.patch("/booking", {
-                                        "start_time": "14:00:00"
+                                        "start_time": "14:00"
                                     }, format="json")
         force_authenticate(request, user=self.booker)
 
@@ -525,7 +525,7 @@ class BookingAPITest(TestCase):
 
         bookings_after_cancel = len(Booking.objects.all())
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
 
     def testCancelBookingAfterBookingEnded(self):
@@ -541,7 +541,7 @@ class BookingAPITest(TestCase):
 
         bookings_after_cancel = len(Booking.objects.all())
 
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(bookings_before_cancel, bookings_after_cancel)
 
     def testCancelBookingNoCamponsSuccess(self):
@@ -932,8 +932,8 @@ class BookingAPITest(TestCase):
         request = self.factory.patch("/booking", {
                                         "room": 2,
                                         "date": "2018-10-7",
-                                        "start_time": "14:00:00",
-                                        "end_time": "16:00:00",
+                                        "start_time": "14:00",
+                                        "end_time": "16:00",
                                         "admin_selected_user": self.booker.id
                                     }, format="json")
 

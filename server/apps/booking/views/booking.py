@@ -1,5 +1,7 @@
 import datetime
+
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,9 +16,10 @@ from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.CampOn import CampOn
 from apps.booking.serializers.booking import \
     BookingSerializer, AdminBookingSerializer, ReadBookingSerializer, MyBookingSerializer
-from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
+from apps.booking.serializers.recurring_booking import MyRecurringBookingSerializer
 from apps.booking.serializers.campon import ReadCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
+from apps.notifications.models.Notification import Notification
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
 
@@ -91,11 +94,12 @@ class BookingCancel(APIView):
     serializer_class = BookingSerializer
 
     def post(self, request, pk):
+
         # Ensure that booking to be canceled exists
         try:
             booking = Booking.objects.get(id=pk)
         except Booking.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response("Selected booking to cancel does not exist", status=status.HTTP_400_BAD_REQUEST)
 
         # Check user permissions
         self.check_object_permissions(request, booking.booker)
@@ -106,69 +110,15 @@ class BookingCancel(APIView):
         timeout = now.time()
 
         if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
-            return Response("Can't cancel booking anymore.", status=status.HTTP_403_FORBIDDEN)
+            if not request.user.is_superuser:
+                return Response("Selected booking cannot be canceled as booking has started",
+                                status=status.HTTP_400_BAD_REQUEST)
 
-        # Get all campons for this booking
-        booking_id = booking.id
-        booking_campons = list(CampOn.objects.filter(camped_on_booking__id=booking_id))
-
-        # Remove any campons that have endtimes before current time
-        for campon in booking_campons:
-            if campon.end_time < timeout:
-                booking_campons.remove(campon)
-
-        # Checks to see if booking to cancel has any campons otherwise simply deletes the booking
-        if len(booking_campons) <= 0:
+        try:
+            booking.delete_booking()
             utils.log_model_change(booking, utils.DELETION, request.user)
-            booking.delete()
-
-        # Otherwise handles turning campons of original booking into campons for new booking and bookings if required
-        else:
-            # Sort list of campons by campon.id
-            booking_campons.sort(key=booking_key, reverse=False)
-            # Set first campon in list to first campon created
-            first_campon = booking_campons[0]
-
-            # Turn first campon (which should be first created) into a booking
-            new_booking = Booking(booker=first_campon.booker,
-                                  group=None,
-                                  room=booking.room,
-                                  date=now.date(),
-                                  start_time=first_campon.start_time,
-                                  end_time=first_campon.end_time)
-
-            # Delete previous booking in order to then save new_booking derived from first campon,
-            # then delete first campon
-            booking.delete()
-            new_booking.save()
-            previous_campon = first_campon
-
-            # Adding to see if I can iterate over all the rest without checking condition
-            booking_campons.remove(first_campon)
-
-            for campon in booking_campons:
-                # Change associated booking of all other campons to booking id of new booking
-                campon.camped_on_booking = new_booking
-                # Creates booking for difference (Assuming current campon does not go into another booking)
-                if (campon.end_time.hour > previous_campon.end_time.hour) \
-                        or (campon.end_time.hour == previous_campon.end_time.hour and
-                            (campon.end_time.minute - previous_campon.end_time.minute) > 10):
-                    difference_booking = Booking(
-                        booker=campon.booker,
-                        group=None,
-                        room=booking.room,
-                        date=new_booking.date,
-                        start_time=previous_campon.end_time,
-                        end_time=campon.end_time)
-                    difference_booking.save()
-                    campon.end_time = difference_booking.start_time
-                else:
-                    campon.end_time = previous_campon.end_time
-                campon.save()
-                previous_campon = campon
-            # Finally delete the first campon as it is now a new booking
-            first_campon.delete()
-
+        except ValidationError as e:
+            return Response(e.message, status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -202,9 +152,13 @@ class BookingRetrieveUpdateDestroy(APIView):
         settings = SystemSettings.get_settings()
         timeout = (now + settings.booking_edit_lock_timeout).time()
 
-        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking.start_time):
-            if not request.user.is_superuser:
-                return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
+        # time = datetime.datetime.strptime(data["start_time"], "%H:%M").time()
+
+        if "start_time" in data:
+            if not datetime.datetime.strptime(data["start_time"], "%H:%M").time() == booking.start_time:
+                if now.date() > booking.date or (now.date() == booking.date and timeout >= booking.start_time):
+                    if not request.user.is_superuser:
+                        return Response("Can't modify booking anymore.", status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
         data["booker"] = booking.booker.id
@@ -229,6 +183,9 @@ class BookingRetrieveUpdateDestroy(APIView):
             update_booking.save()
 
             utils.log_model_change(update_booking, utils.CHANGE, request.user)
+
+            Notification.objects.notify(update_booking.date, update_booking.room)
+
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except ValidationError as error:
@@ -257,12 +214,43 @@ class BookingViewMyBookings(APIView):
         recurring_bookings = RecurringBooking.objects.filter(booker=user)
         campons = CampOn.objects.filter(booker=user)
 
+        # Insert standard_bookings and recurring_bookings made by groups that user is in
+        for group in user.group_set.all():
+            group_standard_bookings = group.get_active_non_recurring_bookings()
+            standard_bookings = standard_bookings | group_standard_bookings
+
+            group_recurring_bookings = RecurringBooking.objects.filter(~Q(booker=user), group=group)
+            recurring_bookings = recurring_bookings | group_recurring_bookings
+
         # Add serialized lists of booking types to dictionary associated with type key
         bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
-        bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
+        bookings["recurring_bookings"] = MyRecurringBookingSerializer(recurring_bookings, many=True).data
         bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
 
         return Response(bookings, status=status.HTTP_200_OK)
+
+
+class BookingConfirmation(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
+
+    def post(self, request, pk):
+
+        try:
+            booking_to_confirm = Booking.objects.get(pk=pk)
+        except Booking.DoesNotExist:
+            return Response("Booking does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        self.check_object_permissions(request, booking_to_confirm.booker)
+
+        today = datetime.datetime.now()
+        time = today.time()
+        if booking_to_confirm.date == today.date() and\
+                booking_to_confirm.start_time <= time <= booking_to_confirm.end_time:
+            booking_to_confirm.set_to_confirmed()
+
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response("Can't confirm booking at this time", status=status.HTTP_400_BAD_REQUEST)
 
 
 def booking_key(val):

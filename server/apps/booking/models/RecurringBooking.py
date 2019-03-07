@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from apps.accounts.exceptions import PrivilegeError
 from django.db import models
 from django.db.models import Q
-from rest_framework import serializers
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.rooms.models.Room import Room
@@ -17,6 +16,7 @@ from datetime import timedelta, datetime
 class RecurringBookingManager(models.Manager):
     def create_recurring_booking(self, start_date, end_date, start_time, end_time, room, group,
                                  booker, skip_conflicts):
+
         recurring_booking = self.create(
             start_date=start_date,
             end_date=end_date,
@@ -40,7 +40,8 @@ class RecurringBookingManager(models.Manager):
                     date=date,
                     start_time=recurring_booking.booking_start_time,
                     end_time=recurring_booking.booking_end_time,
-                    recurring_booking=recurring_booking
+                    recurring_booking=recurring_booking,
+                    confirmed=False
                 )
                 recurring_booking.booking_set.add(booking)
             except ValidationError:

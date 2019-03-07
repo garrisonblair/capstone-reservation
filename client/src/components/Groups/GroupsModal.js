@@ -5,6 +5,7 @@ import {
   Modal, Button, FormField, Input, List, Loader, Dimmer,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import InvitedRowItem from './InvitedRowItem';
 import MemberRowItem from './MemberRowItem';
 import RequestPrivilege from './RequestPrivilege';
@@ -20,14 +21,12 @@ class GroupsModal extends Component {
     groupMembers: [],
     newInvitations: [],
     newInvitation: '',
-    stateOptions: [],
     groupPrivilegeRequest: null,
     isLoading: false,
   }
 
   componentDidMount() {
     const { selectedGroup } = this.props;
-    const { stateOptions } = this.state;
     if (selectedGroup !== null) {
       this.setState({
         groupId: selectedGroup.id,
@@ -38,22 +37,11 @@ class GroupsModal extends Component {
         groupPrivilegeRequest: selectedGroup.privilege_request,
       });
     } else {
-      api.getMyUser()
+      api.getUser(storage.getUser().id)
         .then((r) => {
           this.setState({ groupOwner: r.data });
         });
     }
-
-    // get all users and add them to the dropbox
-    api.getUsers()
-      .then((r2) => {
-        r2.data.map(b => stateOptions.push({
-          key: b.id, value: b.id, text: b.username,
-        }));
-        this.setState({
-          stateOptions,
-        });
-      });
   }
 
   verifyModalForm = () => {

@@ -62,6 +62,9 @@ class Login extends Component {
           position: 'top',
           type: 'success',
           title: 'Logged in',
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
         });
         this.closeModal();
       })
@@ -77,13 +80,16 @@ class Login extends Component {
   render() {
     const { show } = this.state;
     return (
-      <Modal closeIcon open={show} onClose={this.closeModal} className="login__container" centered={false}>
+      <Modal open={show} onClose={this.closeModal} className="login__container" centered={false}>
         <Modal.Header>
           <h1 className="login__container__header__title"> Login </h1>
         </Modal.Header>
         <Modal.Content>
           <Modal.Description className="login__container__main__form-wrapper">
             {/* <Form onSubmit={this.handleLogin}> */}
+            <p className="info-text">
+              This is not your ENCS password. If you have not already, you need to register.
+            </p>
             <Form.Field>
               <Input
                 fluid

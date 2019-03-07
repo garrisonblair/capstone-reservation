@@ -4,22 +4,29 @@ import datetime
 from django.db import models
 from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
+from apps.notifications.models.Notification import Notification
 from apps.rooms.models.Room import Room
 from ..models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
+from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.exceptions import PrivilegeError
+
 from apps.system_administration.models.system_settings import SystemSettings
 
 from apps.util.SubjectModel import SubjectModel
 from apps.util.AbstractBooker import AbstractBooker
 from apps.util import utils
 
+from rest_framework.permissions import IsAuthenticated
+
 
 class BookingManager(models.Manager):
-    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking):
+    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking, confirmed):
+
         booking = self.create(
             booker=booker,
             group=group,
@@ -27,7 +34,8 @@ class BookingManager(models.Manager):
             date=date,
             start_time=start_time,
             end_time=end_time,
-            recurring_booking=recurring_booking
+            recurring_booking=recurring_booking,
+            confirmed=confirmed
         )
 
         return booking
@@ -55,6 +63,8 @@ class Booking(models.Model, SubjectModel):
                                           on_delete=models.CASCADE,
                                           blank=True,
                                           null=True)
+    expiration_base = models.TimeField(blank=True, null=True)
+    confirmed = models.BooleanField(default=False)
 
     bypass_privileges = models.BooleanField(default=False)
     bypass_validation = models.BooleanField(default=False)
@@ -67,6 +77,12 @@ class Booking(models.Model, SubjectModel):
 
     observers = list()
 
+    def get_expiration(self):
+        settings = SystemSettings.get_settings()
+
+        return (datetime.datetime.combine(datetime.date.today(), self.expiration_base) +
+                datetime.timedelta(minutes=settings.booking_time_to_expire_minutes)).time()
+
     def save(self, *args, **kwargs):
         if not self.bypass_validation:
             self.validate_model()
@@ -74,6 +90,7 @@ class Booking(models.Model, SubjectModel):
         is_create = False
         if self.id is None:
             is_create = True
+            self.expiration_base = self.start_time
 
         if not self.bypass_privileges:
             self.evaluate_privilege(is_create)
@@ -87,9 +104,10 @@ class Booking(models.Model, SubjectModel):
         return this
 
     def __str__(self):
-        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}, Recurring Booking: {}'\
+        return 'Booking: {}, Booker: {}, Room: {}, Date: {}, Start time: {}, End Time: {}, Recurring Booking: {},' \
+               ' Confirmed: {}'\
             .format(self.id, self.booker.username, self.room.name, self.date, self.start_time, self.end_time,
-                    self.recurring_booking)
+                    self.recurring_booking, self.confirmed)
 
     def validate_model(self):
         now = datetime.datetime.now()
@@ -194,3 +212,80 @@ class Booking(models.Model, SubjectModel):
     def get_duration(self):
         return (datetime.datetime.combine(date=datetime.date.today(), time=self.end_time)
                 - datetime.datetime.combine(date=datetime.date.today(), time=self.start_time))
+
+    def delete_booking(self):
+        from apps.booking.models.CampOn import CampOn
+
+        now = datetime.datetime.now()
+        timeout = now.time()
+
+        # Get all campons for this booking
+        booking_campons = list(CampOn.objects.filter(camped_on_booking__id=self.id))
+
+        # Remove any campons that have endtimes before current time
+        for campon in booking_campons:
+            if campon.end_time < timeout:
+                booking_campons.remove(campon)
+
+        # Checks to see if booking to cancel has any campons otherwise simply deletes the booking
+        if len(booking_campons) <= 0:
+            self.delete()
+
+        # Otherwise handles turning campons of original booking into campons for new booking and bookings if required
+        else:
+            # Sort list of campons by campon.id
+            booking_campons.sort(key=booking_key, reverse=False)
+            # Set first campon in list to first campon created
+            first_campon = booking_campons[0]
+
+            # Turn first campon (which should be first created) into a booking
+            new_booking = Booking(booker=first_campon.booker,
+                                  group=None,
+                                  room=self.room,
+                                  date=now.date(),
+                                  start_time=first_campon.start_time,
+                                  end_time=first_campon.end_time)
+
+            # Delete previous booking in order to then save new_booking derived from first campon,
+            # then delete first campon
+            self.delete()
+            new_booking.save()
+            previous_campon = first_campon
+
+            # Adding to see if I can iterate over all the rest without checking condition
+            booking_campons.remove(first_campon)
+
+            for campon in booking_campons:
+                # Change associated booking of all other campons to booking id of new booking
+                campon.camped_on_booking = new_booking
+                # Creates booking for difference (Assuming current campon does not go into another booking)
+                if (campon.end_time.hour > previous_campon.end_time.hour) \
+                        or (campon.end_time.hour == previous_campon.end_time.hour and
+                            (campon.end_time.minute - previous_campon.end_time.minute) > 10):
+                    difference_booking = Booking(
+                        booker=campon.booker,
+                        group=None,
+                        room=self.room,
+                        date=new_booking.date,
+                        start_time=previous_campon.end_time,
+                        end_time=campon.end_time)
+                    difference_booking.save()
+                    campon.end_time = difference_booking.start_time
+                else:
+                    campon.end_time = previous_campon.end_time
+                campon.save()
+                previous_campon = campon
+            # Finally delete the first campon as it is now a new booking
+            first_campon.delete()
+
+        Notification.objects.notify(self.date, self.room)
+
+        return
+
+    def set_to_confirmed(self):
+        self.confirmed = True
+        self.save()
+
+
+def booking_key(val):
+    return val.id

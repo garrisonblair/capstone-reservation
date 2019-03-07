@@ -6,6 +6,7 @@ import {
   Icon,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 
 
 class UserInfo extends Component {
@@ -14,7 +15,7 @@ class UserInfo extends Component {
   }
 
   componentDidMount() {
-    api.getMyUser()
+    api.getUser(storage.getUser().id)
       .then((response) => {
         const { data: user } = response;
         console.log(user);

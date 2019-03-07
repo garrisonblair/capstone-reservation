@@ -3,6 +3,7 @@ import {
   Button, Icon, Table, TableBody, Segment,
 } from 'semantic-ui-react';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import GroupsRowItem from './GroupsRowItem';
 import GroupsModal from './GroupsModal';
 import './Groups.scss';
@@ -18,7 +19,7 @@ class Groups extends Component {
 
   componentDidMount() {
     this.syncGroups();
-    api.getMyUser()
+    api.getUser(storage.getUser().id)
       .then((r) => {
         if (r.status === 200) {
           this.setState({ myUserId: r.data.id });

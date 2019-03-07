@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Button } from 'semantic-ui-react';
+import { Table, Button, Icon } from 'semantic-ui-react';
 import BookerModal from './BookerModal';
 
 
@@ -31,14 +31,22 @@ class BookerRow extends Component {
         <Table.Cell textAlign="center">
           {`${booker.first_name} ${booker.last_name}`}
         </Table.Cell>
+        <Table.Cell textAlign="center">
+          {booker.email}
+        </Table.Cell>
+        <Table.Cell textAlign="center">
+          {booker.is_superuser ? <Icon name="check circle" color="green" /> : <Icon name="times circle" color="red" />}
+        </Table.Cell>
+        <Table.Cell textAlign="center">
+          {booker.is_staff ? <Icon name="check circle" color="green" /> : <Icon name="times circle" color="red" />}
+        </Table.Cell>
+        <Table.Cell textAlign="center">
+          {booker.is_active ? <Icon name="check circle" color="green" /> : <Icon name="times circle" color="red" />}
+        </Table.Cell>
         <Table.Cell>
           <Button icon="edit" className="edit-button" onClick={this.onClickEditButton} />
         </Table.Cell>
-        <BookerModal
-          show={openModal}
-          booker={booker}
-          onClose={this.closeModal}
-        />
+        {openModal ? <BookerModal show booker={booker} onClose={this.closeModal} /> : null}
       </Table.Row>
     );
   }

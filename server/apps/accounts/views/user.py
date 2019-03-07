@@ -4,29 +4,50 @@ from django.db.models import Q
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.pagination import LimitOffsetPagination
+from apps.util.AbstractPaginatedView import AbstractPaginatedView
 
 from apps.accounts.permissions.IsBooker import IsBooker
 from ..models.BookerProfile import BookerProfile
-from ..serializers.user import UserSerializer, BookerProfileSerializer
+from ..serializers.user import UserSerializer, BookerProfileSerializer, PublicUserSerializer
 from ..permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.util.PrivilegeCategoryManager import PrivilegeCategoryManager
 
 
-class UserList(ListAPIView):
-    permission_class = IsAuthenticated
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class UserList(ListAPIView, AbstractPaginatedView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = PublicUserSerializer
+    pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
-        search_term = self.request.query_params.get("search_text")
-        users = super(UserList, self).get_queryset()
+        users = User.objects.all()
+        keyword = self.request.query_params.get("search_term")
+        is_superuser = self.request.query_params.get("is_superuser")
+        is_staff = self.request.query_params.get("is_staff")
+        is_active = self.request.query_params.get("is_active")
 
-        if search_term is not None:
-            users = users.filter(Q(username__contains=search_term) |
-                                 Q(first_name__contains=search_term) |
-                                 Q(last_name__contains=search_term))
+        if keyword is not None:
+            users = users.filter(Q(username__contains=keyword) |
+                                 Q(first_name__contains=keyword) |
+                                 Q(last_name__contains=keyword) |
+                                 Q(email__contains=keyword))
+
+        if is_superuser is not None:
+            users = users.filter(is_superuser=is_superuser)
+
+        if is_staff is not None:
+            users = users.filter(is_staff=is_staff)
+
+        if is_active is not None:
+            users = users.filter(is_active=is_active)
+
+        if self.request.user.is_superuser:
+            self.serializer_class = UserSerializer
+        else:
+            self.serializer_class = PublicUserSerializer
 
         return users
 
@@ -48,8 +69,19 @@ class BookerList(ListAPIView):
         return qs
 
 
-class UserUpdate(APIView):
+class UserRetrieveUpdate(APIView):
     permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
+
+    def get(self, request, pk):
+        user = None
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Check permissions
+        self.check_object_permissions(request, user)
+        return Response(UserSerializer(user).data)
 
     def patch(self, request, pk):
         username = request.data.get('username')
@@ -61,8 +93,9 @@ class UserUpdate(APIView):
         is_staff = request.data.get('is_staff')
         is_superuser = request.data.get('is_superuser')
         booker_id = request.data.get('booker_id')
-
         secondary_email = request.data.get('secondary_email')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
 
         user = None
         try:
@@ -85,8 +118,15 @@ class UserUpdate(APIView):
         if password:
             user.password = make_password(password)  # Hash password
 
+        if old_password and not user.check_password(old_password):
+            print("WRONG OLD PASSWORD")
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if old_password and new_password:
+            user.password = make_password(new_password)
+
         booker = BookerProfile.objects.get(user_id=user.id)
-        # Add booker ID only if it's a new user
+
         if booker_id:
             booker.booker_id = booker_id
 

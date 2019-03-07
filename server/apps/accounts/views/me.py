@@ -9,14 +9,6 @@ from apps.accounts.serializers.user import UserSerializer
 from apps.accounts.models.User import User
 
 
-class MyUser(APIView):
-    permission_classes = (IsAuthenticated, )
-
-    def get(self, request, format=None):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
-
-
 class MyPrivileges(APIView):
     permission_classes = (IsAuthenticated, IsBooker)
 

@@ -1,0 +1,65 @@
+#notification-modal{
+  .label{
+    font-weight: bold;
+    font-size: 15px;
+  }
+  .top-grid{
+    display: grid;
+    grid-template-rows: auto, auto;
+  }
+  .grid-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    margin-right: 10%;
+    margin-left: 10%;
+  }
+  label{
+    margin-bottom: 8px;
+  }
+  .room-title{
+    margin-bottom: 9px;
+  }
+
+  .min-booking-time{
+    .label{
+      margin-right: 4px;
+      margin-left: 4px;
+    }
+    .hour-label{
+      margin-left: 4px;
+      margin-right: 4px;
+    }
+    .time-input{
+      max-width: 75px;
+    }
+  }
+  .buttons-field{
+    margin-top: 9px;
+  }
+
+  .segment__grid {
+    // background-color: #932439 !important;
+    padding: 2px !important;
+    border-radius: 5px !important;
+    &.top {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      .segment {
+        margin: 0 2px;
+      }
+    }
+    &.middle {
+      grid-template-columns: 1fr;
+      .segment {
+        margin: 0 2px;
+      }
+    }
+    &.bottom {
+      display: grid;
+      grid-template-columns: 1fr;
+      .segment {
+        margin: 0 2px;
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from ..models.User import User
+from ..serializers.privilege_category import ReadPrivilegeCategorySerializer
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
@@ -24,7 +25,9 @@ class PrivilegeCategoriesAssignSingleAutomatic(APIView):
         manager = PrivilegeCategoryManager()
         manager.assign_booker_privileges(user)
 
-        return Response(status=status.HTTP_200_OK)
+        serializer = ReadPrivilegeCategorySerializer(user.bookerprofile.privilege_categories, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class PrivilegeCategoriesAssignAllAutomatic(APIView):
@@ -76,6 +79,7 @@ class PrivilegeCategoriesRemoveManual(APIView):
 
         try:
             privilege_category = PrivilegeCategory.objects.get(id=category_id)
+            default_category = PrivilegeCategory.objects.get(is_default=True)
         except PrivilegeCategory.DoesNotExist:
             return Response("Privilege category does not exist", status=status.HTTP_400_BAD_REQUEST)
 
@@ -86,6 +90,8 @@ class PrivilegeCategoriesRemoveManual(APIView):
             try:
                 user = user_qs.get(id=user_id)
                 user.bookerprofile.privilege_categories.remove(privilege_category)
+                if user.bookerprofile.privilege_categories.count() is 0:
+                    user.bookerprofile.privilege_categories.add(default_category)
             except User.DoesNotExist:
                 ids_do_not_exist.append(user_id)
 
