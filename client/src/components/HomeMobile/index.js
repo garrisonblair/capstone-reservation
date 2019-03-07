@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import { Button } from 'semantic-ui-react';
+
 
 class HomeMobile extends Component {
   componentDidMount = () => {
@@ -8,7 +10,10 @@ class HomeMobile extends Component {
 
   render() {
     return (
-      <h1> Mobile Home </h1>
+      <div>
+        <h1> Mobile Home </h1>
+        <Button> My Button </Button>
+      </div>
     );
   }
 }
