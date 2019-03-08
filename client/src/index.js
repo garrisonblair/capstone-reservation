@@ -4,7 +4,7 @@ import ReactGA from 'react-ga';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import settings from './config/settings';
 import Home from './components/Home';
-import HomeMobile from './components/HomeMobile';
+import HomeMobile from './components/Mobile/Home';
 import HomeDisplay from './components/HomeDisplay';
 import NotFound from './components/NotFound';
 import Registration from './components/Registration';

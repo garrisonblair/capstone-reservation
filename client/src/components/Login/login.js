@@ -99,12 +99,9 @@ class LoginComponent extends Component {
             Login
           </Button>
         </Form.Field>
-        {/* </Form> */}
         <Form.Field>
-          {/* <Link className="ui button" to="/registration">Register?</Link> */}
           <Button fluid size="small" onClick={() => { const { history } = this.props; history.push('/registration'); }}> Register </Button>
         </Form.Field>
-        <div className="ui divider" />
       </Modal.Description>
     );
   }
