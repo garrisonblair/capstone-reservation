@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import {
   Button,
@@ -35,6 +36,7 @@ class LoginComponent extends Component {
   handleLogin = () => {
     // eslint-disable-next-line react/prop-types
     const { username, password } = this.state;
+    const { onSuccess } = this.props;
 
     api.login(username, password)
       .then(response => response.data)
@@ -48,6 +50,7 @@ class LoginComponent extends Component {
           showConfirmButton: false,
           timer: 2000,
         });
+        onSuccess();
       })
       .catch(() => {
         sweetAlert.fire({
@@ -106,5 +109,13 @@ class LoginComponent extends Component {
     );
   }
 }
+
+LoginComponent.propTypes = {
+  onSuccess: PropTypes.func,
+};
+
+LoginComponent.defaultProps = {
+  onSuccess: () => {},
+};
 
 export default withRouter(LoginComponent);
