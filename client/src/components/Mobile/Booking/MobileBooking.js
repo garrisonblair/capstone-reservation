@@ -182,6 +182,9 @@ class MobileBooking extends Component {
       selectedRoom,
       date,
     } = this.state;
+    const {
+      finishBooking,
+    } = this.props;
     const data = {
       room: selectedRoom,
       date,
@@ -202,6 +205,7 @@ class MobileBooking extends Component {
           showConfirmButton: false,
           timer: 2000,
         });
+        finishBooking();
       })
       .catch((error) => {
         sweetAlert.fire({
@@ -235,6 +239,10 @@ class MobileBooking extends Component {
       rooms,
     } = this.state;
 
+    const {
+      finishBooking,
+    } = this.props;
+
     return (
       <div>
         <h3> Room </h3>
@@ -246,8 +254,8 @@ class MobileBooking extends Component {
           defaultValue="room"
         />
         <div>
+          <Button content="Cancel" secondary onClick={finishBooking} />
           <Button content="Reserve" primary onClick={this.handleSubmit} />
-          <Button content="Cancel" secondary onClick={this.handleSubmit} />
         </div>
       </div>
     );
@@ -265,6 +273,9 @@ class MobileBooking extends Component {
       reservationProfiles,
       roomsUpdated,
     } = this.state;
+    const {
+      finishBooking,
+    } = this.props;
 
     return (
       <div>
@@ -328,6 +339,7 @@ class MobileBooking extends Component {
         <Button content="Find Rooms" primary onClick={this.handleFindRooms} />
         <div>
           {roomsUpdated ? this.renderBookingConfirmation() : null}
+          {roomsUpdated ? null : <Button content="Cancel" secondary onClick={finishBooking} />}
         </div>
       </div>
     );
@@ -338,6 +350,7 @@ MobileBooking.propTypes = {
   minHour: PropTypes.number,
   maxHour: PropTypes.number,
   minuteInterval: PropTypes.number,
+  finishBooking: PropTypes.func.isRequired,
 };
 
 MobileBooking.defaultProps = {

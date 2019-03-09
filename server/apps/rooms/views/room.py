@@ -26,7 +26,7 @@ class RoomList(APIView):
                 date = datetime.strptime(date, "%Y-%m-%d").date()
                 start_time = datetime.strptime(start_time, "%H:%M").time()
                 end_time = datetime.strptime(end_time, "%H:%M").time()
-            except (ValueError, TypeError) as error:
+            except (ValueError, TypeError):
                 error_msg = "Invalid parameters, please input parameters in the YYYY-MM-DD HH:mm format"
                 return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
 
