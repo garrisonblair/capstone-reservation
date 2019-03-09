@@ -20,6 +20,7 @@ class MobileBooking extends Component {
     hourOptions: [],
     ownerValue: 'me',
     reservationProfiles: [],
+    canSubmit: false,
   }
 
   componentWillMount() {
@@ -169,8 +170,13 @@ class MobileBooking extends Component {
   }
 
   handleRoomChange = (e, { value }) => {
+    let canSubmit = true;
+    if (value === 'room') {
+      canSubmit = false;
+    }
     this.setState({
       selectedRoom: value,
+      canSubmit,
     });
   }
 
@@ -257,6 +263,7 @@ class MobileBooking extends Component {
   renderBookingConfirmation() {
     const {
       rooms,
+      canSubmit,
     } = this.state;
 
     const {
@@ -275,7 +282,7 @@ class MobileBooking extends Component {
         />
         <div>
           <Button content="Cancel" secondary onClick={finishBooking} />
-          <Button content="Reserve" primary onClick={this.handleSubmit} />
+          {canSubmit ? <Button content="Reserve" primary onClick={this.handleSubmit} /> : null }
         </div>
       </div>
     );
