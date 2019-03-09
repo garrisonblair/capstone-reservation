@@ -27,13 +27,16 @@ class RoomList(APIView):
                 start_time = datetime.strptime(start_time, "%H:%M").time()
                 end_time = datetime.strptime(end_time, "%H:%M").time()
             except (ValueError, TypeError) as error:
-                print(error)
                 error_msg = "Invalid parameters, please input parameters in the YYYY-MM-DD HH:mm format"
                 return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
 
-            for room in qs:
+            if end_time < start_time:
+                error_msg = "Invalid times: start time must be before end time"
+                return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
+
+            for room in qs.all():
                 if not room.is_available(date, start_time, end_time):
-                    qs.exclude(room)
+                    qs = qs.exclude(id=room.id)
 
             if qs.count() == 0:
                 return Response("No available rooms", status=status.HTTP_404_NOT_FOUND)

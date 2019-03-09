@@ -68,8 +68,9 @@ class RoomAPITest(TestCase):
     def testGetRoomsAtDateTime(self):
         request = self.factory.get("/rooms",
                                    {
-                                       "start_date_time": '2018-10-22 11:00',
-                                       "end_date_time": '2018-10-22 17:00'
+                                       "date": '2018-10-22',
+                                       "start_time": '11:00',
+                                       "end_time": '17:00'
                                    }, format="json")
 
         response = RoomList.as_view()(request)
@@ -88,8 +89,9 @@ class RoomAPITest(TestCase):
     def testGetRoomsInvalidRequestEndBeforeStart(self):
         request = self.factory.get("/rooms",
                                    {
-                                       "start_date_time": '2018-10-22 17:00',
-                                       "end_date_time": '2018-10-22 11:00'
+                                       "date": '2018-10-22',
+                                       "start_time": '17:00',
+                                       "end_time": '11:00'
                                    }, format="json")  # start time after end time
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -101,39 +103,12 @@ class RoomAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, error_msg)
 
-    def testGetRoomsInvalidRequestMissingLastParam(self):
-        request = self.factory.get("/rooms",
-                                   {
-                                       "start_date_time": '2018-10-22 11:00'
-                                   }, format="json")
-
-        response = RoomList.as_view()(request)
-
-        force_authenticate(request, user=User.objects.get(username="john"))
-
-        error_msg = "Invalid times: please supply a start time and an end time"
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, error_msg)
-
-    def testGetRoomsInvalidRequestMissingFirstParam(self):
-        request = self.factory.get("/rooms",
-                                   {
-                                       "end_date_time": '2018-10-22 17:00'
-                                   }, format="json")
-
-        response = RoomList.as_view()(request)
-
-        error_msg = "Invalid times: please supply a start time and an end time"
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, error_msg)
-
     def testGetRoomsInvalidRequestWrongParameterFormat(self):
         request = self.factory.get("/rooms",
                                    {
-                                       "start_date_time": 'AdhG4gf',
-                                       "end_date_time": '1234'
+                                       "date": 'monday',
+                                       "start_time": 'AdhG4gf',
+                                       "end_time": '1234'
                                    }, format="json")
 
         response = RoomList.as_view()(request)
