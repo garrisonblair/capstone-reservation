@@ -106,7 +106,7 @@ class MobileBooking extends Component {
           position: 'top',
           type: 'warning',
           title: 'No rooms found',
-          text: `${error.message}`,
+          text: `${error.response.data}`,
           confirmButtonText: 'NO',
           cancelButtonText: 'NO',
           showCancelButton: false,
