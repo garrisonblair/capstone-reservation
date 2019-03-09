@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Form } from 'semantic-ui-react';
 import storage from '../../../utils/local-storage';
 import LoginComponent from '../../Login/login';
+import MobileBooking from '../Booking/MobileBooking';
+import withTracker from '../../HOC/withTracker';
 import './Home.scss';
 
 
@@ -19,9 +20,12 @@ class HomeMobile extends Component {
         <h1> Capstone Reservation </h1>
         { user ? null : <LoginComponent /> }
         <Link to="/?forceDesktop=true">Calendar/Desktop version</Link>
+        <div>
+          <MobileBooking />
+        </div>
       </div>
     );
   }
 }
 
-export default HomeMobile;
+export default withTracker(HomeMobile);
