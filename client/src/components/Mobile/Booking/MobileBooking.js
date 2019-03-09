@@ -10,9 +10,9 @@ import api from '../../../utils/api';
 class MobileBooking extends Component {
   state = {
     date: '',
-    startHour: '8',
+    startHour: '9',
     startMinute: '00',
-    endHour: '8',
+    endHour: '9',
     endMinute: '30',
     selectedRoom: '',
     rooms: [],
@@ -27,9 +27,29 @@ class MobileBooking extends Component {
       minHour, maxHour, minuteInterval,
     } = this.props;
     this.setState({
+      date: this.generateDate(),
       hourOptions: this.generateHourOptions(minHour, maxHour),
       minuteOptions: this.generateMinuteOptions(minuteInterval),
     });
+    this.updateOwnerOptions();
+  }
+
+  generateDate = () => {
+    const today = new Date();
+    let month = '';
+    let day = '';
+    if (today.getMonth() + 1 > 9) {
+      month = `${today.getMonth() + 1}`;
+    } else {
+      month = `0${today.getMonth() + 1}`;
+    }
+    if (today.getDate() > 9) {
+      day = `${today.getDate()}`;
+    } else {
+      day = `0${today.getDate()}`;
+    }
+    const todayDate = `${today.getFullYear()}-${month}-${day}`;
+    return todayDate;
   }
 
   generateHourOptions = (minHour, maxHour) => {
@@ -91,7 +111,7 @@ class MobileBooking extends Component {
     const endTime = `${endHour}:${endMinute}`;
     api.getRoomsForDate(date, startTime, endTime)
       .then((response) => {
-        const availableRooms = [];
+        const availableRooms = [{ key: 'room', value: 'room', text: 'Select Room' }];
         // eslint-disable-next-line array-callback-return
         response.data.map((g) => {
           availableRooms.push({ key: g.id, value: g.id, text: `${g.name} (room)` });
