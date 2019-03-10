@@ -11,10 +11,19 @@ import './Home.scss';
 class HomeMobile extends Component {
   state = {
     createBooking: false,
+    isLoggedIn: false,
   }
 
   componentDidMount = () => {
     document.title = 'Home';
+    const user = storage.getUser();
+    let isLoggedIn = false;
+    if (user) {
+      isLoggedIn = true;
+    }
+    this.setState({
+      isLoggedIn,
+    });
   }
 
   handleMakeBooking = () => {
@@ -29,22 +38,46 @@ class HomeMobile extends Component {
     });
   }
 
-  render() {
-    const user = storage.getUser();
+  onSuccess = () => {
+    this.setState({
+      isLoggedIn: true,
+    });
+  }
+
+  renderLoggedInDashboard() {
     const {
       createBooking,
     } = this.state;
 
     return (
+      <div>
+        { createBooking ? <MobileBooking finishBooking={this.finishBooking} /> : null }
+      </div>
+    );
+  }
+
+  render() {
+    const {
+      createBooking,
+      isLoggedIn,
+    } = this.state;
+
+    return (
       <div className="mobileLogin__container">
-        <h1> Capstone Reservation </h1>
-        { user ? null : <LoginComponent /> }
-        <div>
-          <Button>
-            <Link to="/?forceDesktop=true">Calendar/Desktop version</Link>
-          </Button>
-          { createBooking ? null : <Button content="Create Booking" primary onClick={this.handleMakeBooking} /> }
-          { createBooking ? <MobileBooking finishBooking={this.finishBooking} /> : null }
+        <div className="mobileLogin__top">
+          <h1 className="topBar"><center> Capstone Rooms </center></h1>
+          { isLoggedIn ? null : <LoginComponent onSuccess={this.onSuccess} /> }
+          <div>
+            <center>
+              <Link to="/?forceDesktop=true">
+                <Button className="desktopButton"> Calendar/Desktop version </Button>
+              </Link>
+              { createBooking ? null : <Button className="mainButton book" content="Create Booking" primary onClick={this.handleMakeBooking} /> }
+            </center>
+          </div>
+        </div>
+        <div className="mobileLogin__body">
+          { isLoggedIn ? this.renderLoggedInDashboard() : null }
         </div>
       </div>
     );

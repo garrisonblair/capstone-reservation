@@ -1,5 +1,25 @@
 .mobileLogin {
   &__container {
     padding: 10px;
+    background-color: #2D2D2D;
+  }
+  &__top {
+    background-color: #2D2D2D;
+    color: white;
+    padding-bottom: 10px;
+  }
+  &__body {
+    background-color: #F2D692;
+    border-radius: 5px;
+    padding: 10px;
+  }
+}
+.desktopButton {
+  width: 58%;
+}
+.mainButton {
+  background-color: #932439 !important;
+  &book {
+    width: 38%;
   }
 }

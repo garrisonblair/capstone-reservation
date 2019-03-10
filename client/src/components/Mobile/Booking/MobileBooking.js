@@ -272,7 +272,7 @@ class MobileBooking extends Component {
 
     return (
       <div>
-        <h3> Room </h3>
+        <h3 className="header--inline"> Room </h3>
         <Dropdown
           selection
           onChange={this.handleRoomChange}
@@ -307,64 +307,90 @@ class MobileBooking extends Component {
     return (
       <div>
         <h1> Book Room </h1>
-        <h3> Date </h3>
-        <Input
-          size="small"
-          icon="user"
-          type="date"
-          id="startDateOption0"
-          iconPosition="left"
-          value={date}
-          onChange={this.handleDateChange}
-        />
-        <h3> From </h3>
-        <Dropdown
-          selection
-          compact
-          placeholder="hh"
-          className="dropdown--fixed-width"
-          options={hourOptions}
-          defaultValue={startHour}
-          onChange={this.handleStartHourChange}
-        />
-        <Dropdown
-          selection
-          compact
-          placeholder="mm"
-          className="dropdown--fixed-width"
-          options={minuteOptions}
-          defaultValue={startMinute}
-          onChange={this.handleStartMinuteChange}
-        />
-        <h3> To </h3>
-        <Dropdown
-          selection
-          compact
-          className="dropdown--fixed-width"
-          placeholder="hh"
-          options={hourOptions}
-          defaultValue={endHour}
-          onChange={this.handleEndHourChange}
-        />
-        <Dropdown
-          selection
-          compact
-          className="dropdown--fixed-width"
-          placeholder="mm"
-          options={minuteOptions}
-          defaultValue={endMinute}
-          onChange={this.handleEndMinuteChange}
-        />
-        <h3> By </h3>
-        <Dropdown
-          selection
-          onChange={this.handleOwnerChange}
-          className="dropdown--fixed-width"
-          options={reservationProfiles.length === 0 ? [{ key: 'me', value: 'me', text: 'me' }] : reservationProfiles}
-          defaultValue="me"
-        />
-        <Button content="Find Rooms" primary onClick={this.handleFindRooms} />
+        <table className="input--table">
+          <tbody>
+            <tr>
+              <td className="line--name">
+                <h3 className="header--inline"> Date </h3>
+              </td>
+              <td className="line--input">
+                <Input
+                  size="small"
+                  type="date"
+                  id="startDateOption0"
+                  value={date}
+                  onChange={this.handleDateChange}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className="line--name">
+                <h3 className="header--inline"> Start Time </h3>
+              </td>
+              <td className="line--input">
+                <Dropdown
+                  selection
+                  compact
+                  placeholder="hh"
+                  className="dropdown--fixed-width"
+                  options={hourOptions}
+                  defaultValue={startHour}
+                  onChange={this.handleStartHourChange}
+                />
+                <Dropdown
+                  selection
+                  compact
+                  placeholder="mm"
+                  className="dropdown--fixed-width"
+                  options={minuteOptions}
+                  defaultValue={startMinute}
+                  onChange={this.handleStartMinuteChange}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className="line--name">
+                <h3 className="header--inline"> End Time </h3>
+              </td>
+              <td className="line--input">
+                <Dropdown
+                  selection
+                  compact
+                  className="dropdown--fixed-width"
+                  placeholder="hh"
+                  options={hourOptions}
+                  defaultValue={endHour}
+                  onChange={this.handleEndHourChange}
+                />
+                <Dropdown
+                  selection
+                  compact
+                  className="dropdown--fixed-width"
+                  placeholder="mm"
+                  options={minuteOptions}
+                  defaultValue={endMinute}
+                  onChange={this.handleEndMinuteChange}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className="line--name">
+                <h3 className="header--inline"> By </h3>
+              </td>
+              <td className="line--input">
+                <Dropdown
+                  selection
+                  onChange={this.handleOwnerChange}
+                  className="dropdown--fixed-width"
+                  options={reservationProfiles.length === 0 ? [{ key: 'me', value: 'me', text: 'me' }] : reservationProfiles}
+                  defaultValue="me"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <div>
+          <center><Button content="Find Rooms" primary onClick={this.handleFindRooms} /></center>
           {roomsUpdated ? this.renderBookingConfirmation() : null}
           {roomsUpdated ? null : <Button content="Cancel" secondary onClick={finishBooking} />}
         </div>
