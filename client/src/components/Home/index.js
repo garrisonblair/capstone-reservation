@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { isMobile } from 'react-device-detect';
+import { isMobileOnly } from 'react-device-detect';
 import withTracker from '../HOC/withTracker';
 import Calendar from '../Calendar';
 import './Home.scss';
@@ -28,7 +28,7 @@ class Home extends Component {
       return params;
     }, {});
 
-    if (isMobile && !queryParams.forceDesktop) {
+    if (isMobileOnly && !queryParams.forceDesktop) {
       history.push('/mobile_home');
     }
   }
