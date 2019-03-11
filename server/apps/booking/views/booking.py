@@ -152,7 +152,9 @@ class BookingRetrieveUpdateDestroy(APIView):
         settings = SystemSettings.get_settings()
         timeout = (now + settings.booking_edit_lock_timeout).time()
 
-        # time = datetime.datetime.strptime(data["start_time"], "%H:%M").time()
+        if data["note"] is None:
+            data["show_note_on_calendar"] = False
+            data["display_note"] = False
 
         if "start_time" in data:
             if not datetime.datetime.strptime(data["start_time"], "%H:%M").time() == booking.start_time:
