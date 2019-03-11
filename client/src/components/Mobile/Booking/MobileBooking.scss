@@ -4,13 +4,11 @@
   border-radius: 5px;
   margin-bottom: 5px !important;
 }
+.table--container {
+  margin-bottom: 5px;
+}
 .header--inline {
   display: inline-block;
-  color: #4D4D4D;
-}
-.header--inline-rooms {
-  display: inline-block;
-  margin-right: 60px;
   color: #4D4D4D;
 }
 .dropdown--fixed-width {
@@ -20,11 +18,7 @@
   table-layout: fixed;
   min-width: 100%;
 }
-.booking--rooms {
-  margin-bottom: 10px;
-}
 .button--rooms {
-  margin-top: 3px !important;
   margin-bottom: 5px !important;
 }
 .button--reserve {

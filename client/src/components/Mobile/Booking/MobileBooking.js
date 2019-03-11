@@ -266,9 +266,31 @@ class MobileBooking extends Component {
     this.sendPostRequestBooking();
   }
 
-  renderBookingConfirmation() {
+  renderRoomSelection() {
     const {
       rooms,
+    } = this.state;
+
+    return (
+      <tr>
+        <td>
+          <h3 className="header--inline"> Room </h3>
+        </td>
+        <td>
+          <Dropdown
+            selection
+            onChange={this.handleRoomChange}
+            className="dropdown--fixed-width"
+            options={rooms.length === 0 ? [{ key: 'room', value: 'room', text: 'room' }] : rooms}
+            defaultValue="room"
+          />
+        </td>
+      </tr>
+    );
+  }
+
+  renderBookingConfirmation() {
+    const {
       canSubmit,
     } = this.state;
 
@@ -278,16 +300,6 @@ class MobileBooking extends Component {
 
     return (
       <div className="booking--confirmation">
-        <div className="booking--rooms">
-          <h3 className="header--inline-rooms"> Room </h3>
-          <Dropdown
-            selection
-            onChange={this.handleRoomChange}
-            className="dropdown--fixed-width"
-            options={rooms.length === 0 ? [{ key: 'room', value: 'room', text: 'room' }] : rooms}
-            defaultValue="room"
-          />
-        </div>
         <div className="booking--confirmation buttons">
           <Button className="button--cancel" content="Cancel" secondary onClick={finishBooking} />
           {canSubmit ? <Button className="button--reserve" content="Reserve" primary onClick={this.handleSubmit} /> : null }
@@ -315,90 +327,93 @@ class MobileBooking extends Component {
     return (
       <div>
         <center><h1 className="booking--header"> Book Room </h1></center>
-        <table className="input--table">
-          <tbody>
-            <tr>
-              <td>
-                <h3 className="header--inline"> Date </h3>
-              </td>
-              <td>
-                <Input
-                  size="small"
-                  type="date"
-                  id="mobileDate"
-                  value={date}
-                  onChange={this.handleDateChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <h3 className="header--inline"> Start Time </h3>
-              </td>
-              <td>
-                <Dropdown
-                  selection
-                  compact
-                  placeholder="hh"
-                  className="dropdown--fixed-width"
-                  options={hourOptions}
-                  defaultValue={startHour}
-                  onChange={this.handleStartHourChange}
-                />
-                <Dropdown
-                  selection
-                  compact
-                  placeholder="mm"
-                  className="dropdown--fixed-width"
-                  options={minuteOptions}
-                  defaultValue={startMinute}
-                  onChange={this.handleStartMinuteChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <h3 className="header--inline"> End Time </h3>
-              </td>
-              <td>
-                <Dropdown
-                  selection
-                  compact
-                  className="dropdown--fixed-width"
-                  placeholder="hh"
-                  options={hourOptions}
-                  defaultValue={endHour}
-                  onChange={this.handleEndHourChange}
-                />
-                <Dropdown
-                  selection
-                  compact
-                  className="dropdown--fixed-width"
-                  placeholder="mm"
-                  options={minuteOptions}
-                  defaultValue={endMinute}
-                  onChange={this.handleEndMinuteChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <h3 className="header--inline"> By </h3>
-              </td>
-              <td>
-                <Dropdown
-                  selection
-                  onChange={this.handleOwnerChange}
-                  className="dropdown--fixed-width"
-                  options={reservationProfiles.length === 0 ? [{ key: 'me', value: 'me', text: 'me' }] : reservationProfiles}
-                  defaultValue="me"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="table--container">
+          <table className="input--table">
+            <tbody>
+              <tr>
+                <td>
+                  <h3 className="header--inline"> Date </h3>
+                </td>
+                <td>
+                  <Input
+                    size="small"
+                    type="date"
+                    id="mobileDate"
+                    value={date}
+                    onChange={this.handleDateChange}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h3 className="header--inline"> Start Time </h3>
+                </td>
+                <td>
+                  <Dropdown
+                    selection
+                    compact
+                    placeholder="hh"
+                    className="dropdown--fixed-width"
+                    options={hourOptions}
+                    defaultValue={startHour}
+                    onChange={this.handleStartHourChange}
+                  />
+                  <Dropdown
+                    selection
+                    compact
+                    placeholder="mm"
+                    className="dropdown--fixed-width"
+                    options={minuteOptions}
+                    defaultValue={startMinute}
+                    onChange={this.handleStartMinuteChange}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h3 className="header--inline"> End Time </h3>
+                </td>
+                <td>
+                  <Dropdown
+                    selection
+                    compact
+                    className="dropdown--fixed-width"
+                    placeholder="hh"
+                    options={hourOptions}
+                    defaultValue={endHour}
+                    onChange={this.handleEndHourChange}
+                  />
+                  <Dropdown
+                    selection
+                    compact
+                    className="dropdown--fixed-width"
+                    placeholder="mm"
+                    options={minuteOptions}
+                    defaultValue={endMinute}
+                    onChange={this.handleEndMinuteChange}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h3 className="header--inline"> By </h3>
+                </td>
+                <td>
+                  <Dropdown
+                    selection
+                    onChange={this.handleOwnerChange}
+                    className="dropdown--fixed-width"
+                    options={reservationProfiles.length === 0 ? [{ key: 'me', value: 'me', text: 'me' }] : reservationProfiles}
+                    defaultValue="me"
+                  />
+                </td>
+              </tr>
+              {roomsUpdated ? this.renderRoomSelection() : null}
+            </tbody>
+          </table>
+        </div>
         <div>
-          <center><Button className="button--rooms" content="Find Rooms" primary onClick={this.handleFindRooms} /></center>
+          {roomsUpdated ? null : <center><Button className="button--rooms" content="Find Rooms" primary onClick={this.handleFindRooms} /></center>}
           {roomsUpdated ? this.renderBookingConfirmation() : null}
           {roomsUpdated ? null : <Button className="button--cancel" content="Cancel" secondary onClick={finishBooking} />}
         </div>
