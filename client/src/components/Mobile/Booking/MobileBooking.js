@@ -5,6 +5,7 @@ import { Dropdown, Input, Button } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import withTracker from '../../HOC/withTracker';
 import api from '../../../utils/api';
+import './MobileBooking.scss';
 
 
 class MobileBooking extends Component {
@@ -271,18 +272,20 @@ class MobileBooking extends Component {
     } = this.props;
 
     return (
-      <div>
-        <h3 className="header--inline"> Room </h3>
-        <Dropdown
-          selection
-          onChange={this.handleRoomChange}
-          className="dropdown--fixed-width"
-          options={rooms.length === 0 ? [{ key: 'room', value: 'room', text: 'room' }] : rooms}
-          defaultValue="room"
-        />
-        <div>
-          <Button content="Cancel" secondary onClick={finishBooking} />
-          {canSubmit ? <Button content="Reserve" primary onClick={this.handleSubmit} /> : null }
+      <div className="booking--confirmation">
+        <div className="booking--rooms">
+          <h3 className="header--inline-rooms"> Room </h3>
+          <Dropdown
+            selection
+            onChange={this.handleRoomChange}
+            className="dropdown--fixed-width"
+            options={rooms.length === 0 ? [{ key: 'room', value: 'room', text: 'room' }] : rooms}
+            defaultValue="room"
+          />
+        </div>
+        <div className="booking--confirmation buttons">
+          <Button className="button--cancel" content="Cancel" secondary onClick={finishBooking} />
+          {canSubmit ? <Button className="button--reserve" content="Reserve" primary onClick={this.handleSubmit} /> : null }
         </div>
       </div>
     );
@@ -306,28 +309,28 @@ class MobileBooking extends Component {
 
     return (
       <div>
-        <h1> Book Room </h1>
+        <center><h1 className="booking--header"> Book Room </h1></center>
         <table className="input--table">
           <tbody>
             <tr>
-              <td className="line--name">
+              <td>
                 <h3 className="header--inline"> Date </h3>
               </td>
-              <td className="line--input">
+              <td>
                 <Input
                   size="small"
                   type="date"
-                  id="startDateOption0"
+                  id="mobileDate"
                   value={date}
                   onChange={this.handleDateChange}
                 />
               </td>
             </tr>
             <tr>
-              <td className="line--name">
+              <td>
                 <h3 className="header--inline"> Start Time </h3>
               </td>
-              <td className="line--input">
+              <td>
                 <Dropdown
                   selection
                   compact
@@ -349,10 +352,10 @@ class MobileBooking extends Component {
               </td>
             </tr>
             <tr>
-              <td className="line--name">
+              <td>
                 <h3 className="header--inline"> End Time </h3>
               </td>
-              <td className="line--input">
+              <td>
                 <Dropdown
                   selection
                   compact
@@ -374,10 +377,10 @@ class MobileBooking extends Component {
               </td>
             </tr>
             <tr>
-              <td className="line--name">
+              <td>
                 <h3 className="header--inline"> By </h3>
               </td>
-              <td className="line--input">
+              <td>
                 <Dropdown
                   selection
                   onChange={this.handleOwnerChange}
@@ -390,9 +393,9 @@ class MobileBooking extends Component {
           </tbody>
         </table>
         <div>
-          <center><Button content="Find Rooms" primary onClick={this.handleFindRooms} /></center>
+          <center><Button className="button--rooms" content="Find Rooms" primary onClick={this.handleFindRooms} /></center>
           {roomsUpdated ? this.renderBookingConfirmation() : null}
-          {roomsUpdated ? null : <Button content="Cancel" secondary onClick={finishBooking} />}
+          {roomsUpdated ? null : <Button className="button--cancel" content="Cancel" secondary onClick={finishBooking} />}
         </div>
       </div>
     );

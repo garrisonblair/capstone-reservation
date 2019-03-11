@@ -1,6 +1,17 @@
+.booking--header {
+  background-color: #FFECBF;
+  color: #4D4D4D;
+  border-radius: 5px;
+  margin-bottom: 5px !important;
+}
 .header--inline {
   display: inline-block;
-  margin-right: 500px;
+  color: #4D4D4D;
+}
+.header--inline-rooms {
+  display: inline-block;
+  margin-right: 60px;
+  color: #4D4D4D;
 }
 .dropdown--fixed-width {
   width: 80px;
@@ -9,9 +20,23 @@
   table-layout: fixed;
   min-width: 100%;
 }
-.line--name {
-  align-items: center;
+.booking--rooms {
+  margin-bottom: 10px;
 }
-.line--input {
-  align-items: center;
+.button--rooms {
+  margin-top: 3px !important;
+  margin-bottom: 5px !important;
+}
+.button--reserve {
+  float: right;
+}
+.button--cancel {
+  background-color: #FFECBF !important;
+  color: #f44336 !important;
+  border-color: #f44336 !important;
+  border: 2px solid #f44336 !important;
+}
+.button--cancel:hover {
+  background-color: #f44336 !important;
+  color: white !important;
 }
