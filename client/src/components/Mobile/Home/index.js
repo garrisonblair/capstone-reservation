@@ -44,14 +44,31 @@ class HomeMobile extends Component {
     });
   }
 
-  renderLoggedInDashboard() {
+  renderCreateBooking() {
+    return (
+      <div className="mobileLogin__body">
+        <MobileBooking finishBooking={this.finishBooking} />
+      </div>
+    );
+  }
+
+  renderMobileDashboard = () => (
+    <div>
+      {null}
+    </div>
+  )
+
+  renderLoggedInPage() {
     const {
       createBooking,
     } = this.state;
 
     return (
       <div>
-        { createBooking ? <MobileBooking finishBooking={this.finishBooking} /> : null }
+        {createBooking ? this.renderCreateBooking() : null}
+        <div>
+          {this.renderMobileDashboard()}
+        </div>
       </div>
     );
   }
@@ -76,8 +93,8 @@ class HomeMobile extends Component {
             </center>
           </div>
         </div>
-        <div className="mobileLogin__body">
-          { isLoggedIn ? this.renderLoggedInDashboard() : null }
+        <div>
+          { isLoggedIn ? this.renderLoggedInPage() : null }
         </div>
       </div>
     );
