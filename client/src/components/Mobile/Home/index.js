@@ -70,7 +70,7 @@ class HomeMobile extends Component {
           <div>
             <center>
               <Link to="/?forceDesktop=true">
-                <Button className="desktopButton"> Calendar/Desktop version </Button>
+                <Button className="desktopButton"> Calendar </Button>
               </Link>
               { createBooking ? null : <Button className="mainButton book" content="Create Booking" primary onClick={this.handleMakeBooking} /> }
             </center>
