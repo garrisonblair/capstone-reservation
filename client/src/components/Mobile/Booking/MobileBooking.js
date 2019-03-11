@@ -139,35 +139,40 @@ class MobileBooking extends Component {
   handleDateChange = (e, { value }) => {
     this.setState({
       date: value,
+      roomsUpdated: false,
     });
   }
 
   handleStartHourChange = (e, { value }) => {
     this.setState({
       startHour: value,
+      roomsUpdated: false,
     });
   }
 
   handleStartMinuteChange = (e, { value }) => {
     this.setState({
       startMinute: value,
+      roomsUpdated: false,
     });
   }
 
   handleEndHourChange = (e, { value }) => {
     this.setState({
       endHour: value,
+      roomsUpdated: false,
     });
-  }
-
-  handleOwnerChange = (e, { value }) => {
-    this.setState({ ownerValue: value });
   }
 
   handleEndMinuteChange = (e, { value }) => {
     this.setState({
       endMinute: value,
+      roomsUpdated: false,
     });
+  }
+
+  handleOwnerChange = (e, { value }) => {
+    this.setState({ ownerValue: value });
   }
 
   handleRoomChange = (e, { value }) => {
