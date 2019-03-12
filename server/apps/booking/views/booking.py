@@ -152,7 +152,10 @@ class BookingRetrieveUpdateDestroy(APIView):
         settings = SystemSettings.get_settings()
         timeout = (now + settings.booking_edit_lock_timeout).time()
 
-        # time = datetime.datetime.strptime(data["start_time"], "%H:%M").time()
+        if "note" in data:
+            if data["note"] is None:
+                data["show_note_on_calendar"] = False
+                data["display_note"] = False
 
         if "start_time" in data:
             if not datetime.datetime.strptime(data["start_time"], "%H:%M").time() == booking.start_time:
@@ -208,18 +211,20 @@ class BookingViewMyBookings(APIView):
 
         bookings = dict()
 
+        now = datetime.datetime.now().date()
+
         # Obtain all standard_bookings, recurring_bookings, and campons for this booker
 
         standard_bookings = user.get_active_non_recurring_bookings()
-        recurring_bookings = RecurringBooking.objects.filter(booker=user)
-        campons = CampOn.objects.filter(booker=user)
+        recurring_bookings = RecurringBooking.objects.filter(booker=user, end_date__gte=now)
+        campons = CampOn.objects.filter(booker=user, camped_on_booking__date__gte=now)
 
         # Insert standard_bookings and recurring_bookings made by groups that user is in
         for group in user.group_set.all():
             group_standard_bookings = group.get_active_non_recurring_bookings()
             standard_bookings = standard_bookings | group_standard_bookings
 
-            group_recurring_bookings = RecurringBooking.objects.filter(~Q(booker=user), group=group)
+            group_recurring_bookings = RecurringBooking.objects.filter(~Q(booker=user), group=group, end_date__gte=now)
             recurring_bookings = recurring_bookings | group_recurring_bookings
 
         # Add serialized lists of booking types to dictionary associated with type key

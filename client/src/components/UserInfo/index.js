@@ -18,7 +18,6 @@ class UserInfo extends Component {
     api.getUser(storage.getUser().id)
       .then((response) => {
         const { data: user } = response;
-        console.log(user);
         this.setState({ user });
       });
   }
