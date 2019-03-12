@@ -12,7 +12,6 @@ class SelectedDate extends Component {
   state = {
     focusDate: false,
     date: moment(),
-    update: false,
   }
 
   static getDerivedStateFromProps(props, state) {

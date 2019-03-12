@@ -100,9 +100,15 @@ class CampOns extends Component {
 }
 
 CampOns.propTypes = {
-  rooms: PropTypes.instanceOf(Object).isRequired,
-  allBookings: PropTypes.instanceOf(Object).isRequired,
-  campOns: PropTypes.instanceOf(Object).isRequired,
+  rooms: PropTypes.instanceOf(Object),
+  allBookings: PropTypes.instanceOf(Object),
+  campOns: PropTypes.instanceOf(Object),
+};
+
+CampOns.defaultProps = {
+  campOns: [],
+  rooms: [],
+  allBookings: [],
 };
 
 export default CampOns;
