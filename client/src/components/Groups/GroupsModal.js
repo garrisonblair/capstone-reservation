@@ -97,8 +97,6 @@ class GroupsModal extends Component {
         } else {
           sweetAlert(':(', 'Something went wrong. Please refresh.', 'error');
           this.setState({ isLoading: false });
-          // eslint-disable-next-line no-console
-          console.log(r);
         }
       });
   }
