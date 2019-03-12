@@ -30,6 +30,10 @@ class SystemSettings(models.Model):
     booking_time_to_expire_minutes = models.PositiveIntegerField(default=30)
     manual_booking_confirmation = models.BooleanField(default=False)
 
+    # Global email notification settings
+    booking_reminders_active = models.BooleanField(default=False)
+    default_time_to_notify_before_booking = models.DurationField(default=timedelta(days=1))
+
     tracker = FieldTracker()
 
     @staticmethod
