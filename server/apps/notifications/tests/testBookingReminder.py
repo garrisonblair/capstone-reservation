@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 from django.test import TestCase
 
-from ..models.BookingReminder import BookingReminder
+from apps.notifications.models.BookingReminder import BookingReminder
 
 from apps.booking.models.Booking import Booking
 from apps.accounts.models.User import User
