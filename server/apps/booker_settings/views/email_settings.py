@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from apps.booker_settings.models.EmailSettings import EmailSettings as EmailSettingsModel
 from apps.accounts.models.User import User
+from apps.booker_settings.serializers.booker_settings import EmailSettingsSerializer
 
 class EmailSettings(APIView):
     def patch(self, request):
@@ -15,5 +16,5 @@ class EmailSettings(APIView):
 
     def get(self, request):
         email_settings = EmailSettingsModel.objects.get(booker=request.user)
-        print(str(email_settings))
-        return Response(email_settings.when_booking,status=status.HTTP_200_OK)
+        serializer = EmailSettingsSerializer(email_settings)
+        return Response(serializer.data,status=status.HTTP_200_OK)
