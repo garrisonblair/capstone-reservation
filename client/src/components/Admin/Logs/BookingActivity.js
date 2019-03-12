@@ -9,6 +9,7 @@ import {
   Input,
   Button,
   Segment,
+  Grid,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import 'react-dates/initialize';
@@ -18,6 +19,7 @@ import moment from 'moment';
 import api from '../../../utils/api';
 import BookingActivityModal from './BookingActivityModal';
 import '../Admin.scss';
+import UserSearch from './../../ReusableComponents/UserSearch';
 
 class BookingActivity extends Component {
   static formatAction(flag) {
@@ -142,19 +144,13 @@ class BookingActivity extends Component {
     this.setState({ [change.name]: change.value !== '' ? change.value : null });
   }
 
-  // handleContentTypeSearch = (e, change) => {
-  //   this.setState({ })
-  //   api.getLogEntries(data)
-  //     .then((response) => {
-  //       if (response.status === 200) {
-  //         const logsToDisplay = this.setLogsToDisplay(response.data);
-  //         this.setState({ logs: response.data, logsToDisplay });
-  //       }
-  //     })
-  //     .catch(() => {
-  //       sweetAlert(':(', 'We are sorry. There was a problem getting the logs', 'error');
-  //     });
-  // }
+  handleUserSelect = (user) => {
+    if (user) {
+      this.setState({ userId: user.id });
+    } else {
+      this.setState({ userId: null});
+    }
+  }
 
   handleOnCloseBookingActivityModal = () => {
     this.setState({ showBookingActivityModal: false, selectedLog: null });
@@ -252,31 +248,54 @@ class BookingActivity extends Component {
 
     return (
       <div>
-        <div>
-          <SingleDatePicker
-            isOutsideRange={() => false}
-            numberOfMonths={1}
-            date={from}
-            onDateChange={date => this.setState({ from: date })}
-            focused={focusedFrom}
-            onFocusChange={({ focused }) => this.setState({ focusedFrom: focused })}
-            id="from"
-            placeholder="From"
-          />
-          <SingleDatePicker
-            isOutsideRange={() => false}
-            numberOfMonths={1}
-            date={to}
-            onDateChange={date => this.setState({ to: date })}
-            focused={focusedTo}
-            onFocusChange={({ focused }) => this.setState({ focusedTo: focused })}
-            id="to"
-            placeholder="To"
-          />
-        </div>
-        <Dropdown placeholder="Type..." fluid search selection options={contentTypesOptions} name="contentTypeId" value={contentTypeId == null ? '' : contentTypeId} onChange={this.handleSearchInput} />
-        <Input placeholder="Object ID..." name="objectId" value={objectId == null ? '' : objectId} onChange={this.handleSearchInput} />
-        <Input placeholder="User..." name="userId" value={userId == null ? '' : userId} onChange={this.handleSearchInput} />
+        <SingleDatePicker
+          isOutsideRange={() => false}
+          numberOfMonths={1}
+          date={from}
+          onDateChange={date => this.setState({ from: date })}
+          focused={focusedFrom}
+          onFocusChange={({ focused }) => this.setState({ focusedFrom: focused })}
+          id="from"
+          placeholder="From"
+        />
+        <SingleDatePicker
+          isOutsideRange={() => false}
+          numberOfMonths={1}
+          date={to}
+          onDateChange={date => this.setState({ to: date })}
+          focused={focusedTo}
+          onFocusChange={({ focused }) => this.setState({ focusedTo: focused })}
+          id="to"
+          placeholder="To"
+        />
+        <Grid>
+          <Grid.Column largeScreen={5} mobile={16}>
+            <Dropdown
+              fluid
+              placeholder="Type..."
+              search
+              selection
+              options={contentTypesOptions}
+              name="contentTypeId"
+              value={contentTypeId == null ? '' : contentTypeId} onChange={this.handleSearchInput}
+            />
+          </Grid.Column>
+          <Grid.Column largeScreen={5} mobile={16}>
+            <Input
+              fluid
+              placeholder="Object ID..."
+              name="objectId"
+              value={objectId == null ? '' : objectId}
+              onChange={this.handleSearchInput}
+            />
+          </Grid.Column>
+          <Grid.Column largeScreen={6} mobile={16}>
+            <UserSearch
+              maxUsers={10}
+              onSelect={this.handleUserSelect}
+            />
+          </Grid.Column>
+        </Grid>
         <Button onClick={this.handleSearch}>Filter</Button>
         <Button onClick={this.handleClear}>Clear</Button>
         <Table sortable celled fixed selectable>
