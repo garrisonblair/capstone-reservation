@@ -66,6 +66,14 @@ class SystemSettings(models.Model):
             else:
                 booking_exporter_config.stop_importing_ics_bookings()
 
+        if self.tracker.has_changed("booking_reminders_active"):
+            notififications_config = apps.get_app_config("notifications")
+
+            if self.booking_reminders_active:
+                notififications_config.start_booking_reminder_task()
+            else:
+                notififications_config.stop_booking_reminder_task()
+
         return this
 
     def __str__(self):
