@@ -4,17 +4,27 @@ from rest_framework import status
 from apps.booker_settings.models.EmailSettings import EmailSettings as EmailSettingsModel
 from apps.accounts.models.User import User
 from apps.booker_settings.serializers.booker_settings import EmailSettingsSerializer
+from django.core.exceptions import ValidationError
 
 class EmailSettings(APIView):
     def patch(self, request):
         data = request.data
-        when_booking = "when_booking"
-        if not when_booking in data:
-            return Response("'{}' is missing in request body".format(when_booking), status=status.HTTP_400_BAD_REQUEST)
+
+        email_settings = EmailSettingsModel.objects.get(booker=request.user)
+
+        if "when_booking" in data:
+            email_settings.when_booking = data["when_booking"]
+
+        try:
+            email_settings.save()
+        except ValidationError as error:
+            return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
+
         return Response(status=status.HTTP_200_OK)
 
 
     def get(self, request):
         email_settings = EmailSettingsModel.objects.get(booker=request.user)
         serializer = EmailSettingsSerializer(email_settings)
+
         return Response(serializer.data,status=status.HTTP_200_OK)
