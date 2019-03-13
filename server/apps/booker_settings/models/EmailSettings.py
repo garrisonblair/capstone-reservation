@@ -6,6 +6,10 @@ from django.core.exceptions import ValidationError
 class EmailSettings(models.Model):
     booker = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     when_booking = models.BooleanField(default=True)
+    when_recurring_booking = models.BooleanField(default=True)
+    when_delete_booking = models.BooleanField(default=True)
+    when_delete_recurring_booking = models.BooleanField(default=True)
+    when_camp_on_booking = models.BooleanField(default=True)
 
 
     def __str__(self):
