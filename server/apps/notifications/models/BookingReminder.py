@@ -3,11 +3,19 @@ import datetime
 from django.db import models
 
 from apps.booking.models.Booking import Booking
+from apps.system_administration.models.system_settings import SystemSettings
+from apps.util.ModelObserver import ModelObserver
+from apps.notifications.apps import NotificationsConfig
 
 
-class BookingReminderManager(models.Manager):
+class BookingReminderManager(models.Manager, ModelObserver):
 
-    def create_reminder(self, booking, remind_time_delta_before):
+    def create_reminder(self, booking, remind_time_delta_before=None):
+
+        if remind_time_delta_before is None:
+            settings = SystemSettings.get_settings()
+            remind_time_delta_before = settings.default_time_to_notify_before_booking
+
         reminder = BookingReminder(booking=booking)
 
         reminder_time = datetime.datetime.combine(booking.date, booking.start_time) - remind_time_delta_before
@@ -17,6 +25,38 @@ class BookingReminderManager(models.Manager):
 
         return reminder
 
+    def send_reminders(self):
+
+        now = datetime.datetime.now()
+        print(now)
+
+        # lower bound prevents sending mass reminders if reminders are turned off for a while.
+        # They would accumulate and get sent all at once when the feature is turned on.
+        lower_bound = now - datetime.timedelta(minutes=NotificationsConfig.booking_reminder_interval_minutes + 1)
+        print(lower_bound)
+        reminders = self.filter(reminder_time__lte=now, reminder_time__gte=lower_bound)
+
+        for reminder in reminders:
+            reminder.send()
+
+        old_reminders = self.filter(reminder_time__lt=lower_bound)
+        for reminder in old_reminders:
+            print('deleting old reminder')
+            reminder.delete()
+
+    def subject_created(self, subject):
+        print("creating reminder")
+        self.create_reminder(subject)
+
+    def subject_updated(self, subject):
+        pass
+
+    def subject_deleted(self, subject):
+        reminders_for_booking = self.filter(booking=subject)
+
+        for reminder in reminders_for_booking:
+            reminder.delete()
+
 
 class BookingReminder(models.Model):
 
@@ -25,7 +65,7 @@ class BookingReminder(models.Model):
 
     objects = BookingReminderManager()
 
-    def remind(self):
+    def send(self):
 
         users = list()
 
@@ -45,3 +85,5 @@ class BookingReminder(models.Model):
             full_message = greeting + "\n\n" + message
 
             user.send_email(subject, full_message)
+
+        self.delete()

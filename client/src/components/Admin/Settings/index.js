@@ -144,10 +144,9 @@ class Settings extends Component {
   }
 
   handleChangeBookingRemindersActive = (e, data) => {
-    const { value } = data;
+    const { checked } = data;
     const { settings } = this.state;
-
-    settings.booking_reminders_active = value;
+    settings.booking_reminders_active = checked;
     this.setState({
       settings,
     });

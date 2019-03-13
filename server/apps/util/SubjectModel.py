@@ -10,6 +10,7 @@ class SubjectModel:
         pass
 
     def register(self, model_observer):
+        print(model_observer)
         self.get_observers().append(model_observer)
 
     def unregister(self, model_observer):
