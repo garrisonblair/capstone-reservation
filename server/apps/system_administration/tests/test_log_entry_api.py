@@ -23,7 +23,7 @@ class TestLogEntryAPI(TestCase):
     def tearDown(self):
         pass
 
-    @skip()
+    @skip
     def testGetAllLogEntries(self):
 
         request = self.factory.get("/logentries")
