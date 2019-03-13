@@ -87,15 +87,15 @@ class BookingActivityModal extends Component {
                 </tr>
                 <tr>
                   <th>Room</th>
-                  <td>{obj.room}</td>
+                  <td>{obj.room.name}</td>
                 </tr>
                 <tr>
                   <th>Booker</th>
-                  <td>{obj.booker}</td>
+                  <td>{obj.booker.username}</td>
                 </tr>
                 <tr>
                   <th>Group</th>
-                  <td>{obj.group == null ? 'None' : obj.group}</td>
+                  <td>{obj.group == null ? 'None' : obj.group.name}</td>
                 </tr>
               </tbody>
             </table>

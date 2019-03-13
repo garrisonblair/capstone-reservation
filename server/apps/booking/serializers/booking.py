@@ -59,7 +59,7 @@ class ReadBookingSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class MyBookingSerializer(serializers.ModelSerializer):
+class DetailedBookingSerializer(serializers.ModelSerializer):
 
     booker = UserSerializer(required=False)
     group = ReadGroupSerializer(required=False)

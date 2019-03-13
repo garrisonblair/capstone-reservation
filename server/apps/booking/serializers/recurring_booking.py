@@ -48,7 +48,7 @@ class ReadRecurringBookingSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class MyRecurringBookingSerializer(serializers.ModelSerializer):
+class DetailedRecurringBookingSerializer(serializers.ModelSerializer):
 
     booker = UserSerializer(required=False)
     room = RoomSerializer(required=False)
