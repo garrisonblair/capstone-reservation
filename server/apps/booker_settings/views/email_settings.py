@@ -15,6 +15,18 @@ class EmailSettings(APIView):
         if "when_booking" in data:
             email_settings.when_booking = data["when_booking"]
 
+        if "when_recurring_booking" in data:
+            email_settings.when_recurring_booking = data["when_recurring_booking"]
+
+        if "when_delete_booking" in data:
+            email_settings.when_delete_booking = data["when_delete_booking"]
+
+        if "when_delete_recurring_booking" in data:
+            email_settings.when_delete_recurring_booking = data["when_delete_recurring_booking"]
+
+        if "when_camp_on_booking" in data:
+            email_settings.when_camp_on_booking = data["when_camp_on_booking"]
+
         try:
             email_settings.save()
         except ValidationError as error:

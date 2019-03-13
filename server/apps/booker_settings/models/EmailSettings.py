@@ -25,4 +25,16 @@ class EmailSettings(models.Model):
         if(not isinstance(self.when_booking, bool)):
             raise ValidationError("'when_booking' must be a boolean")
 
+        if(not isinstance(self.when_recurring_booking, bool)):
+            raise ValidationError("'when_recurring_booking' must be a boolean")
+
+        if(not isinstance(self.when_delete_booking, bool)):
+            raise ValidationError("'when_delete_booking' must be a boolean")
+
+        if(not isinstance(self.when_delete_recurring_booking, bool)):
+            raise ValidationError("'when_delete_recurring_booking' must be a boolean")
+
+        if(not isinstance(self.when_camp_on_booking, bool)):
+            raise ValidationError("'when_camp_on_booking' must be a boolean")
+
 
