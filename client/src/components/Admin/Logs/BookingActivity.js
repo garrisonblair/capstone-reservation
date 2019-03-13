@@ -152,6 +152,13 @@ class BookingActivity extends Component {
     }
   }
 
+  handleOnUseObjectAsFilter = (content_type, id) => {
+    this.handleSearchInput(null, {name:'contentTypeId', value: content_type.id});
+    this.handleSearchInput(null, {name:'objectId', value: id});
+
+    this.handleOnCloseBookingActivityModal();
+  }
+
   handleOnCloseBookingActivityModal = () => {
     this.setState({ showBookingActivityModal: false, selectedLog: null });
   }
@@ -268,7 +275,7 @@ class BookingActivity extends Component {
           id="to"
           placeholder="To"
         />
-        <Grid>
+        <Grid >
           <Grid.Column largeScreen={5} mobile={16}>
             <Dropdown
               fluid
@@ -342,6 +349,7 @@ class BookingActivity extends Component {
             log={selectedLog}
             show={showBookingActivityModal}
             onClose={this.handleOnCloseBookingActivityModal}
+            onUseObjectAsFilter={this.handleOnUseObjectAsFilter}
           />
         </Segment>
       </div>
