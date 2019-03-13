@@ -708,6 +708,15 @@ function postNotification(bookerId, rooms, date, rangeStart, rangeEnd, minBookin
   });
 }
 
+function getEmailSettings() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/email_settings`,
+    headers,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -768,6 +777,7 @@ const api = {
   deleteAnnouncement,
   updateAnnouncement,
   postNotification,
+  getEmailSettings,
 };
 
 export default api;
