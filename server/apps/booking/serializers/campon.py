@@ -30,7 +30,6 @@ class ReadCampOnSerializer(serializers.ModelSerializer):
 
 
 class MyCampOnSerializer(serializers.ModelSerializer):
-    booker = UserSerializer(required=False)
     camped_on_booking = MyBookingSerializer(required=False)
 
     class Meta:
