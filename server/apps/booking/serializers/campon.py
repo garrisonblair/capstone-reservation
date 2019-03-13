@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from apps.booking.serializers.booking import MyBookingSerializer
 from ..models.CampOn import CampOn
 from ..models.Booking import Booking
 from apps.accounts.models.User import User
@@ -25,4 +26,14 @@ class ReadCampOnSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampOn
         fields = ('id', 'booker', 'camped_on_booking', 'generated_booking', 'start_time', 'end_time')
+        read_only_fields = ('id',)
+
+
+class MyCampOnSerializer(serializers.ModelSerializer):
+    booker = UserSerializer(required=False)
+    camped_on_booking = MyBookingSerializer(required=False)
+
+    class Meta:
+        model = CampOn
+        fields = '__all__'
         read_only_fields = ('id',)

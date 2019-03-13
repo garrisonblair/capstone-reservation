@@ -17,7 +17,7 @@ from apps.booking.models.CampOn import CampOn
 from apps.booking.serializers.booking import \
     BookingSerializer, AdminBookingSerializer, ReadBookingSerializer, MyBookingSerializer
 from apps.booking.serializers.recurring_booking import MyRecurringBookingSerializer
-from apps.booking.serializers.campon import ReadCampOnSerializer
+from apps.booking.serializers.campon import MyCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
 from apps.notifications.models.Notification import Notification
 from apps.util import utils
@@ -230,7 +230,7 @@ class BookingViewMyBookings(APIView):
         # Add serialized lists of booking types to dictionary associated with type key
         bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
         bookings["recurring_bookings"] = MyRecurringBookingSerializer(recurring_bookings, many=True).data
-        bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
+        bookings["campons"] = MyCampOnSerializer(campons, many=True).data
 
         return Response(bookings, status=status.HTTP_200_OK)
 
