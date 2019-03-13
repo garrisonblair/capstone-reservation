@@ -717,6 +717,26 @@ function getEmailSettings() {
   });
 }
 
+function updateEmailSettings(
+  whenBooking, whenRecurringBoooking, whenDeleteBooking,
+  whenDeleteRecurringBooking, whenCampsOnBooking,
+) {
+  const headers = getTokenHeader();
+  const data = {
+    when_booking: whenBooking,
+    when_recurring_booking: whenRecurringBoooking,
+    when_delete_booking: whenDeleteBooking,
+    when_delete_recurring_booking: whenDeleteRecurringBooking,
+    when_camp_on_booking: whenCampsOnBooking,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/email_settings`,
+    headers,
+    data,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -778,6 +798,7 @@ const api = {
   updateAnnouncement,
   postNotification,
   getEmailSettings,
+  updateEmailSettings,
 };
 
 export default api;

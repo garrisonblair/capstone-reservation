@@ -7,7 +7,7 @@ from apps.booker_settings.serializers.booker_settings import EmailSettingsSerial
 from django.core.exceptions import ValidationError
 
 class EmailSettings(APIView):
-    def patch(self, request):
+    def post(self, request):
         data = request.data
 
         email_settings = EmailSettingsModel.objects.get(booker=request.user)

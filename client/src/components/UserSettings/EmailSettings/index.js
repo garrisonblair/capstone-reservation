@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import {
   Button, Checkbox, Table, Segment,
 } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 // import PropTypes from 'prop-types';
+
 
 class EmailSettings extends Component {
   state = {
@@ -57,6 +59,28 @@ class EmailSettings extends Component {
   }
 
   handleSaveOnClick = () => {
+    const {
+      whenBooking, whenRecurringBooking, whenDeleteBooking,
+      whenDeleteRecurringBooking, whenCamponOnBooking,
+    } = this.state;
+
+    api.updateEmailSettings(
+      whenBooking, whenRecurringBooking, whenDeleteBooking,
+      whenDeleteRecurringBooking, whenCamponOnBooking,
+    )
+      .then((r) => {
+        // console.log(r);
+        if (r.status === 200) {
+          sweetAlert.fire({
+            // position: 'top',
+            type: 'success',
+            title: 'Email settings saved',
+            toast: true,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      });
   }
 
   render() {
