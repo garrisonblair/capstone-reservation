@@ -41,11 +41,9 @@ class BookingReminderManager(models.Manager, ModelObserver):
 
         old_reminders = self.filter(reminder_time__lt=lower_bound)
         for reminder in old_reminders:
-            print('deleting old reminder')
             reminder.delete()
 
     def subject_created(self, subject):
-        print("creating reminder")
         self.create_reminder(subject)
 
     def subject_updated(self, subject):

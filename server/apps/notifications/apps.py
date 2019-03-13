@@ -15,7 +15,6 @@ class NotificationsConfig(AppConfig):
                 settings = SystemSettings.get_settings()
 
                 if settings.booking_reminders_active:
-                    print("start_booking_reminder_task")
                     self.start_booking_reminder_task()
 
             except Exception:
