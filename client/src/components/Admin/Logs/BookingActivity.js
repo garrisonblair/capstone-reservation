@@ -42,13 +42,14 @@ class BookingActivity extends Component {
   }
 
   state = {
-    column: null,
-    direction: null,
+    column: 'date',
+    direction: 'descending',
     logs: [],
     logsToDisplay: [],
     tableHeaders: ['date', 'type', 'action', 'user'],
     activePage: 1,
     logsPerPage: 10,
+    totalLogCount: 0,
     elementsPerPage: [
       { text: '5', value: 5 },
       { text: '10', value: 10 },
@@ -80,14 +81,36 @@ class BookingActivity extends Component {
       });
   }
 
-  getLogs = (data) => {
+  getLogs = () => {
+    const {
+      logsPerPage,
+      activePage,
+      from,
+      to,
+      contentTypeId,
+      objectId,
+      userId,
+    } = this.state;
+
+    const data = {
+      from: from == null ? null : moment(from).format('DD-MM-YYYY 00:59:59'),
+      to: to == null ? null : moment(to).format('DD-MM-YYYY 23:59:59'),
+      content_type_id: contentTypeId,
+      object_id: objectId,
+      user_id: userId,
+    };
+
     this.setState({ isLoading: true });
+    data.limit = logsPerPage;
+    data.offset = logsPerPage * activePage - logsPerPage;
     api.getLogEntries(data)
       .then((response) => {
         this.setState({ isLoading: false });
         if (response.status === 200) {
-          const logsToDisplay = this.setLogsToDisplay(response.data);
-          this.setState({ logs: response.data, logsToDisplay });
+          this.setState({ logs: response.data.results,
+                          logsToDisplay: response.data.results,
+                          totalLogCount: response.data.count
+                          });
         }
       })
       .catch(() => {
@@ -95,43 +118,13 @@ class BookingActivity extends Component {
       });
   }
 
-  setLogsToDisplay(data) {
-    const { logsPerPage } = this.state;
-    const logs = cloneDeep(data);
-    const logsToDisplay = [];
-    while (logs.length) {
-      logsToDisplay.push(logs.splice(0, logsPerPage));
-    }
-    return logsToDisplay;
+  handlePaginationChange = (e, { activePage }) => {
+    this.setState({ activePage }, this.getLogs);
   }
-
-  handleSort = clickedColumn => () => {
-    const { column, logs, direction } = this.state;
-    if (column !== clickedColumn) {
-      this.setState({
-        column: clickedColumn,
-        logs: _.sortBy(logs, [clickedColumn]),
-        direction: 'ascending',
-      });
-
-      return;
-    }
-
-    this.setState({
-      logs: logs.reverse(),
-      direction: direction === 'ascending' ? 'descending' : 'ascending',
-    }, () => {
-      this.setState({ logsToDisplay: this.setLogsToDisplay(logs) });
-    });
-  }
-
-  handlePaginationChange = (e, { activePage }) => this.setState({ activePage });
 
   handlePaginationSettingsChange = (e, change) => {
     const { logs } = this.state;
-    this.setState({ activePage: 1, logsPerPage: change.value }, () => {
-      this.setState({ logsToDisplay: this.setLogsToDisplay(logs) });
-    });
+    this.setState({ activePage: 1, logsPerPage: change.value }, this.getLogs);
   }
 
   showDetails = (log) => {
@@ -164,22 +157,7 @@ class BookingActivity extends Component {
   }
 
   handleSearch = () => {
-    const {
-      from,
-      to,
-      contentTypeId,
-      objectId,
-      userId,
-    } = this.state;
-
-    const data = {
-      from: from == null ? null : moment(from).format('DD-MM-YYYY 00:59:59'),
-      to: to == null ? null : moment(to).format('DD-MM-YYYY 23:59:59'),
-      content_type_id: contentTypeId,
-      object_id: objectId,
-      user_id: userId,
-    };
-    this.getLogs(data);
+    this.getLogs();
   }
 
   handleClear = () => {
@@ -197,7 +175,7 @@ class BookingActivity extends Component {
     const { logsToDisplay, activePage } = this.state;
     return (
       <Table.Body>
-        {logsToDisplay[activePage - 1].map(log => (
+        {logsToDisplay.map(log => (
           <Table.Row key={log.id} onClick={() => this.showDetails(log)}>
             <Table.Cell>
               {BookingActivity.formatDate(log.action_time)}
@@ -241,8 +219,10 @@ class BookingActivity extends Component {
       contentTypeId,
       objectId,
       userId,
+      logsPerPage,
+      totalLogCount
     } = this.state;
-    const totalPages = logsToDisplay.length;
+    const totalPages = Math.ceil(totalLogCount / logsPerPage);
 
     const contentTypesOptions = [];
     contentTypes.forEach((c) => {
@@ -305,13 +285,11 @@ class BookingActivity extends Component {
         </Grid>
         <Button onClick={this.handleSearch}>Filter</Button>
         <Button onClick={this.handleClear}>Clear</Button>
-        <Table sortable celled fixed selectable>
+        <Table celled fixed selectable>
           <Table.Header>
             <Table.Row>
               {tableHeaders.map(header => (
                 <Table.HeaderCell
-                  sorted={column === header ? direction : null}
-                  onClick={header === 'date' ? this.handleSort(header) : null}
                   key={header}
                 >
                   {header}
