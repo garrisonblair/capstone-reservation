@@ -14,15 +14,15 @@ class TestRoomStatisticManager(TestCase):
                                                 email="jcorbin@email.com",
                                                 password="safe_password")
         self.booker1.user = None
-        self.booker1.booker_profile = BookerProfile(program="cse", graduate_level="ugrad").save()
         self.booker1.save()
+        self.booker1.booker_profile = BookerProfile(program="cse", graduate_level="ugrad").save()
 
         self.booker2 = User.objects.create_user(username="j_cena",
                                                 email="jcena@email.com",
                                                 password="safe_password")
         self.booker2.user = None
-        self.booker2.booker_profile = BookerProfile(program="miae", graduate_level="mthesis").save()
         self.booker2.save()
+        self.booker2.booker_profile = BookerProfile(program="miae", graduate_level="mthesis").save()
 
         name = "1"
         capacity = 7
@@ -72,13 +72,10 @@ class TestRoomStatisticManager(TestCase):
         self.assertEqual(grad_levels[0]['graduate_level'], 'ugrad')
         self.assertEqual(grad_levels[1]['graduate_level'], 'mthesis')
 
-    # def testGetNumRoomBookings(self):
-    #     self.assertEqual(self.stats.get_num_room_bookings(room=self.room), 3)
-    #     self.assertEqual(self.stats.get_num_room_bookings(room=self.room, start_date=self.date2), 2)
-    #     self.assertEqual(self.stats.get_num_room_bookings(room=self.room, end_date=self.date2), 2)
-    #     self.assertEqual(
-    #         self.stats.get_num_room_bookings(room=self.room, start_date=self.date2, end_date=self.date2),
-    #         1)
+    def testGetNumProgramBookings(self):
+        self.assertEqual(self.stats.get_num_program_bookings(program="cse"), 2)
+        self.assertEqual(self.stats.get_num_program_bookings(program="cse", start_date=self.date2), 2)
+        self.assertEqual(self.stats.get_num_program_bookings(program="miae"), 1)
     #
     # def testRoomTimeBooked(self):
     #     self.assertEqual(self.stats.get_time_booked(room=self.room), timedelta(hours=6))
