@@ -86,8 +86,8 @@ class TestRoomStatisticManager(TestCase):
         self.assertEqual(self.stats.get_num_program_bookings(program="cse", grad_level="mthesis"), 0)
 
     def testRoomTimeBooked(self):
-        self.assertEqual(self.stats.get_time_booked(program="cse"), timedelta(hours=4))
-        self.assertEqual(self.stats.get_time_booked(program="miae"), timedelta(hours=2))
+        self.assertEqual(self.stats.get_program_time_booked(program="cse"), timedelta(hours=4))
+        self.assertEqual(self.stats.get_program_time_booked(program="miae"), timedelta(hours=2))
 
     def testGetAverageBookingsPerDay(self):
         date4 = datetime.datetime(2018, 12, 24).date()
