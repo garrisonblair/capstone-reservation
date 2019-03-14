@@ -6,6 +6,7 @@ from apps.accounts.models.User import User
 from apps.accounts.models.BookerProfile import BookerProfile
 from apps.statistics.util.ProgramStatisticManager import ProgramStatisticManager
 import datetime
+import pdb
 
 
 class TestRoomStatisticManager(TestCase):
@@ -13,15 +14,19 @@ class TestRoomStatisticManager(TestCase):
         self.booker1 = User.objects.create_user(username="j_corbin",
                                                 email="jcorbin@email.com",
                                                 password="safe_password")
-        self.booker1.booker_profile.program = "cse"
-        self.booker1.booker_profile.graduate_level = "ugrad"
+        self.booker1.save()
+        self.booker1.bookerprofile.program = "cse"
+        self.booker1.bookerprofile.graduate_level = "ugrad"
+        self.booker1.bookerprofile.save()
         self.booker1.save()
 
         self.booker2 = User.objects.create_user(username="j_cena",
                                                 email="jcena@email.com",
                                                 password="safe_password")
-        self.booker2.booker_profile.program = "miae"
-        self.booker2.booker_profile.graduate_level = "mthesis"
+        self.booker2.save()
+        self.booker2.bookerprofile.program = "miae"
+        self.booker2.bookerprofile.graduate_level = "mthesis"
+        self.booker2.bookerprofile.save()
         self.booker2.save()
 
         name = "1"
@@ -74,79 +79,52 @@ class TestRoomStatisticManager(TestCase):
 
     def testGetNumProgramBookings(self):
         self.assertEqual(self.stats.get_num_program_bookings(program="cse"), 2)
-        self.assertEqual(self.stats.get_num_program_bookings(program="cse", start_date=self.date2), 2)
+        self.assertEqual(self.stats.get_num_program_bookings(program="cse", start_date=self.date2), 1)
         self.assertEqual(self.stats.get_num_program_bookings(program="miae"), 1)
-    #
-    # def testRoomTimeBooked(self):
-    #     self.assertEqual(self.stats.get_time_booked(room=self.room), timedelta(hours=6))
-    #     self.assertEqual(self.stats.get_time_booked(room=self.room, start_date=self.date2), timedelta(hours=4))
-    #     self.assertEqual(self.stats.get_time_booked(room=self.room, end_date=self.date2), timedelta(hours=4))
-    #     self.assertEqual(
-    #         self.stats.get_time_booked(room=self.room, start_date=self.date2, end_date=self.date2),
-    #         timedelta(hours=2))
-    #     self.stats.get_average_bookings_per_day(self.room)
-    #
-    # def testGetAverageBookingsPerDay(self):
-    #     date4 = datetime.datetime(2018, 12, 24).date()
-    #     booking4 = Booking(booker=self.booker,
-    #                        room=self.room,
-    #                        date=date4,
-    #                        start_time=self.start_time,
-    #                        end_time=self.end_time)
-    #     booking4.save()
-    #
-    #     date5 = datetime.datetime(2019, 1, 10).date()
-    #     booking5 = Booking(booker=self.booker,
-    #                        room=self.room,
-    #                        date=date5,
-    #                        start_time=self.start_time,
-    #                        end_time=self.end_time)
-    #     booking5.save()
-    #
-    #     self.assertEqual(self.stats.get_average_bookings_per_day(room=self.room, start_date=date4, end_date=date5),
-    #                      0.278)
-    #
-    # def testGetAverageTimeBookedPerDay(self):
-    #     date4 = datetime.datetime(2018, 12, 24).date()
-    #     booking4 = Booking(booker=self.booker,
-    #                        room=self.room,
-    #                        date=date4,
-    #                        start_time=self.start_time,
-    #                        end_time=self.end_time)
-    #     booking4.save()
-    #
-    #     date5 = datetime.datetime(2019, 1, 10).date()
-    #     booking5 = Booking(booker=self.booker,
-    #                        room=self.room,
-    #                        date=date5,
-    #                        start_time=self.start_time,
-    #                        end_time=self.end_time)
-    #     booking5.save()
-    #
-    #     self.assertEqual(self.stats.get_average_time_booked_per_day(room=self.room, start_date=date4, end_date=date5),
-    #                      0.556)
-    #
-    # def testGetRoomStatistics(self):
-    #     date4 = datetime.datetime(2018, 12, 24).date()
-    #     booking4 = Booking(booker=self.booker,
-    #                        room=self.room,
-    #                        date=date4,
-    #                        start_time=self.start_time,
-    #                        end_time=self.end_time)
-    #     booking4.save()
-    #
-    #     date5 = datetime.datetime(2019, 1, 10).date()
-    #     booking5 = Booking(booker=self.booker,
-    #                        room=self.room,
-    #                        date=date5,
-    #                        start_time=self.start_time,
-    #                        end_time=self.end_time)
-    #     booking5.save()
-    #
-    #     stats = {'average_bookings_per_day': 0.278,
-    #              'average_time_booked_per_day': 0.556,
-    #              'hours_booked': 10.0,
-    #              'num_room_bookings': 5,
-    #              'room': {'number_of_computers': 2, 'capacity': 7, 'name': '1', 'id': 1}}
-    #
-    #     self.assertEqual(self.stats.get_serialized_statistics(room=self.room, start_date=date4, end_date=date5), stats)
+
+        self.assertEqual(self.stats.get_num_program_bookings(grad_level="ugrad"), 2)
+        self.assertEqual(self.stats.get_num_program_bookings(program="cse", grad_level="mthesis"), 0)
+
+    def testRoomTimeBooked(self):
+        self.assertEqual(self.stats.get_time_booked(program="cse"), timedelta(hours=4))
+        self.assertEqual(self.stats.get_time_booked(program="miae"), timedelta(hours=2))
+
+    def testGetAverageBookingsPerDay(self):
+        date4 = datetime.datetime(2018, 12, 24).date()
+        booking4 = Booking(booker=self.booker1,
+                           room=self.room,
+                           date=date4,
+                           start_time=self.start_time,
+                           end_time=self.end_time)
+        booking4.save()
+
+        date5 = datetime.datetime(2019, 1, 10).date()
+        booking5 = Booking(booker=self.booker1,
+                           room=self.room,
+                           date=date5,
+                           start_time=self.start_time,
+                           end_time=self.end_time)
+        booking5.save()
+
+        self.assertEqual(self.stats.get_average_bookings_per_day(program="cse", start_date=date4, end_date=date5),
+                         0.222)
+
+    def testGetAverageTimeBookedPerDay(self):
+        date4 = datetime.datetime(2018, 12, 24).date()
+        booking4 = Booking(booker=self.booker1,
+                           room=self.room,
+                           date=date4,
+                           start_time=self.start_time,
+                           end_time=self.end_time)
+        booking4.save()
+
+        date5 = datetime.datetime(2019, 1, 10).date()
+        booking5 = Booking(booker=self.booker1,
+                           room=self.room,
+                           date=date5,
+                           start_time=self.start_time,
+                           end_time=self.end_time)
+        booking5.save()
+
+        self.assertEqual(self.stats.get_average_time_booked_per_day(program="cse", start_date=date4, end_date=date5),
+                         0.444)

@@ -4,7 +4,6 @@ import decimal
 from apps.booking.models.Booking import Booking
 from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.User import User
-import pdb
 
 
 class ProgramStatisticManager:
@@ -18,9 +17,8 @@ class ProgramStatisticManager:
             program_bookers = BookerProfile.objects.filter(program=program)
             users = User.objects.filter(id__in=program_bookers)
             bookings = bookings.filter(booker_id__in=users)
-            pdb.set_trace()
         if grad_level is not None:
-            grad_level_bookers = BookerProfile.objects.filter(booker_profile__graduate_level=grad_level)
+            grad_level_bookers = BookerProfile.objects.filter(graduate_level=grad_level)
             users = User.objects.filter(id__in=grad_level_bookers)
             bookings = bookings.filter(booker_id__in=users)
 
