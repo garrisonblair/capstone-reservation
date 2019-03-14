@@ -13,16 +13,16 @@ class TestRoomStatisticManager(TestCase):
         self.booker1 = User.objects.create_user(username="j_corbin",
                                                 email="jcorbin@email.com",
                                                 password="safe_password")
-        self.booker1.user = None
+        self.booker1.booker_profile.program = "cse"
+        self.booker1.booker_profile.graduate_level = "ugrad"
         self.booker1.save()
-        self.booker1.booker_profile = BookerProfile(program="cse", graduate_level="ugrad").save()
 
         self.booker2 = User.objects.create_user(username="j_cena",
                                                 email="jcena@email.com",
                                                 password="safe_password")
-        self.booker2.user = None
+        self.booker2.booker_profile.program = "miae"
+        self.booker2.booker_profile.graduate_level = "mthesis"
         self.booker2.save()
-        self.booker2.booker_profile = BookerProfile(program="miae", graduate_level="mthesis").save()
 
         name = "1"
         capacity = 7
