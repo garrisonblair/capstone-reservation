@@ -2,6 +2,10 @@ from django.contrib.auth.models import User as DjangoUser
 from django.core import mail
 from django.conf import settings
 
+import jwt
+import time
+import os
+
 import apps.accounts.tasks as tasks
 
 from apps.util.AbstractBooker import AbstractBooker
@@ -34,5 +38,19 @@ class User(DjangoUser, AbstractBooker):
             recipient_list.append(self.bookerprofile.secondary_email)
         else:
             recipient_list.append(self.email)
-
+        token = self.generateToken(self)
+        # TODO: create URL
         tasks.send_email.delay(subject, message, recipient_list)
+
+    def generateToken(self, user):
+        now = int(time.time())
+        token={
+            "iat": now,
+            "exp": now + 10, #3600 * 2,  # 2 hours
+            "user_id": user.id
+        }
+        secret_key = os.environ.get('SECRET_KEY')
+        token = jwt.encode(token, secret_key, algorithm="HS256")
+
+        return token
+
