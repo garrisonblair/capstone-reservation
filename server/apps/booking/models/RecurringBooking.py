@@ -147,5 +147,5 @@ class RecurringBooking(models.Model):
             raise PrivilegeError(p_c.get_error_text("booking_end_time"))
 
     def json_serialize(self):
-        from ..serializers.recurring_booking import RecurringBookingSerializer
-        return json.dumps(RecurringBookingSerializer(self).data)
+        from ..serializers.recurring_booking import DetailedRecurringBookingSerializer
+        return json.dumps(DetailedRecurringBookingSerializer(self).data)

@@ -11,7 +11,7 @@ class ContentTypeValueHelp(APIView):
     exposed_models = [
         "booking",
         "campon",
-        "recurringbooking"
+        "recurringbooking",
     ]
 
     def get(self, request):

@@ -24,6 +24,12 @@ class BookingActivityModal extends Component {
     return '';
   }
 
+  onUseAsFilter = (e, data) => {
+    const { log, onUseObjectAsFilter } = this.props;
+
+    onUseObjectAsFilter(log.content_type, log.object_id)
+  }
+
   renderBoolean = boolean => (
     <Icon
       name={boolean ? 'check circle' : 'times circle'}
@@ -81,21 +87,25 @@ class BookingActivityModal extends Component {
                 </tr>
                 <tr>
                   <th>Room</th>
-                  <td>{obj.room}</td>
+                  <td>{obj.room.name}</td>
                 </tr>
                 <tr>
                   <th>Booker</th>
-                  <td>{obj.booker}</td>
+                  <td>{obj.booker.username}</td>
                 </tr>
                 <tr>
                   <th>Group</th>
-                  <td>{obj.group == null ? 'None' : obj.group}</td>
+                  <td>{obj.group == null ? 'None' : obj.group.name}</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div className="ui divider" />
           <div className="controls">
+            <Button icon labelPosition="left" size="small" onClick={this.onUseAsFilter}>
+              <Icon name="crosshairs"  />
+              Use as Filter
+            </Button>
             <Button icon labelPosition="left" negative size="small" onClick={onClose}>
               <Icon name="x" />
               Close
@@ -111,6 +121,7 @@ class BookingActivityModal extends Component {
 BookingActivityModal.propTypes = {
   show: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  onUseObjectAsFilter: PropTypes.func.isRequired,
   log: PropTypes.instanceOf(Object),
 };
 

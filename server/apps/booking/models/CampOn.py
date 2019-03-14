@@ -110,5 +110,5 @@ class CampOn(models.Model, SubjectModel):
             raise PrivilegeError(p_c.get_error_text("booking_end_time"))
 
     def json_serialize(self):
-        from ..serializers.campon import CampOnSerializer
-        return json.dumps(CampOnSerializer(self).data)
+        from ..serializers.campon import DetailedCampOnSerializer
+        return json.dumps(DetailedCampOnSerializer(self).data)
