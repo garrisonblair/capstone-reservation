@@ -3,20 +3,41 @@ from apps.booking.models.Booking import Booking
 from apps.rooms.models.Room import Room
 from datetime import timedelta
 from apps.accounts.models.User import User
-from apps.accounts.models.BookerProfile import BookerProfile
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.statistics.util.ProgramStatisticManager import ProgramStatisticManager
 import datetime
-import pdb
 
 
-class TestRoomStatisticManager(TestCase):
+class TestProgramStatisticManager(TestCase):
     def setUp(self):
         self.booker1 = User.objects.create_user(username="j_corbin",
                                                 email="jcorbin@email.com",
                                                 password="safe_password")
         self.booker1.save()
+
+        self.category1 = PrivilegeCategory(name="Category 1")
+        self.category1.max_days_until_booking = 2
+        self.category1.can_make_recurring_booking = False
+        self.category1.max_num_days_with_bookings = 5
+        self.category1.max_num_bookings_for_date = 2
+        self.category1.max_recurring_bookings = 0
+        self.category1.booking_start_time = datetime.time(8, 0)
+        self.category1.booking_end_time = datetime.time(23, 0)
+        self.category1.save()
+
+        self.category2 = PrivilegeCategory(name="Category 2")
+        self.category2.max_days_until_booking = 2
+        self.category2.can_make_recurring_booking = False
+        self.category2.max_num_days_with_bookings = 5
+        self.category2.max_num_bookings_for_date = 2
+        self.category2.max_recurring_bookings = 0
+        self.category2.booking_start_time = datetime.time(8, 0)
+        self.category2.booking_end_time = datetime.time(23, 0)
+        self.category2.save()
+
         self.booker1.bookerprofile.program = "cse"
         self.booker1.bookerprofile.graduate_level = "ugrad"
+        self.booker1.bookerprofile.privilege_categories.add(self.category1)
         self.booker1.bookerprofile.save()
         self.booker1.save()
 
@@ -26,6 +47,7 @@ class TestRoomStatisticManager(TestCase):
         self.booker2.save()
         self.booker2.bookerprofile.program = "miae"
         self.booker2.bookerprofile.graduate_level = "mthesis"
+        self.booker2.bookerprofile.privilege_categories.add(self.category2)
         self.booker2.bookerprofile.save()
         self.booker2.save()
 
@@ -77,6 +99,12 @@ class TestRoomStatisticManager(TestCase):
         self.assertEqual(grad_levels[0]['graduate_level'], 'ugrad')
         self.assertEqual(grad_levels[1]['graduate_level'], 'mthesis')
 
+    def testGetCategories(self):
+        categories = self.stats.get_categories()
+        self.assertEqual(categories.count(), 2)
+        self.assertEqual(categories[0]['name'], 'Category 1')
+        self.assertEqual(categories[1]['name'], 'Category 2')
+
     def testGetNumProgramBookings(self):
         self.assertEqual(self.stats.get_num_program_bookings(program="cse"), 2)
         self.assertEqual(self.stats.get_num_program_bookings(program="cse", start_date=self.date2), 1)
@@ -85,9 +113,17 @@ class TestRoomStatisticManager(TestCase):
         self.assertEqual(self.stats.get_num_program_bookings(grad_level="ugrad"), 2)
         self.assertEqual(self.stats.get_num_program_bookings(program="cse", grad_level="mthesis"), 0)
 
-    def testRoomTimeBooked(self):
+    def testGetNumCategoryBookings(self):
+        self.assertEqual(self.stats.get_num_category_bookings(category="Category 1"), 2)
+        self.assertEqual(self.stats.get_num_category_bookings(category="Category 2"), 1)
+
+    def testProgramTimeBooked(self):
         self.assertEqual(self.stats.get_program_time_booked(program="cse"), timedelta(hours=4))
         self.assertEqual(self.stats.get_program_time_booked(program="miae"), timedelta(hours=2))
+
+    def testCategoryTimeBooked(self):
+        self.assertEqual(self.stats.get_category_time_booked(category="Category 1"), timedelta(hours=4))
+        self.assertEqual(self.stats.get_category_time_booked(category="Category 2"), timedelta(hours=2))
 
     def testGetAverageBookingsPerDay(self):
         date4 = datetime.datetime(2018, 12, 24).date()

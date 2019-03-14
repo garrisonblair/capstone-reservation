@@ -5,6 +5,7 @@ from apps.booking.models.Booking import Booking
 from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.User import User
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
+import pdb
 
 
 class ProgramStatisticManager:
@@ -45,7 +46,7 @@ class ProgramStatisticManager:
 
     def get_category_time_booked(self, category):
         time_booked = datetime.timedelta(hours=0)
-        for booking in self.get_num_category_bookings(category).all:
+        for booking in self.get_category_bookings(category).all():
             time_booked = time_booked + booking.get_duration()
         return time_booked
 
@@ -99,7 +100,7 @@ class ProgramStatisticManager:
         return BookerProfile.objects.exclude(program__isnull=True).values('graduate_level').distinct()
 
     def get_categories(self):
-        return PrivilegeCategory.objects.exclude(related_course__isnull=True).values('name').distinct()
+        return PrivilegeCategory.objects.values('name').distinct()
 
     def get_all_statistics(self, with_program, with_grad_level, with_categories, start_date=None, end_date=None):
         all_stats = list()
