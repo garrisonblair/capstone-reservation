@@ -5,7 +5,6 @@ from apps.booking.models.Booking import Booking
 from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.User import User
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-import pdb
 
 
 class ProgramStatisticManager:
@@ -105,16 +104,7 @@ class ProgramStatisticManager:
     def get_all_statistics(self, with_program, with_grad_level, with_categories, start_date=None, end_date=None):
         all_stats = list()
 
-        if with_program and with_grad_level:
-            programs = self.get_programs()
-            grad_levels = self.get_grad_levels()
-            for program in programs:
-                for grad_level in grad_levels:
-                    all_stats.append(self.get_program_serialized_statistics(program['program'],
-                                                                            grad_level['graduate_level'],
-                                                                            start_date,
-                                                                            end_date))
-        elif with_program:
+        if with_program:
             programs = self.get_programs()
             for program in programs:
                 all_stats.append(self.get_program_serialized_statistics(program['program'],

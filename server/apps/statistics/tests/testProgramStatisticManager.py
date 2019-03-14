@@ -111,7 +111,6 @@ class TestProgramStatisticManager(TestCase):
         self.assertEqual(self.stats.get_num_program_bookings(program="miae"), 1)
 
         self.assertEqual(self.stats.get_num_program_bookings(grad_level="ugrad"), 2)
-        self.assertEqual(self.stats.get_num_program_bookings(program="cse", grad_level="mthesis"), 0)
 
     def testGetNumCategoryBookings(self):
         self.assertEqual(self.stats.get_num_category_bookings(category="Category 1"), 2)
