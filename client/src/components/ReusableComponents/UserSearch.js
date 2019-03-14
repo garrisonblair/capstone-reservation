@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Dropdown, Button, Icon,
+  Dropdown,
 } from 'semantic-ui-react';
 
 import api from '../../utils/api';
