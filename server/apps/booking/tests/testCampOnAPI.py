@@ -85,7 +85,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(latest_campon_log.action_flag, ADDITION)
         self.assertEqual(latest_campon_log.object_id, str(created_camp_on.id))
         self.assertEqual(latest_campon_log.user, self.user)
-        self.assertEqual(latest_campon_log.object_repr, json.dumps(LogCampOnSerializer(created_camp_on).data))
+        self.assertEqual(latest_campon_log.change_message, json.dumps(LogCampOnSerializer(created_camp_on).data))
 
     def testCreateCampOnWithBooking(self):
         request = self.factory.post("/campon", {
@@ -131,7 +131,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(latest_campon_log.action_flag, ADDITION)
         self.assertEqual(latest_campon_log.object_id, str(created_camp_on.id))
         self.assertEqual(latest_campon_log.user, self.user)
-        self.assertEqual(latest_campon_log.object_repr, json.dumps(LogCampOnSerializer(created_camp_on).data))
+        self.assertEqual(latest_campon_log.change_message, json.dumps(LogCampOnSerializer(created_camp_on).data))
 
         # Generated Booking Log Entry
         all_booking_logs = LogEntry.objects.filter(content_type=ContentType.objects.get_for_model(created_booking))
@@ -139,7 +139,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(latest_booking_log.action_flag, ADDITION)
         self.assertEqual(latest_booking_log.object_id, str(created_booking.id))
         self.assertEqual(latest_booking_log.user, self.user)
-        self.assertEqual(latest_booking_log.object_repr, json.dumps(LogBookingSerializer(created_booking).data))
+        self.assertEqual(latest_booking_log.change_message, json.dumps(LogBookingSerializer(created_booking).data))
 
     # @unittest.skip("tests to be changed to account for actual time")
     def testCreateCampOnSecondBooking(self):

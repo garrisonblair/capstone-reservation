@@ -101,7 +101,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(latest_recurring_booking_log.action_flag, ADDITION)
         self.assertEqual(latest_recurring_booking_log.object_id, str(recurring_booking.id))
         self.assertEqual(latest_recurring_booking_log.user, self.user1)
-        self.assertEqual(latest_recurring_booking_log.object_repr,
+        self.assertEqual(latest_recurring_booking_log.change_message,
                          json.dumps(LogRecurringBookingSerializer(recurring_booking).data))
 
         for booking in recurring_booking.booking_set.all():
@@ -113,7 +113,7 @@ class BookingAPITest(TestCase):
             self.assertEqual(latest_booking_log.action_flag, ADDITION)
             self.assertEqual(latest_booking_log.object_id, str(booking.id))
             self.assertEqual(latest_booking_log.user, self.user1)
-            self.assertEqual(latest_booking_log.object_repr,
+            self.assertEqual(latest_booking_log.change_message,
                              json.dumps(LogBookingSerializer(booking).data))
 
     def testCreateRecurringBookingFailureDateStartAfterEnd(self):

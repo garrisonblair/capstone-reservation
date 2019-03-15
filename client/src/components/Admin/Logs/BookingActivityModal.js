@@ -40,7 +40,7 @@ class BookingActivityModal extends Component {
   render() {
     const { show, onClose, log } = this.props;
     if (log != null) {
-      const obj = JSON.parse(log.object_repr);
+      const obj = JSON.parse(log.change_message);
       return (
         <Modal className="booking-activity-modal" open={show} onClose={onClose}>
           <Header>
