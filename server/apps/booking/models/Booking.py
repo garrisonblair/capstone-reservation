@@ -220,8 +220,8 @@ class Booking(models.Model, SubjectModel):
         return Booking.observers
 
     def json_serialize(self):
-        from ..serializers.booking import DetailedBookingSerializer
-        return json.dumps(DetailedBookingSerializer(self).data)
+        from ..serializers.booking import LogBookingSerializer
+        return json.dumps(LogBookingSerializer(self).data)
 
     def get_duration(self):
         return (datetime.datetime.combine(date=datetime.date.today(), time=self.end_time)
