@@ -96,10 +96,7 @@ class LogBookingSerializer(serializers.ModelSerializer):
                   'date',
                   'start_time',
                   'end_time',
-                  'recurring_booking',
-                  'note',
-                  'display_note',
-                  'confirmed')
+                  'recurring_booking',)
         read_only_fields = ('id',)
 
     def get_booker(self, booking):
