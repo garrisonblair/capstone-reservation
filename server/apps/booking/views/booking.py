@@ -2,6 +2,7 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.core.files import File
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,6 +23,7 @@ from apps.accounts.exceptions import PrivilegeError
 from apps.notifications.models.Notification import Notification
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
+from apps.booking_exporter.WEBCalendarExporter.ICSSerializer import ICSSerializerFactory
 
 
 class BookingList(ListAPIView):
@@ -84,6 +86,12 @@ class BookingCreate(APIView):
             booking.save()
             utils.log_model_change(booking, utils.ADDITION, request.user)
 
+
+            with open('ics_files/{}.ics'.format(datetime.datetime.now().time()), 'w') as f:
+                    myfile = File(f)
+                    icsSerializer = ICSSerializerFactory.get_serializer(booking)
+                    fileTxt = icsSerializer.serialize(booking)
+                    myfile.write(fileTxt)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
