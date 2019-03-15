@@ -29,11 +29,8 @@ class ReadCampOnSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class DetailedCampOnSerializer(serializers.ModelSerializer):
-    booker = UserSerializer(required=False)
-    camped_on_booking = serializers.PrimaryKeyRelatedField(queryset=Booking.objects.all())
-    generated_booking = serializers.PrimaryKeyRelatedField(read_only=True)
-
+class LogCampOnSerializer(serializers.ModelSerializer):
+    booker = serializers.SerializerMethodField()
     room = serializers.SerializerMethodField()
 
     class Meta:
@@ -41,9 +38,11 @@ class DetailedCampOnSerializer(serializers.ModelSerializer):
         fields = ('id', 'booker', 'camped_on_booking', 'generated_booking', 'start_time', 'end_time', 'room')
         read_only_fields = ('id',)
 
-    def get_room(self, campon):
-        from apps.rooms.serializers.room import RoomSerializer
-        return RoomSerializer(campon.camped_on_booking.room).data
+    def get_booker(self, booking):
+        return {"username": booking.booker.username, "id": booking.booker.id}
+
+    def get_room(self, booking):
+        return {"name": booking.room.name, "id": booking.room.id}
 
 
 class MyCampOnSerializer(serializers.ModelSerializer):
