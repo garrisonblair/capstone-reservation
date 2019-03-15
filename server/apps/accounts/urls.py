@@ -5,9 +5,8 @@ from apps.accounts.views.verify import VerifyView
 from apps.accounts.views.login import LoginView
 from apps.accounts.views.logout import LogoutView
 from apps.accounts.views.user import UserList, UserRetrieveUpdate, BookerList
-from apps.accounts.views.me import MyPrivileges
+from apps.accounts.views.me import MyPrivileges, MyRecurringBookingPrivileges
 from apps.accounts.views.privilege_categories import PrivilegeCategoryList
-from apps.accounts.views.privilege_categories import MyPrivilegeCategoryList
 from apps.accounts.views.privilege_categories import PrivilegeCategoryCreate
 from apps.accounts.views.privilege_categories import PrivilegeCategoryRetrieveUpdateDestroy
 from apps.accounts.views.assign_privileges import PrivilegeCategoriesAssignSingleAutomatic
@@ -27,9 +26,9 @@ urlpatterns = [
     path(r'bookers', BookerList.as_view()),
 
     path(r'my_privileges', MyPrivileges.as_view()),
+    path(r'can_make_recurring', MyRecurringBookingPrivileges.as_view()),
 
     path(r'privilege_categories', PrivilegeCategoryList.as_view()),
-    # path(r'myprivilegecategorylist', MyPrivilegeCategoryList.as_view()),
     path(r'privilege_category', PrivilegeCategoryCreate.as_view()),
     path(r'privilege_category/<int:pk>', PrivilegeCategoryRetrieveUpdateDestroy.as_view()),
 

@@ -461,6 +461,22 @@ function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaf
   });
 }
 
+function canUserMakeRecurring(userId, userType) {
+  const headers = getTokenHeader();
+
+  const params = {
+    pk: userId,
+    type: userType,
+  };
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/can_make_recurring`,
+    params,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function addPrivilege(username, privilegeID) {
   const headers = getTokenHeader();
   const data = {
@@ -750,6 +766,7 @@ const api = {
   getLogEntries,
   getContentTypes,
   getUsers,
+  canUserMakeRecurring,
   addPrivilege,
   assignIndividualPrivileges,
   assignAllPrivileges,

@@ -26,6 +26,7 @@ class ReservationDetailsModal extends Component {
       endDate: '',
     },
     ownerValue: 'me',
+    canMakeRecurringBookings: false,
     updatedOwnerOptions: false,
     reservationProfiles: [],
     bypassPrivileges: false,
@@ -82,6 +83,29 @@ class ReservationDetailsModal extends Component {
       bypassValidation: false,
     });
     this.getDefaultEndTime(hour, minute);
+    this.ownerCanMakeRecurringBookings('me');
+  }
+
+  ownerCanMakeRecurringBookings = (ownerValue) => {
+    if (ownerValue === 'me') {
+      if (localStorage.CapstoneReservationUser) {
+        const owner = JSON.parse(localStorage.CapstoneReservationUser);
+        api.canUserMakeRecurring(owner.id, 'user')
+          .then((r) => {
+            this.setState({
+              ownerValue,
+              canMakeRecurringBookings: r.data,
+            });
+          });
+      }
+    } else {
+      api.canUserMakeRecurring(ownerValue, 'group')
+        .then((r) => {
+          this.setState({
+            canMakeRecurringBookings: r.data,
+          });
+        });
+    }
   }
 
   generateHourOptions = (minHour, maxHour) => {
@@ -134,6 +158,7 @@ class ReservationDetailsModal extends Component {
       },
       isRecurring: false,
       updatedOwnerOptions: false,
+      ownerValue: 'me',
     });
     onClose();
   }
@@ -177,7 +202,9 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  handleOpen = () => this.setState({ show: true });
+  handleOpen = () => {
+    this.setState({ show: true });
+  }
 
   handleStartHourChange = (e, { value }) => {
     this.setState({
@@ -199,6 +226,7 @@ class ReservationDetailsModal extends Component {
 
   handleOwnerChange = (e, { value }) => {
     this.setState({ ownerValue: value });
+    this.ownerCanMakeRecurringBookings(value);
   }
 
   handleEndMinuteChange = (e, { value }) => {
@@ -526,6 +554,7 @@ class ReservationDetailsModal extends Component {
       endMinute,
       reservationProfiles,
       isLoading,
+      canMakeRecurringBookings,
     } = this.state;
     const { selectedDate } = this.props;
     let user;
@@ -605,7 +634,7 @@ class ReservationDetailsModal extends Component {
               {user && user.is_superuser ? this.renderAdminBookingForm() : null}
             </div>
             <div className="modal-description">
-              <Checkbox label="Request a recurring booking" onChange={this.handleCheckboxClick} />
+              {canMakeRecurringBookings ? <Checkbox label="Request a recurring booking" onChange={this.handleCheckboxClick} /> : null}
             </div>
             {isRecurring ? this.renderRecurringForm() : null}
             <div className="ui divider" />

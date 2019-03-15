@@ -24,10 +24,10 @@ class BookingActivityModal extends Component {
     return '';
   }
 
-  onUseAsFilter = (e, data) => {
+  onUseAsFilter = () => {
     const { log, onUseObjectAsFilter } = this.props;
 
-    onUseObjectAsFilter(log.content_type, log.object_id)
+    onUseObjectAsFilter(log.content_type, log.object_id);
   }
 
   renderBoolean = boolean => (
@@ -103,7 +103,7 @@ class BookingActivityModal extends Component {
           <div className="ui divider" />
           <div className="controls">
             <Button icon labelPosition="left" size="small" onClick={this.onUseAsFilter}>
-              <Icon name="crosshairs"  />
+              <Icon name="crosshairs" />
               Use as Filter
             </Button>
             <Button icon labelPosition="left" negative size="small" onClick={onClose}>
