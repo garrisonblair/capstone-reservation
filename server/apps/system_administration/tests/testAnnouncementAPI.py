@@ -58,13 +58,6 @@ class AnnouncementAPITest(TestCase):
         self.assertEqual(created_ann.start_date, self.today)
         self.assertEqual(created_ann.end_date, self.tomorrow)
 
-        # LogEntry test
-        latest_log = LogEntry.objects.last()  # type: LogEntry
-        self.assertEqual(latest_log.action_flag, ADDITION)
-        self.assertEqual(latest_log.object_id, str(created_ann.id))
-        self.assertEqual(latest_log.user, self.admin)
-        self.assertEqual(latest_log.object_repr, json.dumps(AnnouncementSerializer(created_ann).data))
-
     def testAnnouncementAPICreaationBeginDateLaterThanEndDate(self):
         request = self.factory.post("/announcement", {
                                         "title": self.title,
@@ -182,13 +175,6 @@ class AnnouncementAPITest(TestCase):
         self.assertEqual(ann.content, "new content")
         self.assertEqual(ann.start_date, self.today)
         self.assertEqual(ann.end_date, self.tomorrow)
-
-        # LogEntry test
-        latest_log = LogEntry.objects.last()  # type: LogEntry
-        self.assertEqual(latest_log.action_flag, CHANGE)
-        self.assertEqual(latest_log.object_id, str(ann.id))
-        self.assertEqual(latest_log.user, self.admin)
-        self.assertEqual(latest_log.object_repr, json.dumps(AnnouncementSerializer(ann).data))
 
     def testAnnouncementAPIUpdateBeginDatelaterThanEndDate(self):
 
