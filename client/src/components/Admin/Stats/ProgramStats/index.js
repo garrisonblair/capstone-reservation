@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
 /* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable max-len */
 import React, { Component } from 'react';
 import {
   Button,
@@ -12,7 +13,6 @@ import {
 } from 'semantic-ui-react';
 import { SingleDatePicker } from 'react-dates';
 // import * as moment from 'moment';
-import { Bar } from 'react-chartjs-2';
 import api from '../../../../utils/api';
 import ByProgramChart from './ByProgramChart';
 import ByGradLevelChart from './ByGradLevelChart';

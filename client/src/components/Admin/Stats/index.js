@@ -6,7 +6,6 @@ import ProgramStats from './ProgramStats';
 import '../Admin.scss';
 
 
-// eslint-disable-next-line react/prefer-stateless-function
 class Stats extends Component {
   state = {
     activeItem: 'program',
