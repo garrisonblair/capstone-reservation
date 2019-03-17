@@ -779,13 +779,13 @@ class BookingAPITest(TestCase):
                                         "booking_end_time": str(edited_end_time)[:5]
                                     }, format="json")
 
-        force_authenticate(request, user=User.objects.get(username="john"))
+        force_authenticate(request, user=User.objects.get(username="f_daigl"))
 
         response = RecurringBookingEdit.as_view()(request, earliest_booking.id)
         bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
 
         self.assertEqual(bookings.count(), 3)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         self.assertEqual(booking1.start_time, start_time1)
         self.assertEqual(booking1.end_time, end_time1)
