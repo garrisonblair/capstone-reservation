@@ -5,5 +5,5 @@ from apps.statistics.views.program_statistics import ProgramStatistics
 
 urlpatterns = [
     path(r'room_statistics', RoomStatistics.as_view()),
-    path(r'program_statistics', RoomStatistics.as_view())
+    path(r'program_statistics', ProgramStatistics.as_view())
 ]

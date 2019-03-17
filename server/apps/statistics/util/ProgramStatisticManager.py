@@ -51,9 +51,11 @@ class ProgramStatisticManager:
 
     def get_average_bookings_per_day(self, program=None, grad_level=None,
                                      start_date=None,
-                                     end_date=datetime.datetime.now().date()):
+                                     end_date=None):
         if start_date is None:
             start_date = Booking.objects.get_first_booking_date()
+        if end_date is None:
+            end_date = datetime.datetime.now().date()
 
         total_days = end_date - start_date
         total_days = total_days.days + 1
@@ -63,9 +65,11 @@ class ProgramStatisticManager:
 
     def get_average_time_booked_per_day(self, program=None, grad_level=None,
                                         start_date=None,
-                                        end_date=datetime.datetime.now().date()):
+                                        end_date=None):
         if start_date is None:
             start_date = Booking.objects.get_first_booking_date()
+        if end_date is None:
+            end_date = datetime.datetime.now().date()
 
         total_days = end_date - start_date
         total_days = total_days.days + 1
@@ -91,6 +95,7 @@ class ProgramStatisticManager:
         stats["category"] = category
         stats["num_bookings"] = self.get_num_category_bookings(category)
         stats["hours_booked"] = self.get_category_time_booked(category).total_seconds() / 3600
+        return stats
 
     def get_programs(self):
         return BookerProfile.objects.exclude(program__isnull=True).values('program').distinct()
@@ -102,27 +107,32 @@ class ProgramStatisticManager:
         return PrivilegeCategory.objects.values('name').distinct()
 
     def get_all_statistics(self, with_program, with_grad_level, with_categories, start_date=None, end_date=None):
-        all_stats = list()
+        all_stats = dict()
+
+        print(with_program, with_grad_level, with_categories)
 
         if with_program:
+            program_stats = dict()
             programs = self.get_programs()
             for program in programs:
-                all_stats.append(self.get_program_serialized_statistics(program['program'],
-                                                                        None,
-                                                                        start_date,
-                                                                        end_date))
+                name = program['program']
+                program_stats[name] = self.get_program_serialized_statistics(name, None, start_date, end_date)
+            all_stats['program'] = program_stats
 
-        elif with_grad_level:
+        if with_grad_level:
+            grad_level_stats = dict()
             grad_levels = self.get_grad_levels()
             for grad_level in grad_levels:
-                all_stats.append(self.get_program_serialized_statistics(None,
-                                                                        grad_level['graduate_level'],
-                                                                        start_date,
-                                                                        end_date))
+                name = grad_level['graduate_level']
+                grad_level_stats[name] = self.get_program_serialized_statistics(None, name, start_date, end_date)
+            all_stats['grad_level'] = grad_level_stats
 
         if with_categories:
             categories = self.get_categories()
+            categories_stats = dict()
             for category in categories:
-                all_stats.append(self.get_category_serialized_statistics(category["name"]))
+                name = category['name']
+                categories_stats[name] = self.get_category_serialized_statistics(name)
+            all_stats['category'] = categories_stats
 
         return all_stats

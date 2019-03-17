@@ -45,7 +45,8 @@ class ProgramStats extends Component {
     api.getProgramStatistics(startDate, endDate, withProgram, withGradLevel, withCategories)
       .then((response) => {
         const { data: stats } = response;
-        this.setState({ stats });
+        console.log(stats);
+        // this.setState({ stats });
       });
   }
 
@@ -84,7 +85,7 @@ class ProgramStats extends Component {
 
   handleCheckboxChange = (name) => {
     const { [name]: flag } = this.state;
-    this.setState({ [name]: !flag });
+    this.setState({ [name]: !flag }, () => { this.getStats(); });
   }
 
   onDropDownChange = (event, data) => {
@@ -192,8 +193,8 @@ class ProgramStats extends Component {
     if (stats.length === 0) {
       return [];
     }
-    const labels = stats.map(stat => stat.room.name);
-    const values = stats.map(stat => stat[type]);
+    const labels = stats.map(stat => stat.program.program);
+    const values = stats.map(stat => stat.program[type]);
     const data = {
       labels,
       datasets: [
@@ -218,18 +219,61 @@ class ProgramStats extends Component {
     );
   }
 
-  render() {
+  renderProgramStats() {
     const { selected } = this.state;
+
+    return (
+      <div className="room-stats">
+        <h2> Program stats </h2>
+        {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
+        {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Program Bookings', 'num_bookings') : ''}
+        {selected.includes('Average Time Booked Per Day') ? this.renderChart('Average Time Booked Per Day', 'average_time_booked_per_day') : ''}
+        {selected.includes('Average Bookings Per Day') ? this.renderChart('Average Bookings Per Day', 'average_bookings_per_day') : ''}
+      </div>
+    );
+  }
+
+  renderGradLevelStats() {
+    const { selected } = this.state;
+
+    return (
+      <div className="room-stats">
+        <h2> Graduate Level stats </h2>
+        {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
+        {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Program Bookings', 'num_bookings') : ''}
+        {selected.includes('Average Time Booked Per Day') ? this.renderChart('Average Time Booked Per Day', 'average_time_booked_per_day') : ''}
+        {selected.includes('Average Bookings Per Day') ? this.renderChart('Average Bookings Per Day', 'average_bookings_per_day') : ''}
+      </div>
+    );
+  }
+
+  renderCategoryStats() {
+    const { selected } = this.state;
+
+    return (
+      <div className="room-stats">
+        <h2> Category stats </h2>
+        {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
+        {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Program Bookings', 'num_bookings') : ''}
+      </div>
+    );
+  }
+
+  render() {
+    const {
+      withProgram,
+      withGradLevel,
+      withCategories,
+    } = this.state;
 
     return (
       <div className="room-stats">
         <h1> Program stats </h1>
         {this.renderDateFilter()}
         {this.renderDropDown()}
-        {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
-        {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Room Bookings', 'num_room_bookings') : ''}
-        {selected.includes('Average Time Booked Per Day') ? this.renderChart('Average Time Booked Per Day', 'average_time_booked_per_day') : ''}
-        {selected.includes('Average Bookings Per Day') ? this.renderChart('Average Bookings Per Day', 'average_bookings_per_day') : ''}
+        {withProgram ? this.renderProgramStats() : null}
+        {withGradLevel ? this.renderGradLevelStats() : null}
+        {withCategories ? this.renderCategoryStats() : null}
       </div>
     );
   }

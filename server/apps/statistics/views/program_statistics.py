@@ -12,11 +12,24 @@ class ProgramStatistics(APIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
 
     def get(self, request):
-        with_program = request.GET.getlist('with_program')
-        with_grad_level = request.GET.getlist('with_grad_level')
-        with_categories = request.GET.getlist('with_categories')
+        with_program = request.GET.get('withProgram')
+        with_grad_level = request.GET.get('withGradLevel')
+        with_categories = request.GET.get('withCategories')
         start_date = request.GET.get('start')
         end_date = request.GET.get('end')
+
+        if with_program == 'true':
+            with_program = True
+        else:
+            with_program = False
+        if with_grad_level == 'true':
+            with_grad_level = True
+        else:
+            with_grad_level = False
+        if with_categories == 'true':
+            with_categories = True
+        else:
+            with_categories = False
 
         if start_date is not None:
             start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d").date()
