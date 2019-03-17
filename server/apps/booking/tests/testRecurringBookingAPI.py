@@ -338,100 +338,6 @@ class BookingAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(bookings.count(), 0)
 
-    def testCancelRecurringBookingSingleInstanceSuccess(self):
-
-        start1 = datetime.strptime("2019-10-01 12:00", "%Y-%m-%d %H:%M")
-        end1 = datetime.strptime("2019-10-15 15:00", "%Y-%m-%d %H:%M")
-        start_date1 = start1.date()
-        end_date1 = end1.date()
-        start_time1 = start1.time()
-        end_time1 = end1.time()
-
-        start2 = datetime.strptime("2019-10-08 12:00", "%Y-%m-%d %H:%M")
-        end2 = datetime.strptime("2019-10-08 15:00", "%Y-%m-%d %H:%M")
-        start_date2 = start2.date()
-        end_date2 = end2.date()
-        start_time2 = start2.time()
-        end_time2 = end2.time()
-
-        start3 = datetime.strptime("2019-10-15 12:00", "%Y-%m-%d %H:%M")
-        end3 = datetime.strptime("2019-10-15 15:00", "%Y-%m-%d %H:%M")
-        start_date3 = start3.date()
-        end_date3 = end3.date()
-        start_time3 = start3.time()
-        end_time3 = end3.time()
-
-        recurring_booking = RecurringBooking(
-            start_date=start_date1,
-            end_date=end_date1,
-            booking_start_time=start_time1,
-            booking_end_time=end_time1,
-            room=self.room,
-            group=None,
-            booker=self.user1,
-            skip_conflicts=True
-        ).save()
-
-        recurring_booking = RecurringBooking.objects.get(start_date=start_date1,
-                                                         end_date=end_date1,
-                                                         booking_start_time=start_time1,
-                                                         booking_end_time=end_time1,
-                                                         room=self.room,
-                                                         group=None,
-                                                         booker=self.user1,
-                                                         skip_conflicts=True)
-
-        booking1 = Booking(
-            booker=self.user1,
-            room=self.room,
-            date=self.start_date,
-            start_time=start_time1,
-            end_time=end_time1,
-            recurring_booking=recurring_booking,
-            confirmed=False
-        ).save()
-
-        booking2 = Booking(
-            booker=self.user1,
-            room=self.room,
-            date=start_date2,
-            start_time=start_time2,
-            end_time=end_time2,
-            recurring_booking=recurring_booking,
-            confirmed=False
-        ).save()
-
-        booking3 = Booking(
-            booker=self.user1,
-            room=self.room,
-            date=start_date3,
-            start_time=start_time3,
-            end_time=end_time3,
-            recurring_booking=recurring_booking,
-            confirmed=False
-        ).save()
-
-        bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
-        self.assertEqual(bookings.count(), 3)
-
-        earliest_booking = bookings[0]
-        for booking in bookings:
-            if booking.id < earliest_booking.id:
-                earliest_booking = booking
-
-        request = self.factory.post("booking/" + str(earliest_booking.id) + "/cancel_recurring_booking",
-                                    {
-                                        "delete_all_instances": False,
-                                    }, format="json")
-
-        force_authenticate(request, user=User.objects.get(username="john"))
-
-        response = RecurringBookingCancel.as_view()(request, earliest_booking.id)
-        bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(bookings.count(), 2)
-
     def testCancelRecurringBookingAllInstancesFailureNonExistentBooking(self):
 
         start1 = datetime.strptime("2019-10-01 12:00", "%Y-%m-%d %H:%M")
@@ -732,8 +638,8 @@ class BookingAPITest(TestCase):
                                     {
                                         "edit_all_instances": True,
                                         "room": edited_room.id,
-                                        "start_time": str(edited_start_time)[:5],
-                                        "end_time": str(edited_end_time)[:5]
+                                        "booking_start_time": str(edited_start_time)[:5],
+                                        "booking_end_time": str(edited_end_time)[:5]
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -755,149 +661,6 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking3.start_time, edited_start_time)
         self.assertEqual(booking3.end_time, edited_end_time)
         self.assertEqual(booking3.room.id, edited_room.id)
-
-    def testEditRecurringBookingSingleInstanceSuccess(self):
-
-        start1 = datetime.strptime("2019-10-01 12:00", "%Y-%m-%d %H:%M")
-        end1 = datetime.strptime("2019-10-15 15:00", "%Y-%m-%d %H:%M")
-        start_date1 = start1.date()
-        end_date1 = end1.date()
-        start_time1 = start1.time()
-        end_time1 = end1.time()
-
-        start2 = datetime.strptime("2019-10-08 12:00", "%Y-%m-%d %H:%M")
-        end2 = datetime.strptime("2019-10-08 15:00", "%Y-%m-%d %H:%M")
-        start_date2 = start2.date()
-        end_date2 = end2.date()
-        start_time2 = start2.time()
-        end_time2 = end2.time()
-
-        start3 = datetime.strptime("2019-10-15 12:00", "%Y-%m-%d %H:%M")
-        end3 = datetime.strptime("2019-10-15 15:00", "%Y-%m-%d %H:%M")
-        start_date3 = start3.date()
-        end_date3 = end3.date()
-        start_time3 = start3.time()
-        end_time3 = end3.time()
-
-        recurring_booking = RecurringBooking(
-            start_date=start_date1,
-            end_date=end_date1,
-            booking_start_time=start_time1,
-            booking_end_time=end_time1,
-            room=self.room,
-            group=None,
-            booker=self.user1,
-            skip_conflicts=True
-        ).save()
-
-        recurring_booking = RecurringBooking.objects.get(start_date=start_date1,
-                                                         end_date=end_date1,
-                                                         booking_start_time=start_time1,
-                                                         booking_end_time=end_time1,
-                                                         room=self.room,
-                                                         group=None,
-                                                         booker=self.user1,
-                                                         skip_conflicts=True)
-
-        booking1 = Booking(
-            booker=self.user1,
-            room=self.room,
-            date=self.start_date,
-            start_time=start_time1,
-            end_time=end_time1,
-            recurring_booking=recurring_booking,
-            confirmed=False
-        ).save()
-
-        booking2 = Booking(
-            booker=self.user1,
-            room=self.room,
-            date=start_date2,
-            start_time=start_time2,
-            end_time=end_time2,
-            recurring_booking=recurring_booking,
-            confirmed=False
-        ).save()
-
-        booking3 = Booking(
-            booker=self.user1,
-            room=self.room,
-            date=start_date3,
-            start_time=start_time3,
-            end_time=end_time3,
-            recurring_booking=recurring_booking,
-            confirmed=False
-        ).save()
-
-        bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
-        self.assertEqual(bookings.count(), 3)
-
-        booking1 = bookings[0]
-        booking2 = bookings[1]
-        booking3 = bookings[2]
-
-        self.assertEqual(booking1.start_time, start_time1)
-        self.assertEqual(booking1.end_time, end_time1)
-        self.assertEqual(booking1.room, self.room)
-        self.assertEqual(booking1.date, start_date1)
-
-        self.assertEqual(booking2.start_time, start_time2)
-        self.assertEqual(booking2.end_time, end_time2)
-        self.assertEqual(booking2.room, self.room)
-        self.assertEqual(booking2.date, start_date2)
-
-        self.assertEqual(booking3.start_time, start_time3)
-        self.assertEqual(booking3.end_time, end_time3)
-        self.assertEqual(booking3.room, self.room)
-        self.assertEqual(booking3.date, start_date3)
-
-        edited_start = datetime.strptime("2019-10-02 12:00", "%Y-%m-%d %H:%M")
-        edited_end = datetime.strptime("2019-10-02 15:00", "%Y-%m-%d %H:%M")
-        edited_date = edited_start.date()
-        edited_start_time = edited_start.time()
-        edited_end_time = edited_end.time()
-
-        edited_room = Room.objects.get(name="H833-17")
-
-        earliest_booking = bookings[0]
-        for booking in bookings:
-            if booking.id < earliest_booking.id:
-                earliest_booking = booking
-
-        request = self.factory.post("booking/" + str(earliest_booking.id) + "/edit_recurring_booking",
-                                    {
-                                        "edit_all_instances": False,
-                                        "room": edited_room.id,
-                                        "start_time": str(edited_start_time)[:5],
-                                        "end_time": str(edited_end_time)[:5],
-                                        "date": edited_date,
-                                    }, format="json")
-
-        force_authenticate(request, user=User.objects.get(username="john"))
-
-        response = RecurringBookingEdit.as_view()(request, earliest_booking.id)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        bookings = Booking.objects.all().filter(recurring_booking=recurring_booking)
-        booking1 = Booking.objects.get(id=earliest_booking.id)
-
-        self.assertEqual(bookings.count(), 3)
-
-        self.assertEqual(booking1.start_time, edited_start_time)
-        self.assertEqual(booking1.end_time, edited_end_time)
-        self.assertEqual(booking1.room, edited_room)
-        self.assertEqual(booking1.date, edited_date)
-
-        self.assertEqual(booking2.start_time, start_time2)
-        self.assertEqual(booking2.end_time, end_time2)
-        self.assertEqual(booking2.room, self.room)
-        self.assertEqual(booking2.date, start_date2)
-
-        self.assertEqual(booking3.start_time, start_time3)
-        self.assertEqual(booking3.end_time, end_time3)
-        self.assertEqual(booking3.room, self.room)
-        self.assertEqual(booking3.date, start_date3)
 
     def testEditRecurringBookingAllInstancesFailureMultiDateChange(self):
 
@@ -1012,8 +775,8 @@ class BookingAPITest(TestCase):
                                         "edit_all_instances": True,
                                         "room": edited_room.id,
                                         "date": edited_date,
-                                        "start_time": str(edited_start_time)[:5],
-                                        "end_time": str(edited_end_time)[:5]
+                                        "booking_start_time": str(edited_start_time)[:5],
+                                        "booking_end_time": str(edited_end_time)[:5]
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -1152,8 +915,8 @@ class BookingAPITest(TestCase):
                                         "edit_all_instances": True,
                                         "room": edited_room.id,
                                         "date": edited_date,
-                                        "start_time": str(edited_start_time)[:5],
-                                        "end_time": str(edited_end_time)[:5]
+                                        "booking_start_time": str(edited_start_time)[:5],
+                                        "booking_end_time": str(edited_end_time)[:5]
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
@@ -1291,8 +1054,8 @@ class BookingAPITest(TestCase):
                                     {
                                         "edit_all_instances": False,
                                         "room": edited_room.id,
-                                        "start_time": str(edited_start_time)[:5],
-                                        "end_time": str(edited_end_time)[:5],
+                                        "booking_start_time": str(edited_start_time)[:5],
+                                        "booking_end_time": str(edited_end_time)[:5],
                                         "date": edited_date,
                                     }, format="json")
 
@@ -1434,8 +1197,8 @@ class BookingAPITest(TestCase):
                                     {
                                         "edit_all_instances": True,
                                         "room": edited_room.id,
-                                        "start_time": str(edited_start_time)[:5],
-                                        "end_time": str(edited_end_time)[:5],
+                                        "booking_start_time": str(edited_start_time)[:5],
+                                        "booking_end_time": str(edited_end_time)[:5],
                                         "date": edited_date,
                                     }, format="json")
 
@@ -1577,8 +1340,8 @@ class BookingAPITest(TestCase):
                                     {
                                         "edit_all_instances": False,
                                         "room": edited_room.id,
-                                        "start_time": str(edited_start_time)[:5],
-                                        "end_time": str(edited_end_time)[:5],
+                                        "booking_start_time": str(edited_start_time)[:5],
+                                        "booking_end_time": str(edited_end_time)[:5],
                                         "date": edited_date,
                                     }, format="json")
 
