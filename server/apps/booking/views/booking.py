@@ -2,7 +2,6 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.core.files import File
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
