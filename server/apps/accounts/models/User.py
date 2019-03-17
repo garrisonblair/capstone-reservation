@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User as DjangoUser
-from django.core import mail
 from django.conf import settings
 
 import apps.accounts.tasks as tasks
