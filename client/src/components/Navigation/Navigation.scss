@@ -3,12 +3,16 @@
     border: 0px;
 }
 
-.SingleDatePickerInput__withBorder {
+.navigation__bar .SingleDatePickerInput__withBorder {
     display: none !important;
 }
 
 .navigation__title {
 	background-color: #932439 !important;
+}
+
+.navigation__forDisplay {
+	background-color: #46c00e !important;
 }
 
 .navigation__user {

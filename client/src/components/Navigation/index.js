@@ -8,17 +8,20 @@ import {
   Icon,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
+import moment from 'moment';
 import SelectedDate from '../Calendar/SelectedDate';
 import Login from '../Login';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 import './Navigation.scss';
+import NotificationModal from '../NotificationModal';
 
 
 class Navigation extends Component {
   state = {
     showLogin: false,
     update: false,
+    showNotificationModal: false,
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -41,6 +44,11 @@ class Navigation extends Component {
     }
   }
 
+  handleForDisplay = () => {
+    const { history } = this.props;
+    history.push('/forDisplay');
+  }
+
   handleLogin = () => {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
@@ -51,6 +59,9 @@ class Navigation extends Component {
             position: 'top',
             type: 'success',
             title: 'Logged out',
+            toast: true,
+            showConfirmButton: false,
+            timer: 2000,
           });
           this.setState({ showLogin: false });
           if (history.location.pathname !== '/') {
@@ -62,8 +73,16 @@ class Navigation extends Component {
     }
   }
 
+  handleClickNotify = () => {
+    this.setState({ showNotificationModal: true });
+  }
+
   closeLogin = () => {
     this.setState({ showLogin: false });
+  }
+
+  closeNotificationModal = () => {
+    this.setState({ showNotificationModal: false });
   }
 
   handleChangeDate = (date) => {
@@ -105,7 +124,7 @@ class Navigation extends Component {
     return component;
   }
 
-  renderAccountDropDown = () => {
+  renderLoggedMenuInInfo = () => {
     if (!localStorage.CapstoneReservationUser) {
       return '';
     }
@@ -113,62 +132,80 @@ class Navigation extends Component {
     const { history } = this.props;
     const user = storage.getUser();
     const component = (
-      <Dropdown pointing item text={`${user.username}`}>
-        <Dropdown.Menu style={{ left: 'auto', right: 0 }}>
-          {/* <Dropdown.Header>
+      <React.Fragment>
+        <Menu.Item onClick={this.handleClickNotify}>
+          <Icon name="bell" />
+          Free Rooms
+        </Menu.Item>
+        <Dropdown pointing item text={`${user.username}`}>
+          <Dropdown.Menu style={{ left: 'auto', right: 0 }}>
+            {/* <Dropdown.Header>
             <Icon name="user" />
             {`Logged in as ${user.username}`}
           </Dropdown.Header>
           <Dropdown.Divider /> */}
-          <Dropdown.Item icon="th" text="Dashboard" onClick={() => history.push('dashboard')} />
-          <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
-        </Dropdown.Menu>
-      </Dropdown>
+            <Dropdown.Item icon="th" text="Dashboard" onClick={() => history.push('dashboard')} />
+            <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
+          </Dropdown.Menu>
+        </Dropdown>
+      </React.Fragment>
     );
 
-    return component;
-  }
-
-  renderLoggedInInfo = () => {
-    if (!storage.getUser()) {
-      return '';
-    }
-
-    const user = storage.getUser();
-    const component = (
-      <Menu.Item className="navigation__user">
-        <Icon name="user" />
-        {`Logged in as ${user.username}`}
-      </Menu.Item>
-    );
     return component;
   }
 
   render() {
-    const { showLogin } = this.state;
-    const { showDate } = this.props;
+    const { showLogin, update, showNotificationModal } = this.state;
+    const { showDate, forDisplay, history } = this.props;
+
+    if (forDisplay) {
+      return (
+        <div className="navigation">
+          <Menu inverted fixed="top" className="navigation__bar">
+            <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
+              Capstone
+            </Menu.Item>
+            <Menu.Item>
+              {moment().format('ddd MMM Do YYYY')}
+            </Menu.Item>
+          </Menu>
+        </div>
+      );
+    }
 
     return (
       <div className="navigation">
         <Menu inverted fixed="top" className="navigation__bar">
           <Menu.Item className="navigation__title" onClick={this.handleClickLogo}>
-            Capstone
+            {history.location.pathname === '/'
+              ? 'Capstone'
+              : <Icon name="arrow left" size="large" color="black" />
+            }
           </Menu.Item>
           <Menu.Item>
             <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
           </Menu.Item>
-          { showDate
+          {storage.checkAdmin() ? (
+            <Menu.Item className="navigation__forDisplay" onClick={this.handleForDisplay}>
+              For Display
+            </Menu.Item>
+          )
+            : null
+          }
+          {showDate
             ? (
               <SelectedDate
                 changeDate={this.handleChangeDate}
                 onOpenDatePicker={this.onOpenDatePicker}
                 onCloseDatePicker={this.onCloseDatePicker}
+                forDisplay={forDisplay}
+                update={update}
               />
             )
             : null}
           <Menu.Menu position="right" inverted="true" className="navigation__container">
             {this.renderAdminSettings()}
-            {this.renderAccountDropDown()}
+            {this.renderLoggedMenuInInfo()}
             <Menu.Item
               onClick={this.handleLogin}
               className="navigation__login"
@@ -181,6 +218,9 @@ class Navigation extends Component {
             onClose={this.closeLogin}
           />
         </Menu>
+        {showNotificationModal ? (
+          <NotificationModal onClose={this.closeNotificationModal} />
+        ) : null}
       </div>
     );
   }
@@ -191,13 +231,15 @@ Navigation.propTypes = {
   changeDate: PropTypes.func,
   onOpenDatePicker: PropTypes.func,
   onCloseDatePicker: PropTypes.func,
+  forDisplay: PropTypes.bool,
 };
 
 Navigation.defaultProps = {
   showDate: false,
-  changeDate: () => {},
-  onOpenDatePicker: () => {},
-  onCloseDatePicker: () => {},
+  changeDate: () => { },
+  onOpenDatePicker: () => { },
+  onCloseDatePicker: () => { },
+  forDisplay: false,
 };
 
 export default withRouter(Navigation);

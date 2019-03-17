@@ -24,6 +24,7 @@ class Settings extends Component {
       booking_edit_lock_timeout: 0,
       group_can_invite_after_privilege_set: true,
       check_for_expired_bookings_active: false,
+      campons_refutable: false,
       check_for_expired_bookings_frequency_seconds: 30,
       booking_time_to_expire_minutes: 30,
       manual_booking_confirmation: false,
@@ -104,6 +105,15 @@ class Settings extends Component {
     });
   }
 
+  handleCamponsRefutable = (e, data) => {
+    const { checked } = data;
+    const { settings } = this.state;
+    settings.campons_refutable = checked;
+    this.setState({
+      settings,
+    });
+  }
+
   handleCheckForExpireBookingFrequency = (e, data) => {
     const { value } = data;
     const { settings } = this.state;
@@ -168,6 +178,7 @@ class Settings extends Component {
       booking_edit_lock_timeout,
       group_can_invite_after_privilege_set,
       check_for_expired_bookings_active,
+      campons_refutable,
       check_for_expired_bookings_frequency_seconds,
       booking_time_to_expire_minutes,
       manual_booking_confirmation,
@@ -220,6 +231,12 @@ class Settings extends Component {
             label="Bookings expire"
             checked={check_for_expired_bookings_active}
             onChange={this.handleCheckForExpiredBookings}
+          />
+          <Checkbox
+            className="settings_item"
+            label="Campons are Refutable"
+            checked={campons_refutable}
+            onChange={this.handleCamponsRefutable}
           />
           <Input
             className="settings_item"

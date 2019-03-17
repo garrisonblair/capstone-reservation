@@ -14,6 +14,16 @@ class SelectedDate extends Component {
     date: moment(),
   }
 
+  static getDerivedStateFromProps(props, state) {
+    if (props.update !== state.update && props.forDisplay) {
+      return {
+        update: props.update,
+        date: moment(),
+      };
+    }
+    return null;
+  }
+
   handleClickNextDate = () => {
     const { date } = this.state;
     this.setState({ date: date.add(1, 'days').calendar() });
@@ -49,6 +59,7 @@ class SelectedDate extends Component {
 
   render() {
     const { date, focusDate } = this.state;
+
     return (
       <Menu.Item position="right" className="menu--date">
         <Icon

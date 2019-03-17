@@ -13,6 +13,19 @@
   }
 }
 
+.edit {
+  &.privilege-modal {
+    width: 400px !important;
+    .field {
+      .input,
+      .dropdown,
+      .button {
+        width: 350px;
+      }
+    }
+  }
+}
+
 .swal2-content {
   .error-message {
     .field {

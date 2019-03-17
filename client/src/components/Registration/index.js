@@ -49,7 +49,7 @@ class Registration extends Component {
         sweetAlert(
           'A verification link has been sent to your ENCS email account.',
           'Please click on the link to continue the registration process.',
-          'success',
+          'success.  It might take a couple minutes for you to receive the email.',
         );
       })
       .catch((error) => {

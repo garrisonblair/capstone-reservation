@@ -9,6 +9,7 @@ import {
   Input,
   Button,
   Segment,
+  Grid,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import 'react-dates/initialize';
@@ -18,6 +19,7 @@ import moment from 'moment';
 import api from '../../../utils/api';
 import BookingActivityModal from './BookingActivityModal';
 import '../Admin.scss';
+import UserSearch from './../../ReusableComponents/UserSearch';
 
 class BookingActivity extends Component {
   static formatAction(flag) {
@@ -40,13 +42,14 @@ class BookingActivity extends Component {
   }
 
   state = {
-    column: null,
-    direction: null,
+    column: 'date',
+    direction: 'descending',
     logs: [],
     logsToDisplay: [],
     tableHeaders: ['date', 'type', 'action', 'user'],
     activePage: 1,
     logsPerPage: 10,
+    totalLogCount: 0,
     elementsPerPage: [
       { text: '5', value: 5 },
       { text: '10', value: 10 },
@@ -78,90 +81,10 @@ class BookingActivity extends Component {
       });
   }
 
-  getLogs = (data) => {
-    this.setState({ isLoading: true });
-    api.getLogEntries(data)
-      .then((response) => {
-        this.setState({ isLoading: false });
-        if (response.status === 200) {
-          const logsToDisplay = this.setLogsToDisplay(response.data);
-          this.setState({ logs: response.data, logsToDisplay });
-        }
-      })
-      .catch(() => {
-        sweetAlert(':(', 'We are sorry. There was a problem getting the logs', 'error');
-      });
-  }
-
-  setLogsToDisplay(data) {
-    const { logsPerPage } = this.state;
-    const logs = cloneDeep(data);
-    const logsToDisplay = [];
-    while (logs.length) {
-      logsToDisplay.push(logs.splice(0, logsPerPage));
-    }
-    return logsToDisplay;
-  }
-
-  handleSort = clickedColumn => () => {
-    const { column, logs, direction } = this.state;
-    if (column !== clickedColumn) {
-      this.setState({
-        column: clickedColumn,
-        logs: _.sortBy(logs, [clickedColumn]),
-        direction: 'ascending',
-      });
-
-      return;
-    }
-
-    this.setState({
-      logs: logs.reverse(),
-      direction: direction === 'ascending' ? 'descending' : 'ascending',
-    }, () => {
-      this.setState({ logsToDisplay: this.setLogsToDisplay(logs) });
-    });
-  }
-
-  handlePaginationChange = (e, { activePage }) => this.setState({ activePage });
-
-  handlePaginationSettingsChange = (e, change) => {
-    const { logs } = this.state;
-    this.setState({ activePage: 1, logsPerPage: change.value }, () => {
-      this.setState({ logsToDisplay: this.setLogsToDisplay(logs) });
-    });
-  }
-
-  showDetails = (log) => {
-    this.setState({ selectedLog: log }, () => {
-      this.setState({ showBookingActivityModal: true });
-    });
-  }
-
-  handleSearchInput = (e, change) => {
-    this.setState({ [change.name]: change.value !== '' ? change.value : null });
-  }
-
-  // handleContentTypeSearch = (e, change) => {
-  //   this.setState({ })
-  //   api.getLogEntries(data)
-  //     .then((response) => {
-  //       if (response.status === 200) {
-  //         const logsToDisplay = this.setLogsToDisplay(response.data);
-  //         this.setState({ logs: response.data, logsToDisplay });
-  //       }
-  //     })
-  //     .catch(() => {
-  //       sweetAlert(':(', 'We are sorry. There was a problem getting the logs', 'error');
-  //     });
-  // }
-
-  handleOnCloseBookingActivityModal = () => {
-    this.setState({ showBookingActivityModal: false, selectedLog: null });
-  }
-
-  handleSearch = () => {
+  getLogs = () => {
     const {
+      logsPerPage,
+      activePage,
       from,
       to,
       contentTypeId,
@@ -176,7 +99,65 @@ class BookingActivity extends Component {
       object_id: objectId,
       user_id: userId,
     };
-    this.getLogs(data);
+
+    this.setState({ isLoading: true });
+    data.limit = logsPerPage;
+    data.offset = logsPerPage * activePage - logsPerPage;
+    api.getLogEntries(data)
+      .then((response) => {
+        this.setState({ isLoading: false });
+        if (response.status === 200) {
+          this.setState({ logs: response.data.results,
+                          logsToDisplay: response.data.results,
+                          totalLogCount: response.data.count
+                          });
+        }
+      })
+      .catch(() => {
+        sweetAlert(':(', 'We are sorry. There was a problem getting the logs', 'error');
+      });
+  }
+
+  handlePaginationChange = (e, { activePage }) => {
+    this.setState({ activePage }, this.getLogs);
+  }
+
+  handlePaginationSettingsChange = (e, change) => {
+    const { logs } = this.state;
+    this.setState({ activePage: 1, logsPerPage: change.value }, this.getLogs);
+  }
+
+  showDetails = (log) => {
+    this.setState({ selectedLog: log }, () => {
+      this.setState({ showBookingActivityModal: true });
+    });
+  }
+
+  handleSearchInput = (e, change) => {
+    this.setState({ [change.name]: change.value !== '' ? change.value : null });
+  }
+
+  handleUserSelect = (user) => {
+    if (user) {
+      this.setState({ userId: user.id });
+    } else {
+      this.setState({ userId: null});
+    }
+  }
+
+  handleOnUseObjectAsFilter = (content_type, id) => {
+    this.handleSearchInput(null, {name:'contentTypeId', value: content_type.id});
+    this.handleSearchInput(null, {name:'objectId', value: id});
+
+    this.handleOnCloseBookingActivityModal();
+  }
+
+  handleOnCloseBookingActivityModal = () => {
+    this.setState({ showBookingActivityModal: false, selectedLog: null });
+  }
+
+  handleSearch = () => {
+    this.getLogs();
   }
 
   handleClear = () => {
@@ -194,7 +175,7 @@ class BookingActivity extends Component {
     const { logsToDisplay, activePage } = this.state;
     return (
       <Table.Body>
-        {logsToDisplay[activePage - 1].map(log => (
+        {logsToDisplay.map(log => (
           <Table.Row key={log.id} onClick={() => this.showDetails(log)}>
             <Table.Cell>
               {BookingActivity.formatDate(log.action_time)}
@@ -238,8 +219,10 @@ class BookingActivity extends Component {
       contentTypeId,
       objectId,
       userId,
+      logsPerPage,
+      totalLogCount
     } = this.state;
-    const totalPages = logsToDisplay.length;
+    const totalPages = Math.ceil(totalLogCount / logsPerPage);
 
     const contentTypesOptions = [];
     contentTypes.forEach((c) => {
@@ -252,40 +235,61 @@ class BookingActivity extends Component {
 
     return (
       <div>
-        <div>
-          <SingleDatePicker
-            isOutsideRange={() => false}
-            numberOfMonths={1}
-            date={from}
-            onDateChange={date => this.setState({ from: date })}
-            focused={focusedFrom}
-            onFocusChange={({ focused }) => this.setState({ focusedFrom: focused })}
-            id="from"
-            placeholder="From"
-          />
-          <SingleDatePicker
-            isOutsideRange={() => false}
-            numberOfMonths={1}
-            date={to}
-            onDateChange={date => this.setState({ to: date })}
-            focused={focusedTo}
-            onFocusChange={({ focused }) => this.setState({ focusedTo: focused })}
-            id="to"
-            placeholder="To"
-          />
-        </div>
-        <Dropdown placeholder="Type..." fluid search selection options={contentTypesOptions} name="contentTypeId" value={contentTypeId == null ? '' : contentTypeId} onChange={this.handleSearchInput} />
-        <Input placeholder="Object ID..." name="objectId" value={objectId == null ? '' : objectId} onChange={this.handleSearchInput} />
-        <Input placeholder="User..." name="userId" value={userId == null ? '' : userId} onChange={this.handleSearchInput} />
+        <SingleDatePicker
+          isOutsideRange={() => false}
+          numberOfMonths={1}
+          date={from}
+          onDateChange={date => this.setState({ from: date })}
+          focused={focusedFrom}
+          onFocusChange={({ focused }) => this.setState({ focusedFrom: focused })}
+          id="from"
+          placeholder="From"
+        />
+        <SingleDatePicker
+          isOutsideRange={() => false}
+          numberOfMonths={1}
+          date={to}
+          onDateChange={date => this.setState({ to: date })}
+          focused={focusedTo}
+          onFocusChange={({ focused }) => this.setState({ focusedTo: focused })}
+          id="to"
+          placeholder="To"
+        />
+        <Grid >
+          <Grid.Column largeScreen={5} mobile={16}>
+            <Dropdown
+              fluid
+              placeholder="Type..."
+              search
+              selection
+              options={contentTypesOptions}
+              name="contentTypeId"
+              value={contentTypeId == null ? '' : contentTypeId} onChange={this.handleSearchInput}
+            />
+          </Grid.Column>
+          <Grid.Column largeScreen={5} mobile={16}>
+            <Input
+              fluid
+              placeholder="Object ID..."
+              name="objectId"
+              value={objectId == null ? '' : objectId}
+              onChange={this.handleSearchInput}
+            />
+          </Grid.Column>
+          <Grid.Column largeScreen={6} mobile={16}>
+            <UserSearch
+              maxUsers={10}
+              onSelect={this.handleUserSelect}
+            />
+          </Grid.Column>
+        </Grid>
         <Button onClick={this.handleSearch}>Filter</Button>
         <Button onClick={this.handleClear}>Clear</Button>
-        <Table sortable celled fixed selectable>
+        <Table celled fixed selectable>
           <Table.Header>
             <Table.Row>
               {tableHeaders.map(header => (
                 <Table.HeaderCell
-                  sorted={column === header ? direction : null}
-                  onClick={header === 'date' ? this.handleSort(header) : null}
                   key={header}
                 >
                   {header}
@@ -323,6 +327,7 @@ class BookingActivity extends Component {
             log={selectedLog}
             show={showBookingActivityModal}
             onClose={this.handleOnCloseBookingActivityModal}
+            onUseObjectAsFilter={this.handleOnUseObjectAsFilter}
           />
         </Segment>
       </div>

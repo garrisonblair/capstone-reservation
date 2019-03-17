@@ -269,7 +269,7 @@ function getAdminSettings() {
   const headers = getTokenHeader();
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/settings`,
+    url: `${settings.API_ROOT}/getSettings`,
     headers,
     withCredentials: true,
   });
@@ -311,6 +311,17 @@ function createPrivilege(data) {
   return axios({
     method: 'POST',
     url: `${settings.API_ROOT}/privilege_category`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function updatePrivilege(id, data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/privilege_category/${id}`,
     headers,
     data,
     withCredentials: true,
@@ -430,15 +441,16 @@ function getContentTypes() {
   });
 }
 
-function getUsers(searchText) {
+function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaff) {
   const headers = getTokenHeader();
 
   const params = {};
-
-  if (searchText) {
-    params.search_text = searchText;
-  }
-
+  if (searchText !== undefined) { params.search_term = searchText; }
+  if (isActive !== undefined) { params.is_active = isActive ? 'True' : 'False'; }
+  if (isSuperUser !== undefined) { params.is_superuser = isSuperUser ? 'True' : 'False'; }
+  if (isStaff !== undefined) { params.is_staff = isStaff ? 'True' : 'False'; }
+  if (searchLimit !== undefined) { params.limit = searchLimit; }
+  if (offset !== undefined) { params.offset = offset; }
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
@@ -677,6 +689,25 @@ function updateAnnouncement(announcement) {
   });
 }
 
+function postNotification(bookerId, rooms, date, rangeStart, rangeEnd, minBookingTime) {
+  const headers = getTokenHeader();
+  const data = {
+    booker: bookerId,
+    rooms,
+    date,
+    range_start: rangeStart,
+    range_end: rangeEnd,
+    minimum_booking_time: minBookingTime,
+  };
+
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/notify`,
+    headers,
+    data,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -706,6 +737,7 @@ const api = {
   getPrivileges,
   getMyPrivileges,
   createPrivilege,
+  updatePrivilege,
   getMyGroups,
   createGroup,
   addMembersToGroup,
@@ -735,6 +767,7 @@ const api = {
   getAllAnnouncements,
   deleteAnnouncement,
   updateAnnouncement,
+  postNotification,
 };
 
 export default api;

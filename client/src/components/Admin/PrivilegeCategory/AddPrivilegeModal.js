@@ -35,7 +35,7 @@ class AddPrivilegeModal extends Component {
 
   handleSubmit = () => {
     const {
-      name, parent, maxDaysUntilBooking,
+      name, parent, course, maxDaysUntilBooking,
       maxBookingsPerDay, maxDaysWithBookings, maxRecurringBookings, recurringBookingPermission,
       isDefault, bookingStartTime, bookingEndTime,
     } = this.state;
@@ -46,6 +46,10 @@ class AddPrivilegeModal extends Component {
 
     if (parent) {
       data.parent_category = parent;
+    }
+
+    if (course) {
+      data.related_course = course;
     }
 
     if (maxDaysUntilBooking) {
@@ -94,6 +98,7 @@ class AddPrivilegeModal extends Component {
             this.setState({
               name: '',
               parent: '',
+              course: '',
               maxDaysUntilBooking: 0,
               maxBookingsPerDay: 0,
               maxDaysWithBookings: 0,
@@ -179,6 +184,16 @@ class AddPrivilegeModal extends Component {
             selection
             options={privilegeOptions}
             onChange={this.handleParentPrivilegeChange}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Input
+            fluid
+            size="small"
+            icon="text cursor"
+            iconPosition="left"
+            placeholder="Related Course "
+            onChange={e => this.handleInputChange('course', e)}
           />
         </Form.Field>
         <Form.Field>

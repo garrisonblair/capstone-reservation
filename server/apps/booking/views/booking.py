@@ -1,5 +1,7 @@
 import datetime
+
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,10 +15,11 @@ from apps.booking.models.Booking import Booking
 from apps.booking.models.RecurringBooking import RecurringBooking
 from apps.booking.models.CampOn import CampOn
 from apps.booking.serializers.booking import \
-    BookingSerializer, AdminBookingSerializer, ReadBookingSerializer, MyBookingSerializer
-from apps.booking.serializers.recurring_booking import ReadRecurringBookingSerializer
-from apps.booking.serializers.campon import ReadCampOnSerializer
+    BookingSerializer, AdminBookingSerializer, ReadBookingSerializer, DetailedBookingSerializer
+from apps.booking.serializers.recurring_booking import DetailedRecurringBookingSerializer
+from apps.booking.serializers.campon import MyCampOnSerializer
 from apps.accounts.exceptions import PrivilegeError
+from apps.notifications.models.Notification import Notification
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
 
@@ -149,8 +152,10 @@ class BookingRetrieveUpdateDestroy(APIView):
         settings = SystemSettings.get_settings()
         timeout = (now + settings.booking_edit_lock_timeout).time()
 
-        # time = datetime.datetime.strptime(data["start_time"], "%H:%M").time()
-        # pdb.set_trace()
+        if "note" in data:
+            if data["note"] is None:
+                data["show_note_on_calendar"] = False
+                data["display_note"] = False
 
         if "start_time" in data:
             if not datetime.datetime.strptime(data["start_time"], "%H:%M").time() == booking.start_time:
@@ -181,6 +186,9 @@ class BookingRetrieveUpdateDestroy(APIView):
             update_booking.save()
 
             utils.log_model_change(update_booking, utils.CHANGE, request.user)
+
+            Notification.objects.notify(update_booking.date, update_booking.room)
+
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except ValidationError as error:
@@ -203,16 +211,26 @@ class BookingViewMyBookings(APIView):
 
         bookings = dict()
 
+        now = datetime.datetime.now().date()
+
         # Obtain all standard_bookings, recurring_bookings, and campons for this booker
 
         standard_bookings = user.get_active_non_recurring_bookings()
-        recurring_bookings = RecurringBooking.objects.filter(booker=user)
-        campons = CampOn.objects.filter(booker=user)
+        recurring_bookings = RecurringBooking.objects.filter(booker=user, end_date__gte=now)
+        campons = CampOn.objects.filter(booker=user, camped_on_booking__date__gte=now)
+
+        # Insert standard_bookings and recurring_bookings made by groups that user is in
+        for group in user.group_set.all():
+            group_standard_bookings = group.get_active_non_recurring_bookings()
+            standard_bookings = standard_bookings | group_standard_bookings
+
+            group_recurring_bookings = RecurringBooking.objects.filter(~Q(booker=user), group=group, end_date__gte=now)
+            recurring_bookings = recurring_bookings | group_recurring_bookings
 
         # Add serialized lists of booking types to dictionary associated with type key
-        bookings["standard_bookings"] = MyBookingSerializer(standard_bookings, many=True).data
-        bookings["recurring_bookings"] = ReadRecurringBookingSerializer(recurring_bookings, many=True).data
-        bookings["campons"] = ReadCampOnSerializer(campons, many=True).data
+        bookings["standard_bookings"] = DetailedBookingSerializer(standard_bookings, many=True).data
+        bookings["recurring_bookings"] = DetailedRecurringBookingSerializer(recurring_bookings, many=True).data
+        bookings["campons"] = MyCampOnSerializer(campons, many=True).data
 
         return Response(bookings, status=status.HTTP_200_OK)
 

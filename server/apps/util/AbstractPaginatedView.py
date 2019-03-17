@@ -1,6 +1,5 @@
-
-
 class AbstractPaginatedView:
+
     @property
     def paginator(self):
         """

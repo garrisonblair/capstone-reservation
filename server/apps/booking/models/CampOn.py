@@ -17,7 +17,7 @@ class CampOn(models.Model, SubjectModel):
     camped_on_booking = models.ForeignKey(Booking,
                                           on_delete=models.SET_NULL,
                                           null=True,
-                                          related_name="camp_ons")
+                                          related_name="campons")
 
     generated_booking = models.ForeignKey(Booking,
                                           on_delete=models.SET_NULL,
@@ -42,6 +42,7 @@ class CampOn(models.Model, SubjectModel):
 
         if is_create:
             self.object_created()
+
         else:
             self.object_updated()
 
@@ -109,5 +110,5 @@ class CampOn(models.Model, SubjectModel):
             raise PrivilegeError(p_c.get_error_text("booking_end_time"))
 
     def json_serialize(self):
-        from ..serializers.campon import CampOnSerializer
-        return json.dumps(CampOnSerializer(self).data)
+        from ..serializers.campon import LogCampOnSerializer
+        return json.dumps(LogCampOnSerializer(self).data)

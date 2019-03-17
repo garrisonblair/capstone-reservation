@@ -19,6 +19,8 @@ from apps.booking.views.recurring_booking import RecurringBookingCreate, Recurri
 from apps.booking.serializers.recurring_booking import RecurringBookingSerializer
 from apps.booking.serializers.booking import BookingSerializer
 from apps.rooms.serializers.room import RoomSerializer
+from apps.booking.serializers.recurring_booking import LogRecurringBookingSerializer
+from apps.booking.serializers.booking import LogBookingSerializer
 
 
 class BookingAPITest(TestCase):
@@ -105,8 +107,8 @@ class BookingAPITest(TestCase):
         self.assertEqual(latest_recurring_booking_log.action_flag, ADDITION)
         self.assertEqual(latest_recurring_booking_log.object_id, str(recurring_booking.id))
         self.assertEqual(latest_recurring_booking_log.user, self.user1)
-        self.assertEqual(latest_recurring_booking_log.object_repr,
-                         json.dumps(RecurringBookingSerializer(recurring_booking).data))
+        self.assertEqual(latest_recurring_booking_log.change_message,
+                         json.dumps(LogRecurringBookingSerializer(recurring_booking).data))
 
         for booking in recurring_booking.booking_set.all():
             booking_logs = LogEntry.objects.filter(
@@ -117,8 +119,8 @@ class BookingAPITest(TestCase):
             self.assertEqual(latest_booking_log.action_flag, ADDITION)
             self.assertEqual(latest_booking_log.object_id, str(booking.id))
             self.assertEqual(latest_booking_log.user, self.user1)
-            self.assertEqual(latest_booking_log.object_repr,
-                             json.dumps(BookingSerializer(booking).data))
+            self.assertEqual(latest_booking_log.change_message,
+                             json.dumps(LogBookingSerializer(booking).data))
 
     def testCreateRecurringBookingFailureDateStartAfterEnd(self):
 

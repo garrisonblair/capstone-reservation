@@ -279,14 +279,15 @@ class ReservationDetailsModal extends Component {
     api.createBooking(data)
       .then(() => {
         this.setState({ isLoading: false });
+        this.closeModalWithReservation();
 
         sweetAlert.fire({
           position: 'top',
           type: 'success',
-          title: 'Completed',
-          text: `Room ${selectedRoomName} was successfuly booked.`,
-        }).then(() => {
-          this.closeModalWithReservation();
+          title: `Room ${selectedRoomName} was successfuly booked.`,
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
         });
       })
       .catch((error) => {

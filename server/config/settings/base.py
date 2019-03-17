@@ -33,7 +33,8 @@ PROJECT_APPS = [
     'apps.system_administration.apps.CalendarAdminConfig',
     'apps.groups.apps.GroupsConfig',
     'apps.statistics.apps.StatisticsConfig',
-    'apps.card_reader.apps.CardReaderConfig'
+    'apps.card_reader.apps.CardReaderConfig',
+    'apps.notifications.apps.NotificationsConfig'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -109,7 +110,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
