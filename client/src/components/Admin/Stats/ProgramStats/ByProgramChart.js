@@ -5,7 +5,7 @@ import { Bar } from 'react-chartjs-2';
 import '../RoomStats.scss';
 
 
-class ByGradLevelStats extends Component {
+class ByProgramChart extends Component {
   renderChart = (header, type) => {
     const { stats } = this.props;
     if (stats.length === 0) {
@@ -47,7 +47,7 @@ class ByGradLevelStats extends Component {
     const { selected } = this.props;
     return (
       <div className="room-stats">
-        <h2> Grad Level stats </h2>
+        <h2> By Program </h2>
         {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
         {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Program Bookings', 'num_bookings') : ''}
         {selected.includes('Average Time Booked Per Day') ? this.renderChart('Average Time Booked Per Day', 'average_time_booked_per_day') : ''}
@@ -57,9 +57,9 @@ class ByGradLevelStats extends Component {
   }
 }
 
-ByGradLevelStats.propTypes = {
-  stats: PropTypes.isRequired,
-  selected: PropTypes.isRequired,
+ByProgramChart.propTypes = {
+  stats: PropTypes.shape(Object).isRequired,
+  selected: PropTypes.arrayOf(String).isRequired,
 };
 
-export default ByGradLevelStats;
+export default ByProgramChart;

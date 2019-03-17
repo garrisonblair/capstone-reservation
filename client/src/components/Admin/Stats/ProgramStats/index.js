@@ -14,8 +14,9 @@ import { SingleDatePicker } from 'react-dates';
 // import * as moment from 'moment';
 import { Bar } from 'react-chartjs-2';
 import api from '../../../../utils/api';
-import ByProgramStats from './ByProgramStats';
-import ByGradLevelStats from './ByGradLevelStats';
+import ByProgramChart from './ByProgramChart';
+import ByGradLevelChart from './ByGradLevelChart';
+import ByCategoryChart from './ByCategoryChart';
 import 'react-dates/lib/css/_datepicker.css';
 import '../RoomStats.scss';
 
@@ -183,7 +184,7 @@ class ProgramStats extends Component {
           <Checkbox label="Grad Level" checked={withGradLevel} onChange={() => this.handleCheckboxChange('withGradLevel')} />
         </Form.Field>
         <Form.Field>
-          <Checkbox label="Categories" checked={withCategories} onChange={() => this.handleCheckboxChange('withCategories')} />
+          <Checkbox label="Category" checked={withCategories} onChange={() => this.handleCheckboxChange('withCategories')} />
         </Form.Field>
       </Form.Group>
     );
@@ -220,20 +221,6 @@ class ProgramStats extends Component {
     );
   }
 
-  renderGradLevelStats() {
-    const { selected } = this.state;
-
-    return (
-      <div className="room-stats">
-        <h2> Graduate Level stats </h2>
-        {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
-        {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Program Bookings', 'num_bookings') : ''}
-        {selected.includes('Average Time Booked Per Day') ? this.renderChart('Average Time Booked Per Day', 'average_time_booked_per_day') : ''}
-        {selected.includes('Average Bookings Per Day') ? this.renderChart('Average Bookings Per Day', 'average_bookings_per_day') : ''}
-      </div>
-    );
-  }
-
   renderCategoryStats() {
     const { selected } = this.state;
 
@@ -252,7 +239,7 @@ class ProgramStats extends Component {
       selected,
       withProgram,
       withGradLevel,
-      // withCategories,
+      withCategories,
     } = this.state;
 
     return (
@@ -260,9 +247,9 @@ class ProgramStats extends Component {
         <h1> Program stats </h1>
         {this.renderDateFilter()}
         {this.renderDropDown()}
-        {withProgram && stats.program ? <ByProgramStats stats={stats.program} selected={selected} /> : null}
-        {withGradLevel && stats.grad_level ? <ByGradLevelStats stats={stats.grad_level} selected={selected} /> : null}
-        {/* {withCategories ? this.renderCategoryStats() : null} */}
+        {withProgram && stats.program ? <ByProgramChart stats={stats.program} selected={selected} /> : null}
+        {withGradLevel && stats.grad_level ? <ByGradLevelChart stats={stats.grad_level} selected={selected} /> : null}
+        {withCategories && stats.category ? <ByCategoryChart stats={stats.category} selected={selected} /> : null}
       </div>
     );
   }
