@@ -22,6 +22,7 @@ import Announcements from './components/Admin/Announcements';
 import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
 import UserSettings from './components/UserSettings';
+import EmailSettings from './components/UserSettings/EmailSettings';
 import api from './utils/api';
 import storage from './utils/local-storage';
 
@@ -49,6 +50,7 @@ function renderPage() {
           <Route exact path="/dashboard" component={Dashboard} />
           <Route exact path="/profile" component={Profile} />
           <Route exact path="/settings" component={UserSettings} />
+          <Route exact path="/email_settings/:token" component={EmailSettings} />
           <Route component={NotFound} />
         </Switch>
       </div>

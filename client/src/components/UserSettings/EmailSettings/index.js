@@ -18,6 +18,13 @@ class EmailSettings extends Component {
   }
 
   componentDidMount() {
+    // eslint-disable-next-line react/prop-types
+    const { match } = this.props;
+    if (match !== undefined) {
+      console.log(match.params.token);
+    }
+    // console.log(match.params.token);
+    // console.log()
     this.syncSettings();
   }
 
