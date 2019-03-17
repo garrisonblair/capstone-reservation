@@ -143,9 +143,6 @@ class RecurringBookingEdit(APIView):
 
                 # If the date of the recurring booking is after the current indicated booking date, try to update
                 if associated_booking.date > now.date():
-                    if "room" in data:
-                        booking.room = Room.objects.get(id=data["room"])
-                        # booking.room.id = data["room"]
                     if "start_date" in data:
                         booking.date = data["start_date"]
                     if "end_date" in data:
