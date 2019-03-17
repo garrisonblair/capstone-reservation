@@ -15,6 +15,7 @@ import { SingleDatePicker } from 'react-dates';
 import { Bar } from 'react-chartjs-2';
 import api from '../../../../utils/api';
 import ByProgramStats from './ByProgramStats';
+import ByGradLevelStats from './ByGradLevelStats';
 import 'react-dates/lib/css/_datepicker.css';
 import '../RoomStats.scss';
 
@@ -250,7 +251,7 @@ class ProgramStats extends Component {
       stats,
       selected,
       withProgram,
-      // withGradLevel,
+      withGradLevel,
       // withCategories,
     } = this.state;
 
@@ -260,7 +261,7 @@ class ProgramStats extends Component {
         {this.renderDateFilter()}
         {this.renderDropDown()}
         {withProgram && stats.program ? <ByProgramStats stats={stats.program} selected={selected} /> : null}
-        {/* {withGradLevel ? this.renderGradLevelStats() : null} */}
+        {withGradLevel && stats.grad_level ? <ByGradLevelStats stats={stats.grad_level} selected={selected} /> : null}
         {/* {withCategories ? this.renderCategoryStats() : null} */}
       </div>
     );
