@@ -634,6 +634,31 @@ function getRoomStatistics(startDate, endDate) {
   });
 }
 
+function getProgramStatistics(startDate, endDate, withProgram, withGradLevel, withCategories) {
+  const headers = getTokenHeader();
+  const params = {
+    withProgram,
+    withGradLevel,
+    withCategories,
+  };
+
+  if (startDate.length !== 0) {
+    params.start = startDate;
+  }
+
+  if (endDate.length !== 0) {
+    params.end = endDate;
+  }
+
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/program_statistics`,
+    headers,
+    params,
+    withCredentials: true,
+  });
+}
+
 function createAnnouncement(title, content, startDate, endDate) {
   const headers = getTokenHeader();
   const data = {
@@ -763,6 +788,7 @@ const api = {
   rejectInvitation,
   denyPrivilegeRequest,
   getRoomStatistics,
+  getProgramStatistics,
   createAnnouncement,
   getAllAnnouncements,
   deleteAnnouncement,
