@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { Menu } from 'semantic-ui-react';
 import AdminRequired from '../../HOC/AdminRequired';
 import RoomStats from './RoomStats';
-import ProgramStats from './ProgramStats';
+import ProgramStats from './ProgramStats/';
 import '../Admin.scss';
 
 
 // eslint-disable-next-line react/prefer-stateless-function
 class Stats extends Component {
   state = {
-    activeItem: 'room',
+    activeItem: 'program',
   }
 
   handleItemClick = (activeItem) => {

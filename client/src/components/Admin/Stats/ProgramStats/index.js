@@ -13,9 +13,10 @@ import {
 import { SingleDatePicker } from 'react-dates';
 // import * as moment from 'moment';
 import { Bar } from 'react-chartjs-2';
-import api from '../../../utils/api';
+import api from '../../../../utils/api';
+import ByProgramStats from './ByProgramStats';
 import 'react-dates/lib/css/_datepicker.css';
-import './RoomStats.scss';
+import '../RoomStats.scss';
 
 
 class ProgramStats extends Component {
@@ -45,8 +46,7 @@ class ProgramStats extends Component {
     api.getProgramStatistics(startDate, endDate, withProgram, withGradLevel, withCategories)
       .then((response) => {
         const { data: stats } = response;
-        console.log(stats);
-        // this.setState({ stats });
+        this.setState({ stats });
       });
   }
 
@@ -219,20 +219,6 @@ class ProgramStats extends Component {
     );
   }
 
-  renderProgramStats() {
-    const { selected } = this.state;
-
-    return (
-      <div className="room-stats">
-        <h2> Program stats </h2>
-        {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
-        {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Program Bookings', 'num_bookings') : ''}
-        {selected.includes('Average Time Booked Per Day') ? this.renderChart('Average Time Booked Per Day', 'average_time_booked_per_day') : ''}
-        {selected.includes('Average Bookings Per Day') ? this.renderChart('Average Bookings Per Day', 'average_bookings_per_day') : ''}
-      </div>
-    );
-  }
-
   renderGradLevelStats() {
     const { selected } = this.state;
 
@@ -261,9 +247,11 @@ class ProgramStats extends Component {
 
   render() {
     const {
+      stats,
+      selected,
       withProgram,
-      withGradLevel,
-      withCategories,
+      // withGradLevel,
+      // withCategories,
     } = this.state;
 
     return (
@@ -271,9 +259,9 @@ class ProgramStats extends Component {
         <h1> Program stats </h1>
         {this.renderDateFilter()}
         {this.renderDropDown()}
-        {withProgram ? this.renderProgramStats() : null}
-        {withGradLevel ? this.renderGradLevelStats() : null}
-        {withCategories ? this.renderCategoryStats() : null}
+        {withProgram && stats.program ? <ByProgramStats stats={stats.program} selected={selected} /> : null}
+        {/* {withGradLevel ? this.renderGradLevelStats() : null} */}
+        {/* {withCategories ? this.renderCategoryStats() : null} */}
       </div>
     );
   }
