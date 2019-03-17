@@ -190,49 +190,6 @@ class ProgramStats extends Component {
     );
   }
 
-  renderChart = (header, type) => {
-    const { stats } = this.state;
-    if (stats.length === 0) {
-      return [];
-    }
-    const labels = stats.map(stat => stat.program.program);
-    const values = stats.map(stat => stat.program[type]);
-    const data = {
-      labels,
-      datasets: [
-        {
-          label: header,
-          backgroundColor: 'rgba(255,99,132,0.2)',
-          borderColor: 'rgba(255,99,132,1)',
-          borderWidth: 1,
-          hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-          hoverBorderColor: 'rgba(255,99,132,1)',
-          data: values,
-        },
-      ],
-    };
-
-    return (
-      <Bar
-        data={data}
-        width={100}
-        height={30}
-      />
-    );
-  }
-
-  renderCategoryStats() {
-    const { selected } = this.state;
-
-    return (
-      <div className="room-stats">
-        <h2> Category stats </h2>
-        {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
-        {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Program Bookings', 'num_bookings') : ''}
-      </div>
-    );
-  }
-
   render() {
     const {
       stats,

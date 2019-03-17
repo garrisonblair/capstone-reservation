@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Menu } from 'semantic-ui-react';
 import AdminRequired from '../../HOC/AdminRequired';
 import RoomStats from './RoomStats';
-import ProgramStats from './ProgramStats/';
+import ProgramStats from './ProgramStats';
 import '../Admin.scss';
 
 
