@@ -85,13 +85,12 @@ class BookingCreate(APIView):
             booking.merge_with_neighbouring_bookings()
             booking.save()
             utils.log_model_change(booking, utils.ADDITION, request.user)
+            icsSerializer = ICSSerializerFactory.get_serializer(booking)
+            ics_data = icsSerializer.serialize(booking)
+            email_subject = "Your new booking"
+            email_message = "Here attached is an ics file of your new booking."
+            booking.booker.send_email(email_subject, email_message, ics_data=ics_data)
 
-
-            with open('ics_files/{}.ics'.format(datetime.datetime.now().time()), 'w') as f:
-                    myfile = File(f)
-                    icsSerializer = ICSSerializerFactory.get_serializer(booking)
-                    fileTxt = icsSerializer.serialize(booking)
-                    myfile.write(fileTxt)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
