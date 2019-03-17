@@ -47,7 +47,7 @@ class ByCategoryChart extends Component {
     const { selected } = this.props;
     return (
       <div className="room-stats">
-        <h2> By Program </h2>
+        <h2> By Category </h2>
         {selected.includes('Hours Booked') ? this.renderChart('Hours Booked', 'hours_booked') : ''}
         {selected.includes('Number of Room Bookings') ? this.renderChart('Number of Program Bookings', 'num_bookings') : ''}
       </div>
