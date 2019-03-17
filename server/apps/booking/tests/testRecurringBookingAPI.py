@@ -838,7 +838,6 @@ class BookingAPITest(TestCase):
                                                          end_date=end_date1,
                                                          booking_start_time=start_time1,
                                                          booking_end_time=end_time1,
-                                                         room=self.room,
                                                          group=None,
                                                          booker=self.user1,
                                                          skip_conflicts=True)
@@ -977,7 +976,6 @@ class BookingAPITest(TestCase):
                                                          end_date=end_date1,
                                                          booking_start_time=start_time1,
                                                          booking_end_time=end_time1,
-                                                         room=self.room,
                                                          group=None,
                                                          booker=self.user1,
                                                          skip_conflicts=True)
@@ -1120,7 +1118,6 @@ class BookingAPITest(TestCase):
                                                          end_date=end_date1,
                                                          booking_start_time=start_time1,
                                                          booking_end_time=end_time1,
-                                                         room=self.room,
                                                          group=None,
                                                          booker=self.user1,
                                                          skip_conflicts=True)
@@ -1262,7 +1259,6 @@ class BookingAPITest(TestCase):
                                                          end_date=end_date1,
                                                          booking_start_time=start_time1,
                                                          booking_end_time=end_time1,
-                                                         room=self.room,
                                                          group=None,
                                                          booker=self.user1,
                                                          skip_conflicts=True)
@@ -1405,7 +1401,6 @@ class BookingAPITest(TestCase):
                                                          end_date=end_date1,
                                                          booking_start_time=start_time1,
                                                          booking_end_time=end_time1,
-                                                         room=self.room,
                                                          group=None,
                                                          booker=self.user1,
                                                          skip_conflicts=True)
