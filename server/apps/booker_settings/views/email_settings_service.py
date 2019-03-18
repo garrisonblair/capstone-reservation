@@ -4,6 +4,7 @@ from rest_framework import status
 from apps.booker_settings.models.EmailSettings import EmailSettings as EmailSettingsModel
 from apps.accounts.models.User import User
 from apps.booker_settings.serializers.booker_settings import EmailSettingsSerializer
+from apps.util.Jwt import getUserFromToken
 from django.core.exceptions import ValidationError
 
 class EmailSettingsService(APIView):
@@ -23,7 +24,15 @@ class EmailSettingsService(APIView):
 
 
     def get(self, request):
-        # email_settings = EmailSettingsModel.objects.get(booker=request.user)
-        # serializer = EmailSettingsSerializer(email_settings)
-        return Response('test1',status=status.HTTP_200_OK)
-        # return Response(serializer.data,status=status.HTTP_200_OK)
+        if 'HTTP_TOKEN' not in request.META:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        token = request.META['HTTP_TOKEN']
+        try:
+            user = getUserFromToken(token)
+        except ValidationError as error:
+            return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
+
+        email_settings = EmailSettingsModel.objects.get(booker=user)
+        serializer = EmailSettingsSerializer(email_settings)
+        return Response(serializer.data,status=status.HTTP_200_OK)

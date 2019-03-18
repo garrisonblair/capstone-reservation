@@ -36,7 +36,6 @@ class User(DjangoUser, AbstractBooker):
         else:
             recipient_list.append(self.email)
         token = generateToken(self)
-        # TODO: create URL
         message = message + "\n\n\nClick on link below to unsubscribe from emails\n" + "{}://{}/#/email_settings/{}".format(settings.ROOT_PROTOCOL,settings.ROOT_URL, token)
         print(message)
         tasks.send_email.delay(subject, message, recipient_list, ics_data)
