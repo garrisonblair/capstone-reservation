@@ -37,4 +37,22 @@ class EmailSettings(models.Model):
         if(not isinstance(self.when_camp_on_booking, bool)):
             raise ValidationError("'when_camp_on_booking' must be a boolean")
 
+    def update(self, data):
+        if "when_booking" in data:
+            self.when_booking = data["when_booking"]
+
+        if "when_recurring_booking" in data:
+            self.when_recurring_booking = data["when_recurring_booking"]
+
+        if "when_delete_booking" in data:
+            self.when_delete_booking = data["when_delete_booking"]
+
+        if "when_delete_recurring_booking" in data:
+            self.when_delete_recurring_booking = data["when_delete_recurring_booking"]
+
+        if "when_camp_on_booking" in data:
+            self.when_camp_on_booking = data["when_camp_on_booking"]
+
+        self.save()
+
 
