@@ -17,7 +17,7 @@ from apps.booking.views.booking import BookingList, BookingCancel, BookingViewMy
 from apps.booking.views.booking import BookingCreate
 from apps.booking.views.booking import BookingRetrieveUpdateDestroy
 
-from apps.booking.serializers.booking import BookingSerializer
+from apps.booking.serializers.booking import BookingSerializer, LogBookingSerializer
 
 from apps.util.mock_datetime import mock_datetime
 
@@ -79,7 +79,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(latest_booking_log.action_flag, ADDITION)
         self.assertEqual(latest_booking_log.object_id, str(created_booking.id))
         self.assertEqual(latest_booking_log.user, self.booker)
-        self.assertEqual(latest_booking_log.object_repr, json.dumps(BookingSerializer(created_booking).data))
+        self.assertEqual(latest_booking_log.change_message, json.dumps(LogBookingSerializer(created_booking).data))
 
     def testCreateBookingNotAuthenticated(self):
         request = self.factory.post("/booking",
@@ -276,7 +276,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(latest_booking_log.action_flag, CHANGE)
         self.assertEqual(latest_booking_log.object_id, str(edit_booking.id))
         self.assertEqual(latest_booking_log.user, self.booker)
-        self.assertEqual(latest_booking_log.object_repr, json.dumps(BookingSerializer(edit_booking).data))
+        self.assertEqual(latest_booking_log.change_message, json.dumps(LogBookingSerializer(edit_booking).data))
 
     def testEditBookingWithBookerId(self):
 
