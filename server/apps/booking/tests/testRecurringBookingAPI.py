@@ -638,7 +638,8 @@ class BookingAPITest(TestCase):
                                     {
                                         "room": edited_room.id,
                                         "booking_start_time": str(edited_start_time)[:5],
-                                        "booking_end_time": str(edited_end_time)[:5]
+                                        "booking_end_time": str(edited_end_time)[:5],
+                                        "skip_conflicts": False
                                     }, format="json")
 
         force_authenticate(request, user=User.objects.get(username="john"))
