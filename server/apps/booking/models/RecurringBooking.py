@@ -176,7 +176,9 @@ class RecurringBooking(models.Model):
 
         # Determine offset based on earliest booking
         if start_date is not None:
-            booking_offset = earliest_booking.date - start_date
+            # Need to get the offset using the .days of subtraction of 2 dates
+            delta = earliest_booking.date - start_date
+            booking_offset = delta.days
         else:
             booking_offset = 0
 
