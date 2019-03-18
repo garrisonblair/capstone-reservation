@@ -34,4 +34,4 @@ class User(DjangoUser, AbstractBooker):
         else:
             recipient_list.append(self.email)
 
-        tasks.send_email.delay(subject, message, recipient_list,ics_data)
+        tasks.send_email.delay(subject, message, recipient_list, ics_data)

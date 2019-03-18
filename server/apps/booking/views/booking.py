@@ -84,11 +84,13 @@ class BookingCreate(APIView):
             booking.merge_with_neighbouring_bookings()
             booking.save()
             utils.log_model_change(booking, utils.ADDITION, request.user)
-            icsSerializer = ICSSerializerFactory.get_serializer(booking)
-            ics_data = icsSerializer.serialize(booking)
-            email_subject = "Your new booking"
-            email_message = "Here attached is an ics file of your new booking."
-            booking.booker.send_email(email_subject, email_message, ics_data=ics_data)
+            settings = SystemSettings.get_settings()
+            if settings.booking_reminders_active:
+                ics_serializer = ICSSerializerFactory.get_serializer(booking)
+                ics_data = ics_serializer.serialize(booking)
+                email_subject = "Your new booking"
+                email_message = "Here attached is an ics file of your new booking."
+                booking.booker.send_email(email_subject, email_message, ics_data=ics_data)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
