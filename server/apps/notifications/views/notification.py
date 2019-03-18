@@ -8,7 +8,7 @@ from rest_framework import status
 from apps.accounts.models.User import User
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.notifications.models.Notification import Notification
-from apps.notifications.sertializers.notification import WriteNotificationSerializer, ReadNotificationSerializer
+from apps.notifications.serializers.notification import WriteNotificationSerializer, ReadNotificationSerializer
 
 
 class NotificationList(ListAPIView):

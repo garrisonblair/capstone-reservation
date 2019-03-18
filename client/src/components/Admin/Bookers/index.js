@@ -29,10 +29,13 @@ class Bookers extends Component {
     const {
       searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff, activePage,
     } = this.state;
-    this.syncBookers(valueSearch, searchLimit, ((activePage * searchLimit) - searchLimit), valueActive, valueSuperUser, valueStaff);
+    this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff);
   }
 
+  getOffSet = (activePage, searchLimit) => (activePage * searchLimit) - searchLimit;
+
   syncBookers = (valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff) => {
+    const offset = this.getOffSet(activePage, searchLimit);
     if (isActive === 'Any') {
       isActive = undefined;
     }
@@ -43,7 +46,7 @@ class Bookers extends Component {
       isStaff = undefined;
     }
     this.setState({ isLoading: true });
-    api.getUsers(valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff)
+    api.getUsers(valueSearch, searchLimit, offset, isActive, isSuperUser, isStaff)
       .then((r) => {
         this.setState({ isLoading: false });
         if (r.status === 200) {
@@ -60,8 +63,7 @@ class Bookers extends Component {
       searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff,
     } = this.state;
     this.setState({ activePage });
-    const offset = ((activePage * searchLimit) - searchLimit);
-    this.syncBookers(valueSearch, searchLimit, offset, valueActive, valueSuperUser, valueStaff);
+    this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff);
   }
 
   handleSearchOnChange = (e, { value }) => { this.setState({ valueSearch: value }); }
@@ -79,7 +81,7 @@ class Bookers extends Component {
       searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff,
     } = this.state;
     this.setState({ activePage: 1 });
-    this.syncBookers(valueSearch, searchLimit, 0, valueActive, valueSuperUser, valueStaff);
+    this.syncBookers(valueSearch, searchLimit, 1, valueActive, valueSuperUser, valueStaff);
   }
 
   handleResetOnClick = () => {

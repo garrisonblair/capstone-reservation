@@ -68,7 +68,7 @@ class BookingExporterConfig(AppConfig):
             pass
 
     def stop_importing_ics_bookings(self):
-        from django_celery_beat.schedulers import PeriodicTask, IntervalSchedule
+        from django_celery_beat.schedulers import PeriodicTask
         try:
             task = PeriodicTask.objects.get(name=self.gmail_import_periodic_task_name)
             task.delete()

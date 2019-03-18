@@ -7,6 +7,8 @@ from rest_framework.decorators import permission_classes
 from rest_framework.generics import ListAPIView
 from django.contrib.admin.models import LogEntry
 from django.db.models.query import QuerySet
+from django.contrib.contenttypes.models import ContentType
+
 
 from apps.util.AbstractPaginatedView import AbstractPaginatedView
 from rest_framework.pagination import LimitOffsetPagination
@@ -19,6 +21,12 @@ class LogEntryView(ListAPIView):
     pagination_class = LimitOffsetPagination
     serializer_class = LogEntrySerializer
 
+    exposed_models = [
+        "booking",
+        "campon",
+        "recurringbooking",
+    ]
+
     def get_queryset(self):
         # Get query params
         start_datetime = self.request.GET.get("from")  # Datetime string
@@ -27,8 +35,8 @@ class LogEntryView(ListAPIView):
         model_id = self.request.GET.get("content_type_id")  # model content type id
         object_id = self.request.GET.get("object_id")  # object id
         user_id = self.request.GET.get("user_id")  # user id
-
-        log_entries = LogEntry.objects.all()  # type: QuerySet
+        content_types = ContentType.objects.filter(model__in=LogEntryView.exposed_models)
+        log_entries = LogEntry.objects.filter(content_type__in=content_types)  # type: QuerySet
 
         try:
             if start_datetime is not None:

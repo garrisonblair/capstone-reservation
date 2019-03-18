@@ -1,3 +1,4 @@
+import unittest
 from django.test import TestCase
 from apps.system_administration.models.system_settings import SystemSettings
 from apps.booking.models.Booking import Booking
@@ -10,6 +11,7 @@ class SettingsModelTests(TestCase):
         self.system_settings = SystemSettings.get_settings()
         self.system_settings.save()
 
+    @unittest.skip
     def testActivateWebCalendarBackup(self):
 
         booking_observers_before_count = len(Booking.observers)
@@ -21,6 +23,7 @@ class SettingsModelTests(TestCase):
         booking_observers_after_count = len(Booking.observers)
         self.assertEqual(booking_observers_after_count, booking_observers_before_count + 1)
 
+    @unittest.skip
     def testDeactivateWebcalendarBackup(self):
         self.system_settings.is_webcalendar_backup_active = True
         self.system_settings.save()
