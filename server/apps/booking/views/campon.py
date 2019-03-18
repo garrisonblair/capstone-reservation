@@ -1,5 +1,6 @@
 import datetime
 from django.core.exceptions import ValidationError
+from rest_framework.exceptions import APIException
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -24,25 +25,43 @@ class CampOnList(ListAPIView):
     def get_queryset(self):
         qs = super(CampOnList, self).get_queryset()
 
-        # Filter by id
-        id = self.request.GET.get('id')
-        if id:
-            qs = CampOn.objects.filter(id=id)
+        try:
+            # Filter by id
+            id = self.request.GET.get('id')
+            if id:
+                qs = CampOn.objects.filter(id=id)
 
-        # Filter by booking_id
-        booking_id = self.request.GET.get('booking_id')
-        if booking_id:
-            qs = CampOn.objects.filter(camped_on_booking__id=booking_id)
+            # Filter by booking_id
+            booking_id = self.request.GET.get('booking_id')
+            if booking_id:
+                qs = CampOn.objects.filter(camped_on_booking__id=booking_id)
 
-        # Filter by start_time
-        start_time = self.request.GET.get('start_time')
-        if start_time:
-            qs = CampOn.objects.filter(start_time=start_time)
+            # Filter by start_time
+            start_time = self.request.GET.get('start_time')
+            if start_time:
+                qs = CampOn.objects.filter(start_time=start_time)
 
-        # Filter by end_time
-        end_time = self.request.GET.get('end_time')
-        if end_time:
-            qs = CampOn.objects.filter(end_time=end_time)
+            # Filter by end_time
+            end_time = self.request.GET.get('end_time')
+            if end_time:
+                qs = CampOn.objects.filter(end_time=end_time)
+
+            # Filter by year
+            year = self.request.GET.get('year')
+            if year:
+                qs = qs.filter(camped_on_booking__date__year=year)
+
+            # Filter by month
+            month = self.request.GET.get('month')
+            if month:
+                qs = qs.filter(camped_on_booking__date__month=month)
+
+            # Filter by day
+            day = self.request.GET.get('day')
+            if day:
+                qs = qs.filter(camped_on_booking__date__day=day)
+        except Exception:
+            raise APIException
 
         return qs
 
