@@ -51,7 +51,9 @@ class ReservationDetailsModal extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { show } = nextProps;
+    const { ownerValue } = this.state;
     if (nextProps.show) {
+      this.ownerCanMakeRecurringBookings(ownerValue);
       if (localStorage.getItem('CapstoneReservationUser') == null) {
         this.setState({ showLogin: true });
       } else {
@@ -83,10 +85,10 @@ class ReservationDetailsModal extends Component {
       bypassValidation: false,
     });
     this.getDefaultEndTime(hour, minute);
-    this.ownerCanMakeRecurringBookings('me');
   }
 
   ownerCanMakeRecurringBookings = (ownerValue) => {
+    console.log('API call');
     if (ownerValue === 'me') {
       if (localStorage.CapstoneReservationUser) {
         const owner = JSON.parse(localStorage.CapstoneReservationUser);
@@ -225,7 +227,7 @@ class ReservationDetailsModal extends Component {
   }
 
   handleOwnerChange = (e, { value }) => {
-    this.setState({ ownerValue: value });
+    this.setState({ ownerValue: value, isRecurring: false });
     this.ownerCanMakeRecurringBookings(value);
   }
 
@@ -634,7 +636,7 @@ class ReservationDetailsModal extends Component {
               {user && user.is_superuser ? this.renderAdminBookingForm() : null}
             </div>
             <div className="modal-description">
-              {canMakeRecurringBookings ? <Checkbox label="Request a recurring booking" onChange={this.handleCheckboxClick} /> : null}
+              {canMakeRecurringBookings ? <Checkbox checked={isRecurring} label="Request a recurring booking" onChange={this.handleCheckboxClick} /> : null}
             </div>
             {isRecurring ? this.renderRecurringForm() : null}
             <div className="ui divider" />
