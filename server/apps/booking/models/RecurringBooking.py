@@ -214,7 +214,7 @@ class RecurringBooking(models.Model):
             if associated_booking.end_time:
                 associated_booking.end_time = booking_end_time
             if start_date:
-                associated_booking.date = associated_booking.date + booking_offset
+                associated_booking.date = associated_booking.date + timedelta(days=booking_offset)
             try:
                 associated_booking.validate_model()
                 non_conflicting_bookings.append(associated_booking)
