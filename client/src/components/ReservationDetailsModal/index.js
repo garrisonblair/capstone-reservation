@@ -352,7 +352,7 @@ class ReservationDetailsModal extends Component {
             position: 'top',
             type: 'warning',
             title: 'Reservation blocked',
-            text: 'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
+            html: `We are sorry, this reservation overlaps with other reservations. Skip reservation on these dates?<br/><br/><div><center>${response.data}</center></div>`,
             confirmButtonText: 'YES',
             cancelButtonText: 'NO',
             showCancelButton: true,
