@@ -176,7 +176,7 @@ class RecurringBooking(models.Model):
 
         # Determine offset based on earliest booking
         if start_date is not None:
-            booking_offset = earliest_booking - start_date
+            booking_offset = earliest_booking.date - start_date
         else:
             booking_offset = 0
 
@@ -214,7 +214,7 @@ class RecurringBooking(models.Model):
             if associated_booking.end_time:
                 associated_booking.end_time = booking_end_time
             if start_date:
-                associated_booking.date = start_date + booking_offset
+                associated_booking.date = associated_booking.date + booking_offset
             try:
                 associated_booking.validate_model()
                 non_conflicting_bookings.append(associated_booking)
