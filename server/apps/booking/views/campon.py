@@ -18,11 +18,11 @@ from apps.util import utils
 
 class CampOnList(ListAPIView):
     permission_classes = ()
-    serializer_class = CampOnSerializer
+    serializer_class = ReadCampOnSerializer
     queryset = CampOn.objects.all()
 
     def get_queryset(self):
-        qs = super(ListAPIView, self).get_queryset()
+        qs = super(CampOnList, self).get_queryset()
 
         # Filter by id
         id = self.request.GET.get('id')
@@ -45,15 +45,6 @@ class CampOnList(ListAPIView):
             qs = CampOn.objects.filter(end_time=end_time)
 
         return qs
-
-    def get(self, request):
-        try:
-            qs = self.get_queryset()
-            serializer = ReadCampOnSerializer(qs, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            # print(str(e))
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class CampOnCreate(APIView):
