@@ -20,29 +20,35 @@ class EmailSettings extends Component {
   componentDidMount() {
     // eslint-disable-next-line react/prop-types
     const { match } = this.props;
+    let token;
     if (match !== undefined) {
-      console.log(match.params.token);
+      // eslint-disable-next-line prefer-destructuring
+      token = match.params.token;
     }
-    // console.log(match.params.token);
-    // console.log()
-    this.syncSettings();
+
+    this.syncSettings(token);
   }
 
-  syncSettings = () => {
+  syncSettings = (token) => {
     this.setState({ isLoading: true });
-    api.getEmailSettings()
-      .then((r) => {
-        if (r.status === 200) {
-          this.setState({
-            whenBooking: r.data.when_booking,
-            whenRecurringBooking: r.data.when_recurring_booking,
-            whenDeleteBooking: r.data.when_delete_booking,
-            whenDeleteRecurringBooking: r.data.when_delete_recurring_booking,
-            whenCamponOnBooking: r.data.when_camp_on_booking,
-            isLoading: false,
-          });
-        }
-      });
+    if (token) {
+      // TODO: sync settings with Auth token
+      console.log(token);
+    } else {
+      api.getEmailSettings()
+        .then((r) => {
+          if (r.status === 200) {
+            this.setState({
+              whenBooking: r.data.when_booking,
+              whenRecurringBooking: r.data.when_recurring_booking,
+              whenDeleteBooking: r.data.when_delete_booking,
+              whenDeleteRecurringBooking: r.data.when_delete_recurring_booking,
+              whenCamponOnBooking: r.data.when_camp_on_booking,
+              isLoading: false,
+            });
+          }
+        });
+    }
   }
 
   handleWhenBookingOnToggle = (e, data) => {
