@@ -79,3 +79,32 @@ class DetailedBookingSerializer(serializers.ModelSerializer):
                   'display_note',
                   'confirmed')
         read_only_fields = ('id',)
+
+
+class LogBookingSerializer(serializers.ModelSerializer):
+
+    booker = serializers.SerializerMethodField()
+    group = serializers.SerializerMethodField()
+    room = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Booking
+        fields = ('id',
+                  'booker',
+                  'group',
+                  'room',
+                  'date',
+                  'start_time',
+                  'end_time',
+                  'recurring_booking',)
+        read_only_fields = ('id',)
+
+    def get_booker(self, booking):
+        return {"username": booking.booker.username, "id": booking.booker.id}
+
+    def get_group(self, booking):
+        if booking.group:
+            return {"name": booking.group.name, "id": booking.group.id}
+
+    def get_room(self, booking):
+        return {"name": booking.room.name, "id": booking.room.id}

@@ -83,22 +83,23 @@ class RecurringBooking(models.Model):
 
             date = self.start_date
             bookings = 0
+            conflicts = ''
             while date <= self.end_date:
-                if Booking.objects.filter(~Q(start_time=self.booking_end_time), room=self.room, date=date,
-                                          start_time__range=(self.booking_start_time, self.booking_end_time)).exists():
+                if Booking.objects.filter(~Q(id=self.id),
+                                          start_time__lt=self.booking_end_time,
+                                          end_time__gt=self.booking_start_time,
+                                          room=self.room,
+                                          date=date).exists():
                     if self.skip_conflicts:
                         bookings += 1
                     else:
-                        raise ValidationError("Recurring booking at specified time overlaps with another booking.")
-                elif Booking.objects.filter(~Q(end_time=self.booking_start_time), room=self.room, date=date,
-                                            end_time__range=(self.booking_start_time, self.booking_end_time)).exists():
-                    if self.skip_conflicts:
-                        bookings += 1
-                    else:
-                        raise ValidationError("Recurring booking at specified time overlaps with another booking.")
-                else:
-                    bookings += 1
+                        conflict = date.strftime('%x')
+                        conflicts += ", {}".format(conflict)
                 date += timedelta(days=7)
+
+            if conflicts != '':
+                raise ValidationError(conflicts[2:])
+
             if self.skip_conflicts and bookings == 0:
                 raise ValidationError("Recurring booking at specified time overlaps with another booking every week.")
 
@@ -147,5 +148,5 @@ class RecurringBooking(models.Model):
             raise PrivilegeError(p_c.get_error_text("booking_end_time"))
 
     def json_serialize(self):
-        from ..serializers.recurring_booking import DetailedRecurringBookingSerializer
-        return json.dumps(DetailedRecurringBookingSerializer(self).data)
+        from ..serializers.recurring_booking import LogRecurringBookingSerializer
+        return json.dumps(LogRecurringBookingSerializer(self).data)

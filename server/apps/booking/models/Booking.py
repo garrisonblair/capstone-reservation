@@ -11,8 +11,6 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
-from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.exceptions import PrivilegeError
 
 from apps.system_administration.models.system_settings import SystemSettings
@@ -21,11 +19,9 @@ from apps.util.SubjectModel import SubjectModel
 from apps.util.AbstractBooker import AbstractBooker
 from apps.util import utils
 
-from rest_framework.permissions import IsAuthenticated
-
 
 class BookingManager(models.Manager):
-    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking, confirmed):
+    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking=None, confirmed=False):
 
         booking = self.create(
             booker=booker,
@@ -220,8 +216,8 @@ class Booking(models.Model, SubjectModel):
         return Booking.observers
 
     def json_serialize(self):
-        from ..serializers.booking import DetailedBookingSerializer
-        return json.dumps(DetailedBookingSerializer(self).data)
+        from ..serializers.booking import LogBookingSerializer
+        return json.dumps(LogBookingSerializer(self).data)
 
     def get_duration(self):
         return (datetime.datetime.combine(date=datetime.date.today(), time=self.end_time)
