@@ -636,7 +636,6 @@ class BookingAPITest(TestCase):
 
         request = self.factory.post("booking/" + str(earliest_booking.id) + "/edit_recurring_booking",
                                     {
-                                        "room": edited_room.id,
                                         "booking_start_time": str(edited_start_time)[:5],
                                         "booking_end_time": str(edited_end_time)[:5],
                                         "skip_conflicts": False
