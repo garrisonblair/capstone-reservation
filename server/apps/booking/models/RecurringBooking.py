@@ -54,97 +54,6 @@ class RecurringBookingManager(models.Manager):
 
         return recurring_booking, conflicts
 
-    def edit_recurring_booking(self,
-                               start_date,
-                               end_date,
-                               booking_start_time,
-                               booking_end_time,
-                               skip_conflicts,
-                               user):
-        # TODO: Added user for the logging but this may defeat the purpose of moving logiv from viewAPI to model
-
-        from apps.booking.models.Booking import Booking
-
-        now = datetime.now()
-        all_conflicts = []
-        non_conflicting_bookings = []
-
-        # Gets all bookings associated to the indicated booking
-        all_associated_booking_instances = self.booking_set.all()
-        # TODO: Add proper filter to assist with dates. Filter depends on if dates provided though...
-        # all_associated_booking_instances = Booking.objects.all().filter(recurring_booking=self.booking)
-
-        # Find the earliest booking in the list
-        earliest_booking = all_associated_booking_instances[0]
-        for booking in all_associated_booking_instances:
-            if booking.start_date < earliest_booking.start_date:
-                earliest_booking = booking
-
-        # Determine offset based on earliest booking
-        booking_offset = earliest_booking - start_date
-
-        # Get current end date and apply offset in case start date has changed
-        end_date = end_date
-        current_end_date = self.end_date
-        current_end_date = current_end_date + datetime.timedelta(days=booking_offset)
-
-        # Create new bookings if new end date has been extended and add to appropriate lists
-        while current_end_date < end_date:
-            # Sets the next booking in series
-            current_end_date = current_end_date + datetime.timedelta(days=7)
-            if current_end_date < end_date:
-                booking = Booking.objects.create_booking(
-                    booker=self.booker,
-                    group=self.group,
-                    room=self.room,
-                    date=current_end_date,
-                    start_time=booking_start_time,
-                    end_time=booking_end_time,
-                    recurring_booking=self,
-                    confirmed=False
-                )
-                try:
-                    booking.validate_model()
-                    non_conflicting_bookings.append(booking)
-                except ValidationError:
-                        all_conflicts.append(booking)
-                        continue
-
-        # Iterates through associated bookings and makes the adjustment
-        for associated_booking in all_associated_booking_instances:
-            # Will apply offset regardless, but if no offset, will add zero
-            if booking_start_time:
-                associated_booking.start_time = booking_start_time
-            if associated_booking.end_time:
-                associated_booking.end_time = booking_end_time
-            if associated_booking.start_date:
-                associated_booking.start_date = start_date + associated_booking
-            if associated_booking.end_date:
-                associated_booking.end_date = end_date + associated_booking
-            try:
-                associated_booking.validate()
-                non_conflicting_bookings.append(associated_booking)
-            except ValidationError:
-                all_conflicts.append(associated_booking)
-                continue
-
-        # If there are no conflicts, simply make adjustments accordingly
-        if len(all_conflicts) == 0 or skip_conflicts:
-            for non_conflicting in non_conflicting_bookings:
-                # Make sure bookings are in range and have not ended before modifying
-                if non_conflicting.end_date <= end_date and \
-                        non_conflicting.start_date >= start_date and \
-                        non_conflicting.start_date >= now.date():
-                    non_conflicting.save()
-                    utils.log_model_change(non_conflicting, utils.CHANGE, user)
-                # Make sure bookings are in range and have not ended before deleting. Can't delete past bookings
-                elif non_conflicting.start_date >= start_date and \
-                        non_conflicting.start_date >= now.date():
-                    non_conflicting.delete()
-        else:
-            # If there are any conflicts, return list of them
-            return all_conflicts
-
 
 class RecurringBooking(models.Model):
     start_date = models.DateField()
@@ -241,3 +150,88 @@ class RecurringBooking(models.Model):
     def json_serialize(self):
         from ..serializers.recurring_booking import LogRecurringBookingSerializer
         return json.dumps(LogRecurringBookingSerializer(self).data)
+
+    def edit_recurring_booking(self,
+                               start_date,
+                               end_date,
+                               booking_start_time,
+                               booking_end_time,
+                               skip_conflicts,
+                               user=None):
+
+        from apps.booking.models.Booking import Booking
+
+        now = datetime.now()
+        all_conflicts = []
+        non_conflicting_bookings = []
+
+        # Gets all bookings associated to the indicated booking which happen after current date
+        all_associated_booking_instances = Booking.objects.all().filter(recurring_booking=self, date__gte=now)
+
+        # Find the earliest booking in the list
+        earliest_booking = all_associated_booking_instances[0]
+        for booking in all_associated_booking_instances:
+            if booking.date < earliest_booking.date:
+                earliest_booking = booking
+
+        # Determine offset based on earliest booking
+        if start_date is not None:
+            booking_offset = earliest_booking - start_date
+        else:
+            booking_offset = 0
+
+        # Get current end date and apply offset in case start date has changed
+        current_end_date = self.end_date + timedelta(days=booking_offset)
+
+        # Create new bookings if new end date has been extended and add to appropriate lists
+        if end_date is not None:
+            while current_end_date < end_date:
+                # Sets the next booking in series
+                current_end_date = current_end_date + timedelta(days=7)
+                if current_end_date < end_date:
+                    booking = Booking.objects.create_booking(
+                        booker=self.booker,
+                        group=self.group,
+                        room=self.room,
+                        date=current_end_date,
+                        start_time=booking_start_time,
+                        end_time=booking_end_time,
+                        recurring_booking=self,
+                        confirmed=False
+                    )
+                    try:
+                        booking.validate_model()
+                        non_conflicting_bookings.append(booking)
+                    except ValidationError:
+                            all_conflicts.append(booking)
+                            continue
+
+        # Iterates through associated bookings and makes the adjustment
+        for associated_booking in all_associated_booking_instances:
+            # Will apply offset regardless, but if no offset, will add zero
+            if booking_start_time:
+                associated_booking.start_time = booking_start_time
+            if associated_booking.end_time:
+                associated_booking.end_time = booking_end_time
+            if start_date:
+                associated_booking.date = start_date + booking_offset
+            try:
+                associated_booking.validate_model()
+                non_conflicting_bookings.append(associated_booking)
+            except ValidationError:
+                all_conflicts.append(associated_booking)
+                continue
+
+        # If there are no conflicts, simply make adjustments accordingly
+        if len(all_conflicts) == 0 or skip_conflicts:
+            for non_conflicting in non_conflicting_bookings:
+                # Make sure bookings are in range and have not ended before modifying. Past bookings checked by filter
+                if start_date is not None and end_date is not None and start_date <= non_conflicting.date <= end_date:
+                    non_conflicting.save()
+                    utils.log_model_change(non_conflicting, utils.CHANGE, user)
+                # Make sure bookings are in range and have not ended before deleting. Past bookings checked by filter
+                elif start_date is not None and non_conflicting.date >= start_date:
+                    non_conflicting.delete()
+        else:
+            # If there are any conflicts, return list of them
+            return all_conflicts
