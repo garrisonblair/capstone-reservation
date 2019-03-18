@@ -2,6 +2,7 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from rest_framework.exceptions import APIException
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -33,20 +34,23 @@ class BookingList(ListAPIView):
     def get_queryset(self):
         qs = super(BookingList, self).get_queryset()
 
-        # Filter by year
-        year = self.request.GET.get('year')
-        if year:
-            qs = qs.filter(date__year=year)
+        try:
+            # Filter by year
+            year = self.request.GET.get('year')
+            if year:
+                qs = qs.filter(date__year=year)
 
-        # Filter by month
-        month = self.request.GET.get('month')
-        if month:
-            qs = qs.filter(date__month=month)
+            # Filter by month
+            month = self.request.GET.get('month')
+            if month:
+                qs = qs.filter(date__month=month)
 
-        # Filter by day
-        day = self.request.GET.get('day')
-        if day:
-            qs = qs.filter(date__day=day)
+            # Filter by day
+            day = self.request.GET.get('day')
+            if day:
+                qs = qs.filter(date__day=day)
+        except Exception:
+            raise APIException
 
         return qs
 

@@ -432,7 +432,7 @@ class CampOnAPITest(TestCase):
         response = CampOnList.as_view()(request)
 
         # Verify response status code
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def testGetCampOnWithInvalidBookingId(self):
         request = self.factory.get("/campons", {
@@ -441,7 +441,7 @@ class CampOnAPITest(TestCase):
         response = CampOnList.as_view()(request)
 
         # Verify response status code
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def testGetCampOnWithInvalidStartTime(self):
         request = self.factory.get("/campons", {
@@ -451,7 +451,7 @@ class CampOnAPITest(TestCase):
         response = CampOnList.as_view()(request)
 
         # Verify response status code
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def testGetCampOnWithInvalidEndTime(self):
         request = self.factory.get("/campons", {
@@ -461,4 +461,4 @@ class CampOnAPITest(TestCase):
         response = CampOnList.as_view()(request)
 
         # Verify response status code
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)

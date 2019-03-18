@@ -1,3 +1,4 @@
+from rest_framework.exceptions import APIException
 from rest_framework.views import View
 
 from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
@@ -27,8 +28,11 @@ class ListCardReaders(ListAPIView):
         qs = CardReader.objects.all()
 
         room = self.request.GET.get('room')
-        if room:
-            qs = qs.filter(room=room)
+        try:
+            if room:
+                qs = qs.filter(room=room)
+        except Exception:
+            raise APIException
 
         return qs
 
