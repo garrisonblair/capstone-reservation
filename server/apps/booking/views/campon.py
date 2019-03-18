@@ -45,6 +45,21 @@ class CampOnList(ListAPIView):
             end_time = self.request.GET.get('end_time')
             if end_time:
                 qs = CampOn.objects.filter(end_time=end_time)
+
+            # Filter by year
+            year = self.request.GET.get('year')
+            if year:
+                qs = qs.filter(camped_on_booking__date__year=year)
+
+            # Filter by month
+            month = self.request.GET.get('month')
+            if month:
+                qs = qs.filter(camped_on_booking__date__month=month)
+
+            # Filter by day
+            day = self.request.GET.get('day')
+            if day:
+                qs = qs.filter(camped_on_booking__date__day=day)
         except Exception:
             raise APIException
 
