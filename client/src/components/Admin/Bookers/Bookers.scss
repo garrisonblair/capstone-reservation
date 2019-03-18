@@ -1,10 +1,13 @@
 #bookers{
     .edit-button{
-        display: block;
-        margin: auto;
+      display: block;
+      margin: auto;
     }
     .table-max-size{
-        margin-left: 10px;
+      margin-left: 10px;
+    }
+    .sortable-button:hover{
+      background-color: #E0E1E2;
     }
 }
 .segment_container {

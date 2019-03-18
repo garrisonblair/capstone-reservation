@@ -28,6 +28,7 @@ class UserList(ListAPIView, AbstractPaginatedView):
         is_superuser = self.request.query_params.get("is_superuser")
         is_staff = self.request.query_params.get("is_staff")
         is_active = self.request.query_params.get("is_active")
+        sort_field = self.request.query_params.get("sort_by")
 
         if keyword is not None:
             users = users.filter(Q(username__contains=keyword) |
@@ -43,6 +44,9 @@ class UserList(ListAPIView, AbstractPaginatedView):
 
         if is_active is not None:
             users = users.filter(is_active=is_active)
+
+        if sort_field is not None:
+            users = users.order_by(sort_field)
 
         if self.request.user.is_superuser:
             self.serializer_class = UserSerializer
