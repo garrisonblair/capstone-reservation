@@ -4,6 +4,8 @@ import sweetAlert from 'sweetalert2';
 import {
   Modal, Button, FormField, Input, Divider,
 } from 'semantic-ui-react';
+import { DateRangePicker } from 'react-dates';
+import moment from 'moment';
 import api from '../../../utils/api';
 import './RoomModal.scss';
 
@@ -12,6 +14,9 @@ class RoomModal extends Component {
     roomID: '',
     roomCapacity: 1,
     numOfComputers: 0,
+    unavailableStart: moment(),
+    unavailableEnd: moment(),
+    unavailableFocus: null,
   }
 
   componentDidMount() {
@@ -157,6 +162,35 @@ class RoomModal extends Component {
     );
   }
 
+  renderAvailability = () => {
+    const {
+      unavailableEnd,
+      unavailableStart,
+      unavailableFocus,
+    } = this.state;
+    return (
+      <FormField>
+        <DateRangePicker
+          startDate={unavailableStart}
+          startDateId="start_date_id"
+          endDate={unavailableEnd}
+          endDateId="end_date_id"
+          onDatesChange={({ startDate, endDate }) => this.setState({
+            unavailableStart: startDate,
+            unavailableEnd: endDate,
+          })}
+          focusedInput={unavailableFocus}
+          onFocusChange={f => this.setState({ unavailableFocus: f })}
+        />
+        <Button
+          onClick={this.handleAddAvailability}
+        >
+          Add
+        </Button>
+      </FormField>
+    );
+  }
+
   renderCreateCardReader = () => (
     <Button onClick={this.handleGenerateCardReaderKey}>
       Generate Card Reader Key
@@ -203,6 +237,9 @@ class RoomModal extends Component {
                 value={numOfComputers}
               />
             </FormField>
+            <Divider />
+            <h3>Unavailability:</h3>
+            { this.renderAvailability() }
             <Divider />
             <FormField>
               { cardReader ? this.renderCardReader() : this.renderCreateCardReader()}
