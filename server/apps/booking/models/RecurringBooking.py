@@ -53,6 +53,45 @@ class RecurringBookingManager(models.Manager):
 
         return recurring_booking, conflicts
 
+    def edit_recurring_booking(self, start_date, end_date, start_time, end_time, room, group,
+                               booker, skip_conflicts):
+
+        recurring_booking = self.create(
+            start_date=start_date,
+            end_date=end_date,
+            booking_start_time=start_time,
+            booking_end_time=end_time,
+            room=room,
+            group=group,
+            booker=booker,
+            skip_conflicts=skip_conflicts
+        )
+
+        from apps.booking.models.Booking import Booking
+        date = recurring_booking.start_date
+        conflicts = list()
+        while date <= recurring_booking.end_date:
+            try:
+                booking = Booking.objects.create_booking(
+                    booker=recurring_booking.booker,
+                    group=recurring_booking.group,
+                    room=recurring_booking.room,
+                    date=date,
+                    start_time=recurring_booking.booking_start_time,
+                    end_time=recurring_booking.booking_end_time,
+                    recurring_booking=recurring_booking,
+                    confirmed=False
+                )
+                recurring_booking.booking_set.add(booking)
+            except ValidationError:
+                if skip_conflicts:
+                    conflicts.append(date)
+                    date += timedelta(days=7)
+                    continue
+            date += timedelta(days=7)
+
+        return recurring_booking, conflicts
+
 
 class RecurringBooking(models.Model):
     start_date = models.DateField()
