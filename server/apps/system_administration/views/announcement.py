@@ -1,3 +1,4 @@
+from rest_framework.exceptions import APIException
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -23,20 +24,13 @@ class AnnouncementList(ListAPIView):
 
         # Filter by begin date
         date = self.request.GET.get('date')
-        if date:
-            qs = qs.filter(start_date__lte=date, end_date__gte=date)
+        try:
+            if date:
+                qs = qs.filter(start_date__lte=date, end_date__gte=date)
+        except Exception:
+            raise APIException
 
         return qs
-
-    def get(self, request):
-        try:
-            qs = self.get_queryset()
-            serializer = AnnouncementSerializer(qs, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            # print(str(e))
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class AnnouncementCreate(APIView):

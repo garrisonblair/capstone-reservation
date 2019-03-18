@@ -1,5 +1,3 @@
-import _ from 'lodash';
-import cloneDeep from 'lodash/cloneDeep';
 import React, { Component } from 'react';
 import {
   Table,
@@ -19,7 +17,7 @@ import moment from 'moment';
 import api from '../../../utils/api';
 import BookingActivityModal from './BookingActivityModal';
 import '../Admin.scss';
-import UserSearch from './../../ReusableComponents/UserSearch';
+import UserSearch from '../../ReusableComponents/UserSearch';
 
 class BookingActivity extends Component {
   static formatAction(flag) {
@@ -42,9 +40,6 @@ class BookingActivity extends Component {
   }
 
   state = {
-    column: 'date',
-    direction: 'descending',
-    logs: [],
     logsToDisplay: [],
     tableHeaders: ['date', 'type', 'action', 'user'],
     activePage: 1,
@@ -107,10 +102,10 @@ class BookingActivity extends Component {
       .then((response) => {
         this.setState({ isLoading: false });
         if (response.status === 200) {
-          this.setState({ logs: response.data.results,
-                          logsToDisplay: response.data.results,
-                          totalLogCount: response.data.count
-                          });
+          this.setState({
+            logsToDisplay: response.data.results,
+            totalLogCount: response.data.count,
+          });
         }
       })
       .catch(() => {
@@ -123,7 +118,6 @@ class BookingActivity extends Component {
   }
 
   handlePaginationSettingsChange = (e, change) => {
-    const { logs } = this.state;
     this.setState({ activePage: 1, logsPerPage: change.value }, this.getLogs);
   }
 
@@ -141,13 +135,13 @@ class BookingActivity extends Component {
     if (user) {
       this.setState({ userId: user.id });
     } else {
-      this.setState({ userId: null});
+      this.setState({ userId: null });
     }
   }
 
-  handleOnUseObjectAsFilter = (content_type, id) => {
-    this.handleSearchInput(null, {name:'contentTypeId', value: content_type.id});
-    this.handleSearchInput(null, {name:'objectId', value: id});
+  handleOnUseObjectAsFilter = (contentType, id) => {
+    this.handleSearchInput(null, { name: 'contentTypeId', value: contentType.id });
+    this.handleSearchInput(null, { name: 'objectId', value: id });
 
     this.handleOnCloseBookingActivityModal();
   }
@@ -172,7 +166,7 @@ class BookingActivity extends Component {
   }
 
   renderLogs = () => {
-    const { logsToDisplay, activePage } = this.state;
+    const { logsToDisplay } = this.state;
     return (
       <Table.Body>
         {logsToDisplay.map(log => (
@@ -205,8 +199,6 @@ class BookingActivity extends Component {
 
   renderBookingActivity = () => {
     const {
-      column,
-      direction,
       tableHeaders,
       logsToDisplay,
       activePage,
@@ -218,9 +210,8 @@ class BookingActivity extends Component {
       contentTypes,
       contentTypeId,
       objectId,
-      userId,
       logsPerPage,
-      totalLogCount
+      totalLogCount,
     } = this.state;
     const totalPages = Math.ceil(totalLogCount / logsPerPage);
 
@@ -255,7 +246,7 @@ class BookingActivity extends Component {
           id="to"
           placeholder="To"
         />
-        <Grid >
+        <Grid>
           <Grid.Column largeScreen={5} mobile={16}>
             <Dropdown
               fluid
@@ -264,7 +255,8 @@ class BookingActivity extends Component {
               selection
               options={contentTypesOptions}
               name="contentTypeId"
-              value={contentTypeId == null ? '' : contentTypeId} onChange={this.handleSearchInput}
+              value={contentTypeId == null ? '' : contentTypeId}
+              onChange={this.handleSearchInput}
             />
           </Grid.Column>
           <Grid.Column largeScreen={5} mobile={16}>

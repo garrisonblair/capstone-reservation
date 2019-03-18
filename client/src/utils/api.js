@@ -441,7 +441,7 @@ function getContentTypes() {
   });
 }
 
-function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaff) {
+function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaff, sortTerm) {
   const headers = getTokenHeader();
 
   const params = {};
@@ -451,9 +451,26 @@ function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaf
   if (isStaff !== undefined) { params.is_staff = isStaff ? 'True' : 'False'; }
   if (searchLimit !== undefined) { params.limit = searchLimit; }
   if (offset !== undefined) { params.offset = offset; }
+  if (sortTerm !== undefined) { params.sort_by = sortTerm; }
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
+    params,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function canUserMakeRecurring(userId, userType) {
+  const headers = getTokenHeader();
+
+  const params = {
+    pk: userId,
+    type: userType,
+  };
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/can_make_recurring`,
     params,
     headers,
     withCredentials: true,
@@ -803,6 +820,7 @@ const api = {
   getLogEntries,
   getContentTypes,
   getUsers,
+  canUserMakeRecurring,
   addPrivilege,
   assignIndividualPrivileges,
   assignAllPrivileges,

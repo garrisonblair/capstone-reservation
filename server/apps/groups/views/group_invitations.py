@@ -10,9 +10,6 @@ from apps.system_administration.models.system_settings import SystemSettings
 from ..serializers.group_invitation import ReadGroupInvitationSerializer
 from ..models.GroupInvitation import GroupInvitation
 
-from apps.accounts.models.BookerProfile import BookerProfile
-from apps.accounts.models.User import User
-
 
 class GroupInvitationsList(ListAPIView):
 
