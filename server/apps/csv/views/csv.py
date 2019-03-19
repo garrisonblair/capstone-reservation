@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
 
+
 class CsvView(APIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
 
@@ -23,7 +24,7 @@ class CsvView(APIView):
         models = apps.get_models()
         model_instance = [instance for instance in models if instance.__name__ == model][0]
         meta = model_instance._meta
-        fields = [field.name for field in meta.fields] # CSV headers
+        fields = [field.name for field in meta.fields]  # CSV headers
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(model)
