@@ -18,13 +18,17 @@ class CsvView(APIView):
         return Response(response)
 
     def post(self, request):
+        filter = {
+            'User': ['password']
+        }
+
         model = ''
         if 'model' in request.data:
             model = request.data['model']
         models = apps.get_models()
         model_instance = [instance for instance in models if instance.__name__ == model][0]
         meta = model_instance._meta
-        fields = [field.name for field in meta.fields]  # CSV headers
+        fields = [field.name for field in meta.fields if not field.name in filter[model]]  # CSV headers
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(model)
