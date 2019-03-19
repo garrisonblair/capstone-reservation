@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
@@ -5,20 +6,36 @@ import {
   Form,
   Input,
 } from 'semantic-ui-react';
+import { DateRangePicker } from 'react-dates';
 import sweetAlert from 'sweetalert2';
+import moment from 'moment';
 import api from '../../utils/api';
 
 
 class RecurringBookingModal extends Component {
   state = {
     show: false,
-    booking: null,
+    focus: null,
+    room: '',
+    start_date: null,
+    end_date: null,
+    booking_start_time: '',
+    booking_end_time: '',
+    group: '',
+
   }
 
   componentWillMount() {
     const { show, booking } = this.props;
-    this.setState({ show, booking });
-    console.log(booking);
+    this.setState({
+      show,
+      room: booking.room.name,
+      start_date: moment(booking.start_date, 'YYYY-MM-DD'),
+      end_date: moment(booking.end_date, 'YYYY-MM-DD'),
+      booking_start_time: booking.booking_start_time,
+      booking_end_time: booking.booking_end_time,
+      group: booking.group,
+    });
   }
 
   closeModal = () => {
@@ -41,10 +58,28 @@ class RecurringBookingModal extends Component {
   handleOpen = () => this.setState({ show: true });
 
   renderEdit() {
-    const { booking } = this.props;
+    const {
+      focus,
+      room,
+      start_date,
+      end_date,
+      booking_start_time,
+      booking_end_time,
+      group,
+    } = this.state;
     return (
       <Form>
-        <Input placeholder={booking.room} />
+        Room
+        <Input placeholder={room} />
+        <DateRangePicker
+          startDate={start_date}
+          startDateId="sId"
+          endDate={end_date}
+          endDateId="eId"
+          onDatesChange={({ s, e }) => (this.setState({ start_date: s, end_date: e }))}
+          focusedInput={focus}
+          onFocusChange={f => this.setState({ focus: f })}
+        />
       </Form>
     );
   }
