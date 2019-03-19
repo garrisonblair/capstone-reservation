@@ -1,6 +1,8 @@
 import datetime
 import decimal
 
+from django.db.models import Count
+
 from apps.booking.models.Booking import Booking
 from apps.accounts.models.BookerProfile import BookerProfile
 from apps.accounts.models.User import User
@@ -27,7 +29,11 @@ class ProgramStatisticManager:
 
     def get_category_bookings(self, category):
         categories = PrivilegeCategory.objects.filter(name=category)
-        category_bookers = BookerProfile.objects.filter(privilege_categories__in=categories)
+        category_bookers = BookerProfile.objects.all()
+        if categories[0].is_default:
+            category_bookers = category_bookers.annotate(category_count=Count('privilege_categories'))
+            category_bookers = category_bookers.filter(category_count__lt=2)
+        category_bookers = category_bookers.filter(privilege_categories__in=categories)
         users = User.objects.filter(id__in=category_bookers)
         return Booking.objects.filter(booker_id__in=users)
 
@@ -108,8 +114,6 @@ class ProgramStatisticManager:
 
     def get_all_statistics(self, with_program, with_grad_level, with_categories, start_date=None, end_date=None):
         all_stats = dict()
-
-        print(with_program, with_grad_level, with_categories)
 
         if with_program:
             program_stats = dict()
