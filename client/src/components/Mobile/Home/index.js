@@ -5,7 +5,6 @@ import storage from '../../../utils/local-storage';
 import LoginComponent from '../../Login/login';
 import MobileBooking from '../Booking/MobileBooking';
 import MobileDashboard from '../Dashboard';
-import withTracker from '../../HOC/withTracker';
 import './Home.scss';
 
 
@@ -102,4 +101,4 @@ class HomeMobile extends Component {
   }
 }
 
-export default withTracker(HomeMobile);
+export default HomeMobile;
