@@ -25,7 +25,6 @@ class Dashboard extends Component {
       <div>
         <Navigation />
         <div className="dashboard">
-          <h1 className="title"><center> Dashboard </center></h1>
           <div className="segment__container top">
             <Segment className="segment__user">
               <UserInfo />
