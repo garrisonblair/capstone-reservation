@@ -11,6 +11,7 @@ import Navigation from '../Navigation';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 import AuthenticationRequired from '../HOC/AuthenticationRequired';
+import getEmailRegex from '../../utils/emailRegex';
 import './Profile.scss';
 
 
@@ -42,23 +43,38 @@ class Profile extends Component {
 
   updateProfile = () => {
     let { secondaryEmail, studentID } = this.state;
-    let preventSubmit = false;
-    if (secondaryEmail === null || secondaryEmail === '' || secondaryEmail.length === 0) {
-      preventSubmit = true;
-    }
-
-    if (studentID === null || studentID === '' || studentID.length === 0) {
-      preventSubmit = true;
-    }
-
-    if (preventSubmit === true) {
-      return;
-    }
-
     const data = {
       booker_id: studentID,
       secondary_email: secondaryEmail,
     };
+
+    let preventSubmit = false;
+    const validEmail = secondaryEmail.match(getEmailRegex()) !== null;
+
+    if (secondaryEmail === null || secondaryEmail === '' || secondaryEmail.length === 0) {
+      delete data.secondary_email;
+    }
+
+    if (studentID === null || studentID === '' || studentID.length === 0) {
+      delete data.booker_id;
+    }
+
+    if (studentID.length === 0 && secondaryEmail.length === 0) {
+      preventSubmit = true;
+    }
+
+    if (secondaryEmail.length !== 0 && !validEmail) {
+      preventSubmit = true;
+      sweetAlert(
+        ':(',
+        'Please enter a valid email.',
+        'error',
+      );
+    }
+
+    if (preventSubmit) {
+      return;
+    }
 
     api.updateUser(storage.getUser().id, data)
       .then(() => {
@@ -91,6 +107,14 @@ class Profile extends Component {
 
     if (confirmNewPassword === null || confirmNewPassword === '' || confirmNewPassword.length === 0) {
       preventSubmit = true;
+    }
+
+    if (oldPassword.length === 0 || newPassword.length === 0 || confirmNewPassword.length === 0) {
+      sweetAlert(
+        ':(',
+        'Please fill all the fields.',
+        'error',
+      );
     }
 
     if (newPassword !== confirmNewPassword) {
