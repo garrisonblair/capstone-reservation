@@ -13,12 +13,13 @@ class CsvView(APIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
 
     def get(self, request):
+        exclude = []
         models = apps.get_models()
-        response = [model.__name__ for model in models]
+        response = [model.__name__ for model in models if model not in exclude]
         return Response(response)
 
     def post(self, request):
-        filter = {
+        exclude = {
             'User': ['password']
         }
 
@@ -28,7 +29,7 @@ class CsvView(APIView):
         models = apps.get_models()
         model_instance = [instance for instance in models if instance.__name__ == model][0]
         meta = model_instance._meta
-        fields = [field.name for field in meta.fields if not field.name in filter[model]]  # CSV headers
+        fields = [field.name for field in meta.fields if not field.name in exclude[model]]  # CSV headers
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(model)
