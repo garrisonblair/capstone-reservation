@@ -12,8 +12,6 @@ class SelectedDate extends Component {
   state = {
     focusDate: false,
     date: moment(),
-    // eslint-disable-next-line react/no-unused-state
-    update: false,
   }
 
   static getDerivedStateFromProps(props, state) {

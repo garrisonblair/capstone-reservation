@@ -2,6 +2,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework import status
+from rest_framework.exceptions import APIException
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsSuperUser import IsSuperUser
@@ -28,26 +29,33 @@ class UserList(ListAPIView, AbstractPaginatedView):
         is_superuser = self.request.query_params.get("is_superuser")
         is_staff = self.request.query_params.get("is_staff")
         is_active = self.request.query_params.get("is_active")
+        sort_field = self.request.query_params.get("sort_by")
 
-        if keyword is not None:
-            users = users.filter(Q(username__contains=keyword) |
-                                 Q(first_name__contains=keyword) |
-                                 Q(last_name__contains=keyword) |
-                                 Q(email__contains=keyword))
+        try:
+            if keyword is not None:
+                users = users.filter(Q(username__contains=keyword) |
+                                     Q(first_name__contains=keyword) |
+                                     Q(last_name__contains=keyword) |
+                                     Q(email__contains=keyword))
 
-        if is_superuser is not None:
-            users = users.filter(is_superuser=is_superuser)
+            if is_superuser is not None:
+                users = users.filter(is_superuser=is_superuser)
 
-        if is_staff is not None:
-            users = users.filter(is_staff=is_staff)
+            if is_staff is not None:
+                users = users.filter(is_staff=is_staff)
 
-        if is_active is not None:
-            users = users.filter(is_active=is_active)
+            if is_active is not None:
+                users = users.filter(is_active=is_active)
 
-        if self.request.user.is_superuser:
-            self.serializer_class = UserSerializer
-        else:
-            self.serializer_class = PublicUserSerializer
+            if sort_field is not None:
+                users = users.order_by(sort_field)
+
+            if self.request.user.is_superuser:
+                self.serializer_class = UserSerializer
+            else:
+                self.serializer_class = PublicUserSerializer
+        except Exception:
+            raise APIException
 
         return users
 
@@ -61,10 +69,13 @@ class BookerList(ListAPIView):
         search_term = self.request.query_params.get("search_text")
         qs = super(BookerList, self).get_queryset()
 
-        if search_term is not None:
-            qs = qs.filter(Q(user__username__contains=search_term) |
-                           Q(user__first_name__contains=search_term) |
-                           Q(user__last_name__contains=search_term))
+        try:
+            if search_term is not None:
+                qs = qs.filter(Q(user__username__contains=search_term) |
+                               Q(user__first_name__contains=search_term) |
+                               Q(user__last_name__contains=search_term))
+        except Exception:
+            raise APIException
 
         return qs
 

@@ -9,17 +9,20 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import moment from 'moment';
+import { isMobileOnly } from 'react-device-detect';
 import SelectedDate from '../Calendar/SelectedDate';
 import Login from '../Login';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
 import './Navigation.scss';
+import NotificationModal from '../NotificationModal';
 
 
 class Navigation extends Component {
   state = {
     showLogin: false,
     update: false,
+    showNotificationModal: false,
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -47,6 +50,11 @@ class Navigation extends Component {
     history.push('/forDisplay');
   }
 
+  handleMobilePage = () => {
+    const { history } = this.props;
+    history.push('/mobile_home');
+  }
+
   handleLogin = () => {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
@@ -71,8 +79,16 @@ class Navigation extends Component {
     }
   }
 
+  handleClickNotify = () => {
+    this.setState({ showNotificationModal: true });
+  }
+
   closeLogin = () => {
     this.setState({ showLogin: false });
+  }
+
+  closeNotificationModal = () => {
+    this.setState({ showNotificationModal: false });
   }
 
   handleChangeDate = (date) => {
@@ -114,7 +130,7 @@ class Navigation extends Component {
     return component;
   }
 
-  renderAccountDropDown = () => {
+  renderLoggedMenuInInfo = () => {
     if (!localStorage.CapstoneReservationUser) {
       return '';
     }
@@ -122,39 +138,30 @@ class Navigation extends Component {
     const { history } = this.props;
     const user = storage.getUser();
     const component = (
-      <Dropdown pointing item text={`${user.username}`}>
-        <Dropdown.Menu style={{ left: 'auto', right: 0 }}>
-          {/* <Dropdown.Header>
+      <React.Fragment>
+        <Menu.Item onClick={this.handleClickNotify}>
+          <Icon name="bell" />
+          Free Rooms
+        </Menu.Item>
+        <Dropdown pointing item text={`${user.username}`}>
+          <Dropdown.Menu style={{ left: 'auto', right: 0 }}>
+            {/* <Dropdown.Header>
             <Icon name="user" />
             {`Logged in as ${user.username}`}
           </Dropdown.Header>
           <Dropdown.Divider /> */}
-          <Dropdown.Item icon="th" text="Dashboard" onClick={() => history.push('dashboard')} />
-          <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
-        </Dropdown.Menu>
-      </Dropdown>
+            <Dropdown.Item icon="th" text="Dashboard" onClick={() => history.push('dashboard')} />
+            <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
+          </Dropdown.Menu>
+        </Dropdown>
+      </React.Fragment>
     );
 
-    return component;
-  }
-
-  renderLoggedInInfo = () => {
-    if (!storage.getUser()) {
-      return '';
-    }
-
-    const user = storage.getUser();
-    const component = (
-      <Menu.Item className="navigation__user">
-        <Icon name="user" />
-        {`Logged in as ${user.username}`}
-      </Menu.Item>
-    );
     return component;
   }
 
   render() {
-    const { showLogin, update } = this.state;
+    const { showLogin, update, showNotificationModal } = this.state;
     const { showDate, forDisplay, history } = this.props;
 
     if (forDisplay) {
@@ -184,14 +191,21 @@ class Navigation extends Component {
           <Menu.Item>
             <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
           </Menu.Item>
-          { storage.checkAdmin() ? (
+          {isMobileOnly ? (
+            <Menu.Item onClick={this.handleMobilePage}>
+              Mobile Page
+            </Menu.Item>
+          )
+            : null
+          }
+          {storage.checkAdmin() ? (
             <Menu.Item className="navigation__forDisplay" onClick={this.handleForDisplay}>
               For Display
             </Menu.Item>
           )
             : null
           }
-          { showDate
+          {showDate
             ? (
               <SelectedDate
                 changeDate={this.handleChangeDate}
@@ -204,7 +218,7 @@ class Navigation extends Component {
             : null}
           <Menu.Menu position="right" inverted="true" className="navigation__container">
             {this.renderAdminSettings()}
-            {this.renderAccountDropDown()}
+            {this.renderLoggedMenuInInfo()}
             <Menu.Item
               onClick={this.handleLogin}
               className="navigation__login"
@@ -217,6 +231,9 @@ class Navigation extends Component {
             onClose={this.closeLogin}
           />
         </Menu>
+        {showNotificationModal ? (
+          <NotificationModal onClose={this.closeNotificationModal} />
+        ) : null}
       </div>
     );
   }
@@ -232,9 +249,9 @@ Navigation.propTypes = {
 
 Navigation.defaultProps = {
   showDate: false,
-  changeDate: () => {},
-  onOpenDatePicker: () => {},
-  onCloseDatePicker: () => {},
+  changeDate: () => { },
+  onOpenDatePicker: () => { },
+  onCloseDatePicker: () => { },
   forDisplay: false,
 };
 

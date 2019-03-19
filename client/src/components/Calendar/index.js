@@ -63,13 +63,12 @@ class Calendar extends Component {
   /*
    * REQUESTS
    */
-
   // propsTesting* is used for Jest testing
   getBookings() {
-    const { propsTestingBookings } = this.props;
+    const { propsTestingBookings, propsTestingCampOns } = this.props;
     const test = !!propsTestingBookings;
     if (test) {
-      this.setState({ bookings: propsTestingBookings });
+      this.setState({ bookings: propsTestingBookings, campOns: propsTestingCampOns });
     } else {
       const { selectedDate } = this.state;
       const params = {
@@ -78,23 +77,11 @@ class Calendar extends Component {
         day: selectedDate.getDate(),
       };
 
-      api.getBookings(params)
-        .then((response) => {
-          this.getCampOns(params, response.data);
-        });
-    }
-  }
-
-  getCampOns(params, bookings) {
-    const { propsTestingCampOns } = this.props;
-    const test = !!propsTestingCampOns;
-    if (test) {
-      this.setState({ campOns: propsTestingCampOns });
-    } else {
-      api.getCampOns(params)
-        .then((response) => {
-          this.campOnToBooking(response.data, bookings);
-        });
+      Promise.all([api.getBookings(params), api.getCampOns(params)]).then((results) => {
+        const bookings = results[0].data;
+        const campons = results[1].data;
+        this.campOnToBooking(campons, bookings);
+      });
     }
   }
 

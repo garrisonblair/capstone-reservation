@@ -26,6 +26,7 @@ class ReservationDetailsModal extends Component {
       endDate: '',
     },
     ownerValue: 'me',
+    canMakeRecurringBookings: false,
     updatedOwnerOptions: false,
     reservationProfiles: [],
     bypassPrivileges: false,
@@ -50,7 +51,9 @@ class ReservationDetailsModal extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { show } = nextProps;
+    const { ownerValue } = this.state;
     if (nextProps.show) {
+      this.ownerCanMakeRecurringBookings(ownerValue);
       if (localStorage.getItem('CapstoneReservationUser') == null) {
         this.setState({ showLogin: true });
       } else {
@@ -82,6 +85,28 @@ class ReservationDetailsModal extends Component {
       bypassValidation: false,
     });
     this.getDefaultEndTime(hour, minute);
+  }
+
+  ownerCanMakeRecurringBookings = (ownerValue) => {
+    if (ownerValue === 'me') {
+      if (localStorage.CapstoneReservationUser) {
+        const owner = JSON.parse(localStorage.CapstoneReservationUser);
+        api.canUserMakeRecurring(owner.id, 'user')
+          .then((r) => {
+            this.setState({
+              ownerValue,
+              canMakeRecurringBookings: r.data,
+            });
+          });
+      }
+    } else {
+      api.canUserMakeRecurring(ownerValue, 'group')
+        .then((r) => {
+          this.setState({
+            canMakeRecurringBookings: r.data,
+          });
+        });
+    }
   }
 
   generateHourOptions = (minHour, maxHour) => {
@@ -134,6 +159,7 @@ class ReservationDetailsModal extends Component {
       },
       isRecurring: false,
       updatedOwnerOptions: false,
+      ownerValue: 'me',
     });
     onClose();
   }
@@ -177,7 +203,9 @@ class ReservationDetailsModal extends Component {
     }
   }
 
-  handleOpen = () => this.setState({ show: true });
+  handleOpen = () => {
+    this.setState({ show: true });
+  }
 
   handleStartHourChange = (e, { value }) => {
     this.setState({
@@ -198,7 +226,8 @@ class ReservationDetailsModal extends Component {
   }
 
   handleOwnerChange = (e, { value }) => {
-    this.setState({ ownerValue: value });
+    this.setState({ ownerValue: value, isRecurring: false });
+    this.ownerCanMakeRecurringBookings(value);
   }
 
   handleEndMinuteChange = (e, { value }) => {
@@ -352,7 +381,7 @@ class ReservationDetailsModal extends Component {
             position: 'top',
             type: 'warning',
             title: 'Reservation blocked',
-            text: 'We are sorry, this reservation overlaps with other reservations. Skip reservation on already booked dates?',
+            html: `We are sorry, this reservation overlaps with other reservations. Skip reservation on these dates?<br/><br/><div><center>${response.data}</center></div>`,
             confirmButtonText: 'YES',
             cancelButtonText: 'NO',
             showCancelButton: true,
@@ -439,7 +468,6 @@ class ReservationDetailsModal extends Component {
           <Form.Field>
             <Input
               size="small"
-              icon="user"
               type="date"
               id="startDateOption0"
               iconPosition="left"
@@ -457,7 +485,6 @@ class ReservationDetailsModal extends Component {
           <Form.Field>
             <Input
               size="small"
-              icon="user"
               id="endDateOption0"
               type="date"
               value={inputOption0.endDate}
@@ -526,6 +553,7 @@ class ReservationDetailsModal extends Component {
       endMinute,
       reservationProfiles,
       isLoading,
+      canMakeRecurringBookings,
     } = this.state;
     const { selectedDate } = this.props;
     let user;
@@ -605,7 +633,7 @@ class ReservationDetailsModal extends Component {
               {user && user.is_superuser ? this.renderAdminBookingForm() : null}
             </div>
             <div className="modal-description">
-              <Checkbox label="Request a recurring booking" onChange={this.handleCheckboxClick} />
+              {canMakeRecurringBookings ? <Checkbox checked={isRecurring} label="Request a recurring booking" onChange={this.handleCheckboxClick} /> : null}
             </div>
             {isRecurring ? this.renderRecurringForm() : null}
             <div className="ui divider" />

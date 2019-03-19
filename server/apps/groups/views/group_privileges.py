@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
+from rest_framework.exceptions import APIException
 from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -23,18 +23,22 @@ class PrivilegeRequestList(ListAPIView):
 
     def get_queryset(self):
         qs = super(PrivilegeRequestList, self).get_queryset()
-
-        if not self.request.user.is_superuser:
-            try:
-                owner = User.objects.get(id=self.request.user.id)
-                owned_groups = owner.owned_groups.all()
-                qs = qs.filter(group__in=owned_groups)
-            except User.DoesNotExist:
-                pass
-
         request_status = self.request.GET.get('status')
-        if request_status is not None:
-            qs = qs.filter(status=request_status)
+
+        try:
+            if not self.request.user.is_superuser:
+                try:
+                    owner = User.objects.get(id=self.request.user.id)
+                    owned_groups = owner.owned_groups.all()
+                    qs = qs.filter(group__in=owned_groups)
+                except User.DoesNotExist:
+                    pass
+
+            if request_status is not None:
+                qs = qs.filter(status=request_status)
+        except Exception:
+            raise APIException
+
         return qs
 
 

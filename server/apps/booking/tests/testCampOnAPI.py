@@ -14,8 +14,8 @@ from apps.booking.models.Booking import Booking
 from apps.booking.models.CampOn import CampOn
 from apps.booking.views.campon import CampOnList
 from apps.booking.views.campon import CampOnCreate
-from apps.booking.serializers.campon import CampOnSerializer
-from apps.booking.serializers.booking import BookingSerializer
+from apps.booking.serializers.campon import CampOnSerializer, LogCampOnSerializer
+from apps.booking.serializers.booking import BookingSerializer, LogBookingSerializer
 from apps.util.mock_datetime import mock_datetime
 
 
@@ -85,7 +85,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(latest_campon_log.action_flag, ADDITION)
         self.assertEqual(latest_campon_log.object_id, str(created_camp_on.id))
         self.assertEqual(latest_campon_log.user, self.user)
-        self.assertEqual(latest_campon_log.object_repr, json.dumps(CampOnSerializer(created_camp_on).data))
+        self.assertEqual(latest_campon_log.change_message, json.dumps(LogCampOnSerializer(created_camp_on).data))
 
     def testCreateCampOnWithBooking(self):
         request = self.factory.post("/campon", {
@@ -131,7 +131,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(latest_campon_log.action_flag, ADDITION)
         self.assertEqual(latest_campon_log.object_id, str(created_camp_on.id))
         self.assertEqual(latest_campon_log.user, self.user)
-        self.assertEqual(latest_campon_log.object_repr, json.dumps(CampOnSerializer(created_camp_on).data))
+        self.assertEqual(latest_campon_log.change_message, json.dumps(LogCampOnSerializer(created_camp_on).data))
 
         # Generated Booking Log Entry
         all_booking_logs = LogEntry.objects.filter(content_type=ContentType.objects.get_for_model(created_booking))
@@ -139,7 +139,7 @@ class CampOnAPITest(TestCase):
         self.assertEqual(latest_booking_log.action_flag, ADDITION)
         self.assertEqual(latest_booking_log.object_id, str(created_booking.id))
         self.assertEqual(latest_booking_log.user, self.user)
-        self.assertEqual(latest_booking_log.object_repr, json.dumps(BookingSerializer(created_booking).data))
+        self.assertEqual(latest_booking_log.change_message, json.dumps(LogBookingSerializer(created_booking).data))
 
     # @unittest.skip("tests to be changed to account for actual time")
     def testCreateCampOnSecondBooking(self):
@@ -432,7 +432,7 @@ class CampOnAPITest(TestCase):
         response = CampOnList.as_view()(request)
 
         # Verify response status code
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def testGetCampOnWithInvalidBookingId(self):
         request = self.factory.get("/campons", {
@@ -441,7 +441,7 @@ class CampOnAPITest(TestCase):
         response = CampOnList.as_view()(request)
 
         # Verify response status code
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def testGetCampOnWithInvalidStartTime(self):
         request = self.factory.get("/campons", {
@@ -451,7 +451,7 @@ class CampOnAPITest(TestCase):
         response = CampOnList.as_view()(request)
 
         # Verify response status code
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def testGetCampOnWithInvalidEndTime(self):
         request = self.factory.get("/campons", {
@@ -461,4 +461,4 @@ class CampOnAPITest(TestCase):
         response = CampOnList.as_view()(request)
 
         # Verify response status code
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -1,3 +1,5 @@
+import unittest
+
 from django.test import TestCase
 from datetime import date, time, datetime, timedelta
 
@@ -30,6 +32,7 @@ class TestCamponCreateListener(TestCase):
 
         self.booking.save()
 
+    @unittest.skip
     def testCamponsRefutableSet(self):
 
         settings = SystemSettings.get_settings()

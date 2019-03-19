@@ -20,7 +20,7 @@ def log_model_change(model_instance, action, user=None):
     )
     # log_action cuts the object_repr to 200 chars, need to set seperately
 
-    log_entry.object_repr = model_instance.json_serialize()
+    log_entry.change_message = model_instance.json_serialize()
     log_entry.save()
 
 

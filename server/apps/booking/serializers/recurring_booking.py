@@ -48,7 +48,7 @@ class ReadRecurringBookingSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class MyRecurringBookingSerializer(serializers.ModelSerializer):
+class DetailedRecurringBookingSerializer(serializers.ModelSerializer):
 
     booker = UserSerializer(required=False)
     room = RoomSerializer(required=False)
@@ -59,3 +59,25 @@ class MyRecurringBookingSerializer(serializers.ModelSerializer):
         fields = ('id', 'start_date', 'end_date', 'booking_start_time', 'booking_end_time',
                   'room', 'group', 'booker', 'skip_conflicts')
         read_only_fields = ('id',)
+
+
+class LogRecurringBookingSerializer(serializers.ModelSerializer):
+    booker = serializers.SerializerMethodField()
+    group = serializers.SerializerMethodField()
+    room = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RecurringBooking
+        fields = ('id', 'start_date', 'end_date', 'booking_start_time', 'booking_end_time',
+                  'room', 'group', 'booker', 'skip_conflicts')
+        read_only_fields = ('id',)
+
+    def get_booker(self, booking):
+        return {"username": booking.booker.username, "id": booking.booker.id}
+
+    def get_group(self, booking):
+        if booking.group:
+            return {"name": booking.group.name, "id": booking.group.id}
+
+    def get_room(self, booking):
+        return {"name": booking.room.name, "id": booking.room.id}

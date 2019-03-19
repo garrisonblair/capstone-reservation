@@ -177,6 +177,20 @@ function getRooms() {
   });
 }
 
+function getRoomsForDate(date, startTime, endTime) {
+  let params = null;
+  params = {
+    date,
+    start_time: startTime,
+    end_time: endTime,
+  };
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/rooms`,
+    params,
+  });
+}
+
 function createRoom(name, capacity, numberOfComputers) {
   const headers = getTokenHeader();
   const data = {
@@ -441,18 +455,36 @@ function getContentTypes() {
   });
 }
 
-function getUsers(searchText) {
+function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaff, sortTerm) {
   const headers = getTokenHeader();
 
   const params = {};
-
-  if (searchText) {
-    params.search_text = searchText;
-  }
-
+  if (searchText !== undefined) { params.search_term = searchText; }
+  if (isActive !== undefined) { params.is_active = isActive ? 'True' : 'False'; }
+  if (isSuperUser !== undefined) { params.is_superuser = isSuperUser ? 'True' : 'False'; }
+  if (isStaff !== undefined) { params.is_staff = isStaff ? 'True' : 'False'; }
+  if (searchLimit !== undefined) { params.limit = searchLimit; }
+  if (offset !== undefined) { params.offset = offset; }
+  if (sortTerm !== undefined) { params.sort_by = sortTerm; }
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
+    params,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function canUserMakeRecurring(userId, userType) {
+  const headers = getTokenHeader();
+
+  const params = {
+    pk: userId,
+    type: userType,
+  };
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/can_make_recurring`,
     params,
     headers,
     withCredentials: true,
@@ -633,6 +665,31 @@ function getRoomStatistics(startDate, endDate) {
   });
 }
 
+function getProgramStatistics(startDate, endDate, withProgram, withGradLevel, withCategories) {
+  const headers = getTokenHeader();
+  const params = {
+    withProgram,
+    withGradLevel,
+    withCategories,
+  };
+
+  if (startDate.length !== 0) {
+    params.start = startDate;
+  }
+
+  if (endDate.length !== 0) {
+    params.end = endDate;
+  }
+
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/program_statistics`,
+    headers,
+    params,
+    withCredentials: true,
+  });
+}
+
 function createAnnouncement(title, content, startDate, endDate) {
   const headers = getTokenHeader();
   const data = {
@@ -688,6 +745,25 @@ function updateAnnouncement(announcement) {
   });
 }
 
+function postNotification(bookerId, rooms, date, rangeStart, rangeEnd, minBookingTime) {
+  const headers = getTokenHeader();
+  const data = {
+    booker: bookerId,
+    rooms,
+    date,
+    range_start: rangeStart,
+    range_end: rangeEnd,
+    minimum_booking_time: minBookingTime,
+  };
+
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/notify`,
+    headers,
+    data,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -706,6 +782,7 @@ const api = {
   getCampOns,
   createCampOn,
   getRooms,
+  getRoomsForDate,
   createRoom,
   updateRoom,
   deleteRoom,
@@ -729,6 +806,7 @@ const api = {
   getLogEntries,
   getContentTypes,
   getUsers,
+  canUserMakeRecurring,
   addPrivilege,
   assignIndividualPrivileges,
   assignAllPrivileges,
@@ -743,10 +821,12 @@ const api = {
   rejectInvitation,
   denyPrivilegeRequest,
   getRoomStatistics,
+  getProgramStatistics,
   createAnnouncement,
   getAllAnnouncements,
   deleteAnnouncement,
   updateAnnouncement,
+  postNotification,
 };
 
 export default api;

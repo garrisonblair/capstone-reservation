@@ -62,7 +62,7 @@ class Bookings extends Component {
     const { bookings } = this.props;
     let component = (
       <div>
-        <Table>
+        <Table unstackable>
           {this.renderTableHeader()}
           {this.renderTableBody()}
         </Table>
