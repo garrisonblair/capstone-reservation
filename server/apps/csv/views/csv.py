@@ -13,7 +13,7 @@ class CsvView(APIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
 
     def get(self, request):
-        exclude = ()
+        exclude = {}
         models = apps.get_models()
         response = [model.__name__ for model in models if model not in exclude]
         return Response(response)
