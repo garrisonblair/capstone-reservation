@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Accordion, Icon } from 'semantic-ui-react'
+import { Accordion, Icon } from 'semantic-ui-react';
 import withTracker from '../../HOC/withTracker';
 import UserBookings from '../../UserBookings';
 import Privileges from '../../Privileges';
