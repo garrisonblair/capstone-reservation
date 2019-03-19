@@ -2,7 +2,7 @@ import jwt
 import json
 import time
 import os
-from django.core.exceptions import ValidationError
+from rest_framework.exceptions import PermissionDenied
 from django.conf import settings
 
 
@@ -26,9 +26,9 @@ def getUserFromToken(token):
     try:
         decoded = jwt.decode(token, secret_key)
     except jwt.ExpiredSignatureError:
-        raise ValidationError('Signature expired. Please log in again.')
+        raise PermissionDenied('URL expired. Please log in again.')
     except jwt.InvalidTokenError:
-        raise ValidationError('Invalid token. Please log in again.')
+        raise PermissionDenied('Invalid token. We cannot find you in the system.')
 
     user = User.objects.get(id=decoded['user_id'])
 
