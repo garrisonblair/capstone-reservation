@@ -115,4 +115,4 @@ LoginComponent.defaultProps = {
   onSuccess: () => {},
 };
 
-export default withRouter(LoginComponent);
+export default LoginComponent;
