@@ -5,6 +5,7 @@ import {
   Modal,
   Form,
   Input,
+  Button,
 } from 'semantic-ui-react';
 import { DateRangePicker } from 'react-dates';
 import sweetAlert from 'sweetalert2';
@@ -54,6 +55,24 @@ class RecurringBookingModal extends Component {
     onCloseWithAction();
   }
 
+  handleEditButton = () => {
+    const {
+      room,
+      start_date,
+      end_date,
+      booking_start_time,
+      booking_end_time,
+    } = this.state;
+    const data = {
+      room,
+      start_date: start_date.format('YYYY-MM-DD'),
+      end_date: end_date.format('YYYY-MM-DD'),
+      booking_start_time,
+      booking_end_time,
+    };
+    console.log(data);
+  }
+
   handleOpen = () => this.setState({ show: true });
 
   handleTime = (e) => {
@@ -95,8 +114,8 @@ class RecurringBookingModal extends Component {
     } = this.state;
     return (
       <Form>
-        Room
-        <Input placeholder={room} />
+        Room:
+        {room}
         <DateRangePicker
           startDate={start_date}
           startDateId="sId"
@@ -113,6 +132,8 @@ class RecurringBookingModal extends Component {
         <input type="time" id="start" min="9:00" max="23:00" value={booking_start_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
         End time:
         <input type="time" id="end" min="9:00" max="23:00" value={booking_end_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
+        <Button className="edit-button" onClick={this.handleEditButton}>Apply changes</Button>
+        <div className="ui divider" />
       </Form>
     );
   }
