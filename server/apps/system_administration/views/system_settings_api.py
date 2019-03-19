@@ -4,7 +4,6 @@ import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from django.core.exceptions import ValidationError
@@ -34,10 +33,21 @@ class SystemSettingsAPI(APIView):
         settings = SystemSettings.get_settings()
 
         for key in settings_updates:
-            if key == "booking_edit_lock_timeout":
+            if key == "booking_edit_lock_timeout" or key == "default_time_to_notify_before_booking":
                 duration_str = settings_updates[key]
-                time = datetime.datetime.strptime(duration_str, "%H:%M:%S")
-                settings_updates[key] = timedelta(hours=time.hour, minutes=time.minute, seconds=time.second)
+                duration_split = duration_str.split(" ")
+                if len(duration_split) == 2:
+                    duration_time = duration_split[1]
+                    duration_day = int(duration_split[0])
+                else:
+                    duration_time = duration_split[0]
+                    duration_day = 0
+
+                time = datetime.datetime.strptime(duration_time, "%H:%M:%S")
+                settings_updates[key] = timedelta(days=duration_day,
+                                                  hours=time.hour,
+                                                  minutes=time.minute,
+                                                  seconds=time.second)
 
             setattr(settings, key, settings_updates[key])
 

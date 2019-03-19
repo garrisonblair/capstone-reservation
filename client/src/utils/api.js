@@ -455,7 +455,7 @@ function getContentTypes() {
   });
 }
 
-function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaff) {
+function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaff, sortTerm) {
   const headers = getTokenHeader();
 
   const params = {};
@@ -465,9 +465,26 @@ function getUsers(searchText, searchLimit, offset, isActive, isSuperUser, isStaf
   if (isStaff !== undefined) { params.is_staff = isStaff ? 'True' : 'False'; }
   if (searchLimit !== undefined) { params.limit = searchLimit; }
   if (offset !== undefined) { params.offset = offset; }
+  if (sortTerm !== undefined) { params.sort_by = sortTerm; }
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/users`,
+    params,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function canUserMakeRecurring(userId, userType) {
+  const headers = getTokenHeader();
+
+  const params = {
+    pk: userId,
+    type: userType,
+  };
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/can_make_recurring`,
     params,
     headers,
     withCredentials: true,
@@ -648,6 +665,31 @@ function getRoomStatistics(startDate, endDate) {
   });
 }
 
+function getProgramStatistics(startDate, endDate, withProgram, withGradLevel, withCategories) {
+  const headers = getTokenHeader();
+  const params = {
+    withProgram,
+    withGradLevel,
+    withCategories,
+  };
+
+  if (startDate.length !== 0) {
+    params.start = startDate;
+  }
+
+  if (endDate.length !== 0) {
+    params.end = endDate;
+  }
+
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/program_statistics`,
+    headers,
+    params,
+    withCredentials: true,
+  });
+}
+
 function createAnnouncement(title, content, startDate, endDate) {
   const headers = getTokenHeader();
   const data = {
@@ -764,6 +806,7 @@ const api = {
   getLogEntries,
   getContentTypes,
   getUsers,
+  canUserMakeRecurring,
   addPrivilege,
   assignIndividualPrivileges,
   assignAllPrivileges,
@@ -778,6 +821,7 @@ const api = {
   rejectInvitation,
   denyPrivilegeRequest,
   getRoomStatistics,
+  getProgramStatistics,
   createAnnouncement,
   getAllAnnouncements,
   deleteAnnouncement,

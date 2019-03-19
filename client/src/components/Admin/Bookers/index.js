@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { Component } from 'react';
 import {
-  Table, Segment, Pagination, Form, Button, Dropdown, Message,
+  Table, Segment, Pagination, Form, Button, Dropdown, Message, Icon,
 } from 'semantic-ui-react';
 import './Bookers.scss';
 import api from '../../../utils/api';
@@ -22,17 +22,24 @@ class Bookers extends Component {
     valueSuperUser: 'Any',
     valueStaff: 'Any',
     valueSearch: '',
-    searchLimit: 5,
+    valueSortTerm: '',
+    searchLimit: 20,
   }
 
   componentDidMount() {
     const {
-      searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff, activePage,
+      searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff, activePage, valueSortTerm,
     } = this.state;
-    this.syncBookers(valueSearch, searchLimit, ((activePage * searchLimit) - searchLimit), valueActive, valueSuperUser, valueStaff);
+    this.syncBookers(
+      valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff, valueSortTerm,
+    );
   }
 
-  syncBookers = (valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff) => {
+  getOffSet = (activePage, searchLimit) => (activePage * searchLimit) - searchLimit;
+
+  syncBookers =
+  (valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff, sortTerm) => {
+    const offset = this.getOffSet(activePage, searchLimit);
     if (isActive === 'Any') {
       isActive = undefined;
     }
@@ -42,8 +49,11 @@ class Bookers extends Component {
     if (isStaff === 'Any') {
       isStaff = undefined;
     }
+    if (sortTerm === '') {
+      sortTerm = undefined;
+    }
     this.setState({ isLoading: true });
-    api.getUsers(valueSearch, searchLimit, activePage, isActive, isSuperUser, isStaff)
+    api.getUsers(valueSearch, searchLimit, offset, isActive, isSuperUser, isStaff, sortTerm)
       .then((r) => {
         this.setState({ isLoading: false });
         if (r.status === 200) {
@@ -60,8 +70,7 @@ class Bookers extends Component {
       searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff,
     } = this.state;
     this.setState({ activePage });
-    const offset = ((activePage * searchLimit) - searchLimit);
-    this.syncBookers(valueSearch, searchLimit, offset, valueActive, valueSuperUser, valueStaff);
+    this.syncBookers(valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff);
   }
 
   handleSearchOnChange = (e, { value }) => { this.setState({ valueSearch: value }); }
@@ -74,28 +83,97 @@ class Bookers extends Component {
 
   handleLimitOnChange = (e, { value }) => { this.setState({ searchLimit: value }); }
 
+  handleUsernameSort = () => {
+    const {
+      searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff, activePage,
+    } = this.state;
+    let {
+      valueSortTerm,
+    } = this.state;
+
+    if (valueSortTerm === 'username') {
+      valueSortTerm = '-username';
+    } else {
+      valueSortTerm = 'username';
+    }
+    this.setState({ valueSortTerm });
+    this.syncBookers(
+      valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff, valueSortTerm,
+    );
+  }
+
+  handleNameSort = () => {
+    const {
+      searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff, activePage,
+    } = this.state;
+    let {
+      valueSortTerm,
+    } = this.state;
+
+    if (valueSortTerm === 'first_name') {
+      valueSortTerm = '-first_name';
+    } else {
+      valueSortTerm = 'first_name';
+    }
+    this.setState({ valueSortTerm });
+    this.syncBookers(
+      valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff, valueSortTerm,
+    );
+  }
+
+  handleEmailSort = () => {
+    const {
+      searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff, activePage,
+    } = this.state;
+    let {
+      valueSortTerm,
+    } = this.state;
+
+    if (valueSortTerm === 'email') {
+      valueSortTerm = '-email';
+    } else {
+      valueSortTerm = 'email';
+    }
+    this.setState({ valueSortTerm });
+    this.syncBookers(
+      valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff, valueSortTerm,
+    );
+  }
+
   handleSearchOnClick = () => {
     const {
       searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff,
     } = this.state;
     this.setState({ activePage: 1 });
-    this.syncBookers(valueSearch, searchLimit, 0, valueActive, valueSuperUser, valueStaff);
+    this.syncBookers(valueSearch, searchLimit, 1, valueActive, valueSuperUser, valueStaff);
   }
 
   handleResetOnClick = () => {
+    const valueActive = 'Any';
+    const valueSearch = '';
+    const valueStaff = 'Any';
+    const valueSuperUser = 'Any';
+    const valueSortTerm = '';
     this.setState({
-      valueActive: 'Any',
-      valueSearch: '',
-      valueStaff: 'Any',
-      valueSuperUser: 'Any',
+      valueActive,
+      valueSearch,
+      valueStaff,
+      valueSuperUser,
+      valueSortTerm,
     });
+    const {
+      searchLimit, activePage,
+    } = this.state;
+    this.syncBookers(
+      valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff, valueSortTerm,
+    );
   }
 
   render() {
     const {
       bookers, isLoading, activePage, totalPages,
       dropdownOptions, valueActive, valueSuperUser,
-      valueStaff, valueSearch, searchLimit,
+      valueStaff, valueSearch, searchLimit, valueSortTerm,
     } = this.state;
     return (
       <div id="bookers">
@@ -134,14 +212,20 @@ class Bookers extends Component {
           <Table>
             <Table.Header>
               <Table.Row key="-1">
-                <Table.HeaderCell textAlign="center">
+                <Table.HeaderCell textAlign="center" className="sortable-button" onClick={this.handleUsernameSort}>
                   Username
+                  {valueSortTerm === 'username' ? <Icon size="small" name="caret up" /> : null}
+                  {valueSortTerm === '-username' ? <Icon size="small" name="caret down" /> : null}
                 </Table.HeaderCell>
-                <Table.HeaderCell textAlign="center">
+                <Table.HeaderCell textAlign="center" className="sortable-button" onClick={this.handleNameSort}>
                   Full name
+                  {valueSortTerm === 'first_name' ? <Icon size="small" name="caret up" /> : null}
+                  {valueSortTerm === '-first_name' ? <Icon size="small" name="caret down" /> : null}
                 </Table.HeaderCell>
-                <Table.HeaderCell textAlign="center">
+                <Table.HeaderCell textAlign="center" className="sortable-button" onClick={this.handleEmailSort}>
                   Email
+                  {valueSortTerm === 'email' ? <Icon size="small" name="caret up" /> : null}
+                  {valueSortTerm === '-email' ? <Icon size="small" name="caret down" /> : null}
                 </Table.HeaderCell>
                 <Table.HeaderCell textAlign="center">
                   Super User

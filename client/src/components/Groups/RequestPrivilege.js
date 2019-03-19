@@ -59,18 +59,30 @@ class RequestPrivilege extends Component {
       sweetAlert('Empty field', 'Please choose a privilege', 'warning');
       return;
     }
-    api.requestPrivilege(groupId, dropdownValue)
-      .then((r) => {
-        if (r.status === 201) {
-          this.changeToPending();
-          this.setState({ groupPrivilege: r.data });
-        } else {
-          sweetAlert(`${r.status} error`, r.text, 'error');
-        }
-      })
-      .catch((r) => {
-        sweetAlert('Something went wrong', r.text, 'error');
-      });
+    sweetAlert.fire({
+      title: 'Make sure all team members are in group',
+      text: 'All team members must be part of your group before you request privileges',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, resquest privileges!',
+    }).then((result) => {
+      if (result.value) {
+        api.requestPrivilege(groupId, dropdownValue)
+          .then((r) => {
+            if (r.status === 201) {
+              this.changeToPending();
+              this.setState({ groupPrivilege: r.data });
+            } else {
+              sweetAlert(`${r.status} error`, r.text, 'error');
+            }
+          })
+          .catch((r) => {
+            sweetAlert('Something went wrong', r.text, 'error');
+          });
+      }
+    });
   }
 
   handleCancelRequest = () => {

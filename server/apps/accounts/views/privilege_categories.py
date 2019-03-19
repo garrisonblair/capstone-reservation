@@ -1,3 +1,4 @@
+from rest_framework.exceptions import APIException
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 
@@ -15,10 +16,13 @@ class PrivilegeCategoryList(ListAPIView):
     def get_queryset(self):
         qs = super(PrivilegeCategoryList, self).get_queryset()
 
-        # Filter by name
-        name = self.request.GET.get('name')
-        if name:
-            qs = PrivilegeCategory.objects.filter(name=name)
+        try:
+            # Filter by name
+            name = self.request.GET.get('name')
+            if name:
+                qs = PrivilegeCategory.objects.filter(name=name)
+        except Exception:
+            raise APIException
 
         return qs
 

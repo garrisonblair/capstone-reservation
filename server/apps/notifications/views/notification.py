@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from rest_framework.exceptions import APIException
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,7 +9,7 @@ from rest_framework import status
 from apps.accounts.models.User import User
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.notifications.models.Notification import Notification
-from apps.notifications.sertializers.notification import WriteNotificationSerializer, ReadNotificationSerializer
+from apps.notifications.serializers.notification import WriteNotificationSerializer, ReadNotificationSerializer
 
 
 class NotificationList(ListAPIView):
@@ -28,8 +29,11 @@ class NotificationList(ListAPIView):
 
         # Filter by day
         date = self.request.GET.get('date')
-        if date:
-            qs = qs.filter(date=date)
+        try:
+            if date:
+                qs = qs.filter(date=date)
+        except Exception:
+            raise APIException
 
         return qs
 

@@ -30,6 +30,10 @@ class SystemSettings(models.Model):
     booking_time_to_expire_minutes = models.PositiveIntegerField(default=30)
     manual_booking_confirmation = models.BooleanField(default=False)
 
+    # Global email notification settings
+    booking_reminders_active = models.BooleanField(default=False)
+    default_time_to_notify_before_booking = models.DurationField(default=timedelta(days=1))
+
     tracker = FieldTracker()
 
     @staticmethod
@@ -61,6 +65,14 @@ class SystemSettings(models.Model):
                 booking_exporter_config.start_importing_ics_bookings()
             else:
                 booking_exporter_config.stop_importing_ics_bookings()
+
+        if self.tracker.has_changed("booking_reminders_active"):
+            notififications_config = apps.get_app_config("notifications")
+
+            if self.booking_reminders_active:
+                notififications_config.start_booking_reminder_task()
+            else:
+                notififications_config.stop_booking_reminder_task()
 
         return this
 

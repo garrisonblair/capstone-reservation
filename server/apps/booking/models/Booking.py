@@ -11,8 +11,6 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
-from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
-from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.exceptions import PrivilegeError
 
 from apps.system_administration.models.system_settings import SystemSettings
@@ -21,11 +19,9 @@ from apps.util.SubjectModel import SubjectModel
 from apps.util.AbstractBooker import AbstractBooker
 from apps.util import utils
 
-from rest_framework.permissions import IsAuthenticated
-
 
 class BookingManager(models.Manager):
-    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking, confirmed):
+    def create_booking(self, booker, group, room, date, start_time, end_time, recurring_booking=None, confirmed=False):
 
         booking = self.create(
             booker=booker,
@@ -115,6 +111,8 @@ class Booking(models.Model, SubjectModel):
             self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
         if not isinstance(self.end_time, datetime.time):
             self.end_time = datetime.datetime.strptime(self.end_time, "%H:%M").time()
+        if not isinstance(self.date, datetime.date):
+            self.date = datetime.datetime.strptime(self.date, "%Y-%m-%d").date()
 
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
@@ -125,6 +123,18 @@ class Booking(models.Model, SubjectModel):
                                   room=self.room,
                                   date=self.date).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
+
+        start_date_time = datetime.datetime.combine(self.date, self.start_time)
+        end_date_time = datetime.datetime.combine(self.date, self.end_time)
+        room_unavailable_start = self.room.unavailable_start_time
+        room_unavailable_end = self.room.unavailable_end_time
+
+        if self.room.available is False and room_unavailable_start and room_unavailable_end:
+            if room_unavailable_end > start_date_time and end_date_time > room_unavailable_start:
+                raise ValidationError("Room is unavailable at this booking period.")
+
+        if self.room.available is False and not self.room.unavailable_start_time and not self.room.unavailable_end_time:
+            raise ValidationError("Room is unavailable to be booked")
 
     def merge_with_neighbouring_bookings(self):
         settings = SystemSettings.get_settings()
@@ -206,8 +216,8 @@ class Booking(models.Model, SubjectModel):
         return Booking.observers
 
     def json_serialize(self):
-        from ..serializers.booking import BookingSerializer
-        return json.dumps(BookingSerializer(self).data)
+        from ..serializers.booking import LogBookingSerializer
+        return json.dumps(LogBookingSerializer(self).data)
 
     def get_duration(self):
         return (datetime.datetime.combine(date=datetime.date.today(), time=self.end_time)
