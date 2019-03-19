@@ -6,6 +6,7 @@ from rest_framework import status
 from apps.accounts.models.User import User
 from apps.csv.views.csv import CsvView
 
+
 class testCSVAPI(TestCase):
 
     def setUp(self):
