@@ -1,3 +1,4 @@
+import django.apps
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -9,4 +10,6 @@ class CsvView(APIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
 
     def get(self, request):
-        return Response()
+        models = django.apps.apps.get_models()
+        response = [model.__name__ for model in models]
+        return Response(response)
