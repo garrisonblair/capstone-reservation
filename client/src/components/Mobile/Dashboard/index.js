@@ -12,7 +12,7 @@ import './Dashboard.scss';
 
 class MobileDashboard extends Component {
   state = {
-    activeIndex: 0,
+    activeIndex: -1,
   };
 
   groupRef = React.createRef();
@@ -62,11 +62,11 @@ class MobileDashboard extends Component {
           <Accordion.Content active={activeIndex === 3}>
             <GroupInvitations syncGroups={this.syncGroups} />
           </Accordion.Content>
-          <Accordion.Title active={activeIndex === 3} index={3} onClick={this.handleClickAccordion}>
+          <Accordion.Title active={activeIndex === 4} index={4} onClick={this.handleClickAccordion}>
             <Icon name="dropdown" />
             Profile
           </Accordion.Title>
-          <Accordion.Content active={activeIndex === 3}>
+          <Accordion.Content active={activeIndex === 4}>
             <Profile />
           </Accordion.Content>
         </Accordion>
