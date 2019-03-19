@@ -48,7 +48,7 @@ function renderPage() {
           <Route exact path="/admin/bookers" render={() => <Admin menuType="bookers" content={<Bookers />} />} />
           <Route exact path="/admin/announcements" render={() => <Admin menuType="announcements" content={<Announcements />} />} />
           <Route exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/profile" component={Profile} />
+          <Route exact path="/profile" render={() => <Profile asPage />} />
           <Route component={NotFound} />
         </Switch>
       </div>
