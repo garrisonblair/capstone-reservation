@@ -764,6 +764,30 @@ function postNotification(bookerId, rooms, date, rangeStart, rangeEnd, minBookin
   });
 }
 
+function getCSV() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/csv`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function postCSV(model) {
+  const headers = getTokenHeader();
+  const data = {
+    model,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/csv`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -827,6 +851,8 @@ const api = {
   deleteAnnouncement,
   updateAnnouncement,
   postNotification,
+  getCSV,
+  postCSV,
 };
 
 export default api;
