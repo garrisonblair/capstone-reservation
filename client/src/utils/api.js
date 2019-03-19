@@ -750,20 +750,22 @@ function postNotification(bookerId, rooms, date, rangeStart, rangeEnd, minBookin
   });
 }
 
-function getEmailSettings() {
-  const headers = getTokenHeader();
+function getEmailSettings(serviceToken) {
+  const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
+  const endpoint = serviceToken ? 'email_settings_service' : 'email_settings';
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/email_settings`,
+    url: `${settings.API_ROOT}/${endpoint}`,
     headers,
   });
 }
 
 function updateEmailSettings(
   whenBooking, whenRecurringBoooking, whenDeleteBooking,
-  whenDeleteRecurringBooking, whenCampsOnBooking,
+  whenDeleteRecurringBooking, whenCampsOnBooking, serviceToken,
 ) {
-  const headers = getTokenHeader();
+  const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
+  const endpoint = serviceToken ? 'email_settings_service' : 'email_settings';
   const data = {
     when_booking: whenBooking,
     when_recurring_booking: whenRecurringBoooking,
@@ -773,7 +775,7 @@ function updateEmailSettings(
   };
   return axios({
     method: 'POST',
-    url: `${settings.API_ROOT}/email_settings`,
+    url: `${settings.API_ROOT}/${endpoint}`,
     headers,
     data,
   });

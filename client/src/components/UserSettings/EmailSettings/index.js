@@ -18,37 +18,38 @@ class EmailSettings extends Component {
   }
 
   componentDidMount() {
-    // eslint-disable-next-line react/prop-types
+    this.syncSettings(this.getServiceToken());
+  }
+
+  getServiceToken = () => {
     const { match } = this.props;
     let token;
     if (match !== undefined) {
-      // eslint-disable-next-line prefer-destructuring
       token = match.params.token;
     }
-
-    this.syncSettings(token);
+    return token;
   }
 
   syncSettings = (token) => {
     this.setState({ isLoading: true });
-    if (token) {
-      // TODO: sync settings with Auth token
-      console.log(token);
-    } else {
-      api.getEmailSettings()
-        .then((r) => {
-          if (r.status === 200) {
-            this.setState({
-              whenBooking: r.data.when_booking,
-              whenRecurringBooking: r.data.when_recurring_booking,
-              whenDeleteBooking: r.data.when_delete_booking,
-              whenDeleteRecurringBooking: r.data.when_delete_recurring_booking,
-              whenCamponOnBooking: r.data.when_camp_on_booking,
-              isLoading: false,
-            });
-          }
-        });
-    }
+    api.getEmailSettings(token)
+      .then((r) => {
+        if (r.status === 200) {
+          this.setState({
+            whenBooking: r.data.when_booking,
+            whenRecurringBooking: r.data.when_recurring_booking,
+            whenDeleteBooking: r.data.when_delete_booking,
+            whenDeleteRecurringBooking: r.data.when_delete_recurring_booking,
+            whenCamponOnBooking: r.data.when_camp_on_booking,
+            isLoading: false,
+          });
+        }
+      })
+      .catch((e) => {
+        const { data } = e.response;
+        console.log(data);
+        sweetAlert('Blocked', data.detail, 'error');
+      });
   }
 
   handleWhenBookingOnToggle = (e, data) => {
@@ -76,24 +77,31 @@ class EmailSettings extends Component {
       whenBooking, whenRecurringBooking, whenDeleteBooking,
       whenDeleteRecurringBooking, whenCamponOnBooking,
     } = this.state;
+    // eslint-disable-next-line react/destructuring-assignment
 
     api.updateEmailSettings(
       whenBooking, whenRecurringBooking, whenDeleteBooking,
-      whenDeleteRecurringBooking, whenCamponOnBooking,
+      whenDeleteRecurringBooking, whenCamponOnBooking, this.getServiceToken(),
     )
       .then((r) => {
         // console.log(r);
         if (r.status === 200) {
-          sweetAlert.fire({
-            // position: 'top',
-            type: 'success',
-            title: 'Email settings saved',
-            toast: true,
-            showConfirmButton: false,
-            timer: 2000,
-          });
+          this.sweetAlertSuccess();
         }
       });
+
+
+  }
+
+  sweetAlertSuccess = () => {
+    sweetAlert.fire({
+      // position: 'top',
+      type: 'success',
+      title: 'Email settings saved',
+      toast: true,
+      showConfirmButton: false,
+      timer: 2000,
+    });
   }
 
   render() {
