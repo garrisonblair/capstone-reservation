@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
   Modal,
+  Form,
+  Input,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
@@ -10,19 +12,21 @@ import api from '../../utils/api';
 class RecurringBookingModal extends Component {
   state = {
     show: false,
+    booking: null,
   }
 
   componentWillMount() {
-    const { show } = this.props;
-    this.setState({ show });
+    const { show, booking } = this.props;
+    this.setState({ show, booking });
+    console.log(booking);
   }
 
   closeModal = () => {
     const { onClose } = this.props;
-    onClose();
     this.setState({
       show: false,
     });
+    onClose();
   }
 
   // Close the modal if any api POST requests succeeded
@@ -36,15 +40,26 @@ class RecurringBookingModal extends Component {
 
   handleOpen = () => this.setState({ show: true });
 
+  renderEdit() {
+    const { booking } = this.props;
+    return (
+      <Form>
+        <Input placeholder={booking.room} />
+      </Form>
+    );
+  }
+
   render() {
     const { show } = this.state;
-    const { booking } = this.props;
     return (
       <div id="reservation-details-modal">
         <Modal centered={false} size="tiny" open={show} onClose={this.closeModal}>
           <Modal.Header>
             Recurring booking
           </Modal.Header>
+          <Modal.Content>
+            {this.renderEdit()}
+          </Modal.Content>
         </Modal>
       </div>
     );
