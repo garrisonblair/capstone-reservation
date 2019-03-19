@@ -36,7 +36,7 @@ class Dashboard extends Component {
           </div>
           <div className="segment__container bottom">
             <Segment className="segment__privileges">
-              <Privileges />
+              <Privileges showTitle />
             </Segment>
             <Segment className="segment__groups">
               <Groups ref={this.groupRef} />

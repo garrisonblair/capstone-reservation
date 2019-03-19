@@ -1,5 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Menu, Segment, Table } from 'semantic-ui-react';
 import EmptySegment from '../EmptySegment';
 import api from '../../utils/api';
@@ -78,7 +79,7 @@ class Privileges extends Component {
           {this.renderTabs()}
         </Menu>
         <Segment loading={isLoading}>
-          <Table collapsing>
+          <Table collapsing unstackable>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Definition</Table.HeaderCell>
@@ -120,13 +121,23 @@ class Privileges extends Component {
   }
 
   render() {
+    const { showTitle } = this.props;
+
     return (
       <div id="privileges">
-        <h1> My Privileges </h1>
+        { showTitle ? <h1> My Privileges </h1> : null }
         {this.renderTable()}
       </div>
     );
   }
+}
+
+Privileges.propTypes = {
+  showTitle: PropTypes.bool,
+}
+
+Privileges.defaultProps = {
+  showTitle: false,
 }
 
 export default Privileges;
