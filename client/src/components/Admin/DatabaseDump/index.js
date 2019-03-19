@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { Button, Dropdown, Form, Header, Icon, Segment } from 'semantic-ui-react';
 import api from '../../../utils/api';
@@ -48,10 +46,26 @@ class DatabaseDump extends Component {
 
   download = () => {
     const { selectedModel } = this.state;
-    console.log(selectedModel);
+    api.postCSV(selectedModel)
+      .then((response) => {
+        const { data } = response;
+        const filename = `${selectedModel.toLowerCase()}.csv`;
+        const blob = new Blob([data]);
+        if (window.navigator.msSaveOrOpenBlob) { // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
+          window.navigator.msSaveBlob(blob, filename);
+        } else {
+          let a = window.document.createElement('a');
+          a.href = window.URL.createObjectURL(blob, { type: 'text/csv' });
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click(); // IE: "Access is denied"; see: https://connect.microsoft.com/IE/feedback/details/797361/ie-10-treats-blob-url-as-cross-origin-and-denies-access
+          document.body.removeChild(a);
+        }
+      });
   }
 
   renderCSVForm = () => {
+    const { selectedModel } = this.state;
     return (
       <Segment>
         <Form>
@@ -62,7 +76,7 @@ class DatabaseDump extends Component {
             {this.renderDropDown()}
           </Form.Field>
           <Form.Field>
-            <Button primary onClick={this.download}>
+            <Button primary onClick={this.download} disabled={!selectedModel}>
               <Icon name="download" />
               Download
             </Button>
