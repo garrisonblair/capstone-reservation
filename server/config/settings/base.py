@@ -34,7 +34,8 @@ PROJECT_APPS = [
     'apps.groups.apps.GroupsConfig',
     'apps.statistics.apps.StatisticsConfig',
     'apps.card_reader.apps.CardReaderConfig',
-    'apps.notifications.apps.NotificationsConfig'
+    'apps.notifications.apps.NotificationsConfig',
+    'apps.csv.apps.CsvConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
