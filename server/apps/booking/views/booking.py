@@ -75,7 +75,7 @@ class BookingCreate(APIView):
         now = datetime.datetime.now()
 
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response("Request data is invalid or incomplete", status=status.HTTP_400_BAD_REQUEST)
 
         date = datetime.datetime.strptime(data["date"], '%Y-%m-%d').date()
         start_time = datetime.datetime.strptime(data["start_time"], '%H:%M:%S').time()

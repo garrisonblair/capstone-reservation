@@ -23,6 +23,7 @@ import ResetPassword from './components/ResetPassword';
 import Verification from './components/Verification';
 import ResetPasswordVerification from './components/ResetPasswordVerification';
 import Home from './components/Home';
+import HomeMobile from './components/Mobile/Home';
 import HomeDisplay from './components/HomeDisplay';
 import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
@@ -33,6 +34,7 @@ function renderPage() {
       <div>
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route exact path="/mobile_home" component={HomeMobile} />
           <Route exact path="/forDisplay" component={HomeDisplay} />
           <Route exact path="/registration" component={Registration} />
           <Route exact path="/resetPassword" component={ResetPassword} />
@@ -49,7 +51,7 @@ function renderPage() {
           <Route exact path="/admin/logs" render={() => <Admin menuType="logs" content={<BookingActivity />} />} />
           <Route exact path="/admin/databasedump" render={() => <Admin menuType="databasedumps" content={<DatabaseDump />} />} />
           <Route exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/profile" component={Profile} />
+          <Route exact path="/profile" render={() => <Profile asPage />} />
           <Route component={NotFound} />
         </Switch>
       </div>
