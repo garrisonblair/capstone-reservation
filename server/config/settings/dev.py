@@ -7,6 +7,12 @@ ALLOWED_HOSTS = ['*']
 
 EMAIL_USE_SSL = True
 
+THIRD_PARTY_APPS += [
+    'django_extensions'
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

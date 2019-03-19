@@ -242,6 +242,12 @@ The default port of the React app is **3000**
     python3 manage.py test apps
 ```
 
+- Generate Database Schema
+```
+    python manage.py graph_models -a -o models.png
+```
+Installation of graphviz in your system is required before running this command
+
 ## Gmail ICS file Import
 To import external ICS events sent to a gmail account, that gmail account needs to activate the Gmail API.
 One can do so the following Link:
