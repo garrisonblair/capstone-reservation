@@ -22,7 +22,6 @@ class RecurringBookingModal extends Component {
     booking_start_time: '',
     booking_end_time: '',
     group: '',
-
   }
 
   componentWillMount() {
@@ -57,6 +56,33 @@ class RecurringBookingModal extends Component {
 
   handleOpen = () => this.setState({ show: true });
 
+  handleTime = (e) => {
+    if (e.target.id === 'start') {
+      this.setState({ booking_start_time: e.target.value });
+    } else {
+      this.setState({ booking_end_time: e.target.value });
+    }
+  }
+
+  formatTime = (e) => {
+    const { booking_start_time, booking_end_time } = this.state;
+    const t = e.target.id === 'start' ? booking_start_time : booking_end_time;
+    const time = t.split(':');
+    time[1] = parseInt(time[1], 10);
+    time[1] -= time[1] % 10;
+    if (parseInt(time[0], 10) < 10) {
+      time[0] = '09';
+    }
+    if (parseInt(time[0], 10) > 23) {
+      time[0] = '23';
+    }
+    if (e.target.id === 'start') {
+      this.setState({ booking_start_time: `${time[0]}:${time[1] < 10 ? '00' : time[1]}:00` });
+    } else {
+      this.setState({ booking_end_time: `${time[0]}:${time[1] < 10 ? '00' : time[1]}:00` });
+    }
+  }
+
   renderEdit() {
     const {
       focus,
@@ -83,6 +109,10 @@ class RecurringBookingModal extends Component {
           focusedInput={focus}
           onFocusChange={f => this.setState({ focus: f })}
         />
+        Start time:
+        <input type="time" id="start" min="9:00" max="23:00" value={booking_start_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
+        End time:
+        <input type="time" id="end" min="9:00" max="23:00" value={booking_end_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
       </Form>
     );
   }
