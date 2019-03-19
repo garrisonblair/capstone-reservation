@@ -52,6 +52,7 @@ class ReadBookingSerializer(serializers.ModelSerializer):
                   'date',
                   'start_time',
                   'end_time',
+                  'recurring_booking',
                   'note',
                   'display_note',
                   'show_note_on_calendar',
