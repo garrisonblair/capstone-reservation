@@ -88,7 +88,6 @@ class ReservationDetailsModal extends Component {
   }
 
   ownerCanMakeRecurringBookings = (ownerValue) => {
-    console.log('API call');
     if (ownerValue === 'me') {
       if (localStorage.CapstoneReservationUser) {
         const owner = JSON.parse(localStorage.CapstoneReservationUser);
