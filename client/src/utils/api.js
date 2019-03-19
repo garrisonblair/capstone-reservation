@@ -760,6 +760,20 @@ function getCSV() {
   });
 }
 
+function postCSV(model) {
+  const headers = getTokenHeader();
+  const data = {
+    model,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/csv`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -823,6 +837,7 @@ const api = {
   updateAnnouncement,
   postNotification,
   getCSV,
+  postCSV,
 };
 
 export default api;
