@@ -5,6 +5,7 @@ import UserBookings from '../../UserBookings';
 import Privileges from '../../Privileges';
 import Groups from '../../Groups';
 import GroupInvitations from '../../GroupInvitations';
+import Profile from '../../Profile';
 
 import './Dashboard.scss';
 
@@ -60,6 +61,13 @@ class MobileDashboard extends Component {
           </Accordion.Title>
           <Accordion.Content active={activeIndex === 3}>
             <GroupInvitations syncGroups={this.syncGroups} />
+          </Accordion.Content>
+          <Accordion.Title active={activeIndex === 3} index={3} onClick={this.handleClickAccordion}>
+            <Icon name="dropdown" />
+            Profile
+          </Accordion.Title>
+          <Accordion.Content active={activeIndex === 3}>
+            <Profile />
           </Accordion.Content>
         </Accordion>
       </div>
