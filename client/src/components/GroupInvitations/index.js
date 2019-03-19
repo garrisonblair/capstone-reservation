@@ -30,7 +30,7 @@ class GroupInvitations extends Component {
     const { invitations } = this.state;
     const { syncGroups } = this.props;
     return (
-      <Table>
+      <Table unstackable>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Group</Table.HeaderCell>
@@ -63,9 +63,10 @@ class GroupInvitations extends Component {
 
   render() {
     const { invitations, isLoading } = this.state;
+    const { showTitle } = this.props;
     return (
       <div id="group-invitations">
-        <h1>Invitations</h1>
+        {showTitle ? <h1>Invitations</h1> : null}
         <Segment loading={isLoading}>
           {invitations.length === 0 ? this.renderEmptyMessage() : this.renderTable()}
         </Segment>
@@ -77,10 +78,12 @@ class GroupInvitations extends Component {
 GroupInvitations.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   syncGroups: PropTypes.func,
+  showTitle: PropTypes.bool,
 };
 
 GroupInvitations.defaultProps = {
   syncGroups: null,
+  showTitle: false,
 };
 
 export default GroupInvitations;

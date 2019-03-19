@@ -4,6 +4,7 @@ import withTracker from '../../HOC/withTracker';
 import UserBookings from '../../UserBookings';
 import Privileges from '../../Privileges';
 import Groups from '../../Groups';
+import GroupInvitations from '../../GroupInvitations';
 
 import './Dashboard.scss';
 
@@ -52,6 +53,13 @@ class MobileDashboard extends Component {
           </Accordion.Title>
           <Accordion.Content active={activeIndex === 2}>
             <Groups ref={this.groupRef} />
+          </Accordion.Content>
+          <Accordion.Title active={activeIndex === 3} index={3} onClick={this.handleClickAccordion}>
+            <Icon name="dropdown" />
+            Group Invitations
+          </Accordion.Title>
+          <Accordion.Content active={activeIndex === 3}>
+            <GroupInvitations syncGroups={this.syncGroups} />
           </Accordion.Content>
         </Accordion>
       </div>
