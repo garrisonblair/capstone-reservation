@@ -76,7 +76,10 @@ class RecurringBookingModal extends Component {
           startDateId="sId"
           endDate={end_date}
           endDateId="eId"
-          onDatesChange={({ s, e }) => (this.setState({ start_date: s, end_date: e }))}
+          onDatesChange={({ startDate, endDate }) => (this.setState({
+            start_date: startDate,
+            end_date: endDate,
+          }))}
           focusedInput={focus}
           onFocusChange={f => this.setState({ focus: f })}
         />
