@@ -177,6 +177,20 @@ function getRooms() {
   });
 }
 
+function getRoomsForDate(date, startTime, endTime) {
+  let params = null;
+  params = {
+    date,
+    start_time: startTime,
+    end_time: endTime,
+  };
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/rooms`,
+    params,
+  });
+}
+
 function createRoom(name, capacity, numberOfComputers) {
   const headers = getTokenHeader();
   const data = {
@@ -768,6 +782,7 @@ const api = {
   getCampOns,
   createCampOn,
   getRooms,
+  getRoomsForDate,
   createRoom,
   updateRoom,
   deleteRoom,

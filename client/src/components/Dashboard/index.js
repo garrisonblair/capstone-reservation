@@ -25,7 +25,6 @@ class Dashboard extends Component {
       <div>
         <Navigation />
         <div className="dashboard">
-          <h1 className="title"><center> Dashboard </center></h1>
           <div className="segment__container top">
             <Segment className="segment__user">
               <UserInfo />
@@ -36,13 +35,13 @@ class Dashboard extends Component {
           </div>
           <div className="segment__container bottom">
             <Segment className="segment__privileges">
-              <Privileges />
+              <Privileges showTitle />
             </Segment>
             <Segment className="segment__groups">
-              <Groups ref={this.groupRef} />
+              <Groups showTitle ref={this.groupRef} />
             </Segment>
             <Segment className="segment__invitations">
-              <GroupInvitations syncGroups={this.syncGroups} />
+              <GroupInvitations showTitle syncGroups={this.syncGroups} />
             </Segment>
           </div>
         </div>
