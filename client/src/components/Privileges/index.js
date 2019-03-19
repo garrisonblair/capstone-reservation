@@ -134,10 +134,10 @@ class Privileges extends Component {
 
 Privileges.propTypes = {
   showTitle: PropTypes.bool,
-}
+};
 
 Privileges.defaultProps = {
   showTitle: false,
-}
+};
 
 export default Privileges;
