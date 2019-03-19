@@ -73,6 +73,23 @@ class RecurringBookingModal extends Component {
     console.log(data);
   }
 
+  handleDeleteButton = () => {
+    const { booking } = this.props;
+    sweetAlert.fire({
+      position: 'top',
+      type: 'warning',
+      text: 'This will delete all bookings associated with this recurring booking.',
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      showCancelButton: true,
+    })
+      .then((r) => {
+        if (r.value) {
+          console.log('Deleting');
+        }
+      });
+  }
+
   handleOpen = () => this.setState({ show: true });
 
   handleTime = (e) => {
@@ -134,6 +151,7 @@ class RecurringBookingModal extends Component {
         <input type="time" id="end" min="9:00" max="23:00" value={booking_end_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
         <Button className="edit-button" onClick={this.handleEditButton}>Apply changes</Button>
         <div className="ui divider" />
+        <Button className="delete-button" onClick={this.handleDeleteButton}>Delete all bookings</Button>
       </Form>
     );
   }
