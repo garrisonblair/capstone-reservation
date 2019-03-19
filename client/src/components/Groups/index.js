@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button, Icon, Table, TableBody, Segment,
 } from 'semantic-ui-react';
@@ -43,18 +44,19 @@ class Groups extends Component {
   }
 
   render() {
+    const { showTitle } = this.props;
     const {
       groups, showModal, myUserId, isLoading,
     } = this.state;
     return (
       <div id="groups">
-        <h1>Groups</h1>
+        { showTitle ? <h1>Groups</h1> : null }
         <Segment loading={isLoading}>
           <Button icon labelPosition="left" primary size="small" onClick={this.showGroupsModal}>
             <Icon name="plus" />
             Add
           </Button>
-          <Table>
+          <Table unstackable>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Name</Table.HeaderCell>
@@ -81,5 +83,13 @@ class Groups extends Component {
     );
   }
 }
+
+Groups.propTypes = {
+  showTitle: PropTypes.bool,
+};
+
+Groups.defaultProps = {
+  showTitle: false,
+};
 
 export default Groups;

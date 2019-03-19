@@ -39,7 +39,7 @@ class Dashboard extends Component {
               <Privileges showTitle />
             </Segment>
             <Segment className="segment__groups">
-              <Groups ref={this.groupRef} />
+              <Groups showTitle ref={this.groupRef} />
             </Segment>
             <Segment className="segment__invitations">
               <GroupInvitations syncGroups={this.syncGroups} />
