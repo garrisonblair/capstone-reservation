@@ -131,27 +131,36 @@ class RecurringBookingModal extends Component {
     } = this.state;
     return (
       <Form>
-        Room:
-        {room}
-        <DateRangePicker
-          startDate={start_date}
-          startDateId="sId"
-          endDate={end_date}
-          endDateId="eId"
-          onDatesChange={({ startDate, endDate }) => (this.setState({
-            start_date: startDate,
-            end_date: endDate,
-          }))}
-          focusedInput={focus}
-          onFocusChange={f => this.setState({ focus: f })}
-        />
-        Start time:
-        <input type="time" id="start" min="9:00" max="23:00" value={booking_start_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
-        End time:
-        <input type="time" id="end" min="9:00" max="23:00" value={booking_end_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
-        <Button className="edit-button" onClick={this.handleEditButton}>Apply changes</Button>
+        <Form.Field>
+          Room:&nbsp;
+          {room}
+        </Form.Field>
+        <Form.Field>
+          Date range:&nbsp;
+          <DateRangePicker
+            startDate={start_date}
+            startDateId="sId"
+            endDate={end_date}
+            endDateId="eId"
+            onDatesChange={({ startDate, endDate }) => (this.setState({
+              start_date: startDate,
+              end_date: endDate,
+            }))}
+            focusedInput={focus}
+            onFocusChange={f => this.setState({ focus: f })}
+          />
+        </Form.Field>
+        <Form.Field>
+          Start time:
+          <input type="time" id="start" min="9:00" max="23:00" value={booking_start_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
+        </Form.Field>
+        <Form.Field>
+          End time:
+          <input type="time" id="end" min="9:00" max="23:00" value={booking_end_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
+        </Form.Field>
+        <Button className="edit-button" color="blue" onClick={this.handleEditButton}>Apply changes</Button>
         <div className="ui divider" />
-        <Button className="delete-button" onClick={this.handleDeleteButton}>Delete all bookings</Button>
+        <Button className="delete-button" color="red" onClick={this.handleDeleteButton}>Delete all bookings</Button>
       </Form>
     );
   }
