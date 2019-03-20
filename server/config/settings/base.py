@@ -35,6 +35,7 @@ PROJECT_APPS = [
     'apps.statistics.apps.StatisticsConfig',
     'apps.card_reader.apps.CardReaderConfig',
     'apps.notifications.apps.NotificationsConfig',
+    'apps.csv.apps.CsvConfig',
     'apps.booker_settings.apps.EmailSettingsConfig'
 ]
 

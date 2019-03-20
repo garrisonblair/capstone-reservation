@@ -177,6 +177,20 @@ function getRooms() {
   });
 }
 
+function getRoomsForDate(date, startTime, endTime) {
+  let params = null;
+  params = {
+    date,
+    start_time: startTime,
+    end_time: endTime,
+  };
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/rooms`,
+    params,
+  });
+}
+
 function createRoom(name, capacity, numberOfComputers) {
   const headers = getTokenHeader();
   const data = {
@@ -781,6 +795,30 @@ function updateEmailSettings(
   });
 }
 
+function getCSV() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/csv`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function postCSV(model) {
+  const headers = getTokenHeader();
+  const data = {
+    model,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/csv`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 const api = {
   register,
   resetPassword,
@@ -799,6 +837,7 @@ const api = {
   getCampOns,
   createCampOn,
   getRooms,
+  getRoomsForDate,
   createRoom,
   updateRoom,
   deleteRoom,
@@ -845,6 +884,8 @@ const api = {
   postNotification,
   getEmailSettings,
   updateEmailSettings,
+  getCSV,
+  postCSV,
 };
 
 export default api;

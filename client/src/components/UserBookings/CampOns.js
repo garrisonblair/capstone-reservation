@@ -85,7 +85,7 @@ class CampOns extends Component {
     const { campOns } = this.props;
     let component = (
       <div>
-        <Table>
+        <Table unstackable>
           {this.renderTableHeader()}
           {this.renderTableBody()}
         </Table>

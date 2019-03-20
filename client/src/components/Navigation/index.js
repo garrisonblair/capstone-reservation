@@ -9,6 +9,7 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import moment from 'moment';
+import { isMobileOnly } from 'react-device-detect';
 import SelectedDate from '../Calendar/SelectedDate';
 import Login from '../Login';
 import api from '../../utils/api';
@@ -47,6 +48,11 @@ class Navigation extends Component {
   handleForDisplay = () => {
     const { history } = this.props;
     history.push('/forDisplay');
+  }
+
+  handleMobilePage = () => {
+    const { history } = this.props;
+    history.push('/mobile_home');
   }
 
   handleLogin = () => {
@@ -186,6 +192,13 @@ class Navigation extends Component {
           <Menu.Item>
             <a href="https://docs.google.com/forms/u/1/d/1g-d02gd4s1JQjEEArGkwZVmlYcBeWlDL6M3R2dcFmY8/edit?usp=sharing" rel="noopener noreferrer" target="_blank">Feedback</a>
           </Menu.Item>
+          {isMobileOnly ? (
+            <Menu.Item onClick={this.handleMobilePage}>
+              Mobile Page
+            </Menu.Item>
+          )
+            : null
+          }
           {storage.checkAdmin() ? (
             <Menu.Item className="navigation__forDisplay" onClick={this.handleForDisplay}>
               For Display

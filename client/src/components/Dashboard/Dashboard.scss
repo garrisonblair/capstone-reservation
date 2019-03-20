@@ -1,48 +1,51 @@
 .dashboard {
   padding: 50px 30px 30px 30px;
-  background-color: #4D4D4D;
+  background-color: #F9FAFB;
   min-height: 100%;
 }
 
-.title {
-  color: white;
-}
-
 .segment__user {
-  background-color: #B0AEAE !important;
+  background-color: #DFE3E8 !important;
   border-radius: 5px !important;
+  margin: 10px !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23) !important;
 }
 
 .segment__bookings {
-  background-color: #B0AEAE !important;
+  background-color: #DFE3E8 !important;
   border-radius: 5px !important;
+  margin: 10px !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23) !important;
 }
 
 .segment__privileges {
-  background-color: #B0AEAE !important;
+  background-color: #DFE3E8 !important;
   border-radius: 5px !important;
+  margin: 10px !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23) !important;
 }
 
 .segment__groups {
-  background-color: #B0AEAE !important;
+  background-color: #DFE3E8 !important;
   border-radius: 5px !important;
+  margin: 10px !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23) !important;
 }
 
 .segment__invitations {
-  background-color: #B0AEAE !important;
+  background-color: #DFE3E8 !important;
   border-radius: 5px !important;
+  margin: 10px !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23) !important;
 }
 
 .segment__container {
-  background-color: #932439 !important;
+  background-color: Transparent !important;
   padding: 2px !important;
   border-radius: 5px !important;
   &.top {
     display: grid;
     grid-template-columns: 1fr 3fr;
-    .segment {
-      margin: 0 2px;
-    }
   }
   &.bottom {
     display: grid;
@@ -50,6 +53,9 @@
     .segment {
       margin: 0 2px;
     }
+  }
+  h1 {
+    color: #932439;
   }
 }
 

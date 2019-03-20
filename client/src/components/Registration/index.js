@@ -46,11 +46,14 @@ class Registration extends Component {
         this.setState({
           showLoader: false,
         });
-        sweetAlert(
-          'A verification link has been sent to your ENCS email account.',
-          'Please click on the link to continue the registration process.',
-          'success.  It might take a couple minutes for you to receive the email.',
-        );
+        sweetAlert({
+          title: 'A verification link has been sent to your ENCS email account.',
+          text: 'It might take a couple minutes for you to receive the email. Please click on the received link to continue the registration process.',
+          type: 'success',
+        }).then(() => {
+          const url = 'https://mail.encs.concordia.ca/horde/imp/';
+          window.open(url, '_blank').focus();
+        });
       })
       .catch((error) => {
         this.setState({ showLoader: false });
