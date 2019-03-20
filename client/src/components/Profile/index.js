@@ -70,6 +70,7 @@ class Profile extends Component {
         'Please fill all the fields.',
         'error',
       );
+      return;
     }
 
     if (secondaryEmail.length !== 0 && !validEmail) {
@@ -79,6 +80,27 @@ class Profile extends Component {
         'Please enter a valid email.',
         'error',
       );
+      return;
+    }
+
+    if (studentID.length !== 8) {
+      preventSubmit = true;
+      sweetAlert(
+        ':(',
+        'ID should have 8 digits.',
+        'error',
+      );
+      return;
+    }
+
+    if ((!studentID.match('^[0-9]*$')) {
+      preventSubmit = true;
+      sweetAlert(
+        ':(',
+        'ID should have only digits.',
+        'error',
+      );
+      return;
     }
 
     if (preventSubmit) {
