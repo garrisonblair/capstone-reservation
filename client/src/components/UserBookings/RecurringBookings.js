@@ -80,7 +80,7 @@ class RecurringBookings extends Component {
     const { showRecurringModal, booking } = this.state;
     let component = (
       <div>
-        <Table>
+        <Table unstackable>
           {this.renderTableHeader()}
           {this.renderTableBody()}
         </Table>

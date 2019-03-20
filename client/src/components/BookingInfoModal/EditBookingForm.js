@@ -4,6 +4,8 @@ import {
   Button,
   Dropdown,
   Icon,
+  Checkbox,
+  Divider,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
@@ -36,6 +38,8 @@ class EditBookingForm extends Component {
     minuteOptions: [],
     reservedOptions: [{ text: 'me', value: 'me' }],
     isLoading: false,
+    bypassPrivileges: false,
+    bypassValidation: false,
   }
 
   componentDidMount() {
@@ -62,12 +66,22 @@ class EditBookingForm extends Component {
       startMinute,
       endHour,
       endMinute,
+      bypassPrivileges,
+      bypassValidation,
     } = this.state;
 
     const data = {
       start_time: `${startHour}:${startMinute}`,
       end_time: `${endHour}:${endMinute}`,
     };
+    if (bypassPrivileges) {
+      data.bypass_privileges = true;
+    }
+
+    if (bypassValidation) {
+      data.bypass_validation = true;
+    }
+
     api.updateBooking(booking.id, data)
       .then(() => {
         this.setState({ isLoading: false });
@@ -137,6 +151,14 @@ class EditBookingForm extends Component {
     this.setState({
       endMinute: value,
     });
+  }
+
+  handleBypassPrivilegesChange = (event, data) => {
+    this.setState({ bypassPrivileges: data.checked });
+  }
+
+  handleBypassValidationChange = (event, data) => {
+    this.setState({ bypassValidation: data.checked });
   }
 
   generateHourOptions() {
@@ -245,10 +267,29 @@ class EditBookingForm extends Component {
     );
   }
 
+  renderAdminBookingForm() {
+    return (
+      <div className="modal-description">
+        <div className="modal-description">
+          <Checkbox label="Bypass Privileges" onChange={this.handleBypassPrivilegesChange} />
+        </div>
+        <div className="modal-description">
+          <Checkbox label="Bypass Validation" onChange={this.handleBypassValidationChange} />
+        </div>
+        <Divider />
+      </div>
+    );
+  }
+
   render() {
+    let user;
+    if (localStorage.CapstoneReservationUser) {
+      user = JSON.parse(localStorage.CapstoneReservationUser);
+    }
     return (
       <div id="reservation-details-modal">
         {this.renderEditBookingForm()}
+        {user && user.is_superuser ? this.renderAdminBookingForm() : null}
       </div>
     );
   }
