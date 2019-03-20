@@ -207,12 +207,16 @@ function createRoom(name, capacity, numberOfComputers) {
   });
 }
 
-function updateRoom(id, name, capacity, numberOfComputers) {
+function updateRoom(
+  id, name, capacity, numberOfComputers, unavailableStartTime, unavailableEndTime,
+) {
   const headers = getTokenHeader();
   const data = {
     name,
     capacity,
     number_of_computers: numberOfComputers,
+    unavailable_start_time: unavailableStartTime,
+    unavailable_end_time: unavailableEndTime,
   };
   return axios({
     method: 'PATCH',

@@ -24,11 +24,17 @@ class RoomModal extends Component {
   componentDidMount() {
     const { selectedRoom } = this.props;
     if (selectedRoom != null) {
+      const uStart = selectedRoom.unavailable_start_time === null ? null : moment(selectedRoom.unavailable_start_time, 'YYYY-MM-DD HH:mm');
+      const uEnd = selectedRoom.unavailable_end_time === null ? null : moment(selectedRoom.unavailable_end_time, 'YYYY-MM-DD HH:mm');
       this.setState({
         roomID: selectedRoom.name,
         roomCapacity: selectedRoom.capacity,
         numOfComputers: selectedRoom.number_of_computers,
         cardReader: null,
+        unavailableStart: uStart === null ? moment() : uStart,
+        unavailableEnd: uEnd === null ? moment() : uEnd,
+        unavailableStartTime: uStart === null ? '' : uStart.format('HH:mm'),
+        unavailableEndTime: uEnd === null ? '' : uEnd.format('HH:mm'),
       });
     }
 
@@ -87,10 +93,8 @@ class RoomModal extends Component {
       unavailableEndTime,
     } = this.state;
     const { selectedRoom, onClose } = this.props;
-    const unavailabilityStart = `${unavailableStart.format('YYYY-MM-DD')} ${unavailableStartTime}`;
-    const unavailabilityEnd = `${unavailableEnd.format('YYYY-MM-DD')} ${unavailableEndTime}`;
-    console.log(unavailabilityStart);
-    console.log(unavailabilityEnd);
+    const unavailabilityStart = unavailableStartTime === '' ? null : `${unavailableStart.format('YYYY-MM-DD')} ${unavailableStartTime}`;
+    const unavailabilityEnd = unavailableEndTime === '' ? null : `${unavailableEnd.format('YYYY-MM-DD')} ${unavailableEndTime}`;
     // Leaves the method if verification doesn't succeed
     if (!this.verifyModalForm()) {
       return;
@@ -112,7 +116,10 @@ class RoomModal extends Component {
             });
         });
     } else {
-      api.updateRoom(selectedRoom.id, roomID, roomCapacity, numOfComputers)
+      api.updateRoom(
+        selectedRoom.id,
+        roomID, roomCapacity, numOfComputers, unavailabilityStart, unavailabilityEnd,
+      )
         .then((response) => {
           if (response.status === 200) {
             sweetAlert('Completed', `Room '${roomID}' was successfully updated.`, 'success')
@@ -121,11 +128,13 @@ class RoomModal extends Component {
               });
           }
         })
-        .catch(() => {
-          sweetAlert(':(', 'We are sorry. Something went wrong. Room was not saved.', 'error')
-            .then(() => {
-              onClose();
-            });
+        .catch((error) => {
+          sweetAlert.fire({
+            position: 'top',
+            type: 'error',
+            title: 'Operation failed',
+            text: error.response.data,
+          });
         });
     }
   }
@@ -189,6 +198,8 @@ class RoomModal extends Component {
     const {
       unavailableEnd,
       unavailableStart,
+      unavailableEndTime,
+      unavailableStartTime,
       unavailableFocus,
     } = this.state;
     return (
@@ -205,15 +216,13 @@ class RoomModal extends Component {
           focusedInput={unavailableFocus}
           onFocusChange={f => this.setState({ unavailableFocus: f })}
         />
-        <Button
-          onClick={this.handleAddAvailability}
-        >
-          Add
-        </Button>
-        Start time:
-        <input type="time" id="start" min="9:00" max="23:00" onChange={e => this.handleTime(e)} />
-        End time:
-        <input type="time" id="end" min="9:00" max="23:00" onChange={e => this.handleTime(e)} />
+        <br />
+        Start time:&nbsp;
+        <input type="time" id="start" defaultValue={unavailableStartTime} onChange={e => this.handleTime(e)} />
+        <br />
+        End time:&nbsp;
+        <input type="time" id="end" defaultValue={unavailableEndTime} onChange={e => this.handleTime(e)} />
+        <br />
       </FormField>
     );
   }
@@ -226,7 +235,6 @@ class RoomModal extends Component {
 
   render() {
     const { show, onClose, selectedRoom } = this.props;
-    console.log(selectedRoom);
     const {
       roomCapacity,
       roomID,
@@ -266,7 +274,8 @@ class RoomModal extends Component {
               />
             </FormField>
             <Divider />
-            <h3>Unavailability:</h3>
+            <h3>Make room unavailable:</h3>
+            <br />
             { this.renderAvailability() }
             <Divider />
             <FormField>
