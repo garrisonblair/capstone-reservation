@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import {
   Button,
   Form,
@@ -115,4 +115,4 @@ LoginComponent.defaultProps = {
   onSuccess: () => {},
 };
 
-export default LoginComponent;
+export default withRouter(LoginComponent);
