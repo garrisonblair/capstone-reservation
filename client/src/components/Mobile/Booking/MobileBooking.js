@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 
 import { Dropdown, Input, Button } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
-import withTracker from '../../HOC/withTracker';
 import api from '../../../utils/api';
 import './MobileBooking.scss';
 
@@ -435,4 +434,4 @@ MobileBooking.defaultProps = {
   minuteInterval: 10,
 };
 
-export default withTracker(MobileBooking);
+export default MobileBooking;
