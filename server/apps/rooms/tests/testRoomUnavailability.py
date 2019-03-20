@@ -41,3 +41,13 @@ class TestRoomUnavailability(TestCase):
         unavailability = RoomUnavailability(room=self.room, start_time=self.tomorrow)
         with self.assertRaises(ValidationError):
             unavailability.save()
+
+    def testRoomUnavailabilityCreationStartTimeLaterThanEndTime(self):
+        unavailability = RoomUnavailability(room=self.room, start_time=self.tomorrow, end_time=self.today)
+        with self.assertRaises(ValidationError):
+            unavailability.save()
+
+    def testRoomUnavailabilityCreationSameTime(self):
+        unavailability = RoomUnavailability(room=self.room, start_time=self.today, end_time=self.today)
+        with self.assertRaises(ValidationError):
+            unavailability.save()

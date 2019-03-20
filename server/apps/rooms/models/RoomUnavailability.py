@@ -22,3 +22,6 @@ class RoomUnavailability(models.Model):
 
         if not self.end_time:
             raise ValidationError("Unavailable end time cannot be empty.")
+
+        if self.start_time >= self.end_time:
+            raise ValidationError("Unavailable start time must be less than end time")
