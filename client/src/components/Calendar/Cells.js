@@ -7,10 +7,10 @@ import {
   Message,
 } from 'semantic-ui-react';
 import './Calendar.scss';
+import moment from 'moment';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
 import storage from '../../utils/local-storage';
-
 
 class Cells extends Component {
   static timeStringToInt(time) {
@@ -76,11 +76,34 @@ class Cells extends Component {
    */
 
   // Style for .calendar__cells__cell
-  setCellStyle(hourRow) {
-    const { hoursSettings } = this.props;
+  setCellStyle(hourRow, currentRoom, currentHour) {
+    const { hoursSettings, selectedDate } = this.props;
     const { orientation } = this.state;
     const start = (hourRow * hoursSettings.increment / 10) + 1;
     const end = start + hoursSettings.increment / 10;
+    let color = '';
+    let event = 'auto';
+    if (currentRoom.unavailable_start_time !== null) {
+      const s = currentRoom.unavailable_start_time.split('T');
+      const e = currentRoom.unavailable_end_time.split('T');
+      const startDate = moment(s[0], 'YYYY-MM-DD');
+      let startTime = s[1].split('-');
+      startTime = startTime[0].split(':');
+      startDate.set({ h: startTime[0], m: startTime[1] });
+      const endDate = moment(e[0], 'YYYY-MM-DD');
+      let endTime = e[1].split('-');
+      endTime = endTime[0].split(':');
+      endDate.set({ h: endTime[0], m: endTime[1] });
+      const currentDate = moment(`${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`, 'YYYY-MM-DD');
+      currentDate.set({ h: currentHour.split(':')[0], m: currentHour.split(':')[1] });
+      const timeTest = moment(`${currentHour}:00`, 'HH:mm:ss').isBetween(moment(s[1].split('-'), 'HH:mm:ss'), moment(e[1].split('-'), 'HH:mm:ss'));
+      if (currentDate.isBetween(startDate, endDate) && timeTest) {
+        color = 'rgb(127, 127, 127)';
+        if (!storage.checkAdmin()) {
+          event = 'none';
+        }
+      }
+    }
     // const height = '65px';
     let style;
     if (orientation === 0) {
@@ -90,7 +113,8 @@ class Cells extends Component {
           gridRowEnd: end,
           gridColumn: 1,
           width: '120px',
-          // height,
+          backgroundColor: color,
+          pointerEvents: event,
         },
       };
     } else {
@@ -99,6 +123,8 @@ class Cells extends Component {
           gridColumnStart: start,
           gridColumnEnd: end,
           gridRow: 1,
+          backgroundColor: color,
+          pointerEvents: event,
         },
       };
     }
@@ -274,7 +300,6 @@ class Cells extends Component {
     const selectedHour = currentHour;
     const selectedRoomCurrentBookings = [];
     const { bookings } = this.props;
-
     bookings.forEach((booking) => {
       if (booking.room === selectedRoomId) {
         selectedRoomCurrentBookings.push(booking);
@@ -480,7 +505,7 @@ class Cells extends Component {
       for (let j = 0; j < hoursList.length; j += 1) {
         const currentHour = hoursList[j];
         roomsCells.push(
-          <div className="calendar__cells__cell" style={this.setCellStyle(j).cell_style} role="button" tabIndex="0" key={cell} onClick={() => this.handleClickCell(currentHour, currentRoom)} onKeyDown={() => {}} />,
+          <div className="calendar__cells__cell" style={this.setCellStyle(j, currentRoom, currentHour).cell_style} role="button" tabIndex="0" key={cell} onClick={() => this.handleClickCell(currentHour, currentRoom)} onKeyDown={() => {}} />,
         );
         cell += 1;
       }
