@@ -61,6 +61,14 @@ class DetailedRecurringBookingSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
+class PartialRecurringBookingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RecurringBooking
+        fields = ('id', 'start_date', 'end_date', 'booking_start_time', 'booking_end_time')
+        read_only_fields = ('id',)
+
+
 class LogRecurringBookingSerializer(serializers.ModelSerializer):
     booker = serializers.SerializerMethodField()
     group = serializers.SerializerMethodField()
