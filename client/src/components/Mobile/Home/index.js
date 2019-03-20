@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import storage from '../../../utils/local-storage';
 import LoginComponent from '../../Login/login';
 import MobileBooking from '../Booking/MobileBooking';
 import MobileDashboard from '../Dashboard';
+import api from '../../../utils/api';
 import './Home.scss';
 
 
@@ -42,6 +44,22 @@ class HomeMobile extends Component {
     this.setState({
       isLoggedIn: true,
     });
+  }
+
+  handleLogout = () => {
+    api.logout()
+      .then(() => {
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Logged out',
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+
+        this.setState({ isLoggedIn: false });
+      });
   }
 
   renderCreateBooking() {
@@ -95,6 +113,8 @@ class HomeMobile extends Component {
         </div>
         <div>
           { isLoggedIn ? this.renderLoggedInPage() : null }
+          <br />
+          { isLoggedIn ? <Button color="red" onClick={this.handleLogout}>Logout</Button> : null }
         </div>
       </div>
     );
