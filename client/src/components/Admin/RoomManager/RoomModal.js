@@ -16,6 +16,8 @@ class RoomModal extends Component {
     numOfComputers: 0,
     unavailableStart: moment(),
     unavailableEnd: moment(),
+    unavailableStartTime: '',
+    unavailableEndTime: '',
     unavailableFocus: null,
   }
 
@@ -75,8 +77,20 @@ class RoomModal extends Component {
 
   handleSubmit = () => {
     // eslint-disable-next-line object-curly-newline
-    const { roomID, roomCapacity, numOfComputers } = this.state;
+    const {
+      roomID,
+      roomCapacity,
+      numOfComputers,
+      unavailableStart,
+      unavailableEnd,
+      unavailableStartTime,
+      unavailableEndTime,
+    } = this.state;
     const { selectedRoom, onClose } = this.props;
+    const unavailabilityStart = `${unavailableStart.format('YYYY-MM-DD')} ${unavailableStartTime}`;
+    const unavailabilityEnd = `${unavailableEnd.format('YYYY-MM-DD')} ${unavailableEndTime}`;
+    console.log(unavailabilityStart);
+    console.log(unavailabilityEnd);
     // Leaves the method if verification doesn't succeed
     if (!this.verifyModalForm()) {
       return;
@@ -138,6 +152,15 @@ class RoomModal extends Component {
       });
   }
 
+  handleTime = (e) => {
+    if (e.target.id === 'start') {
+      this.setState({ unavailableStartTime: e.target.value });
+    } else {
+      this.setState({ unavailableEndTime: e.target.value });
+    }
+  }
+
+
   renderCardReader = () => {
     const { cardReader } = this.state;
 
@@ -187,6 +210,10 @@ class RoomModal extends Component {
         >
           Add
         </Button>
+        Start time:
+        <input type="time" id="start" min="9:00" max="23:00" onChange={e => this.handleTime(e)} />
+        End time:
+        <input type="time" id="end" min="9:00" max="23:00" onChange={e => this.handleTime(e)} />
       </FormField>
     );
   }
@@ -199,6 +226,7 @@ class RoomModal extends Component {
 
   render() {
     const { show, onClose, selectedRoom } = this.props;
+    console.log(selectedRoom);
     const {
       roomCapacity,
       roomID,
