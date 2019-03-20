@@ -1,6 +1,7 @@
 /* eslint-disable prefer-const */
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Form,
@@ -199,9 +200,11 @@ class Profile extends Component {
       confirmNewPassword,
     } = this.state;
 
+    const { asPage } = this.props;
+
     return (
       <div>
-        <Navigation />
+        { asPage ? <Navigation /> : null }
         <div className="profile">
           <Segment>
             <h1> Profile </h1>
@@ -260,5 +263,14 @@ class Profile extends Component {
     );
   }
 }
+
+Profile.propTypes = {
+  asPage: PropTypes.bool,
+};
+
+Profile.defaultProps = {
+  asPage: false,
+};
+
 
 export default AuthenticationRequired(Profile);

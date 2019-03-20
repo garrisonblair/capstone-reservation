@@ -468,7 +468,6 @@ class ReservationDetailsModal extends Component {
           <Form.Field>
             <Input
               size="small"
-              icon="user"
               type="date"
               id="startDateOption0"
               iconPosition="left"
@@ -486,7 +485,6 @@ class ReservationDetailsModal extends Component {
           <Form.Field>
             <Input
               size="small"
-              icon="user"
               id="endDateOption0"
               type="date"
               value={inputOption0.endDate}

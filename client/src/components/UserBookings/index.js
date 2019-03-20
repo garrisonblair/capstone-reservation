@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import {
   Menu, Segment,
 } from 'semantic-ui-react';
@@ -83,19 +83,31 @@ class UserBookings extends Component {
 
   render() {
     const { activeItem, isLoading } = this.state;
+    const { vertical, tabular } = this.props;
+
     return (
       <div>
-        <Menu tabular>
+        <Menu vertical={vertical} tabular={tabular}>
           <Menu.Item name="Bookings" active={activeItem === 'bookings'} onClick={() => this.handleItemClick('bookings')} />
           <Menu.Item name="Recurring Bookings" active={activeItem === 'recurring'} onClick={() => this.handleItemClick('recurring')} />
           <Menu.Item name="Camp Ons" active={activeItem === 'campons'} onClick={() => this.handleItemClick('campons')} />
         </Menu>
-        <Segment loading={isLoading}>
+        <Segment loading={isLoading} style={{ overflow: 'auto' }}>
           {this.renderTab(activeItem)}
         </Segment>
       </div>
     );
   }
 }
+
+UserBookings.propTypes = {
+  vertical: PropTypes.bool,
+  tabular: PropTypes.bool,
+};
+
+UserBookings.defaultProps = {
+  vertical: false,
+  tabular: true,
+};
 
 export default UserBookings;
