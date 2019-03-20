@@ -1,4 +1,5 @@
 import json
+import datetime
 
 from django.core.exceptions import ValidationError
 from apps.accounts.exceptions import PrivilegeError
@@ -12,6 +13,7 @@ from apps.groups.models.Group import Group
 from apps.util.AbstractBooker import AbstractBooker
 from datetime import timedelta, datetime
 from apps.util import utils
+from apps.system_administration.models.system_settings import SystemSettings
 
 
 class RecurringBookingManager(models.Manager):
@@ -165,6 +167,36 @@ class RecurringBooking(models.Model):
         all_conflicts = []
         non_conflicting_bookings = []
 
+        # print('**********************')
+        # print('start_date: ', start_date)
+        # print('end_date: ', end_date)
+        # print('booking_start_time: ', booking_start_time)
+        # print('booking_end_time: ', booking_end_time)
+        # print('skip_conflicts: ', skip_conflicts)
+        # print('type(start_date): ', type(start_date))
+        # print('type(end_date): ', type(end_date))
+        # print('type(booking_start_time): ', type(booking_start_time))
+        # print('type(booking_end_time): ', type(booking_end_time))
+        # print('type(skip_conflicts): ', type(skip_conflicts))
+        # print('**********************')
+
+        # start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        # end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        # booking_start_time = datetime.strptime(booking_start_time, '%H:%M').time()
+        # booking_end_time = datetime.strptime(booking_end_time, '%H:%M').time()
+
+        # print('start_date: ', start_date)
+        # print('end_date: ', end_date)
+        # print('booking_start_time: ', booking_start_time)
+        # print('booking_end_time: ', booking_end_time)
+        # print('skip_conflicts: ', skip_conflicts)
+        # print('type(start_date): ', type(start_date))
+        # print('type(end_date): ', type(end_date))
+        # print('type(booking_start_time): ', type(booking_start_time))
+        # print('type(booking_end_time): ', type(booking_end_time))
+        # print('type(skip_conflicts): ', type(skip_conflicts))
+        # print('**********************')
+
         # Gets all bookings associated to the indicated booking which happen after current date
         all_associated_booking_instances = Booking.objects.all().filter(recurring_booking=self, date__gte=now)
 
@@ -182,15 +214,22 @@ class RecurringBooking(models.Model):
         else:
             booking_offset = 0
 
+        print(self.end_date)
         # Get current end date and apply offset in case start date has changed
         current_end_date = self.end_date + timedelta(days=booking_offset)
 
         # Create new bookings if new end date has been extended and add to appropriate lists
         if end_date is not None:
             while current_end_date < end_date:
+                print('current_end_date: ', current_end_date)
+                print('end_date: ', end_date)
                 # Sets the next booking in series
                 current_end_date = current_end_date + timedelta(days=7)
+                print('current_end_date: ', current_end_date)
+                print('end_date: ', end_date)
+
                 if current_end_date < end_date:
+                    print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
                     booking = Booking.objects.create_booking(
                         booker=self.booker,
                         group=self.group,
@@ -203,9 +242,11 @@ class RecurringBooking(models.Model):
                     )
                     try:
                         booking.validate_model()
+                        print('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
                         non_conflicting_bookings.append(booking)
                     except ValidationError:
-                            all_conflicts.append(booking)
+                            print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
+                            all_conflicts.append(booking.date)
                             continue
 
         # Iterates through associated bookings and makes the adjustment
@@ -213,7 +254,7 @@ class RecurringBooking(models.Model):
             # Will apply offset regardless, but if no offset, will add zero
             if booking_start_time:
                 associated_booking.start_time = booking_start_time
-            if associated_booking.end_time:
+            if booking_end_time:
                 associated_booking.end_time = booking_end_time
             if start_date:
                 associated_booking.date = associated_booking.date + timedelta(days=booking_offset)
@@ -221,19 +262,46 @@ class RecurringBooking(models.Model):
                 associated_booking.validate_model()
                 non_conflicting_bookings.append(associated_booking)
             except ValidationError:
-                all_conflicts.append(associated_booking)
+                all_conflicts.append(associated_booking.date)
                 continue
 
         # If there are no conflicts, simply make adjustments accordingly
         if len(all_conflicts) == 0 or skip_conflicts:
+
+            now = datetime.now()
+            today = datetime.today()
+            settings = SystemSettings.get_settings()
+            timeout = (now + settings.booking_edit_lock_timeout).time()
+
             for non_conflicting in non_conflicting_bookings:
+                print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+                # If the booking was in the past, ignore this one
+                if datetime.combine(non_conflicting.date, datetime.min.time()) < today \
+                        or (non_conflicting.date == today.date
+                            and non_conflicting.start_time > timeout):
+                    print('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
+                    pass
                 # Make sure bookings are in range and have not ended before modifying. Past bookings checked by filter
-                if start_date is not None and end_date is not None and start_date <= non_conflicting.date <= end_date:
+                elif start_date is not None and end_date is not None and start_date <= non_conflicting.date <= end_date:
+                    print('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
                     non_conflicting.save()
                     utils.log_model_change(non_conflicting, utils.CHANGE, user)
                 # Make sure bookings are in range and have not ended before deleting. Past bookings checked by filter
-                elif start_date is not None and non_conflicting.date >= start_date:
+                elif start_date is not None and non_conflicting.date < start_date:
+                    print('EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
                     non_conflicting.delete()
+                elif end_date is not None and non_conflicting.date > end_date:
+                    print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
+                    non_conflicting.delete()
+                else:
+                    print('GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG')
+                    print(non_conflicting)
+                    non_conflicting.save()
+            # TODO: ensure this is saved
+            # Set the new end date and save it
+            self.end_date = end_date
+            self.save()
         else:
+            print('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
             # If there are any conflicts, return list of them
             return all_conflicts

@@ -15,6 +15,7 @@ from apps.booking.serializers.recurring_booking import RecurringBookingSerialize
 from apps.rooms.serializers.room import RoomSerializer
 from apps.util import utils
 from datetime import timedelta, datetime
+from apps.system_administration.models.system_settings import SystemSettings
 
 
 class RecurringBookingCreate(APIView):
@@ -57,6 +58,8 @@ class RecurringBookingCancel(APIView):
 
     def post(self, request, pk):
 
+        settings = SystemSettings.get_settings()
+
         # Ensure that recurring booking to be canceled exists
         try:
             booking = Booking.objects.get(id=pk)
@@ -70,6 +73,8 @@ class RecurringBookingCancel(APIView):
         now = datetime.now()
         booking_end = booking.end_time
         timeout = now.time()
+        today = datetime.today()
+        timeout = (now + settings.booking_edit_lock_timeout).time()
 
         # Gets the parent recurring booking
         associated_recurring_booking = booking.recurring_booking
@@ -87,7 +92,8 @@ class RecurringBookingCancel(APIView):
             for associated_booking in all_associated_booking_instances:
 
                 # If the date of the recurring booking is after the current indicated booking date, try to delete
-                if associated_booking.date >= now.date():
+                if associated_booking.date > now.date() or (associated_booking.date == today.date
+                                                            and associated_booking.start_time > timeout):
                     associated_booking.delete_booking()
                     utils.log_model_change(booking, utils.DELETION, request.user)
 
@@ -123,28 +129,26 @@ class RecurringBookingEdit(APIView):
         timeout = now.time()
         data = request.data
 
-        # Checks if current selected recurring booking has started or not yet and handles accordingly
-        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
-            if not request.user.is_superuser:
-                return Response("Selected booking cannot be modified as booking has started",
-                                status=status.HTTP_400_BAD_REQUEST)
-
         skip_conflicts = request.data['skip_conflicts']
 
         if "start_date" in data:
             start_date = data["start_date"]
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
         else:
             start_date = None
         if "end_date" in data:
             end_date = data["end_date"]
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
         else:
             end_date = None
         if "booking_start_time" in data:
             booking_start_time = data["booking_start_time"]
+            booking_start_time = datetime.strptime(booking_start_time, '%H:%M').time()
         else:
             booking_start_time = None
         if "booking_end_time" in data:
             booking_end_time = data["booking_end_time"]
+            booking_end_time = datetime.strptime(booking_end_time, '%H:%M').time()
         else:
             booking_end_time = None
 
@@ -158,8 +162,9 @@ class RecurringBookingEdit(APIView):
                                                                             booking_end_time,
                                                                             skip_conflicts,
                                                                             request.user)
+            print('conflicts: ', conflicts)
             if conflicts is not None:
-                Response(conflicts, status=status.HTTP_409_CONFLICT)
+                return Response(conflicts, status=status.HTTP_409_CONFLICT)
             else:
                 return Response(status=status.HTTP_200_OK)
         except (ValidationError, PrivilegeError) as error:
