@@ -63,6 +63,15 @@ class Profile extends Component {
       preventSubmit = true;
     }
 
+    if (studentID.length === 0 || secondaryEmail.length === 0) {
+      preventSubmit = true;
+      sweetAlert(
+        ':(',
+        'Please fill all the fields.',
+        'error',
+      );
+    }
+
     if (secondaryEmail.length !== 0 && !validEmail) {
       preventSubmit = true;
       sweetAlert(
