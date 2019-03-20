@@ -421,7 +421,7 @@ class Cells extends Component {
 
           {booking.confirmed || isRecurring ? (
             <div style={{ marginTop: '5px' }}>
-              {isRecurring ? <Icon name="repeat" /> : null}
+              {isRecurring ? <Icon name="history" flipped="horizontally" /> : null}
               {booking.confirmed ? <Icon name="check circle" /> : null}
             </div>
           ) : null}
