@@ -93,7 +93,7 @@ class Profile extends Component {
       return;
     }
 
-    if ((!studentID.match('^[0-9]*$')) {
+    if (!studentID.match('^[0-9]*$')) {
       preventSubmit = true;
       sweetAlert(
         ':(',
