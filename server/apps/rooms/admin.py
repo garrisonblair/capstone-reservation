@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models.Room import Room
+from .models.RoomUnavailability import RoomUnavailability
 
 
 class RoomAdmin(admin.ModelAdmin):
@@ -8,3 +9,4 @@ class RoomAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Room, RoomAdmin)
+admin.site.register(RoomUnavailability)
