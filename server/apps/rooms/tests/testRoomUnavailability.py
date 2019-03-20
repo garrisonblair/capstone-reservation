@@ -24,10 +24,20 @@ class TestRoomUnavailability(TestCase):
     def tearDown(self):
         pass
 
-    def testUnavailabilityCreation(self):
+    def testRoomUnavailabilityCreation(self):
         unavailability = RoomUnavailability(room=self.room, start_time=self.today, end_time=self.tomorrow)
         unavailability.save()
 
         unavailabilities = RoomUnavailability.objects.filter(room=self.room)
 
         self.assertEqual(unavailabilities.count(), 1)
+
+    def testRoomUnavailabilityCreationWithNoStartTime(self):
+        unavailability = RoomUnavailability(room=self.room, end_time=self.tomorrow)
+        with self.assertRaises(ValidationError):
+            unavailability.save()
+
+    def testRoomUnavailabilityCreationWithNoEndTime(self):
+        unavailability = RoomUnavailability(room=self.room, start_time=self.tomorrow)
+        with self.assertRaises(ValidationError):
+            unavailability.save()
