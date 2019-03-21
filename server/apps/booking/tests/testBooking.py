@@ -1,7 +1,10 @@
 from django.test import TestCase
 from apps.booking.models.Booking import Booking
+from apps.rooms.models.RoomUnavailability import RoomUnavailability
 from apps.rooms.models.Room import Room
 from datetime import datetime, time, timedelta
+from django.utils import timezone
+from django.utils.timezone import make_aware
 
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
@@ -380,3 +383,30 @@ class TestBooking(TestCase):
         settings.merge_threshold_minutes = threshold
 
         settings.save()
+
+    def testBookingCreationWithUnavailableRoom(self):
+
+        room = Room(name="Room 1", capacity=7, number_of_computers=7)
+        room.save()
+
+        today = timezone.now()
+        tomorrow = timezone.now() + timedelta(1)
+
+        start_time = timezone.now() + timedelta(hours=1)
+        start_time = start_time.time()
+        end_time = timezone.now() + timedelta(hours=2)
+        end_time = end_time.time()
+
+        unavailability = RoomUnavailability(room=room,
+                                            start_time=today,
+                                            end_time=tomorrow)
+        unavailability.save()
+
+        booking = Booking(booker=self.booker,
+                          room=room,
+                          date=today,
+                          start_time=start_time,
+                          end_time=end_time)
+
+        with self.assertRaises(ValidationError):
+            booking.save()

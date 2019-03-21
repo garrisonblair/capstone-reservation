@@ -1,4 +1,6 @@
 import json
+import pytz
+from django.utils import timezone
 import datetime
 
 from django.db import models
@@ -6,6 +8,7 @@ from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
 from apps.notifications.models.Notification import Notification
 from apps.rooms.models.Room import Room
+from apps.rooms.models.RoomUnavailability import RoomUnavailability
 from ..models.RecurringBooking import RecurringBooking
 from django.db.models import Q
 from django.core.exceptions import ValidationError
@@ -106,7 +109,6 @@ class Booking(models.Model, SubjectModel):
                     self.recurring_booking, self.confirmed)
 
     def validate_model(self):
-        now = datetime.datetime.now()
         if not isinstance(self.start_time, datetime.time):
             self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
         if not isinstance(self.end_time, datetime.time):
@@ -123,6 +125,25 @@ class Booking(models.Model, SubjectModel):
                                   room=self.room,
                                   date=self.date).exists():
             raise ValidationError("Specified time is overlapped with other bookings.")
+
+        # Avoid getting naive dateTime
+        start_date_time = timezone.datetime(self.date.year, self.date.month, self.date.day,
+                                            self.start_time.hour, self.start_time.minute)
+        aware_start_time = timezone.get_current_timezone().localize(start_date_time)
+
+        end_date_time = timezone.datetime(self.date.year, self.date.month, self.date.day,
+                                          self.end_time.hour, self.end_time.minute)
+        aware_end_time = timezone.get_current_timezone().localize(end_date_time)
+
+        if RoomUnavailability.objects.filter(room=self.room,
+                                             start_time__lte=aware_start_time,
+                                             end_time__gte=aware_start_time).count() > 0:
+            raise ValidationError("Room is unavailable at this booking period.")
+
+        if RoomUnavailability.objects.filter(room=self.room,
+                                             start_time__lte=aware_end_time,
+                                             end_time__gte=aware_end_time).count() > 0:
+            raise ValidationError("Room is unavailable at this booking period.")
 
     def merge_with_neighbouring_bookings(self):
         settings = SystemSettings.get_settings()
