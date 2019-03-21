@@ -23,6 +23,7 @@ class RecurringBookingModal extends Component {
     booking_start_time: '',
     booking_end_time: '',
     group: '',
+    isLoading: false,
   }
 
   componentWillMount() {
@@ -63,6 +64,7 @@ class RecurringBookingModal extends Component {
       booking_start_time,
       booking_end_time,
     } = this.state;
+    const { booking } = this.props;
     const data = {
       room,
       start_date: start_date.format('YYYY-MM-DD'),
@@ -70,7 +72,30 @@ class RecurringBookingModal extends Component {
       booking_start_time,
       booking_end_time,
     };
-    console.log(data);
+    this.setState({ isLoading: true });
+    api.editRecurringBooking(data, booking.id)
+      .then(() => {
+        this.setState({ isLoading: false });
+        this.closeModal();
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Recurring booking was successfully updated.',
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      })
+      .catch((error) => {
+        this.setState({ isLoading: false });
+
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Edit failed',
+          text: error.response.data,
+        });
+      });
   }
 
   handleDeleteButton = () => {
@@ -85,7 +110,29 @@ class RecurringBookingModal extends Component {
     })
       .then((r) => {
         if (r.value) {
-          console.log('Deleting');
+          this.setState({ isLoading: true });
+          api.deleteRecurringBooking(booking.id)
+            .then(() => {
+              this.setState({ isLoading: false });
+              this.closeModal();
+              sweetAlert.fire({
+                position: 'top',
+                type: 'success',
+                title: 'Recurring booking was successfully deleted.',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+              });
+            })
+            .catch((error) => {
+              this.setState({ isLoading: false });
+
+              sweetAlert.fire({
+                position: 'top',
+                type: 'error',
+                text: error.response.data,
+              });
+            });
         }
       });
   }
@@ -128,6 +175,7 @@ class RecurringBookingModal extends Component {
       booking_start_time,
       booking_end_time,
       group,
+      isLoading,
     } = this.state;
     return (
       <Form>
@@ -158,7 +206,7 @@ class RecurringBookingModal extends Component {
           End time:
           <input type="time" id="end" min="9:00" max="23:00" value={booking_end_time} onChange={e => this.handleTime(e)} onBlur={e => this.formatTime(e)} />
         </Form.Field>
-        <Button className="edit-button" color="blue" onClick={this.handleEditButton}>Apply changes</Button>
+        <Button className="edit-button" color="blue" loading={isLoading} onClick={this.handleEditButton}>Apply changes</Button>
         <div className="ui divider" />
         <Button className="delete-button" color="red" onClick={this.handleDeleteButton}>Delete all bookings</Button>
       </Form>
