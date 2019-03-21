@@ -8,6 +8,7 @@ import './ReservationDetailsModal.scss';
 import toDateInputValue from '../../utils/dateFormatter';
 import Login from '../Login';
 import api from '../../utils/api';
+import timeUtil from '../../utils/time';
 import UserSearch from '../ReusableComponents/UserSearch';
 
 class ReservationDetailsModal extends Component {
@@ -41,7 +42,7 @@ class ReservationDetailsModal extends Component {
     } = this.props;
     this.setState({
       hourOptions: this.generateHourOptions(minHour, maxHour),
-      minuteOptions: this.generateMinuteOptions(minuteInterval),
+      minuteOptions: timeUtil.generateMinuteOptions(minuteInterval),
       inputOption0: {
         startDate: toDateInputValue(selectedDate),
         endDate: toDateInputValue(selectedDate),
@@ -115,17 +116,6 @@ class ReservationDetailsModal extends Component {
       result.push({
         text: `${i}`,
         value: `${i}`,
-      });
-    }
-    return result;
-  }
-
-  generateMinuteOptions = (minuteInterval) => {
-    const result = [];
-    for (let i = 0; i < 60; i += minuteInterval) {
-      result.push({
-        text: `${i < 10 ? `0${i}` : i}`,
-        value: `${i < 10 ? `0${i}` : i}`,
       });
     }
     return result;

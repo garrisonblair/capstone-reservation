@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
 import { Dropdown, Input, Button } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
+import timeUtil from '../../../utils/time';
 import './MobileBooking.scss';
 
 
@@ -30,7 +30,7 @@ class MobileBooking extends Component {
     this.setState({
       date: this.generateDate(),
       hourOptions: this.generateHourOptions(minHour, maxHour),
-      minuteOptions: this.generateMinuteOptions(minuteInterval),
+      minuteOptions: timeUtil.generateMinuteOptions(minuteInterval),
     });
     this.updateOwnerOptions();
   }
@@ -59,17 +59,6 @@ class MobileBooking extends Component {
       result.push({
         text: `${i}`,
         value: `${i}`,
-      });
-    }
-    return result;
-  }
-
-  generateMinuteOptions = (minuteInterval) => {
-    const result = [];
-    for (let i = 0; i < 60; i += minuteInterval) {
-      result.push({
-        text: `${i < 10 ? `0${i}` : i}`,
-        value: `${i < 10 ? `0${i}` : i}`,
       });
     }
     return result;

@@ -9,20 +9,12 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
+import timeUtil from '../../utils/time';
 import './BookingInfoModal.scss';
 
 
 class EditBookingForm extends Component {
-  static generateMinuteOptions(minuteInterval) {
-    const result = [];
-    for (let i = 0; i < 60; i += minuteInterval) {
-      result.push({
-        text: `${i < 10 ? `0${i}` : i}`,
-        value: `${i < 10 ? `0${i}` : i}`,
-      });
-    }
-    return result;
-  }
 
   static generateReservationProfilesOptions(reservationProfiles) {
     const result = reservationProfiles.map(profile => ({ text: profile, value: profile }));
@@ -52,7 +44,7 @@ class EditBookingForm extends Component {
       endHour: endTime.substring(0, 2),
       endMinute: endTime.substring(3, 5),
       hourOptions: this.generateHourOptions(),
-      minuteOptions: EditBookingForm.generateMinuteOptions(minuteInterval),
+      minuteOptions: timeUtil.generateMinuteOptions(minuteInterval),
       reservedOptions: EditBookingForm.generateReservationProfilesOptions(reservationProfiles),
     });
   }
@@ -282,10 +274,7 @@ class EditBookingForm extends Component {
   }
 
   render() {
-    let user;
-    if (localStorage.CapstoneReservationUser) {
-      user = JSON.parse(localStorage.CapstoneReservationUser);
-    }
+    const user = storage.getUser();
     return (
       <div id="reservation-details-modal">
         {this.renderEditBookingForm()}
