@@ -12,11 +12,11 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import moment from 'moment';
+import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
-import storage from '../../utils/local-storage';
 import './BookingInfoModal.scss';
-import api from '../../utils/api';
 
 
 class BookingInfoModal extends Component {
@@ -42,16 +42,8 @@ class BookingInfoModal extends Component {
     return false;
   }
 
-  static checkAdmin() {
-    const user = storage.getUser();
-    if (user) {
-      return user.is_superuser;
-    }
-    return false;
-  }
-
   static checkSameUserOrAdmin(booking) {
-    return BookingInfoModal.checkSameUser(booking) || BookingInfoModal.checkAdmin();
+    return BookingInfoModal.checkSameUser(booking) || storage.checkAdmin();
   }
 
   state = {
@@ -302,7 +294,7 @@ class BookingInfoModal extends Component {
                   <Icon name="user" />
                   {' '}
                   {booker ? `by ${booking.booker.username}` : ''}
-                  { BookingInfoModal.checkAdmin() ? (
+                  { storage.checkAdmin() ? (
                     <Icon name="search" link onClick={this.handleGoToUser} />
                   ) : null}
                 </h3>
@@ -346,7 +338,7 @@ class BookingInfoModal extends Component {
   }
 
   renderNote(booking) {
-    if (!BookingInfoModal.checkAdmin()) {
+    if (!storage.checkAdmin()) {
       return (
         <Message negative>
           {booking.note}
@@ -372,7 +364,7 @@ class BookingInfoModal extends Component {
             <Icon name="map marker alternate" />
             Room&nbsp;
             {selectedRoomName}
-            {(booking.display_note && booking.note) || BookingInfoModal.checkAdmin()
+            {(booking.display_note && booking.note) || storage.checkAdmin()
               ? this.renderNote(booking) : null}
           </Modal.Header>
           {this.renderDescription()}

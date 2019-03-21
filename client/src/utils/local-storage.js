@@ -25,10 +25,8 @@ function saveOrientation(orientation) {
 }
 
 function checkAdmin() {
-  if (localStorage.getItem('CapstoneReservationUser')) {
-    return JSON.parse(localStorage.getItem('CapstoneReservationUser')).is_superuser;
-  }
-  return false;
+  const user = getUser();
+  return user && user.is_superuser;
 }
 
 const storage = {
