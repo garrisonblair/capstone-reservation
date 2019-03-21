@@ -111,8 +111,6 @@ class EditBookingForm extends Component {
       end_time: `${endHour}:${endMinute}`,
     };
 
-    console.log(booking);
-
     api.updateCampOn(booking.camped_on_booking, data)
       .then(() => {
         this.setState({ isLoading: false });
