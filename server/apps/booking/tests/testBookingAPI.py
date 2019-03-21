@@ -659,6 +659,23 @@ class BookingAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(bookings_after_cancel, bookings_before_cancel+1)
 
+    def testCancelBookingAfterStart(self):
+        today = datetime.datetime.now().date()
+
+        booking = Booking(booker=self.booker, room=self.room, date=today, start_time="10:00", end_time="22:00")
+        booking.save()
+
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
+            request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
+                                        }, format="json")
+            force_authenticate(request, user=self.booker)
+            response = BookingCancel.as_view()(request, booking.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        booking_after_cancel = Booking.objects.get(id=booking.id)
+
+        self.assertEqual(booking_after_cancel.end_time, datetime.time(11, 30))
+
     def testGetMyBookingsUnauthorizedNotLoggedInFail(self):
 
         today = datetime.datetime.now().date()
