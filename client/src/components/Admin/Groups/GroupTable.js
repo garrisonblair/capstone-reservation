@@ -25,12 +25,16 @@ class GroupsTable extends Component {
       text: 'Owner',
       align: 'center',
     }, {
+      dataField: 'privilege_category.name',
+      text: 'Privilege Category',
+      align: 'center',
+    }, {
       dataField: 'dummy',
       text: '',
       align: 'center',
       isDummyField: true,
       formatter: (col, row) => (
-        <Button color="blue" onClick={() => this.openModal(row)}>Details</Button>
+        <Button color="blue" onClick={() => this.openModal(row)}>Members</Button>
       ),
     }],
   }
@@ -63,24 +67,24 @@ class GroupsTable extends Component {
 
   renderModal = () => {
     const { modalContent } = this.state;
-    console.log(modalContent);
     return (
       <Modal open onClose={this.closeModal} size="tiny">
         <Modal.Header>
           {`Group: ${modalContent.name}`}
         </Modal.Header>
         <Modal.Content>
+          <h3>Members</h3>
           <List divided>
             {modalContent.members.map(m => (
               <MemberRowItem
                 key={m.id}
                 member={m}
+                // eslint-disable-next-line no-console
                 deleteFunction={() => console.log()}
-                isAdmin
+                isAdmin={false}
               />
             ))}
           </List>
-          {/* <MemberRowItem /> */}
         </Modal.Content>
       </Modal>
     );

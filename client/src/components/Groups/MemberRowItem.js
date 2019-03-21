@@ -13,6 +13,7 @@ class MemberRowItem extends Component {
 
   render() {
     const { member, isAdmin } = this.props;
+    console.log(member);
     return (
       <List.Item className="member-row-item">
         <List.Content floated="left">

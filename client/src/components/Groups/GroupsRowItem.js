@@ -62,7 +62,7 @@ GroupsRowItem.propTypes = {
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     owner: PropTypes.object.isRequired,
-    privilege_category: PropTypes.number,
+    privilege_category: PropTypes.object,
   }).isRequired,
   myUserId: PropTypes.number.isRequired,
 };

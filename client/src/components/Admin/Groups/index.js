@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-// import {
-//   Table, Segment, Pagination, Form, Button, Dropdown, Message, Icon,
-// } from 'semantic-ui-react';
 import './Groups.scss';
-// import api from '../../../utils/api';
 import GroupsTable from './GroupTable';
 
 
+// eslint-disable-next-line react/prefer-stateless-function
 class Groups extends Component {
   render() {
     // const { groups } = this.state;
