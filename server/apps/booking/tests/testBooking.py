@@ -424,3 +424,39 @@ class TestBooking(TestCase):
                                            end_time=self.end_time)
         self.assertEqual(read_booking, booking)
         self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
+
+    def testBookingTooLongForRoom(self):
+        self.room.max_booking_duration = 2
+        self.room.save()
+
+        booking = Booking(booker=self.booker,
+                          room=self.room,
+                          date=self.date,
+                          start_time=time(12, 0, 0),
+                          end_time=time(15, 0, 0))
+
+        try:
+            booking.save()
+        except ValidationError as e:
+            self.assertTrue(True)
+            return
+
+        self.fail()
+
+    def testBookingNotTooLongForRoom(self):
+        self.room.max_booking_duration = 2
+        self.room.save()
+
+        booking = Booking(booker=self.booker,
+                          room=self.room,
+                          date=self.date,
+                          start_time=time(12, 0, 0),
+                          end_time=time(14, 0, 0))
+
+        try:
+            booking.save()
+        except ValidationError as e:
+            self.fail()
+            return
+
+        self.assertTrue(True)
