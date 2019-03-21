@@ -1,5 +1,6 @@
 import random
 import string
+import datetime
 
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.contrib.contenttypes.models import ContentType
@@ -36,3 +37,16 @@ def get_system_user(username="system_user"):
         user = User.objects.create_user(username=username, password=password)
 
     return user
+
+
+def get_rounded_time(minute):
+    time = datetime.datetime.now().replace(microsecond=0)
+    discard = datetime.timedelta(
+        minutes=time.minute % minute,
+        seconds=time.second,
+        microseconds=time.microsecond
+    )
+    time -= discard
+    if discard >= datetime.timedelta(minutes=minute/2):
+        time += datetime.timedelta(minutes=minute)
+    return time
