@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {
-  Button, Checkbox, Table, Segment,
+  Button, Checkbox, Table, Segment, Message,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
+import './EmailSettings.scss';
 // import PropTypes from 'prop-types';
 
 
@@ -15,6 +16,7 @@ class EmailSettings extends Component {
     whenDeleteRecurringBooking: false,
     whenCamponOnBooking: false,
     isLoading: false,
+    showNeedToSaveMessage: false,
   }
 
   componentDidMount() {
@@ -22,9 +24,11 @@ class EmailSettings extends Component {
   }
 
   getServiceToken = () => {
+    // eslint-disable-next-line react/prop-types
     const { match } = this.props;
     let token;
     if (match !== undefined) {
+      // eslint-disable-next-line prefer-destructuring
       token = match.params.token;
     }
     return token;
@@ -53,23 +57,38 @@ class EmailSettings extends Component {
   }
 
   handleWhenBookingOnToggle = (e, data) => {
-    this.setState({ whenBooking: data.checked });
+    this.setState({
+      whenBooking: data.checked,
+      showNeedToSaveMessage: true,
+    });
   }
 
   handleWhenRecurringBookingOnToggle = (e, data) => {
-    this.setState({ whenRecurringBooking: data.checked });
+    this.setState({
+      whenRecurringBooking: data.checked,
+      showNeedToSaveMessage: true,
+    });
   }
 
   handleWhenDeleteBookingOnToogle = (e, data) => {
-    this.setState({ whenDeleteBooking: data.checked });
+    this.setState({
+      whenDeleteBooking: data.checked,
+      showNeedToSaveMessage: true,
+    });
   }
 
   handleWhenDeleteRecurringBookingOnToogle = (e, data) => {
-    this.setState({ whenDeleteRecurringBooking: data.checked });
+    this.setState({
+      whenDeleteRecurringBooking: data.checked,
+      showNeedToSaveMessage: true,
+    });
   }
 
   handleWhenCamponOnBookingOnToogle = (e, data) => {
-    this.setState({ whenCamponOnBooking: data.checked });
+    this.setState({
+      whenCamponOnBooking: data.checked,
+      showNeedToSaveMessage: true,
+    });
   }
 
   handleSaveOnClick = () => {
@@ -77,7 +96,6 @@ class EmailSettings extends Component {
       whenBooking, whenRecurringBooking, whenDeleteBooking,
       whenDeleteRecurringBooking, whenCamponOnBooking,
     } = this.state;
-    // eslint-disable-next-line react/destructuring-assignment
 
     api.updateEmailSettings(
       whenBooking, whenRecurringBooking, whenDeleteBooking,
@@ -87,10 +105,11 @@ class EmailSettings extends Component {
         // console.log(r);
         if (r.status === 200) {
           this.sweetAlertSuccess();
+          this.setState({
+            showNeedToSaveMessage: false,
+          });
         }
       });
-
-
   }
 
   sweetAlertSuccess = () => {
@@ -108,6 +127,7 @@ class EmailSettings extends Component {
     const {
       whenBooking, whenRecurringBooking, whenDeleteBooking,
       whenDeleteRecurringBooking, whenCamponOnBooking, isLoading,
+      showNeedToSaveMessage,
     } = this.state;
     return (
       <div id="email-settings">
@@ -173,6 +193,12 @@ class EmailSettings extends Component {
               </Table.Row>
             </Table.Body>
           </Table>
+          {showNeedToSaveMessage ? (
+            <Message warning>
+              <Message.Header>Don&lsquo;t forget to click on Save button</Message.Header>
+              {/* <p>Visit our registration page, then try again.</p> */}
+            </Message>
+          ) : null}
           <Button color="blue" onClick={this.handleSaveOnClick}>Save</Button>
         </Segment>
       </div>
