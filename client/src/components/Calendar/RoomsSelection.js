@@ -39,7 +39,7 @@ class RoomsSelection extends Component {
     } else {
       const r = roomsToDisplay;
       r.push(room);
-      r.sort((r1, r2) => r1.id < r2.id);
+      r.sort((a, b) => a.id - b.id);
       this.setState({ roomsToDisplay: r });
     }
   }
