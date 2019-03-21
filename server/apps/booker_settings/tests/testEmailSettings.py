@@ -21,8 +21,8 @@ class TestEmailSettings(TestCase):
         email_settings = EmailSettings(booker=self.booker1)
         email_settings.save()
         self.assertEqual(True,email_settings.when_booking)
-        self.assertEqual(True,email_settings.when_delete_booking)
-        self.assertEqual(True,email_settings.when_delete_recurring_booking)
+        self.assertEqual(True,email_settings.when_invitation)
+        self.assertEqual(True,email_settings.booking_reminder)
         self.assertEqual(True,email_settings.when_camp_on_booking)
         self.assertEqual(tableLength + 1, len(EmailSettings.objects.all()))
 
@@ -33,8 +33,8 @@ class TestEmailSettings(TestCase):
         email_settings1.when_booking = False
         data = {
             "when_booking": False,
-            "when_delete_booking": False,
-            "when_delete_recurring_booking": False,
+            "when_invitation": False,
+            "booking_reminder": False,
             "when_camp_on_booking": False,
         }
         email_settings1.update(data)
@@ -46,11 +46,11 @@ class TestEmailSettings(TestCase):
         with self.assertRaises(ValidationError) as ex:
             email_settings2.update(data)
 
-        data['when_delete_booking'] = 1
+        data['when_invitation'] = 1
         with self.assertRaises(ValidationError) as ex:
             email_settings2.update(data)
 
-        data['when_delete_recurring_booking'] = 1
+        data['booking_reminder'] = 1
         with self.assertRaises(ValidationError) as ex:
             email_settings2.update(data)
 

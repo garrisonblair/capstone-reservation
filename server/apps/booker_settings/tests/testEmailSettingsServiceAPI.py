@@ -28,8 +28,8 @@ class EmailSettingsAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_email_settings = response.data
         self.assertEqual(True, "when_booking" in returned_email_settings)
-        self.assertEqual(True, "when_delete_booking" in returned_email_settings)
-        self.assertEqual(True, "when_delete_recurring_booking" in returned_email_settings)
+        self.assertEqual(True, "when_invitation" in returned_email_settings)
+        self.assertEqual(True, "booking_reminder" in returned_email_settings)
         self.assertEqual(True, "when_camp_on_booking" in returned_email_settings)
         self.assertEqual(True, "id" in returned_email_settings)
         self.assertEqual(True, "booker" in returned_email_settings)
@@ -57,8 +57,8 @@ class EmailSettingsAPITest(TestCase):
     def testPostEmailSettingsSucessful(self):
         request = self.factory.post('email_settings',{
                                         "when_booking":False,
-                                        "when_delete_booking": False,
-                                        "when_delete_recurring_booking": False,
+                                        "when_invitation": False,
+                                        "booking_reminder": False,
                                         "when_camp_on_booking": False
                                         }, format="json", HTTP_AUTHORIZATION=self.token)
         response = EmailSettingsServiceView.as_view()(request)
@@ -67,15 +67,15 @@ class EmailSettingsAPITest(TestCase):
         current_email_settings = EmailSettings.objects.get(booker=self.booker)
 
         self.assertEqual(False, current_email_settings.when_booking)
-        self.assertEqual(False, current_email_settings.when_delete_booking)
-        self.assertEqual(False, current_email_settings.when_delete_recurring_booking)
+        self.assertEqual(False, current_email_settings.when_invitation)
+        self.assertEqual(False, current_email_settings.booking_reminder)
         self.assertEqual(False, current_email_settings.when_camp_on_booking)
 
     def testPostEmailSettingsWrongData(self):
         request = self.factory.post('email_settings',{
                                         "when_booking":1,
-                                        "when_delete_booking": False,
-                                        "when_delete_recurring_booking": False,
+                                        "when_invitation": False,
+                                        "booking_reminder": False,
                                         "when_camp_on_booking": False
                                         }, format="json", HTTP_AUTHORIZATION=self.token)
         response = EmailSettingsServiceView.as_view()(request)
@@ -83,8 +83,8 @@ class EmailSettingsAPITest(TestCase):
 
         request = self.factory.post('email_settings',{
                                         "when_booking":False,
-                                        "when_delete_booking": 1,
-                                        "when_delete_recurring_booking": False,
+                                        "when_invitation": 1,
+                                        "booking_reminder": False,
                                         "when_camp_on_booking": False
                                         }, format="json", HTTP_AUTHORIZATION=self.token)
         response = EmailSettingsServiceView.as_view()(request)
@@ -92,8 +92,8 @@ class EmailSettingsAPITest(TestCase):
 
         request = self.factory.post('email_settings',{
                                         "when_booking":False,
-                                        "when_delete_booking": False,
-                                        "when_delete_recurring_booking": 1,
+                                        "when_invitation": False,
+                                        "booking_reminder": 1,
                                         "when_camp_on_booking": False
                                         }, format="json", HTTP_AUTHORIZATION=self.token)
         response = EmailSettingsServiceView.as_view()(request)
@@ -101,8 +101,8 @@ class EmailSettingsAPITest(TestCase):
 
         request = self.factory.post('email_settings',{
                                         "when_booking":False,
-                                        "when_delete_booking": False,
-                                        "when_delete_recurring_booking": False,
+                                        "when_invitation": False,
+                                        "booking_reminder": False,
                                         "when_camp_on_booking": 1
                                         }, format="json", HTTP_AUTHORIZATION=self.token)
         response = EmailSettingsServiceView.as_view()(request)

@@ -6,8 +6,8 @@ from django.core.exceptions import ValidationError
 class EmailSettings(models.Model):
     booker = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     when_booking = models.BooleanField(default=True)
-    when_delete_booking = models.BooleanField(default=True)
-    when_delete_recurring_booking = models.BooleanField(default=True)
+    when_invitation = models.BooleanField(default=True)
+    booking_reminder = models.BooleanField(default=True)
     when_camp_on_booking = models.BooleanField(default=True)
 
 
@@ -24,11 +24,11 @@ class EmailSettings(models.Model):
         if(not isinstance(self.when_booking, bool)):
             raise ValidationError("'when_booking' must be a boolean")
 
-        if(not isinstance(self.when_delete_booking, bool)):
-            raise ValidationError("'when_delete_booking' must be a boolean")
+        if(not isinstance(self.when_invitation, bool)):
+            raise ValidationError("'when_invitation' must be a boolean")
 
-        if(not isinstance(self.when_delete_recurring_booking, bool)):
-            raise ValidationError("'when_delete_recurring_booking' must be a boolean")
+        if(not isinstance(self.booking_reminder, bool)):
+            raise ValidationError("'booking_reminder' must be a boolean")
 
         if(not isinstance(self.when_camp_on_booking, bool)):
             raise ValidationError("'when_camp_on_booking' must be a boolean")
@@ -37,11 +37,11 @@ class EmailSettings(models.Model):
         if "when_booking" in data:
             self.when_booking = data["when_booking"]
 
-        if "when_delete_booking" in data:
-            self.when_delete_booking = data["when_delete_booking"]
+        if "when_invitation" in data:
+            self.when_invitation = data["when_invitation"]
 
-        if "when_delete_recurring_booking" in data:
-            self.when_delete_recurring_booking = data["when_delete_recurring_booking"]
+        if "booking_reminder" in data:
+            self.booking_reminder = data["booking_reminder"]
 
         if "when_camp_on_booking" in data:
             self.when_camp_on_booking = data["when_camp_on_booking"]

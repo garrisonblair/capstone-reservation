@@ -775,15 +775,15 @@ function getEmailSettings(serviceToken) {
 }
 
 function updateEmailSettings(
-  whenBooking, whenDeleteBooking,
-  whenDeleteRecurringBooking, whenCampsOnBooking, serviceToken,
+  whenBooking, whenInvitation,
+  bookingReminder, whenCampsOnBooking, serviceToken,
 ) {
   const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
   const endpoint = serviceToken ? 'email_settings_service' : 'email_settings';
   const data = {
     when_booking: whenBooking,
-    when_delete_booking: whenDeleteBooking,
-    when_delete_recurring_booking: whenDeleteRecurringBooking,
+    when_invitation: whenInvitation,
+    booking_reminder: bookingReminder,
     when_camp_on_booking: whenCampsOnBooking,
   };
   return axios({

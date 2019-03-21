@@ -10,8 +10,8 @@ import './EmailSettings.scss';
 class EmailSettings extends Component {
   state = {
     whenBooking: false,
-    whenDeleteBooking: false,
-    whenDeleteRecurringBooking: false,
+    whenInvitation: false,
+    bookingReminder: false,
     whenCamponOnBooking: false,
     isLoading: false,
     showNeedToSaveMessage: false,
@@ -39,8 +39,8 @@ class EmailSettings extends Component {
         if (r.status === 200) {
           this.setState({
             whenBooking: r.data.when_booking,
-            whenDeleteBooking: r.data.when_delete_booking,
-            whenDeleteRecurringBooking: r.data.when_delete_recurring_booking,
+            whenInvitation: r.data.when_invitation,
+            bookingReminder: r.data.booking_reminder,
             whenCamponOnBooking: r.data.when_camp_on_booking,
             isLoading: false,
           });
@@ -61,16 +61,16 @@ class EmailSettings extends Component {
   }
 
 
-  handleWhenDeleteBookingOnToogle = (e, data) => {
+  handleWhenInvitationOnToogle = (e, data) => {
     this.setState({
-      whenDeleteBooking: data.checked,
+      whenInvitation: data.checked,
       showNeedToSaveMessage: true,
     });
   }
 
-  handleWhenDeleteRecurringBookingOnToogle = (e, data) => {
+  handleBookingReminderOnToogle = (e, data) => {
     this.setState({
-      whenDeleteRecurringBooking: data.checked,
+      bookingReminder: data.checked,
       showNeedToSaveMessage: true,
     });
   }
@@ -84,13 +84,13 @@ class EmailSettings extends Component {
 
   handleSaveOnClick = () => {
     const {
-      whenBooking, whenDeleteBooking,
-      whenDeleteRecurringBooking, whenCamponOnBooking,
+      whenBooking, whenInvitation,
+      bookingReminder, whenCamponOnBooking,
     } = this.state;
 
     api.updateEmailSettings(
-      whenBooking, whenDeleteBooking,
-      whenDeleteRecurringBooking, whenCamponOnBooking, this.getServiceToken(),
+      whenBooking, whenInvitation,
+      bookingReminder, whenCamponOnBooking, this.getServiceToken(),
     )
       .then((r) => {
         // console.log(r);
@@ -116,8 +116,8 @@ class EmailSettings extends Component {
 
   render() {
     const {
-      whenBooking, whenDeleteBooking,
-      whenDeleteRecurringBooking, whenCamponOnBooking, isLoading,
+      whenBooking, whenInvitation,
+      bookingReminder, whenCamponOnBooking, isLoading,
       showNeedToSaveMessage,
     } = this.state;
     return (
@@ -143,12 +143,12 @@ class EmailSettings extends Component {
                 </Table.Cell>
               </Table.Row>
               <Table.Row>
-                <Table.Cell>Receive email when deleting a booking</Table.Cell>
+                <Table.Cell>Receive email when invited to a group</Table.Cell>
                 <Table.Cell collapsing>
                   <Checkbox
                     toggle
-                    checked={whenDeleteBooking}
-                    onChange={this.handleWhenDeleteBookingOnToogle}
+                    checked={whenInvitation}
+                    onChange={this.handleInvitationOnToogle}
                   />
                 </Table.Cell>
               </Table.Row>
@@ -157,8 +157,8 @@ class EmailSettings extends Component {
                 <Table.Cell collapsing>
                   <Checkbox
                     toggle
-                    checked={whenDeleteRecurringBooking}
-                    onChange={this.handleWhenDeleteRecurringBookingOnToogle}
+                    checked={bookingReminder}
+                    onChange={this.handleBookingReminderOnToogle}
                   />
                 </Table.Cell>
               </Table.Row>
