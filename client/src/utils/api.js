@@ -195,6 +195,8 @@ function createRoom(
   name,
   capacity,
   numberOfComputers,
+  hasTv,
+  hasWindows,
   maxBookingDuration,
   maxRecurringBookingDuration,
 ) {
@@ -203,6 +205,8 @@ function createRoom(
     name,
     capacity,
     number_of_computers: numberOfComputers,
+    has_tv: hasTv,
+    has_windows: hasWindows,
     max_booking_duration: maxBookingDuration,
     max_recurring_booking_duration: maxRecurringBookingDuration,
   };
@@ -220,6 +224,8 @@ function updateRoom(
   name,
   capacity,
   numberOfComputers,
+  hasTv,
+  hasWindows,
   maxBookingDuration,
   maxRecurringBookingDuration,
 ) {
@@ -228,6 +234,8 @@ function updateRoom(
     name,
     capacity,
     number_of_computers: numberOfComputers,
+    has_tv: hasTv,
+    has_windows: hasWindows,
     max_booking_duration: maxBookingDuration,
     max_recurring_booking_duration: maxRecurringBookingDuration,
   };

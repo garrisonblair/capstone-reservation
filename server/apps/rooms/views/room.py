@@ -44,6 +44,7 @@ class RoomList(APIView):
                 return Response("No available rooms", status=status.HTTP_404_NOT_FOUND)
 
         serializer = RoomSerializer(qs, many=True)
+        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
