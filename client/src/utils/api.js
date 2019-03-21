@@ -171,6 +171,27 @@ function createCampOn(data) {
   });
 }
 
+function updateCampOn(id, data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/campon/${id}/edit`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function deleteCampOn(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/campon/${id}/cancel`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function getRooms() {
   return axios({
     method: 'GET',
@@ -806,6 +827,8 @@ const api = {
   createRecurringBooking,
   getCampOns,
   createCampOn,
+  updateCampOn,
+  deleteCampOn,
   getRooms,
   getRoomsForDate,
   createRoom,
