@@ -88,7 +88,7 @@ class RoomsSelection extends Component {
       <div id="reservation-details-modal">
         <Modal centered={false} size="tiny" open={show} onClose={this.closeModalWithoutChange}>
           <Modal.Header>
-            Rooms
+            Select rooms to display
           </Modal.Header>
           {this.renderDescription()}
           <Modal.Actions>

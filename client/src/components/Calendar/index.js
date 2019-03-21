@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Button } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Announcement from './Announcement';
 import Cells from './Cells';
@@ -101,6 +101,8 @@ class Calendar extends Component {
               roomsList: response.data,
               roomsNum: response.data.length,
               roomsToDisplay: response.data,
+            }, () => {
+              this.setState({ showRoomsSelection: true });
             });
           } else {
             this.setState({ roomsList: response.data, roomsNum: response.data.length });
@@ -288,7 +290,6 @@ class Calendar extends Component {
             />)
           : null}
         <div className="calendar__container" key={1}>
-          <input type="button" onClick={() => this.setState({ showRoomsSelection: true })} />
           <Announcement />
           <div className="calendar__wrapper" style={this.setStyle().wrapper}>
             <button type="button" className="button_orientation" onClick={() => this.changeOrientation()}><Icon name="exchange" /></button>
