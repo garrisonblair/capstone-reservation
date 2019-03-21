@@ -114,6 +114,15 @@ class Booking(models.Model, SubjectModel):
         if not isinstance(self.date, datetime.date):
             self.date = datetime.datetime.strptime(self.date, "%Y-%m-%d").date()
 
+        # Check room rule
+        today = datetime.date.today()
+        duration = datetime.datetime.combine(today, self.end_time) - datetime.datetime.combine(today, self.start_time)
+
+        if self.room.max_booking_duration and self.recurring_booking is None:
+            if duration.seconds > self.room.max_booking_duration * 60 * 60:
+                raise ValidationError("This room can't be booked for more than {} hours."
+                                      .format(self.room.max_booking_duration))
+
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be less than end time")
 
