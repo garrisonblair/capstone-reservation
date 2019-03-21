@@ -33,7 +33,15 @@ class RoomsSelection extends Component {
   }
 
   handleCheckbox = (d, room) => {
-    
+    const { roomsToDisplay } = this.state;
+    if (!d.checked) {
+      this.setState({ roomsToDisplay: roomsToDisplay.filter(r => r !== room) });
+    } else {
+      const r = roomsToDisplay;
+      r.push(room);
+      r.sort((r1, r2) => r1.id < r2.id);
+      this.setState({ roomsToDisplay: r });
+    }
   }
 
   renderDescription() {
