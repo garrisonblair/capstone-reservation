@@ -14,6 +14,7 @@ import moment from 'moment';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
 import storage from '../../utils/local-storage';
+import RecurringBookingModal from '../RecurringBookingModal';
 import './BookingInfoModal.scss';
 import api from '../../utils/api';
 
@@ -57,6 +58,7 @@ class BookingInfoModal extends Component {
     displayNote: false,
     showOnCalendar: false,
     booking: undefined,
+    showRecurringModal: false,
   }
 
   componentWillMount() {
@@ -88,6 +90,7 @@ class BookingInfoModal extends Component {
     onClose();
     this.setState({
       show: false,
+      showRecurringModal: false,
     });
   }
 
@@ -274,11 +277,16 @@ class BookingInfoModal extends Component {
     const { selectedRoomName } = this.props;
     if (!!booking.isCampOn === false && BookingInfoModal.checkSameUserOrAdmin(booking)) {
       return (
-        <EditBookingForm
-          booking={booking}
-          selectedRoomName={selectedRoomName}
-          onCloseWithEditBooking={this.closeModalWithAction}
-        />
+        <div>
+          <EditBookingForm
+            booking={booking}
+            selectedRoomName={selectedRoomName}
+            onCloseWithEditBooking={this.closeModalWithAction}
+          />
+          {booking.recurring_booking === null ? null
+            : <Button content="Edit recurring bookings" color="blue" onClick={() => this.setState({ showRecurringModal: true })} />}
+          <div className="ui divider" />
+        </div>
       );
     }
     if (BookingInfoModal.checkCamponPossible(booking)) {
@@ -311,7 +319,7 @@ class BookingInfoModal extends Component {
   }
 
   render() {
-    const { show } = this.state;
+    const { show, showRecurringModal } = this.state;
     const { selectedRoomName, booking } = this.props;
     return (
       <div id="reservation-details-modal">
@@ -325,6 +333,14 @@ class BookingInfoModal extends Component {
           </Modal.Header>
           {this.renderDescription()}
         </Modal>
+        {showRecurringModal === true
+          ? (
+            <RecurringBookingModal
+              show={showRecurringModal}
+              booking={booking.recurring_booking}
+              onClose={this.closeModal}
+            />)
+          : null}
       </div>
     );
   }

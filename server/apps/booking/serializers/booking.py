@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from apps.booking.serializers.recurring_booking import PartialRecurringBookingSerializer
 from ..models.Booking import Booking
 from apps.accounts.serializers.user import UserSerializer
 from apps.groups.serializers.group import ReadGroupSerializer
@@ -42,6 +44,7 @@ class ReadBookingSerializer(serializers.ModelSerializer):
 
     booker = UserSerializer(required=False)
     group = ReadGroupSerializer(required=False)
+    recurring_booking = PartialRecurringBookingSerializer(required=False)
 
     class Meta:
         model = Booking
