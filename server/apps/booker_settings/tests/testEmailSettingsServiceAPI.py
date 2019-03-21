@@ -28,7 +28,6 @@ class EmailSettingsAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         returned_email_settings = response.data
         self.assertEqual(True, "when_booking" in returned_email_settings)
-        self.assertEqual(True, "when_recurring_booking" in returned_email_settings)
         self.assertEqual(True, "when_delete_booking" in returned_email_settings)
         self.assertEqual(True, "when_delete_recurring_booking" in returned_email_settings)
         self.assertEqual(True, "when_camp_on_booking" in returned_email_settings)
@@ -58,7 +57,6 @@ class EmailSettingsAPITest(TestCase):
     def testPostEmailSettingsSucessful(self):
         request = self.factory.post('email_settings',{
                                         "when_booking":False,
-                                        "when_recurring_booking": False,
                                         "when_delete_booking": False,
                                         "when_delete_recurring_booking": False,
                                         "when_camp_on_booking": False
@@ -69,7 +67,6 @@ class EmailSettingsAPITest(TestCase):
         current_email_settings = EmailSettings.objects.get(booker=self.booker)
 
         self.assertEqual(False, current_email_settings.when_booking)
-        self.assertEqual(False, current_email_settings.when_recurring_booking)
         self.assertEqual(False, current_email_settings.when_delete_booking)
         self.assertEqual(False, current_email_settings.when_delete_recurring_booking)
         self.assertEqual(False, current_email_settings.when_camp_on_booking)
@@ -77,7 +74,6 @@ class EmailSettingsAPITest(TestCase):
     def testPostEmailSettingsWrongData(self):
         request = self.factory.post('email_settings',{
                                         "when_booking":1,
-                                        "when_recurring_booking": False,
                                         "when_delete_booking": False,
                                         "when_delete_recurring_booking": False,
                                         "when_camp_on_booking": False
@@ -87,17 +83,6 @@ class EmailSettingsAPITest(TestCase):
 
         request = self.factory.post('email_settings',{
                                         "when_booking":False,
-                                        "when_recurring_booking": 1,
-                                        "when_delete_booking": False,
-                                        "when_delete_recurring_booking": False,
-                                        "when_camp_on_booking": False
-                                        }, format="json", HTTP_AUTHORIZATION=self.token)
-        response = EmailSettingsServiceView.as_view()(request)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        request = self.factory.post('email_settings',{
-                                        "when_booking":False,
-                                        "when_recurring_booking": False,
                                         "when_delete_booking": 1,
                                         "when_delete_recurring_booking": False,
                                         "when_camp_on_booking": False
@@ -107,7 +92,6 @@ class EmailSettingsAPITest(TestCase):
 
         request = self.factory.post('email_settings',{
                                         "when_booking":False,
-                                        "when_recurring_booking": False,
                                         "when_delete_booking": False,
                                         "when_delete_recurring_booking": 1,
                                         "when_camp_on_booking": False
@@ -117,7 +101,6 @@ class EmailSettingsAPITest(TestCase):
 
         request = self.factory.post('email_settings',{
                                         "when_booking":False,
-                                        "when_recurring_booking": False,
                                         "when_delete_booking": False,
                                         "when_delete_recurring_booking": False,
                                         "when_camp_on_booking": 1

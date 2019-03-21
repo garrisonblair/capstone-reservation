@@ -5,13 +5,11 @@ import {
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 import './EmailSettings.scss';
-// import PropTypes from 'prop-types';
 
 
 class EmailSettings extends Component {
   state = {
     whenBooking: false,
-    whenRecurringBooking: false,
     whenDeleteBooking: false,
     whenDeleteRecurringBooking: false,
     whenCamponOnBooking: false,
@@ -41,7 +39,6 @@ class EmailSettings extends Component {
         if (r.status === 200) {
           this.setState({
             whenBooking: r.data.when_booking,
-            whenRecurringBooking: r.data.when_recurring_booking,
             whenDeleteBooking: r.data.when_delete_booking,
             whenDeleteRecurringBooking: r.data.when_delete_recurring_booking,
             whenCamponOnBooking: r.data.when_camp_on_booking,
@@ -63,12 +60,6 @@ class EmailSettings extends Component {
     });
   }
 
-  handleWhenRecurringBookingOnToggle = (e, data) => {
-    this.setState({
-      whenRecurringBooking: data.checked,
-      showNeedToSaveMessage: true,
-    });
-  }
 
   handleWhenDeleteBookingOnToogle = (e, data) => {
     this.setState({
@@ -93,12 +84,12 @@ class EmailSettings extends Component {
 
   handleSaveOnClick = () => {
     const {
-      whenBooking, whenRecurringBooking, whenDeleteBooking,
+      whenBooking, whenDeleteBooking,
       whenDeleteRecurringBooking, whenCamponOnBooking,
     } = this.state;
 
     api.updateEmailSettings(
-      whenBooking, whenRecurringBooking, whenDeleteBooking,
+      whenBooking, whenDeleteBooking,
       whenDeleteRecurringBooking, whenCamponOnBooking, this.getServiceToken(),
     )
       .then((r) => {
@@ -125,7 +116,7 @@ class EmailSettings extends Component {
 
   render() {
     const {
-      whenBooking, whenRecurringBooking, whenDeleteBooking,
+      whenBooking, whenDeleteBooking,
       whenDeleteRecurringBooking, whenCamponOnBooking, isLoading,
       showNeedToSaveMessage,
     } = this.state;
@@ -148,16 +139,6 @@ class EmailSettings extends Component {
                     toggle
                     checked={whenBooking}
                     onChange={this.handleWhenBookingOnToggle}
-                  />
-                </Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>Receive email when making a recurring booking</Table.Cell>
-                <Table.Cell collapsing>
-                  <Checkbox
-                    toggle
-                    checked={whenRecurringBooking}
-                    onChange={this.handleWhenRecurringBookingOnToggle}
                   />
                 </Table.Cell>
               </Table.Row>

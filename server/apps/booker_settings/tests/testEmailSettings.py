@@ -21,7 +21,6 @@ class TestEmailSettings(TestCase):
         email_settings = EmailSettings(booker=self.booker1)
         email_settings.save()
         self.assertEqual(True,email_settings.when_booking)
-        self.assertEqual(True,email_settings.when_recurring_booking)
         self.assertEqual(True,email_settings.when_delete_booking)
         self.assertEqual(True,email_settings.when_delete_recurring_booking)
         self.assertEqual(True,email_settings.when_camp_on_booking)
@@ -34,7 +33,6 @@ class TestEmailSettings(TestCase):
         email_settings1.when_booking = False
         data = {
             "when_booking": False,
-            "when_recurring_booking": False,
             "when_delete_booking": False,
             "when_delete_recurring_booking": False,
             "when_camp_on_booking": False,
@@ -45,10 +43,6 @@ class TestEmailSettings(TestCase):
         email_settings2.save()
 
         data['when_booking'] = 1
-        with self.assertRaises(ValidationError) as ex:
-            email_settings2.update(data)
-
-        data['when_recurring_booking'] = 1
         with self.assertRaises(ValidationError) as ex:
             email_settings2.update(data)
 
