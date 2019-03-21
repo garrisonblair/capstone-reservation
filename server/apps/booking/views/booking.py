@@ -24,6 +24,7 @@ from apps.notifications.models.Notification import Notification
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
 from apps.booking_exporter.WEBCalendarExporter.ICSSerializer import ICSSerializerFactory
+from apps.booker_settings.models.EmailSettings import EmailSettings
 
 
 class BookingList(ListAPIView):
@@ -89,7 +90,8 @@ class BookingCreate(APIView):
             booking.save()
             utils.log_model_change(booking, utils.ADDITION, request.user)
             settings = SystemSettings.get_settings()
-            if settings.booking_reminders_active:
+            email_settings = EmailSettings.objects.get_or_create(booker=request.user)[0]
+            if settings.booking_reminders_active and email_settings.when_booking:
                 ics_serializer = ICSSerializerFactory.get_serializer(booking)
                 ics_data = ics_serializer.serialize(booking)
                 email_subject = "Your new booking"

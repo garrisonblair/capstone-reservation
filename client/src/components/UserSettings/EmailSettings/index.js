@@ -153,7 +153,7 @@ class EmailSettings extends Component {
                 </Table.Cell>
               </Table.Row>
               <Table.Row>
-                <Table.Cell>Receive email when deleting a recurring booking</Table.Cell>
+                <Table.Cell>Receive email reminder before a booking</Table.Cell>
                 <Table.Cell collapsing>
                   <Checkbox
                     toggle
