@@ -114,7 +114,12 @@ class HomeMobile extends Component {
         <div>
           { isLoggedIn ? this.renderLoggedInPage() : null }
           <br />
-          { isLoggedIn ? <Button color="red" onClick={this.handleLogout}>Logout</Button> : null }
+          { isLoggedIn ? (
+            <center>
+              <Button className="mobile_button-logout" onClick={this.handleLogout}>
+                Logout
+              </Button>
+            </center>) : null }
         </div>
       </div>
     );
