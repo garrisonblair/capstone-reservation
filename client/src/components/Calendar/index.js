@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon, Button } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Announcement from './Announcement';
 import Cells from './Cells';
