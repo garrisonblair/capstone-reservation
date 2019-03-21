@@ -131,12 +131,12 @@ class Navigation extends Component {
   }
 
   renderLoggedMenuInInfo = () => {
-    if (!localStorage.CapstoneReservationUser) {
+    const user = storage.getUser();
+    if (!user) {
       return '';
     }
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
-    const user = storage.getUser();
     const component = (
       <React.Fragment>
         <Menu.Item onClick={this.handleClickNotify}>

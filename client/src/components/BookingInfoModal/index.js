@@ -34,15 +34,17 @@ class BookingInfoModal extends Component {
   }
 
   static checkSameUser(booking) {
-    if (localStorage.getItem('CapstoneReservationUser') && !!booking.booker) {
-      return booking.booker.username === JSON.parse(localStorage.getItem('CapstoneReservationUser')).username;
+    const user = storage.getUser();
+    if (user && !!booking.booker) {
+      return booking.booker.username === user.username;
     }
     return false;
   }
 
   static checkAdmin() {
-    if (localStorage.getItem('CapstoneReservationUser')) {
-      return JSON.parse(localStorage.getItem('CapstoneReservationUser')).is_superuser;
+    const user = storage.getUser();
+    if (user) {
+      return user.is_superuser;
     }
     return false;
   }

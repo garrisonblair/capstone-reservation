@@ -1,5 +1,6 @@
 import axios from 'axios';
 import settings from '../config/settings';
+import storage from './local-storage';
 import getTokenHeader from './requestHeaders';
 
 
@@ -49,7 +50,7 @@ async function logout() {
     // eslint-disable-next-line no-console
     console.log(e);
   }
-  localStorage.removeItem('CapstoneReservationUser');
+  storage.deleteUser();
 }
 
 function verify(token) {

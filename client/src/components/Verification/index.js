@@ -7,6 +7,7 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import CustomFormInput from '../ReusableComponents/CustomFormInput';
 import './Verification.scss';
 
@@ -46,7 +47,7 @@ class Verification extends Component {
             firstName: response.data.first_name,
             userId: response.data.id,
           });
-          localStorage.setItem('CapstoneReservationUser', JSON.stringify(response.data));
+          storage.saveUser(response.data);
         })
         .catch((error) => {
           this.setState({
