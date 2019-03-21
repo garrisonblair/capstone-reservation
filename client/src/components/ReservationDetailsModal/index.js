@@ -43,7 +43,7 @@ class ReservationDetailsModal extends Component {
       minHour, maxHour, minuteInterval, selectedDate,
     } = this.props;
     this.setState({
-      hourOptions: this.generateHourOptions(minHour, maxHour),
+      hourOptions: timeUtil.generateHourOptions(minHour, maxHour),
       minuteOptions: timeUtil.generateMinuteOptions(minuteInterval),
       inputOption0: {
         startDate: toDateInputValue(selectedDate),
@@ -110,17 +110,6 @@ class ReservationDetailsModal extends Component {
           });
         });
     }
-  }
-
-  generateHourOptions = (minHour, maxHour) => {
-    const result = [];
-    for (let i = minHour; i < maxHour; i += 1) {
-      result.push({
-        text: `${i}`,
-        value: `${i}`,
-      });
-    }
-    return result;
   }
 
   getDefaultEndTime = (startHour, startMinute) => {

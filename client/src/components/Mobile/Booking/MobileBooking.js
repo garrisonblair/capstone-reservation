@@ -29,7 +29,7 @@ class MobileBooking extends Component {
     } = this.props;
     this.setState({
       date: this.generateDate(),
-      hourOptions: this.generateHourOptions(minHour, maxHour),
+      hourOptions: timeUtil.generateHourOptions(minHour, maxHour),
       minuteOptions: timeUtil.generateMinuteOptions(minuteInterval),
     });
     this.updateOwnerOptions();
@@ -51,17 +51,6 @@ class MobileBooking extends Component {
     }
     const todayDate = `${today.getFullYear()}-${month}-${day}`;
     return todayDate;
-  }
-
-  generateHourOptions = (minHour, maxHour) => {
-    const result = [];
-    for (let i = minHour; i < maxHour; i += 1) {
-      result.push({
-        text: `${i}`,
-        value: `${i}`,
-      });
-    }
-    return result;
   }
 
   getDefaultEndTime = (startHour, startMinute) => {

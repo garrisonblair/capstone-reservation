@@ -35,7 +35,7 @@ class EditBookingForm extends Component {
   }
 
   componentDidMount() {
-    const { minuteInterval, reservationProfiles, booking } = this.props;
+    const { minuteInterval, reservationProfiles, booking, minHour, maxHour } = this.props;
     const startTime = booking.start_time;
     const endTime = booking.end_time;
     this.setState({
@@ -43,7 +43,7 @@ class EditBookingForm extends Component {
       startMinute: startTime.substring(3, 5),
       endHour: endTime.substring(0, 2),
       endMinute: endTime.substring(3, 5),
-      hourOptions: this.generateHourOptions(),
+      hourOptions: timeUtil.generateHourOptions(minHour, maxHour),
       minuteOptions: timeUtil.generateMinuteOptions(minuteInterval),
       reservedOptions: EditBookingForm.generateReservationProfilesOptions(reservationProfiles),
     });
@@ -191,18 +191,6 @@ class EditBookingForm extends Component {
 
   handleBypassValidationChange = (event, data) => {
     this.setState({ bypassValidation: data.checked });
-  }
-
-  generateHourOptions() {
-    const result = [];
-    const { minHour, maxHour } = this.props;
-    for (let i = minHour; i < maxHour; i += 1) {
-      result.push({
-        text: `${i < 10 ? `0${i}` : i}`,
-        value: `${i < 10 ? `0${i}` : i}`,
-      });
-    }
-    return result;
   }
 
   verifyReservationTimes() {
