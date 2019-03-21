@@ -1,9 +1,10 @@
 from django.test import TestCase
+from apps.util.mock_datetime import mock_datetime
 from apps.booking.models.Booking import Booking
 from apps.booking.models.CampOn import CampOn
 from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from django.core.exceptions import ValidationError
 
 
@@ -157,3 +158,16 @@ class TestCampOn(TestCase):
                                   start_time=camp_on_start_time,
                                   end_time=camp_on_end_time)
         self.assertEqual(len(CampOn.objects.all()), 0)
+
+    def testDeleteCampOnSuccess(self):
+        camp_on = CampOn.objects.create(booker=self.campbooker,
+                                        camped_on_booking=self.booking,
+                                        start_time=self.start_time,
+                                        end_time=self.end_time)
+        with mock_datetime(datetime(self.date.year, self.date.month, self.date.day, 12, 30, 0, 0), datetime):
+            camp_on.delete(time(13, 0))
+
+        edited_campon = CampOn.objects.get(id=camp_on.id)
+        self.assertEqual(edited_campon, time(13, 0))
+
+

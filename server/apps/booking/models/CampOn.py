@@ -1,12 +1,9 @@
 import json
-
 from django.db import models
 from apps.accounts.models.User import User
 from apps.booking.models.Booking import Booking
 from datetime import datetime
 from django.core.exceptions import ValidationError
-
-
 from apps.accounts.exceptions import PrivilegeError
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.util.SubjectModel import SubjectModel
@@ -112,3 +109,26 @@ class CampOn(models.Model, SubjectModel):
     def json_serialize(self):
         from ..serializers.campon import LogCampOnSerializer
         return json.dumps(LogCampOnSerializer(self).data)
+
+    def edit(self, end_time, is_admin=False):
+        now = datetime.now()
+        if self.end_time <= now.time() and not is_admin:
+            raise ValidationError("Can not edit camp on after it has ended")
+
+        try:
+            self.end_time = end_time
+            self.save()
+        except ValidationError as error:
+            raise error
+        return
+
+    def delete_campon(self, is_admin=False):
+        now = datetime.now()
+        if self.end_time <= now.time() and not is_admin:
+            raise ValidationError("Can not delete camp on after it has ended")
+
+        if self.start_time <= now.time() and not is_admin:
+            print("todo")
+
+        self.delete()
+        return
