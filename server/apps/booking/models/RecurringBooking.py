@@ -266,7 +266,7 @@ class RecurringBooking(models.Model):
                 associated_booking.date = associated_booking.date + timedelta(days=booking_offset)
             try:
                 print('KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK')
-                # TODO: Determine why validate_model() is failing and indicating conflicts as there as no visible conflicts
+                # TODO: Determine why validate_model() is failing
                 associated_booking.validate_model()
                 non_conflicting_bookings.append(associated_booking)
             except ValidationError:
