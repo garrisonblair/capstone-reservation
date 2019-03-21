@@ -7,6 +7,7 @@ from rest_framework import status
 from django.core.exceptions import ValidationError
 
 from apps.accounts.models.User import User
+from apps.booker_settings.models.EmailSettings import EmailSettings
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.groups.serializers.group import WriteGroupSerializer, ReadGroupSerializer
 from apps.groups.models.Group import Group
@@ -96,14 +97,15 @@ class InviteMembers(APIView):
                 invitation.save()
                 created_invitations.append(invitation)
 
-            subject = "Capstone Room System: Group Invitation"
-            message = "Hi {},\n" \
-                      "You have been invited to the group {} by {}." \
-                      "Please go to your profile to accept the invitation.".format(user.first_name,
+            email_settings = EmailSettings.objects.get_or_create(booker=user)[0]
+            if email_settings.when_invitation:
+                subject = "Capstone Room System: Group Invitation"
+                message = "Hi {},\n" \
+                          "You have been invited to the group {} by {}." \
+                          "Please go to your profile to accept the invitation.".format(user.first_name,
                                                                                    group.name,
                                                                                    group.owner.username)
-
-            user.send_email(subject, message)
+                user.send_email(subject, message)
 
         serializer = ReadGroupInvitationSerializer(created_invitations, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
