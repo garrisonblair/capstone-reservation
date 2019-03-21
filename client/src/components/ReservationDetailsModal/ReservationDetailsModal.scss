@@ -9,13 +9,18 @@
 .modal-description {
   margin: 15px 0;
 }
-#exception-dates{
+
+#exception-dates {
   font-weight: bold;
-   width: 115px;
-  ul{
+  width: 115px;
+  ul {
     margin: 0px;
   }
-  li{
+  li {
     width: 100px;
   }
+}
+
+.ui.top.aligned.page.modals.dimmer.transition.visible.active {
+  overflow-y: scroll;
 }
