@@ -1,0 +1,36 @@
+.booking--header {
+  background-color: #E6E6E6;
+  color: #4D4D4D;
+  border-radius: 5px;
+  margin-bottom: 5px !important;
+}
+.table--container {
+  margin-bottom: 5px;
+}
+.header--inline {
+  display: inline-block;
+  color: #4D4D4D;
+}
+.dropdown--fixed-width {
+  width: 80px;
+}
+.input--table {
+  table-layout: fixed;
+  min-width: 100%;
+}
+.button--rooms {
+  margin-bottom: 5px !important;
+}
+.button--reserve {
+  float: right;
+}
+.button--cancel {
+  background-color: Transparent !important;
+  color: #f44336 !important;
+  border-color: #f44336 !important;
+  border: 2px solid #f44336 !important;
+}
+.button--cancel:hover {
+  background-color: #f44336 !important;
+  color: white !important;
+}

@@ -4,9 +4,7 @@ from apps.rooms.models.Room import Room
 from datetime import timedelta
 from apps.accounts.models.User import User
 from apps.statistics.util.RoomStatisticManager import RoomStatisticManager
-from apps.util import mock_datetime
 import datetime
-import unittest
 
 
 class TestRoomStatisticManager(TestCase):

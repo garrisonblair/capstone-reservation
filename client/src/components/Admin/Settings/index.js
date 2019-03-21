@@ -28,6 +28,8 @@ class Settings extends Component {
       check_for_expired_bookings_frequency_seconds: 30,
       booking_time_to_expire_minutes: 30,
       manual_booking_confirmation: false,
+      booking_reminders_active: false,
+      default_time_to_notify_before_booking: 0,
     },
   }
 
@@ -141,6 +143,25 @@ class Settings extends Component {
     });
   }
 
+  handleChangeBookingRemindersActive = (e, data) => {
+    const { checked } = data;
+    const { settings } = this.state;
+    settings.booking_reminders_active = checked;
+    this.setState({
+      settings,
+    });
+  }
+
+  handleChangeDefaultTimeToNotifyBeforeBooking = (e, data) => {
+    const { value } = data;
+    const { settings } = this.state;
+
+    settings.default_time_to_notify_before_booking = value;
+    this.setState({
+      settings,
+    });
+  }
+
   handleCloseLoginModal = () => {
     this.setState({ showLoginModal: false });
     this.getSettings();
@@ -182,6 +203,8 @@ class Settings extends Component {
       check_for_expired_bookings_frequency_seconds,
       booking_time_to_expire_minutes,
       manual_booking_confirmation,
+      booking_reminders_active,
+      default_time_to_notify_before_booking,
     } = settings;
 
     return (
@@ -263,6 +286,20 @@ class Settings extends Component {
             label="Allow group invitations after privilege validation"
             checked={group_can_invite_after_privilege_set}
             onChange={this.handleChangeGroupInvitations}
+          />
+          <Divider />
+          <h3> Email Notifications </h3>
+          <Checkbox
+            className="settings_time"
+            label="Booking Reminders active"
+            checked={booking_reminders_active}
+            onChange={this.handleChangeBookingRemindersActive}
+          />
+          <Input
+            className="settings_item"
+            label="Default time to notify before booking"
+            value={default_time_to_notify_before_booking}
+            onChange={this.handleChangeDefaultTimeToNotifyBeforeBooking}
           />
           <Divider />
           <Button onClick={this.saveSettings}>

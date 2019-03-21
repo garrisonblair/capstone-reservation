@@ -5,8 +5,8 @@ from rest_framework.views import APIView
 
 from apps.accounts.models import PrivilegeCategory
 from apps.accounts.permissions.IsBooker import IsBooker
-from apps.accounts.serializers.user import UserSerializer
 from apps.accounts.models.User import User
+from apps.groups.models.Group import Group
 
 
 class MyPrivileges(APIView):
@@ -41,3 +41,30 @@ class MyPrivileges(APIView):
             privileges[group.name] = group_privileges
 
         return Response(privileges, status=status.HTTP_200_OK)
+
+
+class MyRecurringBookingPrivileges(APIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+
+    def get(self, request):
+        pk = self.request.query_params.get("pk")
+        type = self.request.query_params.get("type")
+
+        if type == "user":
+            try:
+                user = User.objects.get(id=pk)
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        elif type == "group":
+            try:
+                user = Group.objects.get(id=pk)
+            except Group.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        can_make_recurring_booking = user.get_privileges().get_parameter("can_make_recurring_booking")
+
+        return Response(can_make_recurring_booking, status=status.HTTP_200_OK)

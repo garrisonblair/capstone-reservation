@@ -115,3 +115,8 @@ class Room(models.Model):
         if end_date is not None:
             bookings = bookings.filter(date__lte=end_date)
         return bookings
+
+    def is_available(self, date, start, end):
+        if self.booking_set.filter(date=date, start_time__lt=end, end_time__gt=start).exists():
+            return False
+        return True

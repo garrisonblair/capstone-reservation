@@ -2,6 +2,7 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from rest_framework.exceptions import APIException
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,6 +23,7 @@ from apps.accounts.exceptions import PrivilegeError
 from apps.notifications.models.Notification import Notification
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
+from apps.booking_exporter.WEBCalendarExporter.ICSSerializer import ICSSerializerFactory
 
 
 class BookingList(ListAPIView):
@@ -32,20 +34,23 @@ class BookingList(ListAPIView):
     def get_queryset(self):
         qs = super(BookingList, self).get_queryset()
 
-        # Filter by year
-        year = self.request.GET.get('year')
-        if year:
-            qs = qs.filter(date__year=year)
+        try:
+            # Filter by year
+            year = self.request.GET.get('year')
+            if year:
+                qs = qs.filter(date__year=year)
 
-        # Filter by month
-        month = self.request.GET.get('month')
-        if month:
-            qs = qs.filter(date__month=month)
+            # Filter by month
+            month = self.request.GET.get('month')
+            if month:
+                qs = qs.filter(date__month=month)
 
-        # Filter by day
-        day = self.request.GET.get('day')
-        if day:
-            qs = qs.filter(date__day=day)
+            # Filter by day
+            day = self.request.GET.get('day')
+            if day:
+                qs = qs.filter(date__day=day)
+        except Exception:
+            raise APIException
 
         return qs
 
@@ -70,7 +75,7 @@ class BookingCreate(APIView):
         now = datetime.datetime.now()
 
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response("Request data is invalid or incomplete", status=status.HTTP_400_BAD_REQUEST)
 
         date = datetime.datetime.strptime(data["date"], '%Y-%m-%d').date()
         start_time = datetime.datetime.strptime(data["start_time"], '%H:%M:%S').time()
@@ -83,6 +88,13 @@ class BookingCreate(APIView):
             booking.merge_with_neighbouring_bookings()
             booking.save()
             utils.log_model_change(booking, utils.ADDITION, request.user)
+            settings = SystemSettings.get_settings()
+            if settings.booking_reminders_active:
+                ics_serializer = ICSSerializerFactory.get_serializer(booking)
+                ics_data = ics_serializer.serialize(booking)
+                email_subject = "Your new booking"
+                email_message = "Here attached is an ics file of your new booking."
+                booking.booker.send_email(email_subject, email_message, ics_data=ics_data)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except (ValidationError, PrivilegeError) as error:
@@ -106,17 +118,28 @@ class BookingCancel(APIView):
 
         # Check if Booking has ended and if it has, disable booking from being canceled
         now = datetime.datetime.now()
+        booking_start = booking.start_time
         booking_end = booking.end_time
         timeout = now.time()
 
         if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
             if not request.user.is_superuser:
-                return Response("Selected booking cannot be canceled as booking has started",
+                return Response("Selected booking cannot be canceled as booking has ended",
                                 status=status.HTTP_400_BAD_REQUEST)
 
+        if now.date() == booking.date and timeout >= booking_start:
+            try:
+                now_end = utils.get_rounded_time(10).time()
+                booking.end_time = now_end
+                booking.save()
+                utils.log_model_change(booking, utils.DELETION, request.user)
+            except ValidationError as e:
+                return Response(e.message, status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
+
         try:
-            booking.delete_booking()
             utils.log_model_change(booking, utils.DELETION, request.user)
+            booking.delete_booking()
         except ValidationError as e:
             return Response(e.message, status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)

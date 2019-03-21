@@ -53,7 +53,7 @@ class InvitationRow extends Component {
     const { invitation } = this.props;
     const { groupOwner } = this.state;
     return (
-      <Table.Row key={invitation.id}>
+      <Table.Row className="invitation_row" key={invitation.id}>
         <Table.Cell>
           {invitation.group.name}
         </Table.Cell>
@@ -61,8 +61,8 @@ class InvitationRow extends Component {
           {groupOwner}
         </Table.Cell>
         <Table.Cell>
-          <Button color="blue" onClick={this.handleAccept}>Accept</Button>
-          <Button color="red" onClick={this.hanleDecline}>Decline</Button>
+          <Button color="blue" className="invitation_button" onClick={this.handleAccept}>Accept</Button>
+          <Button color="red" className="invitation_button" onClick={this.hanleDecline}>Decline</Button>
         </Table.Cell>
       </Table.Row>
     );
