@@ -7,6 +7,7 @@ import Header from './Header';
 import Navigation from '../Navigation';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
+import RoomsSelection from './RoomsSelection';
 import './Calendar.scss';
 
 class Calendar extends Component {
@@ -37,6 +38,8 @@ class Calendar extends Component {
     hoursDivisionNum: 0,
     orientation: 1,
     update: false,
+    showRoomsSelection: false,
+    roomsToDisplay: [],
   };
 
   /*
@@ -86,14 +89,22 @@ class Calendar extends Component {
   }
 
   getRooms() {
-    const { propsTestingRooms } = this.props;
+    const { propsTestingRooms, forDisplay } = this.props;
     const test = !!propsTestingRooms;
     if (test) {
       this.setState({ roomsList: propsTestingRooms });
     } else {
       api.getRooms()
         .then((response) => {
-          this.setState({ roomsList: response.data, roomsNum: response.data.length });
+          if (forDisplay) {
+            this.setState({
+              roomsList: response.data,
+              roomsNum: response.data.length,
+              roomsToDisplay: response.data,
+            });
+          } else {
+            this.setState({ roomsList: response.data, roomsNum: response.data.length });
+          }
         });
     }
   }
@@ -182,6 +193,11 @@ class Calendar extends Component {
     this.getBookings();
   }
 
+  closeRoomsSelection = (rooms) => {
+    console.log(rooms);
+    this.setState({ roomsToDisplay: rooms, showRoomsSelection: false });
+  }
+
   campOnToBooking = (campOns, bookings) => {
     const campOnBookings = [];
     if (!!campOns && !!bookings) {
@@ -238,6 +254,8 @@ class Calendar extends Component {
       roomsNum,
       hoursDivisionNum,
       update,
+      showRoomsSelection,
+      roomsToDisplay,
     } = this.state;
     const { forDisplay } = this.props;
     let colList = roomsList;
@@ -261,7 +279,17 @@ class Calendar extends Component {
           update={update}
           forDisplay={forDisplay}
         />
+        {forDisplay
+          ? (
+            <RoomsSelection
+              show={showRoomsSelection}
+              rooms={roomsList}
+              roomsToDisplay={roomsToDisplay}
+              onClose={this.closeRoomsSelection}
+            />)
+          : null}
         <div className="calendar__container" key={1}>
+          <input type="button" onClick={() => this.setState({ showRoomsSelection: true })} />
           <Announcement />
           <div className="calendar__wrapper" style={this.setStyle().wrapper}>
             <button type="button" className="button_orientation" onClick={() => this.changeOrientation()}><Icon name="exchange" /></button>
