@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
-import { Button, Dropdown, Form, Header, Icon, Segment } from 'semantic-ui-react';
+import {
+  Button,
+  Dropdown,
+  Form,
+  Header,
+  Icon,
+  Segment,
+} from 'semantic-ui-react';
 import api from '../../../utils/api';
 import './DatabaseDump.scss';
 
 class DatabaseDump extends Component {
-
   state = {
     models: [],
     selectedModel: '',
@@ -54,7 +60,7 @@ class DatabaseDump extends Component {
         if (window.navigator.msSaveOrOpenBlob) { // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
           window.navigator.msSaveBlob(blob, filename);
         } else {
-          let a = window.document.createElement('a');
+          const a = window.document.createElement('a');
           a.href = window.URL.createObjectURL(blob, { type: 'text/csv' });
           a.download = filename;
           document.body.appendChild(a);
@@ -83,7 +89,7 @@ class DatabaseDump extends Component {
           </Form.Field>
         </Form>
       </Segment>
-    )
+    );
   }
 
   render() {
@@ -95,7 +101,7 @@ class DatabaseDump extends Component {
         </Header>
         {this.renderCSVForm()}
       </div>
-    )
+    );
   }
 }
 
