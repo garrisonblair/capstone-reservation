@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import {
   Button,
   Icon,
@@ -175,6 +176,14 @@ class BookingInfoModal extends Component {
       });
   }
 
+  handleGoToUser = () => {
+    // eslint-disable-next-line react/prop-types
+    const { history } = this.props;
+    const { booking } = this.state;
+    const userId = booking.booker.id;
+    history.push(`/admin/bookers?user=${userId}`);
+  }
+
   checkDisplayConfirmation(booking) {
     const { settings } = this.state;
 
@@ -253,6 +262,9 @@ class BookingInfoModal extends Component {
                   <Icon name="user" />
                   {' '}
                   {booker ? `by ${booking.booker.username}` : ''}
+                  { BookingInfoModal.checkAdmin() ? (
+                    <Icon name="search" link onClick={this.handleGoToUser} />
+                  ) : null}
                 </h3>
               </div>
             </div>
@@ -345,4 +357,4 @@ BookingInfoModal.defaultProps = {
   campons: null,
 };
 
-export default BookingInfoModal;
+export default withRouter(BookingInfoModal);

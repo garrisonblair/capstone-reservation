@@ -1,7 +1,7 @@
 
 
 function parse(queryString) {
-  const query = queryString.substring(1, queryString.length - 1).split('&');
+  const query = queryString.substring(1, queryString.length).split('&');
 
   const queryParams = query.reduce((params, currentParam) => {
     const keyValuePair = currentParam.split('=');
