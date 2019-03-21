@@ -21,7 +21,7 @@ class EmailSettings(APIView):
 
 
     def get(self, request):
-        email_settings = EmailSettingsModel.objects.get(booker=request.user)
+        email_settings = EmailSettingsModel.objects.get_or_create(booker=request.user)[0]
         serializer = EmailSettingsSerializer(email_settings)
 
         return Response(serializer.data,status=status.HTTP_200_OK)
