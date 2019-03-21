@@ -194,8 +194,7 @@ class Calendar extends Component {
   }
 
   closeRoomsSelection = (rooms) => {
-    console.log(rooms);
-    this.setState({ roomsToDisplay: rooms, showRoomsSelection: false });
+    this.setState({ roomsNum: rooms.length, roomsToDisplay: rooms, showRoomsSelection: false });
   }
 
   campOnToBooking = (campOns, bookings) => {
@@ -258,12 +257,12 @@ class Calendar extends Component {
       roomsToDisplay,
     } = this.state;
     const { forDisplay } = this.props;
-    let colList = roomsList;
+    let colList = forDisplay ? roomsToDisplay : roomsList;
     let colName = 'room';
     let rowList = hoursList;
     let rowName = 'hour';
     if (orientation === 1) {
-      rowList = roomsList;
+      rowList = forDisplay ? roomsToDisplay : roomsList;
       rowName = 'room';
       colList = hoursList;
       colName = 'hour';
@@ -298,7 +297,7 @@ class Calendar extends Component {
             <Cells
               hoursSettings={hoursSettings}
               bookings={bookings}
-              roomsList={roomsList}
+              roomsList={forDisplay ? roomsToDisplay : roomsList}
               hoursList={hoursList}
               campOns={campOns}
               selectedDate={selectedDate}
