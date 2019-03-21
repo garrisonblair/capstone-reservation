@@ -70,7 +70,7 @@ class GroupsTable extends Component {
           {`Group: ${modalContent.name}`}
         </Modal.Header>
         <Modal.Content>
-          <List>
+          <List divided>
             {modalContent.members.map(m => (
               <MemberRowItem
                 key={m.id}
