@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import {
   Modal,
   Checkbox,
+  Button,
 } from 'semantic-ui-react';
 import './Calendar.scss';
 
@@ -15,7 +16,8 @@ class RoomsSelection extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { roomsToDisplay } = this.props;
-    if (nextProps.show) {
+    const { show } = this.state;
+    if (nextProps.show && nextProps.show !== show) {
       this.setState({
         show: nextProps.show,
         roomsToDisplay,
@@ -26,6 +28,14 @@ class RoomsSelection extends Component {
   closeModal = () => {
     const { onClose } = this.props;
     const { roomsToDisplay } = this.state;
+    onClose(roomsToDisplay);
+    this.setState({
+      show: false,
+    });
+  }
+
+  closeModalWithoutChange = () => {
+    const { onClose, roomsToDisplay } = this.props;
     onClose(roomsToDisplay);
     this.setState({
       show: false,
@@ -50,12 +60,13 @@ class RoomsSelection extends Component {
     const roomsCheckbox = [];
     rooms.forEach((room) => {
       roomsCheckbox.push(
-        <Checkbox
-          label={room.name}
-          key={room.id}
-          checked={roomsToDisplay.includes(room)}
-          onChange={(e, d) => this.handleCheckbox(d, room)}
-        />,
+        <div key={room.id}>
+          <Checkbox
+            label={room.name}
+            checked={roomsToDisplay.includes(room)}
+            onChange={(e, d) => this.handleCheckbox(d, room)}
+          />
+        </div>,
       );
     });
     return (
@@ -75,11 +86,23 @@ class RoomsSelection extends Component {
     const { show } = this.state;
     return (
       <div id="reservation-details-modal">
-        <Modal centered={false} size="tiny" open={show} onClose={this.closeModal}>
+        <Modal centered={false} size="tiny" open={show} onClose={this.closeModalWithoutChange}>
           <Modal.Header>
             Rooms
           </Modal.Header>
           {this.renderDescription()}
+          <Modal.Actions>
+            <Button onClick={() => this.closeModalWithoutChange()} negative>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => this.closeModal()}
+              positive
+              labelPosition="right"
+              icon="checkmark"
+              content="Confirm"
+            />
+          </Modal.Actions>
         </Modal>
       </div>
     );
