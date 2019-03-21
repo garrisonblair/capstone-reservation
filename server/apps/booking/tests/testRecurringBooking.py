@@ -254,4 +254,5 @@ class TestRecurringBooking(TestCase):
 
         except ValidationError:
             self.fail()
+            return
         self.assertTrue(True)
