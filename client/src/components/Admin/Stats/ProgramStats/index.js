@@ -12,7 +12,6 @@ import {
   Segment,
 } from 'semantic-ui-react';
 import { SingleDatePicker } from 'react-dates';
-// import * as moment from 'moment';
 import api from '../../../../utils/api';
 import ByProgramChart from './ByProgramChart';
 import ByGradLevelChart from './ByGradLevelChart';
