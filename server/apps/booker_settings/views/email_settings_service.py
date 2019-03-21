@@ -32,6 +32,6 @@ class EmailSettingsService(APIView):
 
         token = request.META['HTTP_AUTHORIZATION']
         user = getUserFromToken(token)
-        email_settings = EmailSettingsModel.objects.get(booker=user)
+        email_settings = EmailSettingsModel.objects.get_or_create(booker=user)[0]
         serializer = EmailSettingsSerializer(email_settings)
         return Response(serializer.data,status=status.HTTP_200_OK)
