@@ -579,7 +579,7 @@ class BookingAPITest(TestCase):
         bookings_before_cancel = len(Booking.objects.all())
         campons_before_cancel = len(CampOn.objects.all())
 
-        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 9, 30, 0, 0), datetime):
             request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
                                         }, format="json")
             force_authenticate(request, user=self.booker)
@@ -614,7 +614,7 @@ class BookingAPITest(TestCase):
         bookings_before_cancel = len(Booking.objects.all())
         campons_before_cancel = len(CampOn.objects.all())
 
-        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 9, 30, 0, 0), datetime):
             request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
                                         }, format="json")
             force_authenticate(request, user=self.booker)
@@ -648,7 +648,7 @@ class BookingAPITest(TestCase):
 
         bookings_before_cancel = len(Booking.objects.all())
 
-        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
+        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 9, 30, 0, 0), datetime):
             request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
                                         }, format="json")
             force_authenticate(request, user=self.booker)
@@ -658,38 +658,6 @@ class BookingAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(bookings_after_cancel, bookings_before_cancel+1)
-
-    def testCancelBookingMultipleCamponsSecondEndsBeforeFirstSuccess(self):
-
-        today = datetime.datetime.now().date()
-
-        booking = Booking(booker=self.booker, room=self.room, date=today, start_time="00:00", end_time="23:59")
-        booking.save()
-
-        campon = CampOn(booker=self.booker_2,
-                        camped_on_booking=booking,
-                        start_time=datetime.time(10, 0),
-                        end_time=datetime.time(22, 0))
-        campon.save()
-
-        campon2 = CampOn(booker=self.booker_3,
-                         camped_on_booking=booking,
-                         start_time=datetime.time(10, 0),
-                         end_time=datetime.time(20, 0))
-        campon2.save()
-
-        bookings_before_cancel = len(Booking.objects.all())
-        with mock_datetime(datetime.datetime(today.year, today.month, today.day, 11, 30, 0, 0), datetime):
-            request = self.factory.post("/booking/" + str(booking.id) + "/cancel_booking", {
-                                        }, format="json")
-
-            force_authenticate(request, user=self.booker)
-            response = BookingCancel.as_view()(request, booking.id)
-
-        bookings_after_cancel = len(Booking.objects.all())
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(bookings_before_cancel, bookings_after_cancel)
 
     def testGetMyBookingsUnauthorizedNotLoggedInFail(self):
 

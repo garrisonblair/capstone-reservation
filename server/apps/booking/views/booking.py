@@ -118,10 +118,10 @@ class BookingCancel(APIView):
 
         # Check if Booking has ended and if it has, disable booking from being canceled
         now = datetime.datetime.now()
-        booking_end = booking.end_time
+        booking_start = booking.start_time
         timeout = now.time()
 
-        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
+        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_start):
             if not request.user.is_superuser:
                 return Response("Selected booking cannot be canceled as booking has started",
                                 status=status.HTTP_400_BAD_REQUEST)
