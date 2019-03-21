@@ -122,6 +122,8 @@ class Booking(models.Model, SubjectModel):
                                   end_time__gt=self.start_time,
                                   room=self.room,
                                   date=self.date).exists():
+            print('booking model being validated: ', self)
+            print('JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ')
             raise ValidationError("Specified time is overlapped with other bookings.")
 
         start_date_time = datetime.datetime.combine(self.date, self.start_time)
