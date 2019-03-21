@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, Divider,
+  Modal, Button, FormField, Input, Divider, Table,
 } from 'semantic-ui-react';
 import api from '../../../utils/api';
 import './RoomModal.scss';
@@ -246,22 +246,54 @@ class RoomModal extends Component {
                 disabled={selectedRoom != null}
               />
             </FormField>
-            <h3>Room capacity:</h3>
-            <FormField>
-              <Input
-                size="small"
-                onChange={this.handleRoomCapacityOnChange}
-                value={roomCapacity}
-              />
-            </FormField>
-            <h3>Number of computers:</h3>
-            <FormField>
-              <Input
-                size="small"
-                onChange={this.handleNumberOfComputersOnChange}
-                value={numOfComputers}
-              />
-            </FormField>
+            <Table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h3>Room capacity:</h3>
+                    <FormField>
+                      <Input
+                        size="small"
+                        onChange={this.handleRoomCapacityOnChange}
+                        value={roomCapacity}
+                      />
+                    </FormField>
+                  </td>
+                  <td>
+                    <h3>Number of computers:</h3>
+                    <FormField>
+                      <Input
+                        size="small"
+                        onChange={this.handleNumberOfComputersOnChange}
+                        value={numOfComputers}
+                      />
+                    </FormField>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h3>Has TV:</h3>
+                    <FormField>
+                      <Input
+                        size="small"
+                        onChange={this.handleRoomCapacityOnChange}
+                        value={roomCapacity}
+                      />
+                    </FormField>
+                  </td>
+                  <td>
+                    <h3>Number of computers:</h3>
+                    <FormField>
+                      <Input
+                        size="small"
+                        onChange={this.handleNumberOfComputersOnChange}
+                        value={numOfComputers}
+                      />
+                    </FormField>
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
             <Divider />
             <h3>Maximum duration of Booking (Hours):</h3>
             <FormField>
