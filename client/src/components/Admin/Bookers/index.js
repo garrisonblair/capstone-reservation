@@ -1,11 +1,15 @@
 /* eslint-disable no-param-reassign */
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+
 import {
   Table, Segment, Pagination, Form, Button, Dropdown, Message, Icon,
 } from 'semantic-ui-react';
 import './Bookers.scss';
 import api from '../../../utils/api';
 import BookerRow from './BookerRow';
+import BookerModal from './BookerModal';
+import queryParams from '../../../utils/queryParams';
 
 
 class Bookers extends Component {
@@ -24,15 +28,33 @@ class Bookers extends Component {
     valueSearch: '',
     valueSortTerm: '',
     searchLimit: 20,
+    queriedUser: undefined,
   }
 
   componentDidMount() {
+    // eslint-disable-next-line react/prop-types
+    const { location } = this.props;
     const {
-      searchLimit, valueSearch, valueActive, valueSuperUser, valueStaff, activePage, valueSortTerm,
+      searchLimit,
+      valueSearch,
+      valueActive,
+      valueSuperUser,
+      valueStaff,
+      activePage,
+      valueSortTerm,
     } = this.state;
     this.syncBookers(
       valueSearch, searchLimit, activePage, valueActive, valueSuperUser, valueStaff, valueSortTerm,
     );
+
+    const query = queryParams.parse(location.search);
+    console.log(query);
+    if (query.user) {
+      api.getUser(query.user)
+        .then((response) => {
+          this.setState({ queriedUser: response.data });
+        });
+    }
   }
 
   getOffSet = (activePage, searchLimit) => (activePage * searchLimit) - searchLimit;
@@ -148,6 +170,10 @@ class Bookers extends Component {
     this.syncBookers(valueSearch, searchLimit, 1, valueActive, valueSuperUser, valueStaff);
   }
 
+  closeModal = () => {
+    this.setState({ queriedUser: undefined });
+  }
+
   handleResetOnClick = () => {
     const valueActive = 'Any';
     const valueSearch = '';
@@ -174,6 +200,7 @@ class Bookers extends Component {
       bookers, isLoading, activePage, totalPages,
       dropdownOptions, valueActive, valueSuperUser,
       valueStaff, valueSearch, searchLimit, valueSortTerm,
+      queriedUser,
     } = this.state;
     return (
       <div id="bookers">
@@ -268,9 +295,10 @@ class Bookers extends Component {
             />
           ) : null}
         </Segment>
+        { queriedUser ? <BookerModal show booker={queriedUser} onClose={this.closeModal} /> : null }
       </div>
     );
   }
 }
 
-export default Bookers;
+export default withRouter(Bookers);

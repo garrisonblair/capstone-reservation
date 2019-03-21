@@ -30,6 +30,10 @@ class Room(models.Model):
     available = models.BooleanField(default=True)
     unavailable_start_time = models.DateTimeField(blank=True, null=True)
     unavailable_end_time = models.DateTimeField(blank=True, null=True)
+
+    max_booking_duration = models.IntegerField(blank=True, null=True)
+    max_recurring_booking_duration = models.IntegerField(blank=True, null=True)
+
     objects = RoomManager()
 
     observers = list()
