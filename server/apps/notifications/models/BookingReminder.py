@@ -6,7 +6,7 @@ from apps.booking.models.Booking import Booking
 from apps.system_administration.models.system_settings import SystemSettings
 from apps.util.ModelObserver import ModelObserver
 from apps.notifications.apps import NotificationsConfig
-from apps.booker_settings.model.EmailSettings import EmailSettings
+from apps.booker_settings.models.EmailSettings import EmailSettings
 
 
 class BookingReminderManager(models.Manager, ModelObserver):
