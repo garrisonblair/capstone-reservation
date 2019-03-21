@@ -64,7 +64,7 @@ class DetailedRecurringBookingSerializer(serializers.ModelSerializer):
 class PartialRecurringBookingSerializer(serializers.ModelSerializer):
 
     room = RoomSerializer(required=False)
-    
+
     class Meta:
         model = RecurringBooking
         fields = ('id', 'start_date', 'end_date', 'booking_start_time', 'booking_end_time', 'room')
