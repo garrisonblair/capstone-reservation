@@ -200,3 +200,5 @@ class CamponRetrieveUpdateDestroy(APIView):
             utils.log_model_change(campon, utils.CHANGE, request.user)
         except ValidationError as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_200_OK)
