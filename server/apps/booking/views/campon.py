@@ -77,15 +77,7 @@ class CampOnCreate(APIView):
         data["booker"] = request.user.id
 
         # Rounding to nearest 10th minute, as bookings and camp-ons can only be made every ten minute interval
-        time = datetime.datetime.now().replace(microsecond=0)
-        discard = datetime.timedelta(
-            minutes=time.minute % 10,
-            seconds=time.second,
-            microseconds=time.microsecond
-        )
-        time -= discard
-        if discard >= datetime.timedelta(minutes=5):
-            time += datetime.timedelta(minutes=10)
+        time = utils.get_rounded_time(10)
 
         data["start_time"] = time.time()
         serializer = CampOnSerializer(data=data)

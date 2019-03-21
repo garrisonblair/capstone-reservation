@@ -120,17 +120,28 @@ class BookingCancel(APIView):
 
         # Check if Booking has ended and if it has, disable booking from being canceled
         now = datetime.datetime.now()
+        booking_start = booking.start_time
         booking_end = booking.end_time
         timeout = now.time()
 
         if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
             if not request.user.is_superuser:
-                return Response("Selected booking cannot be canceled as booking has started",
+                return Response("Selected booking cannot be canceled as booking has ended",
                                 status=status.HTTP_400_BAD_REQUEST)
 
+        if now.date() == booking.date and timeout >= booking_start:
+            try:
+                now_end = utils.get_rounded_time(10).time()
+                booking.end_time = now_end
+                booking.save()
+                utils.log_model_change(booking, utils.DELETION, request.user)
+            except ValidationError as e:
+                return Response(e.message, status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
+
         try:
-            booking.delete_booking()
             utils.log_model_change(booking, utils.DELETION, request.user)
+            booking.delete_booking()
         except ValidationError as e:
             return Response(e.message, status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
