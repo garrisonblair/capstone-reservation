@@ -121,7 +121,6 @@ class RoomModal extends Component {
     }
 
     if (selectedRoom == null) {
-
       api.createRoom(
         roomID,
         roomCapacity,
