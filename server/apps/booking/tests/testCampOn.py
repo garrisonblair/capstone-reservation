@@ -169,5 +169,3 @@ class TestCampOn(TestCase):
 
         edited_campon = CampOn.objects.get(id=camp_on.id)
         self.assertEqual(edited_campon, time(13, 0))
-
-
