@@ -191,12 +191,20 @@ function getRoomsForDate(date, startTime, endTime) {
   });
 }
 
-function createRoom(name, capacity, numberOfComputers) {
+function createRoom(
+  name,
+  capacity,
+  numberOfComputers,
+  maxBookingDuration,
+  maxRecurringBookingDuration,
+) {
   const headers = getTokenHeader();
   const data = {
     name,
     capacity,
     number_of_computers: numberOfComputers,
+    max_booking_duration: maxBookingDuration,
+    max_recurring_booking_duration: maxRecurringBookingDuration,
   };
   return axios({
     method: 'POST',
@@ -207,12 +215,21 @@ function createRoom(name, capacity, numberOfComputers) {
   });
 }
 
-function updateRoom(id, name, capacity, numberOfComputers) {
+function updateRoom(
+  id,
+  name,
+  capacity,
+  numberOfComputers,
+  maxBookingDuration,
+  maxRecurringBookingDuration,
+) {
   const headers = getTokenHeader();
   const data = {
     name,
     capacity,
     number_of_computers: numberOfComputers,
+    max_booking_duration: maxBookingDuration,
+    max_recurring_booking_duration: maxRecurringBookingDuration,
   };
   return axios({
     method: 'PATCH',

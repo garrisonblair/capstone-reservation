@@ -12,6 +12,8 @@ class RoomModal extends Component {
     roomID: '',
     roomCapacity: 1,
     numOfComputers: 0,
+    maxBookingDuration: '',
+    maxRecurringBookingDuration: '',
   }
 
   componentDidMount() {
@@ -22,22 +24,30 @@ class RoomModal extends Component {
         roomCapacity: selectedRoom.capacity,
         numOfComputers: selectedRoom.number_of_computers,
         cardReader: null,
+        maxBookingDuration: selectedRoom.max_booking_duration,
+        maxRecurringBookingDuration: selectedRoom.max_recurring_booking_duration,
       });
+
+      api.getCardReaders(selectedRoom.id)
+        .then((response) => {
+          if (response.data.length > 0) {
+            this.setState({
+              cardReader: response.data[0],
+            });
+          }
+        });
     }
-
-
-    api.getCardReaders(selectedRoom.id)
-      .then((response) => {
-        if (response.data.length > 0) {
-          this.setState({
-            cardReader: response.data[0],
-          });
-        }
-      });
   }
 
   verifyModalForm = () => {
-    const { roomID, roomCapacity, numOfComputers } = this.state;
+    const {
+      roomID,
+      roomCapacity,
+      numOfComputers,
+      maxBookingDuration,
+      maxRecurringBookingDuration,
+    } = this.state;
+
     let result = true;
 
     if (roomID.length === 0) {
@@ -50,6 +60,14 @@ class RoomModal extends Component {
       // eslint-disable-next-line no-restricted-globals
     } else if (isNaN(numOfComputers)) {
       sweetAlert('Blocked', '"Number of Computers" field should be a number.', 'warning');
+      result = false;
+      // eslint-disable-next-line no-restricted-globals
+    } else if (isNaN(maxBookingDuration) && maxBookingDuration !== '') {
+      sweetAlert('Blocked', '"Maximum Booking Duration" field should be a number.');
+      result = false;
+      // eslint-disable-next-line no-restricted-globals
+    } else if (isNaN(maxRecurringBookingDuration) && maxBookingDuration !== '') {
+      sweetAlert('Blocked', '"Maximum Recurring Booking Duration" field should be a number.');
       result = false;
     }
 
@@ -68,16 +86,49 @@ class RoomModal extends Component {
     this.setState({ numOfComputers: event.target.value });
   }
 
+  handleBookingDurationChange = (event) => {
+    this.setState({ maxBookingDuration: event.target.value });
+  }
+
+  handleRecurringBookingDurationChange = (event) => {
+    this.setState({ maxRecurringBookingDuration: event.target.value });
+  }
+
   handleSubmit = () => {
     // eslint-disable-next-line object-curly-newline
-    const { roomID, roomCapacity, numOfComputers } = this.state;
+    const {
+      roomID,
+      roomCapacity,
+      numOfComputers,
+    } = this.state;
+
+    let {
+      maxBookingDuration,
+      maxRecurringBookingDuration,
+    } = this.state;
     const { selectedRoom, onClose } = this.props;
     // Leaves the method if verification doesn't succeed
     if (!this.verifyModalForm()) {
       return;
     }
+
+    if (maxBookingDuration === '') {
+      maxBookingDuration = undefined;
+    }
+
+    if (maxRecurringBookingDuration === '') {
+      maxRecurringBookingDuration = undefined;
+    }
+
     if (selectedRoom == null) {
-      api.createRoom(roomID, roomCapacity, numOfComputers)
+
+      api.createRoom(
+        roomID,
+        roomCapacity,
+        numOfComputers,
+        maxBookingDuration,
+        maxRecurringBookingDuration,
+      )
         .then((response) => {
           if (response.status === 201) {
             sweetAlert('Completed', `Room '${roomID}' was successfully created.`, 'success')
@@ -93,7 +144,14 @@ class RoomModal extends Component {
             });
         });
     } else {
-      api.updateRoom(selectedRoom.id, roomID, roomCapacity, numOfComputers)
+      api.updateRoom(
+        selectedRoom.id,
+        roomID,
+        roomCapacity,
+        numOfComputers,
+        maxBookingDuration,
+        maxRecurringBookingDuration,
+      )
         .then((response) => {
           if (response.status === 200) {
             sweetAlert('Completed', `Room '${roomID}' was successfully updated.`, 'success')
@@ -170,6 +228,8 @@ class RoomModal extends Component {
       roomID,
       numOfComputers,
       cardReader,
+      maxBookingDuration,
+      maxRecurringBookingDuration,
     } = this.state;
     return (
       <Modal centered={false} size="tiny" open={show} id="room-modal" onClose={onClose}>
@@ -201,6 +261,23 @@ class RoomModal extends Component {
                 size="small"
                 onChange={this.handleNumberOfComputersOnChange}
                 value={numOfComputers}
+              />
+            </FormField>
+            <Divider />
+            <h3>Maximum duration of Booking (Hours):</h3>
+            <FormField>
+              <Input
+                size="tiny"
+                onChange={this.handleBookingDurationChange}
+                value={maxBookingDuration}
+              />
+            </FormField>
+            <h3>Maximum duration of Recurring Bookings (Hours):</h3>
+            <FormField>
+              <Input
+                size="tiny"
+                onChange={this.handleRecurringBookingDurationChange}
+                value={maxRecurringBookingDuration}
               />
             </FormField>
             <Divider />
