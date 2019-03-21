@@ -1,0 +1,45 @@
+#groups-table{
+    table{
+      width: 100%;
+      border: 1px solid rgba(34,36,38,.15);
+      font-size: 1em;
+      border-radius: .28571429rem;
+      border-collapse: collapse;
+    }
+    th{
+      background: #f9fafb;
+      padding: .92857143em .78571429em;
+      border: 1px solid rgba(34,36,38,.1);
+      text-align: center;
+    }
+    textarea{
+      border: 1px solid rgba(34,36,38,.15);
+      border-radius: .28571429rem;
+    }
+    input{
+      font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+      padding: .67857143em 1em;
+      border: 1px solid rgba(34,36,38,.15);
+      border-radius: .28571429rem;
+    }
+    input:focus, textarea:focus{
+      border-color: #66afe9;
+      box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+    }
+    .alert{
+      color: #a94442;
+      padding: 5px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+    }
+    td{
+      word-wrap: break-word;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    ul{
+        padding-left: 15px;
+    }
+  }
