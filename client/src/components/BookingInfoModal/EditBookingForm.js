@@ -99,7 +99,46 @@ class EditBookingForm extends Component {
       });
   }
 
+  sendPatchCampOn = () => {
+    this.setState({ isLoading: true });
+    const { booking } = this.props;
+    const {
+      endHour,
+      endMinute,
+    } = this.state;
+
+    const data = {
+      end_time: `${endHour}:${endMinute}`,
+    };
+
+    console.log(booking);
+
+    api.updateCampOn(booking.camped_on_booking, data)
+      .then(() => {
+        this.setState({ isLoading: false });
+        this.closeModalWithEditBooking();
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Camp On was successfully updated.',
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      })
+      .catch((error) => {
+        this.setState({ isLoading: false });
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Reservation failed',
+          text: error.response.data,
+        });
+      });
+  }
+
   handleSubmit = () => {
+    const { booking } = this.props;
     // Verify requirements before sending the POST request
     try {
       this.verifyReservationTimes();
@@ -112,8 +151,11 @@ class EditBookingForm extends Component {
       });
       return;
     }
-
-    this.sendPatchBooking();
+    if (booking.isCampOn) {
+      this.sendPatchCampOn();
+    } else {
+      this.sendPatchBooking();
+    }
   }
 
   closeModalWithEditBooking = () => {
@@ -190,70 +232,82 @@ class EditBookingForm extends Component {
       endMinute,
       isLoading,
     } = this.state;
+    const { booking } = this.props;
+    const fromComponent = (
+      <div className="modal-description">
+        <h3 className="header--inline">
+          <span>From  </span>
+        </h3>
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="hh"
+          options={hourOptions}
+          onChange={this.handleStartHourChange}
+          value={startHour}
+        />
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="mm"
+          options={minuteOptions}
+          onChange={this.handleStartMinuteChange}
+          value={startMinute}
+        />
+      </div>
+    );
+
+    const toComponent = (
+      <div className="modal-description">
+        <h3 className="header--inline">
+          <span>To </span>
+        </h3>
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="hh"
+          options={hourOptions}
+          onChange={this.handleEndHourChange}
+          value={endHour}
+        />
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="mm"
+          options={minuteOptions}
+          onChange={this.handleEndMinuteChange}
+          value={endMinute}
+        />
+      </div>
+    );
+
+    const byComponent = (
+      <div className="modal-description">
+        <h3 className="header--inline">
+          <Icon name="user" />
+          {' '}
+          {'by '}
+        </h3>
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="hh"
+          options={reservedOptions}
+          defaultValue={reservedOptions[0].value}
+        />
+      </div>
+    );
     return (
       <div>
-        <div className="modal-description">
-          <h3 className="header--inline">
-            <span>From  </span>
-          </h3>
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="hh"
-            options={hourOptions}
-            onChange={this.handleStartHourChange}
-            value={startHour}
-          />
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="mm"
-            options={minuteOptions}
-            onChange={this.handleStartMinuteChange}
-            value={startMinute}
-          />
-        </div>
-        <div className="modal-description">
-          <h3 className="header--inline">
-            <span>To </span>
-          </h3>
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="hh"
-            options={hourOptions}
-            onChange={this.handleEndHourChange}
-            value={endHour}
-          />
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="mm"
-            options={minuteOptions}
-            onChange={this.handleEndMinuteChange}
-            value={endMinute}
-          />
-        </div>
-        <div className="modal-description">
-          <h3 className="header--inline">
-            <Icon name="user" />
-            {' '}
-            {'by '}
-          </h3>
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="hh"
-            options={reservedOptions}
-            defaultValue={reservedOptions[0].value}
-          />
-        </div>
-        <Button content="Edit Booking" loading={isLoading} primary onClick={this.handleSubmit} />
+        {!booking.isCampOn && fromComponent}
+        {toComponent}
+        {!booking.isCampOn && byComponent}
+        <Button content={`Edit ${booking.isCampOn ? 'Camp On' : 'Booking'}`} loading={isLoading} primary onClick={this.handleSubmit} />
         <div className="ui divider" />
       </div>
     );

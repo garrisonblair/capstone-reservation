@@ -312,7 +312,7 @@ class BookingInfoModal extends Component {
 
   renderForm(booking) {
     const { selectedRoomName } = this.props;
-    if (!!booking.isCampOn === false && BookingInfoModal.checkSameUserOrAdmin(booking)) {
+    if (BookingInfoModal.checkSameUserOrAdmin(booking)) {
       return (
         <EditBookingForm
           booking={booking}
