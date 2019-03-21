@@ -48,7 +48,6 @@ class Bookers extends Component {
     );
 
     const query = queryParams.parse(location.search);
-    console.log(query);
     if (query.user) {
       api.getUser(query.user)
         .then((response) => {

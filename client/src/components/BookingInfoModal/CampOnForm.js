@@ -4,21 +4,12 @@ import { Button, Dropdown, Icon } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import Login from '../Login';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
+import timeUtil from '../../utils/time';
 import './BookingInfoModal.scss';
 
 
 class CampOnForm extends Component {
-  static generateMinuteOptions(minuteInterval) {
-    const result = [];
-    for (let i = 0; i < 60; i += minuteInterval) {
-      result.push({
-        text: `${i < 10 ? `0${i}` : i}`,
-        value: `${i < 10 ? `0${i}` : i}`,
-      });
-    }
-    return result;
-  }
-
   static generateReservationProfilesOptions(reservationProfiles) {
     const result = reservationProfiles.map(profile => ({ text: profile, value: profile }));
     return result;
@@ -40,7 +31,7 @@ class CampOnForm extends Component {
     const { maxHour, minuteInterval, reservationProfiles } = this.props;
     this.setState({
       hourOptions: this.generateHourOptions(maxHour),
-      minuteOptions: CampOnForm.generateMinuteOptions(minuteInterval),
+      minuteOptions: timeUtil.generateMinuteOptions(minuteInterval),
       reservedOptions: CampOnForm.generateReservationProfilesOptions(reservationProfiles),
     });
   }
@@ -75,7 +66,7 @@ class CampOnForm extends Component {
       });
       return;
     }
-    if (localStorage.getItem('CapstoneReservationUser') == null) {
+    if (storage.getUser() == null) {
       this.setState({ showLogin: true });
     } else {
       this.sendPostRequestCampOn();
@@ -84,7 +75,7 @@ class CampOnForm extends Component {
 
   closeLogin = () => {
     this.setState({ showLogin: false });
-    if (localStorage.getItem('CapstoneReservationUser') == null) {
+    if (storage.getUser() == null) {
       sweetAlert.fire({
         position: 'top',
         type: 'error',
@@ -148,10 +139,6 @@ class CampOnForm extends Component {
       throw new Error('The end time you entered is before the current time.');
     }
   }
-
-  /*
-   * COMPONENT RENDERING
-   */
 
   renderCampOnForm() {
     const {
