@@ -16,9 +16,15 @@ import './Dashboard.scss';
 class Dashboard extends Component {
   groupRef = React.createRef();
 
+  privilegeRef = React.createRef();
+
   syncGroups = () => {
     this.groupRef.current.syncGroups();
   };
+
+  syncPrivileges = () => {
+    this.privilegeRef.current.syncPrivileges();
+  }
 
   render() {
     return (
@@ -35,10 +41,10 @@ class Dashboard extends Component {
           </div>
           <div className="segment__container bottom">
             <Segment className="segment__privileges">
-              <Privileges showTitle />
+              <Privileges showTitle ref={this.privilegeRef} />
             </Segment>
             <Segment className="segment__groups">
-              <Groups showTitle ref={this.groupRef} />
+              <Groups showTitle ref={this.groupRef} syncPrivileges={this.syncPrivileges} />
             </Segment>
             <Segment className="segment__invitations">
               <GroupInvitations showTitle syncGroups={this.syncGroups} />

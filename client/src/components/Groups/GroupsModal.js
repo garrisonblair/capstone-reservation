@@ -112,13 +112,14 @@ class GroupsModal extends Component {
   handleLeaveGroup = () => {
     this.setState({ isLoading: true });
     const { groupId } = this.state;
-    const { onClose } = this.props;
+    const { onClose, syncPrivileges } = this.props;
     api.leaveGroup(groupId)
       .then((r) => {
         this.setState({ isLoading: false });
         if (r.status === 202) {
           onClose();
           sweetAlert('Completed', 'You have left the group.', 'success');
+          syncPrivileges();
         }
       });
   }
@@ -126,13 +127,14 @@ class GroupsModal extends Component {
   handleDeleteGroup = () => {
     this.setState({ isLoading: true });
     const { groupId } = this.state;
-    const { onClose } = this.props;
+    const { onClose, syncPrivileges } = this.props;
     api.leaveGroup(groupId)
       .then((r) => {
         this.setState({ isLoading: false });
         if (r.status === 202) {
           onClose();
           sweetAlert('Completed', 'You have deleted the group.', 'success');
+          syncPrivileges();
         }
       });
   }
@@ -167,6 +169,7 @@ class GroupsModal extends Component {
       return;
     }
     const { groupName } = this.state;
+    const { syncPrivileges } = this.props;
     api.createGroup(groupName)
       .then((r) => {
         this.setState({ isLoading: false });
@@ -175,6 +178,7 @@ class GroupsModal extends Component {
             groupId: r.data.id,
             groupMembers: r.data.members,
           });
+          syncPrivileges();
         }
       });
   }
@@ -314,10 +318,12 @@ GroupsModal.propTypes = {
     members: PropTypes.array.isRequired,
   }),
   isAdmin: PropTypes.bool.isRequired,
+  syncPrivileges: PropTypes.func,
 };
 
 GroupsModal.defaultProps = {
   selectedGroup: null,
+  syncPrivileges: null,
 };
 
 

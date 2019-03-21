@@ -29,7 +29,12 @@ class GroupsRowItem extends Component {
   }
 
   render() {
-    const { group, syncGroupsList, myUserId } = this.props;
+    const {
+      group,
+      syncGroupsList,
+      myUserId,
+      syncPrivileges,
+    } = this.props;
     const { openModal } = this.state;
     return (
       <Table.Row key={group.id}>
@@ -47,6 +52,7 @@ class GroupsRowItem extends Component {
               selectedGroup={group}
               onClose={this.closeModal}
               syncGroupsList={syncGroupsList}
+              syncPrivileges={syncPrivileges}
               isAdmin={myUserId === group.owner.id}
             />
           ) : ''}
@@ -65,6 +71,11 @@ GroupsRowItem.propTypes = {
     privilege_category: PropTypes.number,
   }).isRequired,
   myUserId: PropTypes.number.isRequired,
+  syncPrivileges: PropTypes.func,
+};
+
+GroupsRowItem.defaultProps = {
+  syncPrivileges: null,
 };
 
 export default GroupsRowItem;

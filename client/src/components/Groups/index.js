@@ -30,10 +30,12 @@ class Groups extends Component {
 
   syncGroups = () => {
     this.setState({ isLoading: true });
+    const { syncPrivileges } = this.props;
     api.getMyGroups()
       .then((r) => {
         this.setState({ groups: r.data, isLoading: false });
       });
+    syncPrivileges();
   }
 
   showGroupsModal = () => { this.setState({ showModal: true }); }
@@ -44,7 +46,7 @@ class Groups extends Component {
   }
 
   render() {
-    const { showTitle } = this.props;
+    const { showTitle, syncPrivileges } = this.props;
     const {
       groups, showModal, myUserId, isLoading,
     } = this.state;
@@ -70,6 +72,7 @@ class Groups extends Component {
                   <GroupsRowItem
                     key={g.id}
                     group={g}
+                    syncPrivileges={syncPrivileges}
                     syncGroupsList={this.syncGroups}
                     myUserId={myUserId}
                   />
@@ -77,7 +80,7 @@ class Groups extends Component {
               )}
             </TableBody>
           </Table>
-          {showModal ? <GroupsModal show onClose={this.closeGroupsModal} isAdmin /> : ''}
+          {showModal ? <GroupsModal show syncPrivileges={syncPrivileges} onClose={this.closeGroupsModal} isAdmin /> : ''}
         </Segment>
       </div>
     );
@@ -86,10 +89,12 @@ class Groups extends Component {
 
 Groups.propTypes = {
   showTitle: PropTypes.bool,
+  syncPrivileges: PropTypes.func,
 };
 
 Groups.defaultProps = {
   showTitle: false,
+  syncPrivileges: null,
 };
 
 export default Groups;

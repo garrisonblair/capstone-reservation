@@ -24,6 +24,19 @@ class Privileges extends Component {
       });
   }
 
+  syncPrivileges = () => {
+    this.setState({
+      isLoading: true,
+    });
+    api.getMyPrivileges()
+      .then((r) => {
+        this.setState({ isLoading: false });
+        if (r.status === 200) {
+          this.setState({ privileges: r.data });
+        }
+      });
+  }
+
   handleItemClick = (activeItem) => {
     this.setState({
       activeItem,
