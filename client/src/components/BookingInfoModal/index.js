@@ -105,6 +105,44 @@ class BookingInfoModal extends Component {
   handleOpen = () => this.setState({ show: true });
 
   handleDelete = () => {
+    const { booking } = this.props;
+    if (booking.isCampOn) {
+      this.handleDeleteCampon();
+    } else {
+      this.handleDeleteBooking();
+    }
+  }
+
+  handleDeleteCampon = () => {
+    sweetAlert({
+      title: 'Are you sure?',
+      text: 'Camp On will be deleted.',
+      type: 'warning',
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.value) {
+        const { booking } = this.props;
+        api.deleteCampOn(booking.camped_on_booking)
+          .then(() => {
+            this.closeModalWithAction();
+            sweetAlert({
+              title: 'Success',
+              text: 'Camp On deleted',
+              type: 'success',
+            });
+          })
+          .catch((error) => {
+            sweetAlert(
+              'Cancellation failed',
+              error.response.data,
+              'error',
+            );
+          });
+      }
+    });
+  }
+
+  handleDeleteBooking = () => {
     sweetAlert({
       title: 'Are you sure?',
       text: 'Booking will be deleted.',
