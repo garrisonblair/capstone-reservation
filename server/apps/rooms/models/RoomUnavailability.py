@@ -17,6 +17,15 @@ class RoomUnavailability(models.Model):
 
     def validate_model(self):
 
+        if self.start_time:
+            if not isinstance(self.start_time, datetime.datetime):
+                self.start_time = \
+                    datetime.datetime.strptime(self.start_time, "%Y-%m-%d %H:%M")
+        if self.end_time:
+            if not isinstance(self.end_time, datetime.datetime):
+                self.end_time = \
+                    datetime.datetime.strptime(self.end_time, "%Y-%m-%d %H:%M")
+
         if not self.start_time:
             raise ValidationError("Unavailable start time cannot be empty.")
 

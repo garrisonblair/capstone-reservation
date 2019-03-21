@@ -5,7 +5,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import APIException
 
 from apps.rooms.models.RoomUnavailability import RoomUnavailability
-from apps.rooms.serializers.RoomUnavailabilitySerializer import RoomUnavailabilitySerializer
+from apps.rooms.serializers.room_unavailability import RoomUnavailabilitySerializer
 
 
 class RoomUnavailabilityList(ListAPIView):
@@ -13,12 +13,12 @@ class RoomUnavailabilityList(ListAPIView):
     serializer_class = RoomUnavailabilitySerializer
     queryset = RoomUnavailability.objects.all()
 
-    def get(self, request):
+    def get_queryset(self):
         qs = super(RoomUnavailabilityList, self).get_queryset()
 
         try:
-            room_id = request.GET.get('room_id')
-            date_time = request.GET.get('date_time')
+            room_id = self.request.GET.get('room_id')
+            date_time = self.request.GET.get('date_time')
 
             # Filter by room
             if room_id:
