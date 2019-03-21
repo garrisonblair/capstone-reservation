@@ -169,6 +169,9 @@ class RecurringBooking(models.Model):
         from apps.booking.models.Booking import Booking
 
         now = datetime.now()
+        today = datetime.today()
+        settings = SystemSettings.get_settings()
+        timeout = (now + settings.booking_edit_lock_timeout).time()
         all_conflicts = []
         non_conflicting_bookings = []
 
@@ -202,22 +205,29 @@ class RecurringBooking(models.Model):
         # print('type(skip_conflicts): ', type(skip_conflicts))
         # print('**********************')
 
-        # Gets all bookings associated to the indicated booking which happen after current date
-        all_associated_booking_instances = Booking.objects.all().filter(recurring_booking=self, date__gte=now)
+        # Gets all bookings associated to the indicated booking which happen after current date and current timr
+        all_associated_booking_instances1 = Booking.objects.all().filter(recurring_booking=self, date__gte=now)
+        print('FIRST WITHOUT TIME FILTER')
+        print('all_associated_booking_instances: ', all_associated_booking_instances1)
+        all_associated_booking_instances = Booking.objects.all()\
+            .filter(recurring_booking=self, date__gte=now, start_time__gt=timeout)
+        print('SECONDLY WITHOUT TIME FILTER: ', all_associated_booking_instances)
 
+        earliest_booking = None
         # Find the earliest booking in the list
-        earliest_booking = all_associated_booking_instances[0]
-        for booking in all_associated_booking_instances:
-            if booking.date < earliest_booking.date:
-                earliest_booking = booking
+        if len(all_associated_booking_instances) > 0:
+            earliest_booking = all_associated_booking_instances[0]
+            for booking in all_associated_booking_instances:
+                if booking.date < earliest_booking.date:
+                    earliest_booking = booking
+
+        booking_offset = 0
 
         # Determine offset based on earliest booking
-        if start_date is not None:
+        if start_date is not None and len(all_associated_booking_instances) > 0:
             # Need to get the offset using the .days of subtraction of 2 dates
             delta = earliest_booking.date - start_date
             booking_offset = delta.days
-        else:
-            booking_offset = 0
 
         print('self.end_date: ', self.end_date)
         # Get current end date and apply offset in case start date has changed
@@ -247,7 +257,6 @@ class RecurringBooking(models.Model):
                     )
                     try:
                         print('Booking being created that needs validation: ', booking)
-
                         booking.validate_model()
                         print('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
                         non_conflicting_bookings.append(booking)
@@ -266,8 +275,6 @@ class RecurringBooking(models.Model):
             if start_date:
                 associated_booking.date = associated_booking.date + timedelta(days=booking_offset)
             try:
-                print('KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK')
-                # TODO: Determine why validate_model() is failing
                 associated_booking.validate_model()
                 non_conflicting_bookings.append(associated_booking)
             except ValidationError:
@@ -280,7 +287,7 @@ class RecurringBooking(models.Model):
         # TODO: Make sure that this works with skip_conflicts: false
         # If there are no conflicts, simply make adjustments accordingly
         if len(all_conflicts) == 0 or skip_conflicts:
-            print('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
+            print('************* EITHER NO CONFLICTS OR SKIP CONFLICTS IS TRUE **************')
             print('all_conflicts: ', all_conflicts)
             print('skip_conflicts: ', skip_conflicts)
             now = datetime.now()
@@ -289,39 +296,44 @@ class RecurringBooking(models.Model):
             timeout = (now + settings.booking_edit_lock_timeout).time()
 
             for non_conflicting in non_conflicting_bookings:
-                print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+                print('********** NON_CONFLICTING BOOKINGS ***********')
                 # If the booking was in the past, ignore  this one
                 if datetime.combine(non_conflicting.date, datetime.min.time()) < today \
                         or (non_conflicting.date == today.date
                             and non_conflicting.start_time > timeout):
-                    print('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
-                    print(non_conflicting)
-                    pass
-                # Make sure bookings are in range and have not ended before modifying. Past bookings checked by filter
-                elif start_date is not None and end_date is not None and start_date <= non_conflicting.date <= end_date:
-                    print('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
-                    print('start_date: ', start_date)
-                    print('end_date: ', end_date)
+                    print('*********** BOOKING ON PREVIOUS DAY OR SAME DAY BUT HAS STARTED **************')
+                    # print('datetime.combine(non_conflicting.date, datetime.min.time()): ', datetime.combine(non_conflicting.date, datetime.min.time()))
                     print('non_conflicting.date: ', non_conflicting.date)
+                    print('today.date: ', today.date)
+                    print('non_conflicting.date: ', non_conflicting.date)
+                    print('today.date: ', today.date)
+                    print('non_conflicting.start_time: ', non_conflicting.start_time)
+                    print('timeout: ', timeout)
+                    pass
+                elif start_date is None or end_date is None:
+                    raise ValidationError("Missing start_date and/or end_date.")
+                # Make sure bookings are in range and have not ended before deleting. Past bookings checked by filter
+                elif non_conflicting.date < start_date:
+                    print('******* START DATE HAS BEEN MOVED UP SO DELETING EARLIER BOOKING(S) IN SERIES **********')
+                    print('non_conflicting: ', non_conflicting)
+                    non_conflicting.delete()
+                    utils.log_model_change(non_conflicting, utils.DELETE, user)
+                elif non_conflicting.date > end_date:
+                    print('******* END DATE HAS BEEN MOVED DOWN SO DELETING LATER BOOKING(S) IN SERIES **********')
+                    print('non_conflicting: ', non_conflicting)
+                    non_conflicting.delete()
+                    utils.log_model_change(non_conflicting, utils.DELETE, user)
+                else:
+                    print('************** SAVING NON_CONFLICTING *****************')
+                    print('non_conflicting: ', non_conflicting)
                     non_conflicting.save()
                     utils.log_model_change(non_conflicting, utils.CHANGE, user)
-                # Make sure bookings are in range and have not ended before deleting. Past bookings checked by filter
-                elif start_date is not None and non_conflicting.date < start_date:
-                    print('EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
-                    non_conflicting.delete()
-                elif end_date is not None and non_conflicting.date > end_date:
-                    print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
-                    non_conflicting.delete()
-                else:
-                    print('GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG')
-                    print(non_conflicting)
-                    non_conflicting.save()
-            # TODO: ensure this is saved
             # Set the new end date and save it
             self.end_date = end_date
             self.save()
+            utils.log_model_change(self, utils.CHANGE, user)
             print('***************************self after saving: ', self)
         else:
-            print('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
+            print('****************** THERE WERE CONFLICTS SO SENDING THEM BACK TO THE UI ********************')
             # If there are any conflicts, return list of them
             return all_conflicts

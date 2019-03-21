@@ -88,11 +88,19 @@ class RecurringBookingCancel(APIView):
         try:
             # Gets all bookings associated to the indicated booking
             all_associated_booking_instances = associated_recurring_booking.booking_set.all()
-
+            # print('DELETING BOOKINGS')
+            # print('all_associated_booking_instances: ', all_associated_booking_instances)
             for associated_booking in all_associated_booking_instances:
-
                 # If the date of the recurring booking is after the current indicated booking date, try to delete
-                if associated_booking.date > now.date() or (associated_booking.date == today.date
+                # print('associated_booking: ', associated_booking)
+                # print('associated_booking.date > now.date(): ', associated_booking.date > now.date())
+                # print('(associated_booking.date == today.date and associated_booking.start_time > timeout)',
+                # (associated_booking.date == today.date and associated_booking.start_time > timeout))
+                # print('associated_booking.date: ', associated_booking.date)
+                # print('today.date: ', today.date())
+                # print('associated_booking.start_time: ', associated_booking.start_time)
+                # print('timeout: ', timeout)
+                if associated_booking.date > now.date() or (associated_booking.date == today.date()
                                                             and associated_booking.start_time > timeout):
                     associated_booking.delete_booking()
                     utils.log_model_change(booking, utils.DELETION, request.user)
