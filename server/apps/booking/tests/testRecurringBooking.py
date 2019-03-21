@@ -34,7 +34,7 @@ class TestRecurringBooking(TestCase):
         name = "1"
         capacity = 7
         number_of_computers = 2
-        self.room = Room(name=name, capacity=capacity, number_of_computers=number_of_computers)
+        self.room = Room(name=name, capacity=capacity, number_of_computers=number_of_computers, max_booking_duration=24)
         self.room.save()
 
         # Create date and times
@@ -254,5 +254,4 @@ class TestRecurringBooking(TestCase):
 
         except ValidationError:
             self.fail()
-            return
         self.assertTrue(True)
