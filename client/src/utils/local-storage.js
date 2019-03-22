@@ -9,6 +9,10 @@ function saveUser(data) {
   localStorage.setItem('CapstoneReservationUser', JSON.stringify(data));
 }
 
+function deleteUser() {
+  localStorage.removeItem('CapstoneReservationUser');
+}
+
 function getOrientation() {
   if (!localStorage.Orientation) {
     return null;
@@ -21,15 +25,14 @@ function saveOrientation(orientation) {
 }
 
 function checkAdmin() {
-  if (localStorage.getItem('CapstoneReservationUser')) {
-    return JSON.parse(localStorage.getItem('CapstoneReservationUser')).is_superuser;
-  }
-  return false;
+  const user = getUser();
+  return user && user.is_superuser;
 }
 
 const storage = {
   getUser,
   saveUser,
+  deleteUser,
   getOrientation,
   saveOrientation,
   checkAdmin,

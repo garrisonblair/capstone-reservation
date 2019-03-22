@@ -73,7 +73,7 @@ if (user) {
       renderPage();
     })
     .catch(() => {
-      localStorage.removeItem('CapstoneReservationUser');
+      storage.deleteUser();
       renderPage();
     });
 } else {
