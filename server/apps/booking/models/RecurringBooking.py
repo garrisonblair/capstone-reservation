@@ -217,32 +217,29 @@ class RecurringBooking(models.Model):
 
             # Create new bookings if new end date has been extended and add to appropriate lists)
             while current_end_date <= end_date:
-
-                # Sets the next booking in series (Ex. Continued: 7, 14, 21, etc
-                current_end_date = current_end_date + timedelta(days=7)
-
                 # If the newly computed current_end_date is less than the provided end_date, we create a booking
                 if current_end_date < end_date:
-
-                    booking = Booking.objects.create_booking(
-                        booker=self.booker,
-                        group=self.group,
-                        room=self.room,
-                        date=current_end_date,
-                        start_time=booking_start_time,
-                        end_time=booking_end_time,
-                        recurring_booking=self,
-                        confirmed=False
-                    )
-                    print('NOT CURRENTLY REACHING THIS... ')
                     # New bookings should be validated and then appended to either conflicting items list
                     # or non-conflicting items lists
                     try:
+                        booking = Booking.objects.create_booking(
+                            booker=self.booker,
+                            group=self.group,
+                            room=self.room,
+                            date=current_end_date,
+                            start_time=booking_start_time,
+                            end_time=booking_end_time,
+                            recurring_booking=self,
+                            confirmed=False
+                        )
                         booking.validate_model()
                         non_conflicting_bookings.append(booking)
-                    except ValidationError:
-                            all_conflicts.append(booking.date)
-                            continue
+                    except ValidationError as e:
+                        all_conflicts.append(current_end_date)
+                        continue
+                    finally:
+                        # Sets the next booking in series (Ex. Continued: 7, 14, 21, etc
+                        current_end_date = current_end_date + timedelta(days=7)
 
         # Iterates through associated bookings and makes the adjustments of start/end time and start/end date
         for associated_booking in all_associated_booking_instances:
