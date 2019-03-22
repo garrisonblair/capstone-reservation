@@ -9,20 +9,12 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
+import timeUtil from '../../utils/time';
 import './BookingInfoModal.scss';
 
 
 class EditBookingForm extends Component {
-  static generateMinuteOptions(minuteInterval) {
-    const result = [];
-    for (let i = 0; i < 60; i += minuteInterval) {
-      result.push({
-        text: `${i < 10 ? `0${i}` : i}`,
-        value: `${i < 10 ? `0${i}` : i}`,
-      });
-    }
-    return result;
-  }
 
   static generateReservationProfilesOptions(reservationProfiles) {
     const result = reservationProfiles.map(profile => ({ text: profile, value: profile }));
@@ -43,7 +35,7 @@ class EditBookingForm extends Component {
   }
 
   componentDidMount() {
-    const { minuteInterval, reservationProfiles, booking } = this.props;
+    const { minuteInterval, reservationProfiles, booking, minHour, maxHour } = this.props;
     const startTime = booking.start_time;
     const endTime = booking.end_time;
     this.setState({
@@ -51,8 +43,8 @@ class EditBookingForm extends Component {
       startMinute: startTime.substring(3, 5),
       endHour: endTime.substring(0, 2),
       endMinute: endTime.substring(3, 5),
-      hourOptions: this.generateHourOptions(),
-      minuteOptions: EditBookingForm.generateMinuteOptions(minuteInterval),
+      hourOptions: timeUtil.generateHourOptions(minHour, maxHour),
+      minuteOptions: timeUtil.generateMinuteOptions(minuteInterval),
       reservedOptions: EditBookingForm.generateReservationProfilesOptions(reservationProfiles),
     });
   }
@@ -107,7 +99,44 @@ class EditBookingForm extends Component {
       });
   }
 
+  sendPatchCampOn = () => {
+    this.setState({ isLoading: true });
+    const { booking } = this.props;
+    const {
+      endHour,
+      endMinute,
+    } = this.state;
+
+    const data = {
+      end_time: `${endHour}:${endMinute}`,
+    };
+
+    api.updateCampOn(booking.camped_on_booking, data)
+      .then(() => {
+        this.setState({ isLoading: false });
+        this.closeModalWithEditBooking();
+        sweetAlert.fire({
+          position: 'top',
+          type: 'success',
+          title: 'Camp On was successfully updated.',
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      })
+      .catch((error) => {
+        this.setState({ isLoading: false });
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Reservation failed',
+          text: error.response.data,
+        });
+      });
+  }
+
   handleSubmit = () => {
+    const { booking } = this.props;
     // Verify requirements before sending the POST request
     try {
       this.verifyReservationTimes();
@@ -120,8 +149,11 @@ class EditBookingForm extends Component {
       });
       return;
     }
-
-    this.sendPatchBooking();
+    if (booking.isCampOn) {
+      this.sendPatchCampOn();
+    } else {
+      this.sendPatchBooking();
+    }
   }
 
   closeModalWithEditBooking = () => {
@@ -161,18 +193,6 @@ class EditBookingForm extends Component {
     this.setState({ bypassValidation: data.checked });
   }
 
-  generateHourOptions() {
-    const result = [];
-    const { minHour, maxHour } = this.props;
-    for (let i = minHour; i < maxHour; i += 1) {
-      result.push({
-        text: `${i < 10 ? `0${i}` : i}`,
-        value: `${i < 10 ? `0${i}` : i}`,
-      });
-    }
-    return result;
-  }
-
   verifyReservationTimes() {
     const {
       startHour,
@@ -198,70 +218,82 @@ class EditBookingForm extends Component {
       endMinute,
       isLoading,
     } = this.state;
+    const { booking } = this.props;
+    const fromComponent = (
+      <div className="modal-description">
+        <h3 className="header--inline">
+          <span>From  </span>
+        </h3>
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="hh"
+          options={hourOptions}
+          onChange={this.handleStartHourChange}
+          value={startHour}
+        />
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="mm"
+          options={minuteOptions}
+          onChange={this.handleStartMinuteChange}
+          value={startMinute}
+        />
+      </div>
+    );
+
+    const toComponent = (
+      <div className="modal-description">
+        <h3 className="header--inline">
+          <span>To </span>
+        </h3>
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="hh"
+          options={hourOptions}
+          onChange={this.handleEndHourChange}
+          value={endHour}
+        />
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="mm"
+          options={minuteOptions}
+          onChange={this.handleEndMinuteChange}
+          value={endMinute}
+        />
+      </div>
+    );
+
+    const byComponent = (
+      <div className="modal-description">
+        <h3 className="header--inline">
+          <Icon name="user" />
+          {' '}
+          {'by '}
+        </h3>
+        <Dropdown
+          selection
+          compact
+          className="dropdown--fixed-width"
+          placeholder="hh"
+          options={reservedOptions}
+          defaultValue={reservedOptions[0].value}
+        />
+      </div>
+    );
     return (
       <div>
-        <div className="modal-description">
-          <h3 className="header--inline">
-            <span>From  </span>
-          </h3>
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="hh"
-            options={hourOptions}
-            onChange={this.handleStartHourChange}
-            value={startHour}
-          />
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="mm"
-            options={minuteOptions}
-            onChange={this.handleStartMinuteChange}
-            value={startMinute}
-          />
-        </div>
-        <div className="modal-description">
-          <h3 className="header--inline">
-            <span>To </span>
-          </h3>
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="hh"
-            options={hourOptions}
-            onChange={this.handleEndHourChange}
-            value={endHour}
-          />
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="mm"
-            options={minuteOptions}
-            onChange={this.handleEndMinuteChange}
-            value={endMinute}
-          />
-        </div>
-        <div className="modal-description">
-          <h3 className="header--inline">
-            <Icon name="user" />
-            {' '}
-            {'by '}
-          </h3>
-          <Dropdown
-            selection
-            compact
-            className="dropdown--fixed-width"
-            placeholder="hh"
-            options={reservedOptions}
-            defaultValue={reservedOptions[0].value}
-          />
-        </div>
-        <Button content="Edit Booking" loading={isLoading} primary onClick={this.handleSubmit} />
+        {!booking.isCampOn && fromComponent}
+        {toComponent}
+        {!booking.isCampOn && byComponent}
+        <Button content={`Edit ${booking.isCampOn ? 'Camp On' : 'Booking'}`} loading={isLoading} primary onClick={this.handleSubmit} />
         <div className="ui divider" />
       </div>
     );
@@ -282,10 +314,7 @@ class EditBookingForm extends Component {
   }
 
   render() {
-    let user;
-    if (localStorage.CapstoneReservationUser) {
-      user = JSON.parse(localStorage.CapstoneReservationUser);
-    }
+    const user = storage.getUser();
     return (
       <div id="reservation-details-modal">
         {this.renderEditBookingForm()}

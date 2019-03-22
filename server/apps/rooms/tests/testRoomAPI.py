@@ -63,6 +63,8 @@ class RoomAPITest(TestCase):
                 "available": True,
                 "unavailable_start_time": None,
                 "unavailable_end_time": None,
+                "max_booking_duration": None,
+                "max_recurring_booking_duration": None
             },
             {
                 "id": 2,
@@ -72,6 +74,8 @@ class RoomAPITest(TestCase):
                 "available": True,
                 "unavailable_start_time": None,
                 "unavailable_end_time": None,
+                "max_booking_duration": None,
+                "max_recurring_booking_duration": None
             }
         ]
 
@@ -96,6 +100,8 @@ class RoomAPITest(TestCase):
                 "available": True,
                 "unavailable_start_time": None,
                 "unavailable_end_time": None,
+                "max_booking_duration": None,
+                "max_recurring_booking_duration": None
             }
         ]
 

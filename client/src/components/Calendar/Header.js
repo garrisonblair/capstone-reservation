@@ -10,10 +10,7 @@ class Header extends Component {
     name: 'room',
   }
 
-  static getDerivedStateFromProps(props, state) {
-    if (props.headerList === state.headerList && props.type === state.type) {
-      return null;
-    }
+  static getDerivedStateFromProps(props) {
     return {
       headerList: props.headerList,
       headerNum: props.headerList.length,

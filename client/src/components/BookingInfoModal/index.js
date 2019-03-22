@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import {
   Button,
   Icon,
@@ -11,12 +12,12 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import moment from 'moment';
+import api from '../../utils/api';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
 import storage from '../../utils/local-storage';
 import RecurringBookingModal from '../RecurringBookingModal';
 import './BookingInfoModal.scss';
-import api from '../../utils/api';
 
 
 class BookingInfoModal extends Component {
@@ -35,21 +36,15 @@ class BookingInfoModal extends Component {
   }
 
   static checkSameUser(booking) {
-    if (localStorage.getItem('CapstoneReservationUser') && !!booking.booker) {
-      return booking.booker.username === JSON.parse(localStorage.getItem('CapstoneReservationUser')).username;
-    }
-    return false;
-  }
-
-  static checkAdmin() {
-    if (localStorage.getItem('CapstoneReservationUser')) {
-      return JSON.parse(localStorage.getItem('CapstoneReservationUser')).is_superuser;
+    const user = storage.getUser();
+    if (user && !!booking.booker) {
+      return booking.booker.username === user.username;
     }
     return false;
   }
 
   static checkSameUserOrAdmin(booking) {
-    return BookingInfoModal.checkSameUser(booking) || BookingInfoModal.checkAdmin();
+    return BookingInfoModal.checkSameUser(booking) || storage.checkAdmin();
   }
 
   state = {
@@ -106,6 +101,44 @@ class BookingInfoModal extends Component {
   handleOpen = () => this.setState({ show: true });
 
   handleDelete = () => {
+    const { booking } = this.props;
+    if (booking.isCampOn) {
+      this.handleDeleteCampon();
+    } else {
+      this.handleDeleteBooking();
+    }
+  }
+
+  handleDeleteCampon = () => {
+    sweetAlert({
+      title: 'Are you sure?',
+      text: 'Camp On will be deleted.',
+      type: 'warning',
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.value) {
+        const { booking } = this.props;
+        api.deleteCampOn(booking.camped_on_booking)
+          .then(() => {
+            this.closeModalWithAction();
+            sweetAlert({
+              title: 'Success',
+              text: 'Camp On deleted',
+              type: 'success',
+            });
+          })
+          .catch((error) => {
+            sweetAlert(
+              'Cancellation failed',
+              error.response.data,
+              'error',
+            );
+          });
+      }
+    });
+  }
+
+  handleDeleteBooking = () => {
     sweetAlert({
       title: 'Are you sure?',
       text: 'Booking will be deleted.',
@@ -176,6 +209,14 @@ class BookingInfoModal extends Component {
         booking.confirmed = true;
         this.setState({ booking });
       });
+  }
+
+  handleGoToUser = () => {
+    // eslint-disable-next-line react/prop-types
+    const { history } = this.props;
+    const { booking } = this.state;
+    const userId = booking.booker.id;
+    history.push(`/admin/bookers?user=${userId}`);
   }
 
   checkDisplayConfirmation(booking) {
@@ -256,6 +297,9 @@ class BookingInfoModal extends Component {
                   <Icon name="user" />
                   {' '}
                   {booker ? `by ${booking.booker.username}` : ''}
+                  { storage.checkAdmin() ? (
+                    <Icon name="search" link onClick={this.handleGoToUser} />
+                  ) : null}
                 </h3>
               </div>
             </div>
@@ -275,7 +319,7 @@ class BookingInfoModal extends Component {
 
   renderForm(booking) {
     const { selectedRoomName } = this.props;
-    if (!!booking.isCampOn === false && BookingInfoModal.checkSameUserOrAdmin(booking)) {
+    if (BookingInfoModal.checkSameUserOrAdmin(booking)) {
       return (
         <div>
           <EditBookingForm
@@ -302,7 +346,7 @@ class BookingInfoModal extends Component {
   }
 
   renderNote(booking) {
-    if (!BookingInfoModal.checkAdmin()) {
+    if (!storage.checkAdmin()) {
       return (
         <Message negative>
           {booking.note}
@@ -328,7 +372,7 @@ class BookingInfoModal extends Component {
             <Icon name="map marker alternate" />
             Room&nbsp;
             {selectedRoomName}
-            {(booking.display_note && booking.note) || BookingInfoModal.checkAdmin()
+            {(booking.display_note && booking.note) || storage.checkAdmin()
               ? this.renderNote(booking) : null}
           </Modal.Header>
           {this.renderDescription()}
@@ -361,4 +405,4 @@ BookingInfoModal.defaultProps = {
   campons: null,
 };
 
-export default BookingInfoModal;
+export default withRouter(BookingInfoModal);

@@ -63,6 +63,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^3.4.0",
     "chart.js": "^2.7.3",
+    "chartjs-plugin-datalabels": "^0.6.0",
     "moment": "^2.23.0",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
