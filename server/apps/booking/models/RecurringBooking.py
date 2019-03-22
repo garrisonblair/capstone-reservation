@@ -269,7 +269,6 @@ class RecurringBooking(models.Model):
             timeout = (now + settings.booking_edit_lock_timeout).time()
 
             for non_conflicting in non_conflicting_bookings:
-
                 # If the booking was in the past, ignore this one (higher precedence than next case which would delete)
                 if datetime.combine(non_conflicting.date, datetime.min.time()) < today \
                         or (non_conflicting.date == today.date()
@@ -287,6 +286,25 @@ class RecurringBooking(models.Model):
                 else:
                     non_conflicting.save()
                     utils.log_model_change(non_conflicting, utils.CHANGE, user)
+
+            # In case any bookings that were added as conflicts need to be deleted based on date range change
+            for conflicting in all_conflicts:
+                # Gets the booking object for the conflicting date and this RecurringBooking
+                conflicting = Booking.objects.get(recurring_booking=self, date=conflicting)
+                # If the booking was in the past, ignore this one (higher precedence than next case which would delete)
+                if datetime.combine(conflicting.date, datetime.min.time()) < today \
+                        or (conflicting.date == today.date()
+                            and conflicting.start_time > timeout):
+                    pass
+                # Delete bookings which have not started or have passed but are before the new start date
+                elif conflicting.date < start_date:
+                    conflicting.delete()
+                    utils.log_model_change(conflicting, utils.DELETION, user)
+                # Delete bookings which were scheduled to occure after the new end date
+                elif conflicting.date > end_date:
+                    conflicting.delete()
+                    utils.log_model_change(conflicting, utils.DELETION, user)
+
             # Set the new dates / times on the recurring booking and save it (start and end)
             self.booking_start_time = booking_start_time
             self.booking_end_time = booking_end_time
