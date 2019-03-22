@@ -62,48 +62,37 @@ class RecurringBookingCancel(APIView):
 
         # Ensure that recurring booking to be canceled exists
         try:
-            booking = Booking.objects.get(id=pk)
-        except Booking.DoesNotExist as e:
+            recurring_booking = RecurringBooking.objects.get(id=pk)
+        except RecurringBooking.DoesNotExist as e:
             return Response('Booking does not exist.', status=status.HTTP_400_BAD_REQUEST)
 
         # Check user permissions
-        self.check_object_permissions(request, booking.booker)
+        self.check_object_permissions(request, recurring_booking.booker)
 
         # Check if Booking has ended and if it has, disable booking from being canceled
         now = datetime.now()
-        booking_end = booking.end_time
-        timeout = now.time()
         today = datetime.today()
         timeout = (now + settings.booking_edit_lock_timeout).time()
 
-        # Gets the parent recurring booking
-        associated_recurring_booking = booking.recurring_booking
-
         # Checks if current selected recurring booking has started or not yet and handles accordingly
-        if now.date() > booking.date or (now.date() == booking.date and timeout >= booking_end):
+        if now.date() > recurring_booking.end_date \
+                or (now.date() == recurring_booking.end_date and timeout >= recurring_booking.end_time):
             if not request.user.is_superuser:
                 return Response("Selected booking cannot be canceled as booking has started",
                                 status=status.HTTP_400_BAD_REQUEST)
 
         try:
             # Gets all bookings associated to the indicated booking
-            all_associated_booking_instances = associated_recurring_booking.booking_set.all()
-            # print('DELETING BOOKINGS')
-            # print('all_associated_booking_instances: ', all_associated_booking_instances)
+            all_associated_booking_instances = recurring_booking.booking_set.all()
             for associated_booking in all_associated_booking_instances:
+                # print('(associated_booking.date == today.date
+                # and associated_booking.start_time > timeout)', (associated_booking.date == today.date and
+                # associated_booking.start_time > timeout))
                 # If the date of the recurring booking is after the current indicated booking date, try to delete
-                # print('associated_booking: ', associated_booking)
-                # print('associated_booking.date > now.date(): ', associated_booking.date > now.date())
-                # print('(associated_booking.date == today.date and associated_booking.start_time > timeout)',
-                # (associated_booking.date == today.date and associated_booking.start_time > timeout))
-                # print('associated_booking.date: ', associated_booking.date)
-                # print('today.date: ', today.date())
-                # print('associated_booking.start_time: ', associated_booking.start_time)
-                # print('timeout: ', timeout)
                 if associated_booking.date > now.date() or (associated_booking.date == today.date()
                                                             and associated_booking.start_time > timeout):
                     associated_booking.delete_booking()
-                    utils.log_model_change(booking, utils.DELETION, request.user)
+                    utils.log_model_change(recurring_booking, utils.DELETION, request.user)
 
         except (ValidationError, PrivilegeError) as error:
             if isinstance(error, PrivilegeError):
@@ -123,17 +112,16 @@ class RecurringBookingEdit(APIView):
 
     def post(self, request, pk):
 
-        # Ensure that recurring booking to be modifed exists
+        # Ensure that recurring booking to be modified exists
         try:
-            booking = Booking.objects.get(id=pk)
-        except Booking.DoesNotExist:
+            recurring_booking = RecurringBooking.objects.get(id=pk)
+        except RecurringBooking.DoesNotExist:
             return Response("Selected booking to edit does not exist", status=status.HTTP_400_BAD_REQUEST)
 
         # Check user permissions
-        self.check_object_permissions(request, booking.booker)
+        self.check_object_permissions(request, recurring_booking.booker)
 
         now = datetime.now()
-        booking_end = booking.end_time
         timeout = now.time()
         data = request.data
 
@@ -160,17 +148,13 @@ class RecurringBookingEdit(APIView):
         else:
             booking_end_time = None
 
-        # Gets the parent recurring booking
-        associated_recurring_booking = booking.recurring_booking
-
         try:
-            conflicts = associated_recurring_booking.edit_recurring_booking(start_date,
-                                                                            end_date,
-                                                                            booking_start_time,
-                                                                            booking_end_time,
-                                                                            skip_conflicts,
-                                                                            request.user)
-            print('conflicts: ', conflicts)
+            conflicts = recurring_booking.edit_recurring_booking(start_date,
+                                                                 end_date,
+                                                                 booking_start_time,
+                                                                 booking_end_time,
+                                                                 skip_conflicts,
+                                                                 request.user)
             if conflicts is not None:
                 return Response(conflicts, status=status.HTTP_409_CONFLICT)
             else:
