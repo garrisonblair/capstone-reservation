@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Button, Checkbox, Table, Segment, Message,
+  Button, Checkbox, Table, Segment,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
@@ -14,7 +14,7 @@ class EmailSettings extends Component {
     bookingReminder: false,
     whenCamponOnBooking: false,
     isLoading: false,
-    showNeedToSaveMessage: false,
+    disableButton: true,
   }
 
   componentDidMount() {
@@ -56,7 +56,7 @@ class EmailSettings extends Component {
   handleWhenBookingOnToggle = (e, data) => {
     this.setState({
       whenBooking: data.checked,
-      showNeedToSaveMessage: true,
+      disableButton: false,
     });
   }
 
@@ -64,21 +64,21 @@ class EmailSettings extends Component {
   handleWhenInvitationOnToogle = (e, data) => {
     this.setState({
       whenInvitation: data.checked,
-      showNeedToSaveMessage: true,
+      disableButton: false,
     });
   }
 
   handleBookingReminderOnToogle = (e, data) => {
     this.setState({
       bookingReminder: data.checked,
-      showNeedToSaveMessage: true,
+      disableButton: false,
     });
   }
 
   handleWhenCamponOnBookingOnToogle = (e, data) => {
     this.setState({
       whenCamponOnBooking: data.checked,
-      showNeedToSaveMessage: true,
+      disableButton: false,
     });
   }
 
@@ -97,7 +97,7 @@ class EmailSettings extends Component {
         if (r.status === 200) {
           this.sweetAlertSuccess();
           this.setState({
-            showNeedToSaveMessage: false,
+            disableButton: true,
           });
         }
       });
@@ -118,7 +118,7 @@ class EmailSettings extends Component {
     const {
       whenBooking, whenInvitation,
       bookingReminder, whenCamponOnBooking, isLoading,
-      showNeedToSaveMessage,
+      disableButton,
     } = this.state;
     return (
       <div id="email-settings">
@@ -174,13 +174,13 @@ class EmailSettings extends Component {
               </Table.Row>
             </Table.Body>
           </Table>
-          {showNeedToSaveMessage ? (
-            <Message warning>
-              <Message.Header>Don&lsquo;t forget to click on Save button</Message.Header>
-              {/* <p>Visit our registration page, then try again.</p> */}
-            </Message>
-          ) : null}
-          <Button color="blue" onClick={this.handleSaveOnClick}>Save</Button>
+          <Button
+            color="blue"
+            onClick={this.handleSaveOnClick}
+            disabled={disableButton}
+          >
+            Save
+          </Button>
         </Segment>
       </div>
     );
