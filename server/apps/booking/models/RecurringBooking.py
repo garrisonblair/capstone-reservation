@@ -1,5 +1,4 @@
 import json
-import datetime
 
 from django.core.exceptions import ValidationError
 from apps.accounts.exceptions import PrivilegeError
@@ -14,7 +13,7 @@ from apps.util.AbstractBooker import AbstractBooker
 
 from apps.util import utils
 from apps.system_administration.models.system_settings import SystemSettings
-from datetime import timedelta, datetime, date
+from datetime import timedelta, datetime, date, time
 
 
 class RecurringBookingManager(models.Manager):
@@ -101,18 +100,19 @@ class RecurringBooking(models.Model):
             current_date = self.start_date
             bookings = 0
             conflicts = ''
-            while current_date <= self.end_date:
-                if Booking.objects.filter(~Q(id=self.id),
-                                          start_time__lt=self.booking_end_time,
-                                          end_time__gt=self.booking_start_time,
-                                          room=self.room,
-                                          date=current_date).exists():
-                    if self.skip_conflicts:
-                        bookings += 1
-                    else:
-                        conflict = current_date.strftime('%x')
-                        conflicts += ", {}".format(conflict)
-                current_date += timedelta(days=7)
+
+            if is_create:
+                while current_date <= self.end_date:
+                    if Booking.objects.filter(start_time__lt=self.booking_end_time,
+                                              end_time__gt=self.booking_start_time,
+                                              room=self.room,
+                                              date=current_date).exists():
+                        if self.skip_conflicts:
+                            bookings += 1
+                        else:
+                            conflict = current_date.strftime('%x')
+                            conflicts += ", {}".format(conflict)
+                    current_date += timedelta(days=7)
 
             if conflicts != '':
                 raise ValidationError(conflicts[2:])
@@ -169,7 +169,7 @@ class RecurringBooking(models.Model):
         return json.dumps(LogRecurringBookingSerializer(self).data)
 
     def edit_recurring_booking(self,
-                               start_date,
+                               start_date,  # type: date
                                end_date,
                                booking_start_time,
                                booking_end_time,
@@ -182,68 +182,42 @@ class RecurringBooking(models.Model):
         from apps.booking.models.Booking import Booking
 
         now = datetime.now()
-        today = datetime.today()
+        today = datetime.today().date()
         settings = SystemSettings.get_settings()
         timeout = (now + settings.booking_edit_lock_timeout).time()
         all_conflicts = []
         non_conflicting_bookings = []
 
-        # Gets all bookings associated to the indicated booking which happen after current date and current timr
-        all_associated_booking_instances = Booking.objects.all().filter(recurring_booking=self)
-        print('all_associated_booking_instances: ', all_associated_booking_instances)
-
-        earliest_booking = None
-        booking_offset = 0
-
+        # Gets all bookings associated to the indicated booking which happen after current date and current time
+        all_associated_bookings = Booking.objects.all().filter(Q(Q(start_time__gt=now.time()) & Q(date__gt=today)) |
+                                                               Q(Q(recurring_booking=self) &
+                                                               Q(date__gte=today)))
         # Find the earliest booking in the list and use it to determine the offset of booking edits
-        if len(all_associated_booking_instances) > 0:
+        sorted_bookings = all_associated_bookings.order_by("date")
+        sorted_bookings = list(sorted_bookings)
+        bookings_to_delete = list()
 
-            # Sets earliest to the first
-            earliest_booking = all_associated_booking_instances[0]
-            latest_associated_booking_date = all_associated_booking_instances[0].date
+        # remove bookings out of range
+        for booking in sorted_bookings:
+            if booking.date < start_date:
+                bookings_to_delete.append(booking)
+                sorted_bookings.remove(booking)
+            else:
+                break
 
-            # Gets earliest and latest booking dates of associated bookings
-            for booking in all_associated_booking_instances:
-                if booking.date < earliest_booking.date:
-                    earliest_booking = booking
-                if booking.date < latest_associated_booking_date:
-                    latest_associated_booking_date = booking.date
+        # if start_date is in past, move it to now
+        while start_date < today:
+            start_date = add_days_to_date(start_date, 7)
 
-            # This may be positive or negative but will be applied additively anyway
-            delta = earliest_booking.date - start_date
-            booking_offset = delta.days
+        first_booking_new_start = start_date
 
-            # Get current end date and apply offset in case start date has changed (Ex. -2 + 9 = 7)
-            current_end_date = latest_associated_booking_date + timedelta(days=booking_offset)
+        while first_booking_new_start < sorted_bookings[0].date:
+            first_booking_new_start = add_days_to_date(first_booking_new_start, 7)
 
-            # Create new bookings if new end date has been extended and add to appropriate lists)
-            while current_end_date <= end_date:
-                # If the newly computed current_end_date is less than the provided end_date, we create a booking
-                if current_end_date < end_date:
-                    # New bookings should be validated and then appended to either conflicting items list
-                    # or non-conflicting items lists
-                    try:
-                        booking = Booking.objects.create_booking(
-                            booker=self.booker,
-                            group=self.group,
-                            room=self.room,
-                            date=current_end_date,
-                            start_time=booking_start_time,
-                            end_time=booking_end_time,
-                            recurring_booking=self,
-                            confirmed=False
-                        )
-                        booking.validate_model()
-                        non_conflicting_bookings.append(booking)
-                    except ValidationError as e:
-                        all_conflicts.append(current_end_date)
-                        continue
-                    finally:
-                        # Sets the next booking in series (Ex. Continued: 7, 14, 21, etc
-                        current_end_date = current_end_date + timedelta(days=7)
+        booking_offset = (first_booking_new_start - sorted_bookings[0].date).days
 
         # Iterates through associated bookings and makes the adjustments of start/end time and start/end date
-        for associated_booking in all_associated_booking_instances:
+        for associated_booking in sorted_bookings:
             # Will apply offset regardless, but if no offset, will add zero
             if booking_start_time:
                 associated_booking.start_time = booking_start_time
@@ -251,7 +225,8 @@ class RecurringBooking(models.Model):
                 associated_booking.end_time = booking_end_time
             if start_date:
                 # This applies the offset in case the start date has been moved earlier or later
-                associated_booking.date = associated_booking.date + timedelta(days=booking_offset)
+                date_dt = datetime.combine(associated_booking.date, time(0, 0, 0))
+                associated_booking.date = (date_dt + timedelta(days=booking_offset)).date()
             # Previously existing bookings should be validated and then appended to either conflicting items list
             # or non-conflicting items lists
             try:
@@ -261,32 +236,72 @@ class RecurringBooking(models.Model):
                 all_conflicts.append(associated_booking.date)
                 continue
 
-        print('all_conflicts: ', all_conflicts)
+        # create bookings at beginning if necessary
+        while start_date < sorted_bookings[0].date:
+            try:
+
+                booking = Booking.objects.create_booking(
+                    booker=self.booker,
+                    group=self.group,
+                    room=self.room,
+                    date=start_date,
+                    start_time=booking_start_time,
+                    end_time=booking_end_time,
+                    recurring_booking=self,
+                    confirmed=False
+                )
+                booking.validate_model()
+                non_conflicting_bookings.append(booking)
+            except ValidationError as e:
+                all_conflicts.append(booking.date)
+                continue
+            finally:
+                start_date = add_days_to_date(start_date, 7)
+
+        # delete bookings at end if necessary
+        for booking in sorted_bookings:
+            if booking.date > end_date:
+                bookings_to_delete.append(booking)
+                sorted_bookings.remove(booking)
+
+        last_booking = sorted_bookings[len(sorted_bookings) - 1]
+        # Get current end date and apply offset in case start date has changed (Ex. -2 + 9 = 7)
+
+        current_end_date = last_booking.date + timedelta(days=booking_offset + 7)
+
+        # Create new bookings if new end date has been extended and add to appropriate lists)
+        while current_end_date < end_date:
+
+            # New bookings should be validated and then appended to either conflicting items list
+            # or non-conflicting items lists
+            try:
+                booking = Booking.objects.create_booking(
+                    booker=self.booker,
+                    group=self.group,
+                    room=self.room,
+                    date=current_end_date,
+                    start_time=booking_start_time,
+                    end_time=booking_end_time,
+                    recurring_booking=self,
+                    confirmed=False
+                )
+                booking.validate_model()
+                non_conflicting_bookings.append(booking)
+            except ValidationError as e:
+                all_conflicts.append(current_end_date)
+                continue
+            finally:
+                current_end_date = add_days_to_date(current_end_date, 7)
+
         # If there are no conflicts, simply make adjustments accordingly
         if len(all_conflicts) == 0 or skip_conflicts:
-            now = datetime.now()
-            today = datetime.today()
-            settings = SystemSettings.get_settings()
-            timeout = (now + settings.booking_edit_lock_timeout).time()
 
             for non_conflicting in non_conflicting_bookings:
-                # If the booking was in the past, ignore this one (higher precedence than next case which would delete)
-                if datetime.combine(non_conflicting.date, datetime.min.time()) < today \
-                        or (non_conflicting.date == today.date()
-                            and non_conflicting.start_time > timeout):
-                    pass
-                # Delete bookings which have not started or have passed but are before the new start date
-                elif non_conflicting.date < start_date:
-                    non_conflicting.delete()
-                    utils.log_model_change(non_conflicting, utils.DELETION, user)
-                # Delete bookings which were scheduled to occure after the new end date
-                elif non_conflicting.date > end_date:
-                    non_conflicting.delete()
-                    utils.log_model_change(non_conflicting, utils.DELETION, user)
-                # Otherwise should be ok to save modified booking
-                else:
-                    non_conflicting.save()
-                    utils.log_model_change(non_conflicting, utils.CHANGE, user)
+                non_conflicting.save()
+                utils.log_model_change(non_conflicting, utils.CHANGE, user)
+
+            for booking in bookings_to_delete:
+                booking.delete_booking()
 
             # In case any bookings that were added as conflicts need to be deleted based on date range change
             for conflicting in all_conflicts:
@@ -316,3 +331,9 @@ class RecurringBooking(models.Model):
         else:
             # If there are any conflicts, return list of them
             return all_conflicts
+
+
+def add_days_to_date(date, days):
+    date_dt = datetime.combine(date, time(0, 0, 0))
+    date_dt += timedelta(days=days)
+    return date_dt.date()

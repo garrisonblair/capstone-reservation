@@ -121,11 +121,12 @@ class RecurringBookingEdit(APIView):
         # Check user permissions
         self.check_object_permissions(request, recurring_booking.booker)
 
-        now = datetime.now()
-        timeout = now.time()
         data = request.data
 
-        skip_conflicts = request.data['skip_conflicts']
+        if "skip_conflicts" in data:
+            skip_conflicts = data['skip_conflicts']
+        else:
+            skip_conflicts = False
 
         if "start_date" in data:
             start_date = data["start_date"]
@@ -139,14 +140,19 @@ class RecurringBookingEdit(APIView):
             end_date = None
         if "booking_start_time" in data:
             booking_start_time = data["booking_start_time"]
-            booking_start_time = datetime.strptime(booking_start_time, '%H:%M').time()
+            booking_start_time = datetime.strptime(booking_start_time, '%H:%M:%S').time()
         else:
             booking_start_time = None
         if "booking_end_time" in data:
             booking_end_time = data["booking_end_time"]
-            booking_end_time = datetime.strptime(booking_end_time, '%H:%M').time()
+            booking_end_time = datetime.strptime(booking_end_time, '%H:%M:%S').time()
         else:
             booking_end_time = None
+
+        today = datetime.today().date()
+
+        if start_date != recurring_booking.start_date and start_date < today:
+            return Response("Cant move start to the past.", status=status.HTTP_400_BAD_REQUEST)
 
         try:
             conflicts = recurring_booking.edit_recurring_booking(start_date,
