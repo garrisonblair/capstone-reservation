@@ -260,6 +260,7 @@ class RecurringBooking(models.Model):
                 all_conflicts.append(associated_booking.date)
                 continue
 
+        print('all_conflicts: ', all_conflicts)
         # If there are no conflicts, simply make adjustments accordingly
         if len(all_conflicts) == 0 or skip_conflicts:
             now = datetime.now()
@@ -269,27 +270,26 @@ class RecurringBooking(models.Model):
 
             for non_conflicting in non_conflicting_bookings:
 
-                # If the booking was in the past, ignore  this one
+                # If the booking was in the past, ignore this one (higher precedence than next case which would delete)
                 if datetime.combine(non_conflicting.date, datetime.min.time()) < today \
                         or (non_conflicting.date == today.date()
                             and non_conflicting.start_time > timeout):
                     pass
-                # Make sure that the required parameters are given
-                elif start_date is None or end_date is None or booking_start_time is None or booking_end_time is None:
-                    raise ValidationError("Missing required parameters for start/end date and time.")
-                # Make sure bookings are in range and have not ended before deleting. Past bookings checked by filter
+                # Delete bookings which have not started or have passed but are before the new start date
                 elif non_conflicting.date < start_date:
                     non_conflicting.delete()
                     utils.log_model_change(non_conflicting, utils.DELETION, user)
-                #
+                # Delete bookings which were scheduled to occure after the new end date
                 elif non_conflicting.date > end_date:
                     non_conflicting.delete()
                     utils.log_model_change(non_conflicting, utils.DELETION, user)
-                # Otherwise should be ok to save and lot
+                # Otherwise should be ok to save modified booking
                 else:
                     non_conflicting.save()
                     utils.log_model_change(non_conflicting, utils.CHANGE, user)
-            # Set the new dates on the recurring booking and save it
+            # Set the new dates / times on the recurring booking and save it (start and end)
+            self.booking_start_time = booking_start_time
+            self.booking_end_time = booking_end_time
             self.start_date = start_date
             self.end_date = end_date
             self.save()
