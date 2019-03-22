@@ -270,7 +270,7 @@ class RecurringBooking(models.Model):
         current_end_date = last_booking.date + timedelta(days=booking_offset + 7)
 
         # Create new bookings if new end date has been extended and add to appropriate lists)
-        while current_end_date < end_date:
+        while current_end_date <= end_date:
 
             # New bookings should be validated and then appended to either conflicting items list
             # or non-conflicting items lists
