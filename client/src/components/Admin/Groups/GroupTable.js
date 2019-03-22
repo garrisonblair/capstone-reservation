@@ -44,6 +44,9 @@ class GroupsTable extends Component {
   }
 
   syncGroups = () => {
+    // eslint-disable-next-line react/prop-types
+    const { selectedGroup } = this.props;
+
     this.setState({ isLoading: true });
     api.getMyGroups()
       .then((r) => {
@@ -51,6 +54,16 @@ class GroupsTable extends Component {
           groups: r.data,
           isLoading: false,
         });
+        if (selectedGroup) {
+          const group = r.data.find((g) => {
+            // eslint-disable-next-line eqeqeq
+            if (g.id == selectedGroup) {
+              return true;
+            }
+            return false;
+          });
+          this.openModal(group);
+        }
       });
   }
 
@@ -94,7 +107,6 @@ class GroupsTable extends Component {
     const {
       isLoading, groups, columns, showModal, modalContent,
     } = this.state;
-    console.log(groups);
     return (
       <div id="groups-table">
         <Segment loading={isLoading}>
