@@ -235,24 +235,3 @@ class TestRecurringBooking(TestCase):
             self.assertTrue(True)
             return
         self.fail()
-
-    def testRecurringBookingNotTooLongForRoom(self):
-        self.room.max_recurring_booking_duration = 2
-        self.room.save()
-
-        try:
-            RecurringBooking.objects.create_recurring_booking(
-                self.start_date,
-                self.end_date,
-                time(12, 0, 0),
-                time(13, 0, 0),
-                self.room,
-                self.group,
-                self.booker1,
-                True
-            )
-
-        except ValidationError:
-            self.fail()
-            return
-        self.assertTrue(True)

@@ -88,8 +88,8 @@ class ProgramStatisticManager:
         stats["program"] = program
         stats["grad_level"] = grad_level
         stats["num_bookings"] = self.get_num_program_bookings(program, grad_level, start_date, end_date)
-        stats["hours_booked"] = self.get_program_time_booked(program, grad_level, start_date,
-                                                             end_date).total_seconds() / 3600
+        stats["hours_booked"] = round(self.get_program_time_booked(program, grad_level, start_date,
+                                                             end_date).total_seconds() / 3600, 2)
 
         stats["average_bookings_per_day"] = self.get_average_bookings_per_day(program, grad_level, start_date, end_date)
         stats["average_time_booked_per_day"] = self.get_average_time_booked_per_day(
@@ -100,7 +100,7 @@ class ProgramStatisticManager:
         stats = dict()
         stats["category"] = category
         stats["num_bookings"] = self.get_num_category_bookings(category)
-        stats["hours_booked"] = self.get_category_time_booked(category).total_seconds() / 3600
+        stats["hours_booked"] = round(self.get_category_time_booked(category).total_seconds() / 3600, 2)
         return stats
 
     def get_programs(self):
