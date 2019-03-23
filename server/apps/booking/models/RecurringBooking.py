@@ -10,7 +10,7 @@ from apps.rooms.models.Room import Room
 from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
 from apps.util.AbstractBooker import AbstractBooker
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 
 
 class RecurringBookingManager(models.Manager):
@@ -81,21 +81,30 @@ class RecurringBooking(models.Model):
         else:
             from apps.booking.models.Booking import Booking
 
-            date = self.start_date
+            # Check room rule
+            today = date.today()
+            duration = datetime.combine(today, self.booking_end_time) - datetime.combine(today, self.booking_start_time)
+
+            if self.room.max_recurring_booking_duration:
+                if duration.seconds > self.room.max_booking_duration * 60 * 60:
+                    raise ValidationError("This room can't be booked for more than {} hours for recurring bookings."
+                                          .format(self.room.max_booking_duration))
+
+            current_date = self.start_date
             bookings = 0
             conflicts = ''
-            while date <= self.end_date:
+            while current_date <= self.end_date:
                 if Booking.objects.filter(~Q(id=self.id),
                                           start_time__lt=self.booking_end_time,
                                           end_time__gt=self.booking_start_time,
                                           room=self.room,
-                                          date=date).exists():
+                                          date=current_date).exists():
                     if self.skip_conflicts:
                         bookings += 1
                     else:
-                        conflict = date.strftime('%x')
+                        conflict = current_date.strftime('%x')
                         conflicts += ", {}".format(conflict)
-                date += timedelta(days=7)
+                current_date += timedelta(days=7)
 
             if conflicts != '':
                 raise ValidationError(conflicts[2:])

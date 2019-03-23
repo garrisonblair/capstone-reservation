@@ -10,6 +10,7 @@ import {
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
 import './Login.scss';
 
 
@@ -41,7 +42,7 @@ class LoginComponent extends Component {
     api.login(username, password)
       .then(response => response.data)
       .then((data) => {
-        localStorage.setItem('CapstoneReservationUser', JSON.stringify(data));
+        storage.saveUser(data);
         sweetAlert.fire({
           position: 'top',
           type: 'success',

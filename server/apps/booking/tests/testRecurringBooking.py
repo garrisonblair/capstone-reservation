@@ -7,7 +7,7 @@ from apps.booking.models.Booking import Booking
 from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
-from datetime import datetime
+from datetime import datetime, time
 
 
 class TestRecurringBooking(TestCase):
@@ -34,7 +34,7 @@ class TestRecurringBooking(TestCase):
         name = "1"
         capacity = 7
         number_of_computers = 2
-        self.room = Room(name=name, capacity=capacity, number_of_computers=number_of_computers)
+        self.room = Room(name=name, capacity=capacity, number_of_computers=number_of_computers, max_booking_duration=24)
         self.room.save()
 
         # Create date and times
@@ -215,3 +215,44 @@ class TestRecurringBooking(TestCase):
         self.assertEqual(booking3.room, self.room)
         self.assertEqual(booking3.group, self.group)
         self.assertEqual(booking3.booker, self.booker1)
+
+    def testRecurringBookingTooLongForRoom(self):
+        self.room.max_recurring_booking_duration = 2
+        self.room.save()
+
+        try:
+            RecurringBooking.objects.create_recurring_booking(
+                self.start_date,
+                self.end_date,
+                time(12, 0, 0),
+                time(15, 0, 0),
+                self.room,
+                self.group,
+                self.booker1,
+                True
+            )
+        except ValidationError:
+            self.assertTrue(True)
+            return
+        self.fail()
+
+    def testRecurringBookingNotTooLongForRoom(self):
+        self.room.max_recurring_booking_duration = 2
+        self.room.save()
+
+        try:
+            RecurringBooking.objects.create_recurring_booking(
+                self.start_date,
+                self.end_date,
+                time(12, 0, 0),
+                time(13, 0, 0),
+                self.room,
+                self.group,
+                self.booker1,
+                True
+            )
+
+        except ValidationError:
+            self.fail()
+            return
+        self.assertTrue(True)

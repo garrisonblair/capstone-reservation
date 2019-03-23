@@ -29,6 +29,7 @@ import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
 import UserSettings from './components/UserSettings';
 import EmailSettings from './components/UserSettings/EmailSettings';
+import Groups from './components/Admin/Groups';
 
 function renderPage() {
   ReactDOM.render(
@@ -48,6 +49,7 @@ function renderPage() {
           <Route exact path="/admin/bookers" render={() => <Admin menuType="bookers" content={<Bookers />} />} />
           <Route exact path="/admin/privileges" render={() => <Admin menuType="privileges" content={<PrivilegeCategory />} />} />
           <Route exact path="/admin/privileges/requests" render={() => <Admin menuType="group-privilege-request" content={<GroupPrivilegeRequest />} />} />
+          <Route exact path="/admin/groups" render={() => <Admin menuType="groups" content={<Groups />} />} />
           <Route exact path="/admin/rooms" render={() => <Admin menuType="rooms" content={<RoomManager />} />} />
           <Route exact path="/admin/stats" render={() => <Admin menuType="stats" content={<Stats />} />} />
           <Route exact path="/admin/logs" render={() => <Admin menuType="logs" content={<BookingActivity />} />} />
@@ -75,7 +77,7 @@ if (user) {
       renderPage();
     })
     .catch(() => {
-      localStorage.removeItem('CapstoneReservationUser');
+      storage.deleteUser();
       renderPage();
     });
 } else {
