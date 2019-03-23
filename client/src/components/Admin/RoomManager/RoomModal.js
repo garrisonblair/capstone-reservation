@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, Divider,
+  Modal, Button, FormField, Input, Divider, Table, Checkbox,
 } from 'semantic-ui-react';
 import api from '../../../utils/api';
 import './RoomModal.scss';
@@ -12,8 +12,11 @@ class RoomModal extends Component {
     roomID: '',
     roomCapacity: 1,
     numOfComputers: 0,
+    hasTv: false,
+    hasWindows: false,
     maxBookingDuration: '',
     maxRecurringBookingDuration: '',
+    cardReader: '',
   }
 
   componentDidMount() {
@@ -23,7 +26,9 @@ class RoomModal extends Component {
         roomID: selectedRoom.name,
         roomCapacity: selectedRoom.capacity,
         numOfComputers: selectedRoom.number_of_computers,
-        cardReader: null,
+        hasTv: selectedRoom.has_tv,
+        hasWindows: selectedRoom.has_windows,
+        cardReader: '',
         maxBookingDuration: selectedRoom.max_booking_duration,
         maxRecurringBookingDuration: selectedRoom.max_recurring_booking_duration,
       });
@@ -86,6 +91,14 @@ class RoomModal extends Component {
     this.setState({ numOfComputers: event.target.value });
   }
 
+  handleHasTvChange = (event, data) => {
+    this.setState({ hasTv: data.checked });
+  }
+
+  handleHasWindowsChange = (event, data) => {
+    this.setState({ hasWindows: data.checked });
+  }
+
   handleBookingDurationChange = (event) => {
     this.setState({ maxBookingDuration: event.target.value });
   }
@@ -100,6 +113,8 @@ class RoomModal extends Component {
       roomID,
       roomCapacity,
       numOfComputers,
+      hasTv,
+      hasWindows,
     } = this.state;
 
     let {
@@ -125,6 +140,8 @@ class RoomModal extends Component {
         roomID,
         roomCapacity,
         numOfComputers,
+        hasTv,
+        hasWindows,
         maxBookingDuration,
         maxRecurringBookingDuration,
       )
@@ -148,6 +165,8 @@ class RoomModal extends Component {
         roomID,
         roomCapacity,
         numOfComputers,
+        hasTv,
+        hasWindows,
         maxBookingDuration,
         maxRecurringBookingDuration,
       )
@@ -226,12 +245,15 @@ class RoomModal extends Component {
       roomCapacity,
       roomID,
       numOfComputers,
+      hasTv,
+      hasWindows,
       cardReader,
       maxBookingDuration,
       maxRecurringBookingDuration,
     } = this.state;
+
     return (
-      <Modal centered={false} size="tiny" open={show} id="room-modal" onClose={onClose}>
+      <Modal centered={false} size="small" open={show} id="room-modal" onClose={onClose}>
         <Modal.Header>
           Room Details
         </Modal.Header>
@@ -246,37 +268,67 @@ class RoomModal extends Component {
                 disabled={selectedRoom != null}
               />
             </FormField>
-            <h3>Room capacity:</h3>
-            <FormField>
-              <Input
-                size="small"
-                onChange={this.handleRoomCapacityOnChange}
-                value={roomCapacity}
-              />
-            </FormField>
-            <h3>Number of computers:</h3>
-            <FormField>
-              <Input
-                size="small"
-                onChange={this.handleNumberOfComputersOnChange}
-                value={numOfComputers}
-              />
-            </FormField>
+            <Table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h3>Room capacity:</h3>
+                    <FormField>
+                      <Input
+                        size="small"
+                        onChange={this.handleRoomCapacityOnChange}
+                        value={roomCapacity}
+                      />
+                    </FormField>
+                  </td>
+                  <td>
+                    <h3>Number of computers:</h3>
+                    <FormField>
+                      <Input
+                        size="small"
+                        onChange={this.handleNumberOfComputersOnChange}
+                        value={numOfComputers}
+                      />
+                    </FormField>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h3>Has TV:</h3>
+                    <FormField>
+                      <Checkbox
+                        checked={hasTv}
+                        onChange={this.handleHasTvChange}
+                      />
+                    </FormField>
+                  </td>
+                  <td>
+                    <h3>Has Windows:</h3>
+                    <FormField>
+                      <Checkbox
+                        checked={hasWindows}
+                        onChange={this.handleHasWindowsChange}
+                      />
+                    </FormField>
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
             <Divider />
             <h3>Maximum duration of Booking (Hours):</h3>
             <FormField>
               <Input
-                size="tiny"
+                size="small"
                 onChange={this.handleBookingDurationChange}
-                value={maxBookingDuration}
+                value={maxBookingDuration === null ? '' : maxBookingDuration}
               />
             </FormField>
             <h3>Maximum duration of Recurring Bookings (Hours):</h3>
             <FormField>
               <Input
-                size="tiny"
+                size="small"
                 onChange={this.handleRecurringBookingDurationChange}
-                value={maxRecurringBookingDuration}
+                value={maxRecurringBookingDuration === null ? '' : maxRecurringBookingDuration}
               />
             </FormField>
             <Divider />
@@ -302,6 +354,10 @@ RoomModal.propTypes = {
     name: PropTypes.string,
     capacity: PropTypes.number,
     number_of_computers: PropTypes.number,
+    has_tv: PropTypes.bool,
+    has_windows: PropTypes.bool,
+    maxBookingDuration: PropTypes.number,
+    maxRecurringBookingDuration: PropTypes.number,
   }),
 };
 

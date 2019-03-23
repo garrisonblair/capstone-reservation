@@ -165,6 +165,7 @@ class TestCampOn(TestCase):
                                         camped_on_booking=self.booking,
                                         start_time=self.start_time,
                                         end_time=self.end_time)
+
         with mock_datetime(datetime.datetime(self.date.year, self.date.month, self.date.day, 13, 00, 0, 0), datetime):
             camp_on.delete_campon()
 
