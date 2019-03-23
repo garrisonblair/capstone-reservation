@@ -3,6 +3,7 @@ import {
   List, Icon, Button,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import './MemberRowItem.scss';
 
 class MemberRowItem extends Component {
   handleRemoveMember = () => {
@@ -12,10 +13,11 @@ class MemberRowItem extends Component {
 
   render() {
     const { member, isAdmin } = this.props;
+    console.log(member);
     return (
-      <List.Item>
+      <List.Item className="member-row-item">
         <List.Content floated="left">
-          <h3>
+          <h3 className="margin-top">
             <Icon name="user" />
             {member.username}
           </h3>

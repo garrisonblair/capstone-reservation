@@ -100,7 +100,6 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
         return value
 
     def get_error_text(self, param_name):
-
         return self.field_metadata.get(param_name).error_message
 
     def __str__(self):
@@ -109,9 +108,9 @@ class PrivilegeCategory(models.Model, AbstractPrivilege):
             value += " parent category: " + self.parent_category.name
         return value
 
-
-def get_parameter_names():
-    return PrivilegeCategory.field_metadata.keys()
+    @staticmethod
+    def get_parameter_names():
+        return PrivilegeCategory.field_metadata.keys()
 
 
 class PrivilegeMerger(AbstractPrivilege):

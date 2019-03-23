@@ -216,6 +216,14 @@ class BookingInfoModal extends Component {
     history.push(`/admin/bookers?user=${userId}`);
   }
 
+  handleGoToGroup = () => {
+    // eslint-disable-next-line react/prop-types
+    const { history } = this.props;
+    const { booking } = this.state;
+    const groupId = booking.group.id;
+    history.push(`/admin/groups?group=${groupId}`);
+  }
+
   checkDisplayConfirmation(booking) {
     const { settings } = this.state;
 
@@ -296,6 +304,16 @@ class BookingInfoModal extends Component {
                   {booker ? `by ${booking.booker.username}` : ''}
                   { storage.checkAdmin() ? (
                     <Icon name="search" link onClick={this.handleGoToUser} />
+                  ) : null}
+                </h3>
+              </div>
+              <div className="modal-description">
+                <h3 className="header--inline">
+                  <Icon name="users" />
+                  {' '}
+                  {booking.group ? `${booking.group.name}` : ''}
+                  { storage.checkAdmin() ? (
+                    <Icon name="search" link onClick={this.handleGoToGroup} />
                   ) : null}
                 </h3>
               </div>
