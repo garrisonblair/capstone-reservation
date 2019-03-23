@@ -253,7 +253,7 @@ class RoomModal extends Component {
     } = this.state;
 
     return (
-      <Modal centered={false} size="tiny" open={show} id="room-modal" onClose={onClose}>
+      <Modal centered={false} size="small" open={show} id="room-modal" onClose={onClose}>
         <Modal.Header>
           Room Details
         </Modal.Header>
@@ -318,17 +318,17 @@ class RoomModal extends Component {
             <h3>Maximum duration of Booking (Hours):</h3>
             <FormField>
               <Input
-                size="tiny"
+                size="small"
                 onChange={this.handleBookingDurationChange}
-                value={maxBookingDuration}
+                value={maxBookingDuration === null ? '' : maxBookingDuration}
               />
             </FormField>
             <h3>Maximum duration of Recurring Bookings (Hours):</h3>
             <FormField>
               <Input
-                size="tiny"
+                size="small"
                 onChange={this.handleRecurringBookingDurationChange}
-                value={maxRecurringBookingDuration}
+                value={maxRecurringBookingDuration === null ? '' : maxRecurringBookingDuration}
               />
             </FormField>
             <Divider />
