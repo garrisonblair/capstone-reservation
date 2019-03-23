@@ -63,6 +63,7 @@ SideNav.defaultProps = {
     { text: 'Announcements', menu: 'announcements', path: '/admin/announcements' },
     { text: 'Bookers', menu: 'bookers', path: '/admin/bookers' },
     { text: 'Privileges', menu: 'privileges', path: '/admin/privileges' },
+    { text: 'Groups', menu: 'groups', path: '/admin/groups' },
     { text: "Group's Privilege Request", menu: 'group-privilege-request', path: '/admin/privileges/requests' },
     { text: 'Rooms', menu: 'rooms', path: '/admin/rooms' },
     { text: 'Stats', menu: 'stats', path: '/admin/stats' },

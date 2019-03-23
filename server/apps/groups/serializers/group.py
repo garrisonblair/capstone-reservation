@@ -3,6 +3,7 @@ from ..models.Group import Group
 from ..models.PrivilegeRequest import PrivilegeRequest
 
 from apps.accounts.serializers.user import UserSerializer
+from apps.accounts.serializers.privilege_category import ReadPrivilegeCategorySerializer
 
 
 class WriteGroupSerializer(serializers.ModelSerializer):
@@ -11,6 +12,7 @@ class WriteGroupSerializer(serializers.ModelSerializer):
     members = UserSerializer(many=True)
     group_invitations = serializers.SerializerMethodField()
     privilege_request = serializers.SerializerMethodField()
+    privilege_category = ReadPrivilegeCategorySerializer()
 
     def get_group_invitations(self, group):
         from apps.groups.serializers.group_invitation import GroupContextInvitationSerializer
