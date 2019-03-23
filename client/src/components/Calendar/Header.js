@@ -1,8 +1,35 @@
 import React, { Component } from 'react';
+import { Popup } from 'semantic-ui-react';
 import './Calendar.scss';
 
 
 class Header extends Component {
+  static getPopupContent(h) {
+    return (
+      <div>
+        <span>
+          Capacity:&nbsp;
+          {h.capacity}
+        </span>
+        <br />
+        <span>
+          Computers:&nbsp;
+          {h.number_of_computers}
+        </span>
+        <br />
+        <span>
+          TV:&nbsp;
+          {h.has_tv ? 'yes' : 'no'}
+        </span>
+        <br />
+        <span>
+          Windows:&nbsp;
+          {h.windows ? 'yes' : 'no'}
+        </span>
+      </div>
+    );
+  }
+
   state = {
     headerList: [],
     headerNum: 0,
@@ -51,9 +78,19 @@ class Header extends Component {
   render() {
     const { headerList, name } = this.state;
     const header = headerList.map(h => (
-      <div className={`calendar__${name}s__${name}`} style={this.setStyle().cell} key={h.name ? h.name : h}>
-        {h.name ? h.name : h}
-      </div>
+      <Popup
+        key={h.name ? h.name : h}
+        content={Header.getPopupContent(h)}
+        disabled={name !== 'room'}
+        trigger={
+          (
+            <div className={`calendar__${name}s__${name}`} style={this.setStyle().cell} key={h.name ? h.name : h}>
+              {h.name ? h.name : h}
+            </div>
+        )}
+        flowing
+        style={{ padding: '5px' }}
+      />
     ));
 
     return <div className={`calendar__${name}s__wrapper`} style={this.setStyle().wrapper}>{header}</div>;

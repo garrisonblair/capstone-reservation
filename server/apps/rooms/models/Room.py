@@ -8,6 +8,8 @@ class RoomManager(models.Manager):
                     name,
                     capacity,
                     number_of_computers,
+                    has_tv=False,
+                    has_windows=False,
                     available=True,
                     unavailable_start_time=None,
                     unavailable_end_time=None):
@@ -15,6 +17,8 @@ class RoomManager(models.Manager):
             name=name,
             capacity=capacity,
             number_of_computers=number_of_computers,
+            has_tv=has_tv,
+            has_windows=has_windows,
             available=available,
             unavailable_start_time=unavailable_start_time,
             unavailable_end_time=unavailable_end_time,
@@ -27,6 +31,8 @@ class Room(models.Model):
     name = models.CharField(max_length=50, blank=False, unique=True)
     capacity = models.PositiveIntegerField(blank=False, null=False, default=0)
     number_of_computers = models.PositiveIntegerField(blank=False, null=False, default=0)
+    has_tv = models.BooleanField(default=False)
+    has_windows = models.BooleanField(default=False)
     available = models.BooleanField(default=True)
     unavailable_start_time = models.DateTimeField(blank=True, null=True)
     unavailable_end_time = models.DateTimeField(blank=True, null=True)

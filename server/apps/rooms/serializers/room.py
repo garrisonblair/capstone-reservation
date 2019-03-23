@@ -7,13 +7,5 @@ class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Room
-        fields = ('id',
-                  'name',
-                  'capacity',
-                  'number_of_computers',
-                  'available',
-                  'unavailable_start_time',
-                  'unavailable_end_time',
-                  'max_booking_duration',
-                  'max_recurring_booking_duration')
+        fields = '__all__'
         read_only_fields = ('id',)
