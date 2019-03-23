@@ -8,7 +8,10 @@ import './ReservationDetailsModal.scss';
 import toDateInputValue from '../../utils/dateFormatter';
 import Login from '../Login';
 import api from '../../utils/api';
+import storage from '../../utils/local-storage';
+import timeUtil from '../../utils/time';
 import UserSearch from '../ReusableComponents/UserSearch';
+
 
 class ReservationDetailsModal extends Component {
   state = {
@@ -40,8 +43,8 @@ class ReservationDetailsModal extends Component {
       minHour, maxHour, minuteInterval, selectedDate,
     } = this.props;
     this.setState({
-      hourOptions: this.generateHourOptions(minHour, maxHour),
-      minuteOptions: this.generateMinuteOptions(minuteInterval),
+      hourOptions: timeUtil.generateHourOptions(minHour, maxHour),
+      minuteOptions: timeUtil.generateMinuteOptions(minuteInterval),
       inputOption0: {
         startDate: toDateInputValue(selectedDate),
         endDate: toDateInputValue(selectedDate),
@@ -54,7 +57,7 @@ class ReservationDetailsModal extends Component {
     const { ownerValue } = this.state;
     if (nextProps.show) {
       this.ownerCanMakeRecurringBookings(ownerValue);
-      if (localStorage.getItem('CapstoneReservationUser') == null) {
+      if (storage.getUser() == null) {
         this.setState({ showLogin: true });
       } else {
         this.setState({ show });
@@ -88,9 +91,9 @@ class ReservationDetailsModal extends Component {
   }
 
   ownerCanMakeRecurringBookings = (ownerValue) => {
+    const owner = storage.getUser();
     if (ownerValue === 'me') {
-      if (localStorage.CapstoneReservationUser) {
-        const owner = JSON.parse(localStorage.CapstoneReservationUser);
+      if (owner) {
         api.canUserMakeRecurring(owner.id, 'user')
           .then((r) => {
             this.setState({
@@ -107,28 +110,6 @@ class ReservationDetailsModal extends Component {
           });
         });
     }
-  }
-
-  generateHourOptions = (minHour, maxHour) => {
-    const result = [];
-    for (let i = minHour; i < maxHour; i += 1) {
-      result.push({
-        text: `${i}`,
-        value: `${i}`,
-      });
-    }
-    return result;
-  }
-
-  generateMinuteOptions = (minuteInterval) => {
-    const result = [];
-    for (let i = 0; i < 60; i += minuteInterval) {
-      result.push({
-        text: `${i < 10 ? `0${i}` : i}`,
-        value: `${i < 10 ? `0${i}` : i}`,
-      });
-    }
-    return result;
   }
 
   getDefaultEndTime = (startHour, startMinute) => {
@@ -191,7 +172,7 @@ class ReservationDetailsModal extends Component {
   closeLogin = () => {
     const { show } = this.props;
     this.setState({ showLogin: false });
-    if (localStorage.getItem('CapstoneReservationUser') == null) {
+    if (storage.getUser() == null) {
       sweetAlert.fire({
         position: 'top',
         type: 'error',
@@ -282,7 +263,6 @@ class ReservationDetailsModal extends Component {
     const tzoffset = (selectedDate).getTimezoneOffset() * 60000;
     const date = new Date(selectedDate - tzoffset);
     const localISOTime = date.toISOString().slice(0, -1);
-    // const user = JSON.parse(localStorage.CapstoneReservationUser);
     const data = {
       room: selectedRoomId,
       date: localISOTime.slice(0, 10),
@@ -337,7 +317,7 @@ class ReservationDetailsModal extends Component {
       startHour, endHour, startMinute, endMinute, inputOption0, ownerValue,
     } = this.state;
     const { selectedRoomId, selectedRoomName } = this.props;
-    const user = JSON.parse(localStorage.CapstoneReservationUser);
+    const user = storage.getUser();
 
     const data = {
       start_date: inputOption0.startDate,
@@ -556,10 +536,7 @@ class ReservationDetailsModal extends Component {
       canMakeRecurringBookings,
     } = this.state;
     const { selectedDate } = this.props;
-    let user;
-    if (localStorage.CapstoneReservationUser) {
-      user = JSON.parse(localStorage.CapstoneReservationUser);
-    }
+    const user = storage.getUser();
 
     return (
       <Segment loading={isLoading}>

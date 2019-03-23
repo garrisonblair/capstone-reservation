@@ -10,6 +10,7 @@ from rest_framework.test import force_authenticate
 from apps.accounts.models.User import User
 from apps.rooms.models.Room import Room
 from apps.booking.models.Booking import Booking
+from apps.rooms.serializers.room import RoomSerializer
 
 from apps.rooms.views.room import RoomList
 from apps.rooms.views.room import RoomCreate
@@ -54,56 +55,8 @@ class RoomAPITest(TestCase):
         request = self.factory.get("/rooms")
 
         response = RoomList.as_view()(request)
-        response_data = [
-            {
-                "id": 1,
-                "name": "H833-17",
-                "capacity": 4,
-                "number_of_computers": 1,
-                "available": True,
-                "unavailable_start_time": None,
-                "unavailable_end_time": None,
-                "max_booking_duration": None,
-                "max_recurring_booking_duration": None
-            },
-            {
-                "id": 2,
-                "name": "H833-03",
-                "capacity": 8,
-                "number_of_computers": 2,
-                "available": True,
-                "unavailable_start_time": None,
-                "unavailable_end_time": None,
-                "max_booking_duration": None,
-                "max_recurring_booking_duration": None
-            }
-        ]
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, response_data)
-
-    def testGetRoomsAtDateTime(self):
-        request = self.factory.get("/rooms",
-                                   {
-                                       "date": '2018-10-22',
-                                       "start_time": '11:00',
-                                       "end_time": '17:00'
-                                   }, format="json")
-
-        response = RoomList.as_view()(request)
-        response_data = [
-            {
-                "id": 2,
-                "name": "H833-03",
-                "capacity": 8,
-                "number_of_computers": 2,
-                "available": True,
-                "unavailable_start_time": None,
-                "unavailable_end_time": None,
-                "max_booking_duration": None,
-                "max_recurring_booking_duration": None
-            }
-        ]
+        rooms = Room.objects.all()
+        response_data = RoomSerializer(rooms, many=True).data
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, response_data)

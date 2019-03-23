@@ -132,6 +132,8 @@ class TestRoomStatisticManager(TestCase):
                  'room': {'available': True,
                           'number_of_computers': 2,
                           'capacity': 7,
+                          'has_tv': False,
+                          'has_windows': False,
                           'name': '1',
                           'id': 1,
                           'unavailable_start_time': None,
