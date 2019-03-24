@@ -1,5 +1,5 @@
 import unittest
-
+import datetime
 from collections import OrderedDict
 
 from django.test.testcases import TestCase
@@ -46,7 +46,14 @@ class GroupAPITest(TestCase):
         self.group2.save()
 
         self.category = PrivilegeCategory(is_default=True)
-        self.category.save(bypass_validation=True)
+        self.category.max_days_until_booking = 2
+        self.category.can_make_recurring_booking = False
+        self.category.max_num_days_with_bookings = 5
+        self.category.max_num_bookings_for_date = 2
+        self.category.max_recurring_bookings = 0
+        self.category.booking_start_time = datetime.time(8, 0)
+        self.category.booking_end_time = datetime.time(23, 0)
+        self.category.save()
 
     def testGetGroups(self):
         request = self.factory.get("/groups")

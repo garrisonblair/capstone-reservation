@@ -115,7 +115,7 @@ class BookingInfoModal extends Component {
     }).then((result) => {
       if (result.value) {
         const { booking } = this.props;
-        api.deleteCampOn(booking.camped_on_booking)
+        api.deleteCampOn(booking.camp_on_id)
           .then(() => {
             this.closeModalWithAction();
             sweetAlert({
@@ -308,14 +308,16 @@ class BookingInfoModal extends Component {
                 </h3>
               </div>
               <div className="modal-description">
-                <h3 className="header--inline">
-                  <Icon name="users" />
-                  {' '}
-                  {booking.group ? `${booking.group.name}` : ''}
-                  { storage.checkAdmin() ? (
-                    <Icon name="search" link onClick={this.handleGoToGroup} />
-                  ) : null}
-                </h3>
+                {booking.group ? (
+                  <h3 className="header--inline">
+                    <Icon name="users" />
+                    {' '}
+                    {booking.group ? `${booking.group.name}` : ''}
+                    { storage.checkAdmin() ? (
+                      <Icon name="search" link onClick={this.handleGoToGroup} />
+                    ) : null}
+                  </h3>
+                ) : null}
               </div>
             </div>
             {campons == null || campons.length === 0 ? null : this.renderCampons()}

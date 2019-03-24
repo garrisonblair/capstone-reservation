@@ -20,7 +20,6 @@ class PrivilegeDetailsModal extends Component {
   render() {
     const { show, onClose, privilege } = this.props;
     if (privilege.name) {
-      console.log(privilege);
       return (
         <Modal className="privilege-details-modal" open={show} onClose={onClose}>
           <Header>
@@ -61,8 +60,13 @@ class PrivilegeDetailsModal extends Component {
             </p>
             <p>
               <strong> Recurring Booking Permission: </strong>
-              {privilege.booking_start_time !== null ? this.renderBoolean(privilege.can_make_recurring_booking)
-                : this.renderBoolean(privilege.inherited_values.can_make_recurring_booking, true)}
+              {
+                privilege.booking_start_time !== null ? this.renderBoolean(
+                  privilege.can_make_recurring_booking,
+                ) : this.renderBoolean(
+                  privilege.inherited_values.can_make_recurring_booking, true,
+                )
+              }
             </p>
             <p>
               <strong> Booking Start Time: </strong>

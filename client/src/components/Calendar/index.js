@@ -224,6 +224,7 @@ class Calendar extends Component {
           id: `camp${campOn.camped_on_booking}-${index}`,
           isCampOn: true,
           camped_on_booking: campOn.camped_on_booking,
+          camp_on_id: campOn.id,
         });
       });
       campOnBookings.forEach((campOnBooking) => {
