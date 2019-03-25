@@ -21,16 +21,16 @@ class EmailSettings(models.Model):
         return this
 
     def validate_model(self):
-        if(not isinstance(self.when_booking, bool)):
+        if not isinstance(self.when_booking, bool):
             raise ValidationError("'when_booking' must be a boolean")
 
-        if(not isinstance(self.when_invitation, bool)):
+        if not isinstance(self.when_invitation, bool):
             raise ValidationError("'when_invitation' must be a boolean")
 
-        if(not isinstance(self.booking_reminder, bool)):
+        if not isinstance(self.booking_reminder, bool):
             raise ValidationError("'booking_reminder' must be a boolean")
 
-        if(not isinstance(self.when_camp_on_booking, bool)):
+        if not isinstance(self.when_camp_on_booking, bool):
             raise ValidationError("'when_camp_on_booking' must be a boolean")
 
     def update(self, data):

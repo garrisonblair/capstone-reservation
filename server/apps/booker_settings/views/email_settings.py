@@ -10,12 +10,13 @@ class EmailSettings(APIView):
     def post(self, request):
         data = request.data
 
-        email_settings = EmailSettingsModel.objects.get(booker=request.user)
-
         try:
+            email_settings = EmailSettingsModel.objects.get(booker=request.user)
             email_settings.update(data)
         except ValidationError as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
+        except EmailSettingsModel.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_200_OK)
 

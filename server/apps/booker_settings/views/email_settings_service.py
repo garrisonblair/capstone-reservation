@@ -17,11 +17,13 @@ class EmailSettingsService(APIView):
         data = request.data
         token = request.META['HTTP_AUTHORIZATION']
         user = getUserFromToken(token)
-        email_settings = EmailSettingsModel.objects.get(booker=user)
         try:
+            email_settings = EmailSettingsModel.objects.get(booker=user)
             email_settings.update(data)
         except ValidationError as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
+        except EmailSettingsModel.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_200_OK)
 

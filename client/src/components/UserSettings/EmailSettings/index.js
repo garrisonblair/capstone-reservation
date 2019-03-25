@@ -48,7 +48,6 @@ class EmailSettings extends Component {
       })
       .catch((e) => {
         const { data } = e.response;
-        console.log(data);
         sweetAlert('Blocked', data.detail, 'error');
       });
   }
@@ -148,7 +147,7 @@ class EmailSettings extends Component {
                   <Checkbox
                     toggle
                     checked={whenInvitation}
-                    onChange={this.handleInvitationOnToogle}
+                    onChange={this.handleWhenInvitationOnToogle}
                   />
                 </Table.Cell>
               </Table.Row>
