@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User as DjangoUser
 from django.conf import settings
 
-from apps.util.Jwt import generateToken
+from apps.util.Jwt import generate_token
 
 import apps.accounts.tasks as tasks
 
@@ -35,7 +35,7 @@ class User(DjangoUser, AbstractBooker):
             recipient_list.append(self.bookerprofile.secondary_email)
         else:
             recipient_list.append(self.email)
-        token = generateToken(self)
-        message = message + "\n\n\nClick on link below to unsubscribe from emails\n" + "{}://{}/#/email_settings/{}".format(settings.ROOT_PROTOCOL,settings.ROOT_URL, token)
+        token = generate_token(self)
+        message = message + "\n\n\nClick on link below to unsubscribe from emails\n" + "{}://{}/#/email_settings/{}"\
+            .format(settings.ROOT_PROTOCOL, settings.ROOT_URL, token)
         tasks.send_email.delay(subject, message, recipient_list, ics_data)
-

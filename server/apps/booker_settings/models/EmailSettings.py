@@ -10,7 +10,6 @@ class EmailSettings(models.Model):
     booking_reminder = models.BooleanField(default=True)
     when_camp_on_booking = models.BooleanField(default=True)
 
-
     def __str__(self):
         return 'Booker ID:{}, when_booking: {}'.format(self.booker.id, self.when_booking)
 
@@ -47,5 +46,3 @@ class EmailSettings(models.Model):
             self.when_camp_on_booking = data["when_camp_on_booking"]
 
         self.save()
-
-

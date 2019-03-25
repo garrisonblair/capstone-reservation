@@ -103,8 +103,8 @@ class InviteMembers(APIView):
                 message = "Hi {},\n" \
                           "You have been invited to the group {} by {}." \
                           "Please go to your profile to accept the invitation.".format(user.first_name,
-                                                                                   group.name,
-                                                                                   group.owner.username)
+                                                                                       group.name,
+                                                                                       group.owner.username)
                 user.send_email(subject, message)
 
         serializer = ReadGroupInvitationSerializer(created_invitations, many=True)

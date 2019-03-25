@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
 
-from apps.util.Jwt import getUserFromToken, generateToken
+from apps.util.Jwt import generate_token
 from apps.booker_settings.models.EmailSettings import EmailSettings
 from apps.booker_settings.views.email_settings_service import EmailSettingsService as EmailSettingsServiceView
 
@@ -18,11 +18,10 @@ class EmailSettingsAPITest(TestCase):
         self.booker.save()
         email_settings = EmailSettings(booker=self.booker)
         email_settings.save()
-        self.token = generateToken(self.booker)
+        self.token = generate_token(self.booker)
 
-
-    def testGetEmailSettingsSuccesful(self):
-        token = generateToken(self.booker)
+    def testGetEmailSettingsSuccessful(self):
+        token = generate_token(self.booker)
         request = self.factory.get('/email_settings_service', HTTP_AUTHORIZATION=token)
         response = EmailSettingsServiceView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -54,9 +53,9 @@ class EmailSettingsAPITest(TestCase):
         response = EmailSettingsServiceView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def testPostEmailSettingsSucessful(self):
-        request = self.factory.post('email_settings',{
-                                        "when_booking":False,
+    def testPostEmailSettingsSuccessful(self):
+        request = self.factory.post('email_settings', {
+                                        "when_booking": False,
                                         "when_invitation": False,
                                         "booking_reminder": False,
                                         "when_camp_on_booking": False
@@ -72,8 +71,8 @@ class EmailSettingsAPITest(TestCase):
         self.assertEqual(False, current_email_settings.when_camp_on_booking)
 
     def testPostEmailSettingsWrongData(self):
-        request = self.factory.post('email_settings',{
-                                        "when_booking":1,
+        request = self.factory.post('email_settings', {
+                                        "when_booking": 1,
                                         "when_invitation": False,
                                         "booking_reminder": False,
                                         "when_camp_on_booking": False
@@ -81,8 +80,8 @@ class EmailSettingsAPITest(TestCase):
         response = EmailSettingsServiceView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        request = self.factory.post('email_settings',{
-                                        "when_booking":False,
+        request = self.factory.post('email_settings', {
+                                        "when_booking": False,
                                         "when_invitation": 1,
                                         "booking_reminder": False,
                                         "when_camp_on_booking": False
@@ -90,8 +89,8 @@ class EmailSettingsAPITest(TestCase):
         response = EmailSettingsServiceView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        request = self.factory.post('email_settings',{
-                                        "when_booking":False,
+        request = self.factory.post('email_settings', {
+                                        "when_booking": False,
                                         "when_invitation": False,
                                         "booking_reminder": 1,
                                         "when_camp_on_booking": False
@@ -99,8 +98,8 @@ class EmailSettingsAPITest(TestCase):
         response = EmailSettingsServiceView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        request = self.factory.post('email_settings',{
-                                        "when_booking":False,
+        request = self.factory.post('email_settings', {
+                                        "when_booking": False,
                                         "when_invitation": False,
                                         "booking_reminder": False,
                                         "when_camp_on_booking": 1

@@ -1,17 +1,16 @@
 import jwt
-import json
 import time
 import os
 from rest_framework.exceptions import PermissionDenied
 from django.conf import settings
 
 
-def generateToken(user):
+def generate_token(user):
     now = int(time.time())
-    token={
-        "iss": "{}://{}".format(settings.ROOT_PROTOCOL,settings.ROOT_URL),
+    token = {
+        "iss": "{}://{}".format(settings.ROOT_PROTOCOL, settings.ROOT_URL),
         "iat": now,
-        "exp": now + 86400 , # 1 day
+        "exp": now + 86400,  # 1 day
         "user_id": user.id
     }
     secret_key = os.environ.get('SECRET_KEY')
@@ -20,7 +19,7 @@ def generateToken(user):
     return token
 
 
-def getUserFromToken(token):
+def get_user_from_token(token):
     from apps.accounts.models.User import User
     secret_key = os.environ.get('SECRET_KEY')
     try:

@@ -33,8 +33,8 @@ class EmailSettingsAPITest(TestCase):
         self.assertEqual(True, "booker" in returned_email_settings)
 
     def testPostEmailSettingsSuccessful(self):
-        request = self.factory.post('email_settings',{
-                                        "when_booking":False,
+        request = self.factory.post('email_settings', {
+                                        "when_booking": False,
                                         "when_invitation": False,
                                         "booking_reminder": False,
                                         "when_camp_on_booking": False
@@ -50,8 +50,8 @@ class EmailSettingsAPITest(TestCase):
         self.assertEqual(False, current_email_settings.when_camp_on_booking)
 
     def testPostEmailSettingsFailure(self):
-        request = self.factory.post('email_settings',{
-                                        "when_booking":1,
+        request = self.factory.post('email_settings', {
+                                        "when_booking": 1,
                                         "when_invitation": False,
                                         "booking_reminder": False,
                                         "when_camp_on_booking": False
@@ -60,8 +60,8 @@ class EmailSettingsAPITest(TestCase):
         response = EmailSettingsView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        request = self.factory.post('email_settings',{
-                                        "when_booking":False,
+        request = self.factory.post('email_settings', {
+                                        "when_booking": False,
                                         "when_invitation": 2,
                                         "booking_reminder": False,
                                         "when_camp_on_booking": False
@@ -70,8 +70,8 @@ class EmailSettingsAPITest(TestCase):
         response = EmailSettingsView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        request = self.factory.post('email_settings',{
-                                        "when_booking":False,
+        request = self.factory.post('email_settings', {
+                                        "when_booking": False,
                                         "when_invitation": False,
                                         "booking_reminder": 1,
                                         "when_camp_on_booking": False
@@ -80,8 +80,8 @@ class EmailSettingsAPITest(TestCase):
         response = EmailSettingsView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        request = self.factory.post('email_settings',{
-                                        "when_booking":False,
+        request = self.factory.post('email_settings', {
+                                        "when_booking": False,
                                         "when_invitation": False,
                                         "booking_reminder": False,
                                         "when_camp_on_booking": 2
