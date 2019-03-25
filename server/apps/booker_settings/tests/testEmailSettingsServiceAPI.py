@@ -106,5 +106,3 @@ class EmailSettingsAPITest(TestCase):
                                         }, format="json", HTTP_AUTHORIZATION=self.token)
         response = EmailSettingsServiceView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-
