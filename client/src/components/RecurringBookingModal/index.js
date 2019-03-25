@@ -57,6 +57,10 @@ class RecurringBookingModal extends Component {
   }
 
   handleEditButton = () => {
+    this.sendEditRequest(null);
+  }
+
+  sendEditRequest = (skipConflicts) => {
     const {
       room,
       start_date,
@@ -71,30 +75,54 @@ class RecurringBookingModal extends Component {
       end_date: end_date.format('YYYY-MM-DD'),
       booking_start_time,
       booking_end_time,
+      skip_conflicts: skipConflicts,
     };
     this.setState({ isLoading: true });
     api.editRecurringBooking(data, booking.id)
-      .then(() => {
+      .then((response) => {
         this.setState({ isLoading: false });
-        this.closeModal();
+        let conflictsMessage = '';
+        if (response.data.length > 0) {
+          conflictsMessage = 'Except for:<ul>';
+          // eslint-disable-next-line no-return-assign
+          response.data.map(date => conflictsMessage = `${conflictsMessage}<li>${date}</li>`);
+          conflictsMessage = `${conflictsMessage}</ul>`;
+        }
         sweetAlert.fire({
           position: 'top',
           type: 'success',
-          title: 'Recurring booking was successfully updated.',
-          toast: true,
-          showConfirmButton: false,
-          timer: 2000,
-        });
+          html: `Recurring booking was updated.<br/><div id="exception-dates">${conflictsMessage}</div>`,
+        })
+          .then(() => {
+            this.closeModal();
+          });
       })
       .catch((error) => {
         this.setState({ isLoading: false });
 
-        sweetAlert.fire({
-          position: 'top',
-          type: 'error',
-          title: 'Edit failed',
-          text: error.response.data,
-        });
+        if (error.status === 409) {
+          sweetAlert.fire({
+            position: 'top',
+            type: 'warning',
+            title: 'Conflicts detected',
+            html: `There are booking overlapping with other reservations. Skip edit on these dates or cancel edit?<br/><br/><div><center>${error.data}</center></div>`,
+            confirmButtonText: 'Skip',
+            cancelButtonText: 'Cancel',
+            showCancelButton: true,
+          })
+            .then((r) => {
+              if (r.value) {
+                this.sendEditRequest(true);
+              }
+            });
+        } else {
+          sweetAlert.fire({
+            position: 'top',
+            type: 'error',
+            title: 'Edit failed',
+            text: error.data,
+          });
+        }
       });
   }
 
