@@ -165,8 +165,9 @@ class TestCampOn(TestCase):
                                         camped_on_booking=self.booking,
                                         start_time=self.start_time,
                                         end_time=self.end_time)
-        with mock_datetime(datetime.datetime(self.date.year, self.date.month, self.date.day, 12, 30, 0, 0), datetime):
-            camp_on.delete(time(13, 0))
+
+        with mock_datetime(datetime.datetime(self.date.year, self.date.month, self.date.day, 13, 00, 0, 0), datetime):
+            camp_on.delete_campon()
 
         edited_campon = CampOn.objects.get(id=camp_on.id)
-        self.assertEqual(edited_campon, time(13, 0))
+        self.assertEqual(edited_campon.end_time, time(13, 0))
