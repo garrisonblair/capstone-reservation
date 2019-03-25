@@ -99,13 +99,14 @@ class RecurringBookingModal extends Component {
       })
       .catch((error) => {
         this.setState({ isLoading: false });
+        const { response } = error;
 
-        if (error.status === 409) {
+        if (response.status === 409) {
           sweetAlert.fire({
             position: 'top',
             type: 'warning',
             title: 'Conflicts detected',
-            html: `There are booking overlapping with other reservations. Skip edit on these dates or cancel edit?<br/><br/><div><center>${error.data}</center></div>`,
+            html: `There are booking overlapping with other reservations.<br/>Skip edit on these dates or cancel edit?<br/><br/><div><center>${response.data}</center></div>`,
             confirmButtonText: 'Skip',
             cancelButtonText: 'Cancel',
             showCancelButton: true,
@@ -120,7 +121,7 @@ class RecurringBookingModal extends Component {
             position: 'top',
             type: 'error',
             title: 'Edit failed',
-            text: error.data,
+            text: response.data,
           });
         }
       });
