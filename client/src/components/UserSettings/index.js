@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Navigation from '../Navigation';
 import EmailSettings from './EmailSettings';
+import PersonalSettings from './PersonalSettings';
 
 
 class UserSettings extends Component {
@@ -19,6 +20,7 @@ class UserSettings extends Component {
         <br />
         <br />
         <EmailSettings />
+        <PersonalSettings />
       </div>
     );
   }
