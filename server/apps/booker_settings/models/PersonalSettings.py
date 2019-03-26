@@ -7,9 +7,9 @@ import re
 class PersonalSettings(models.Model):
     booker = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     schedule_vertical = models.BooleanField(default=True)
-    booking_color = models.CharField(default="#1F5465")
-    campon_color = models.CharField(default="#82220E")
-    passed_booking_color = models.CharField(default="#7F7F7F")
+    booking_color = models.CharField(default="#1F5465", max_length=7, blank=False, null=False)
+    campon_color = models.CharField(default="#82220E", max_length=7, blank=False, null=False)
+    passed_booking_color = models.CharField(default="#7F7F7F", max_length=7, blank=False, null=False)
 
     def save(self, *args, **kwargs):
 
