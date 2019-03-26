@@ -24,20 +24,24 @@ class RoomModal extends Component {
   componentDidMount() {
     const { selectedRoom } = this.props;
     if (selectedRoom != null) {
-      const uStart = selectedRoom.unavailable_start_time === null ? null : moment(selectedRoom.unavailable_start_time, 'YYYY-MM-DD HH:mm');
-      const uEnd = selectedRoom.unavailable_end_time === null ? null : moment(selectedRoom.unavailable_end_time, 'YYYY-MM-DD HH:mm');
+      const uStart = selectedRoom.unavailable_start_time ? null : moment(selectedRoom.unavailable_start_time, 'YYYY-MM-DD HH:mm');
+      const uEnd = selectedRoom.unavailable_end_time ? null : moment(selectedRoom.unavailable_end_time, 'YYYY-MM-DD HH:mm');
       this.setState({
         roomID: selectedRoom.name,
         roomCapacity: selectedRoom.capacity,
         numOfComputers: selectedRoom.number_of_computers,
         cardReader: null,
-        unavailableStart: uStart === null ? moment() : uStart,
-        unavailableEnd: uEnd === null ? moment() : uEnd,
-        unavailableStartTime: uStart === null ? '' : uStart.format('HH:mm'),
-        unavailableEndTime: uEnd === null ? '' : uEnd.format('HH:mm'),
+        unavailableStart: uStart ? moment() : uStart,
+        unavailableEnd: uEnd ? moment() : uEnd,
+        unavailableStartTime: uStart ? '' : uStart.format('HH:mm'),
+        unavailableEndTime: uEnd ? '' : uEnd.format('HH:mm'),
       });
     }
 
+    api.getRoomAvailabilities()
+      .then((r) => {
+        console.log(r.data);
+      });
 
     api.getCardReaders(selectedRoom.id)
       .then((response) => {
@@ -46,6 +50,48 @@ class RoomModal extends Component {
             cardReader: response.data[0],
           });
         }
+      });
+  }
+
+  addUnavailability = () => {
+    const {
+      unavailableStart,
+      unavailableEnd,
+      unavailableStartTime,
+      unavailableEndTime,
+    } = this.state;
+    const { selectedRoom } = this.props;
+    const unavailabilityStart = unavailableStartTime === '' ? null : `${unavailableStart.format('YYYY-MM-DD')} ${unavailableStartTime}`;
+    const unavailabilityEnd = unavailableEndTime === '' ? null : `${unavailableEnd.format('YYYY-MM-DD')} ${unavailableEndTime}`;
+    // Leaves the method if verification doesn't succeed
+    if (!this.verifyModalForm()) {
+      return;
+    }
+    const data = {
+      room: selectedRoom.id,
+      start_time: unavailabilityStart,
+      end_time: unavailabilityEnd,
+    };
+    api.addRoomAvailability(data)
+      .then((response) => {
+        if (response.status === 201) {
+          sweetAlert.fire({
+            position: 'top',
+            type: 'success',
+            title: 'Time added',
+            toast: true,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      })
+      .catch((error) => {
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Operation failed',
+          text: error.response.data,
+        });
       });
   }
 
@@ -223,6 +269,7 @@ class RoomModal extends Component {
         End time:&nbsp;
         <input type="time" id="end" defaultValue={unavailableEndTime} onChange={e => this.handleTime(e)} />
         <br />
+        <Button primary content="Add" onClick={() => this.addUnavailability()} />
       </FormField>
     );
   }
