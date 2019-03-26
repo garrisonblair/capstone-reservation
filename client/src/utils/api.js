@@ -208,15 +208,13 @@ function createRoom(name, capacity, numberOfComputers) {
 }
 
 function updateRoom(
-  id, name, capacity, numberOfComputers, unavailableStartTime, unavailableEndTime,
+  id, name, capacity, numberOfComputers,
 ) {
   const headers = getTokenHeader();
   const data = {
     name,
     capacity,
     number_of_computers: numberOfComputers,
-    unavailable_start_time: unavailableStartTime,
-    unavailable_end_time: unavailableEndTime,
   };
   return axios({
     method: 'PATCH',
@@ -235,6 +233,41 @@ function deleteRoom(id) {
   return axios({
     method: 'DELETE',
     url: `${settings.API_ROOT}/room/${id}`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function getRoomAvailabilities() {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/room_unavailabilities`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function addRoomAvailability(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/room_unavailability`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function deleteRoomAvailability(id) {
+  const headers = getTokenHeader();
+  const data = {
+    id,
+  };
+  return axios({
+    method: 'DELETE',
+    url: `${settings.API_ROOT}/room_unavailability/${id}`,
     headers,
     data,
     withCredentials: true,
@@ -814,6 +847,9 @@ const api = {
   createRoom,
   updateRoom,
   deleteRoom,
+  getRoomAvailabilities,
+  addRoomAvailability,
+  deleteRoomAvailability,
   getCardReaders,
   createCardReader,
   deleteCardReader,
