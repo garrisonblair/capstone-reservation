@@ -54,7 +54,7 @@ class TestPersonalSettings(TestCase):
                                    campon_color="#000000",
                                    passed_booking_color="#000000")
 
-        with self.assertRaises(ValidationError) as ex:
+        with self.assertRaises(ValidationError):
             setting.save()
 
     def testPersonalSettingCreateFailedWithCamponColor(self):
@@ -64,7 +64,7 @@ class TestPersonalSettings(TestCase):
                                    campon_color="#",
                                    passed_booking_color="#000000")
 
-        with self.assertRaises(ValidationError) as ex:
+        with self.assertRaises(ValidationError):
             setting.save()
 
     def testPersonalSettingCreateFailedWithCamponColor(self):
@@ -74,5 +74,5 @@ class TestPersonalSettings(TestCase):
                                    campon_color="#000000",
                                    passed_booking_color="#")
 
-        with self.assertRaises(ValidationError) as ex:
+        with self.assertRaises(ValidationError):
             setting.save()
