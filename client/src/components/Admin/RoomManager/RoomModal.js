@@ -39,10 +39,7 @@ class RoomModal extends Component {
       });
     }
 
-    api.getRoomAvailabilities(selectedRoom ? selectedRoom.id : null)
-      .then((r) => {
-        this.setState({ availabilities: r.data });
-      });
+    this.getUnavailabilities();
 
     api.getCardReaders(selectedRoom ? selectedRoom.id : null)
       .then((response) => {
@@ -51,6 +48,14 @@ class RoomModal extends Component {
             cardReader: response.data[0],
           });
         }
+      });
+  }
+
+  getUnavailabilities = () => {
+    const { selectedRoom } = this.props;
+    api.getRoomAvailabilities(selectedRoom ? selectedRoom.id : null)
+      .then((r) => {
+        this.setState({ availabilities: r.data });
       });
   }
 
@@ -168,6 +173,7 @@ class RoomModal extends Component {
             showConfirmButton: false,
             timer: 2000,
           });
+          this.getUnavailabilities();
         }
       })
       .catch((error) => {
@@ -180,6 +186,30 @@ class RoomModal extends Component {
       });
   }
 
+  deleteUnavailability = (id) => {
+    api.deleteRoomAvailability(id)
+      .then((response) => {
+        if (response.status === 204) {
+          sweetAlert.fire({
+            position: 'top',
+            type: 'success',
+            title: 'Time removed',
+            toast: true,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          this.getUnavailabilities(); 
+        }
+      })
+      .catch((error) => {
+        sweetAlert.fire({
+          position: 'top',
+          type: 'error',
+          title: 'Operation failed',
+          text: error.response.data,
+        });
+      });
+  }
 
   handleCardReaderDelete = () => {
     const { cardReader } = this.state;
@@ -210,7 +240,6 @@ class RoomModal extends Component {
       this.setState({ unavailableEndTime: e.target.value });
     }
   }
-
 
   renderCardReader = () => {
     const { cardReader } = this.state;
@@ -255,6 +284,7 @@ class RoomModal extends Component {
         a.push(
           <div key={av.id}>
             {text}
+            <Button icon="close" color="red" size="tiny" onClick={() => this.deleteUnavailability(av.id)} />
           </div>,
         );
       }
