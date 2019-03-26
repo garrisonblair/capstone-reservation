@@ -4,20 +4,14 @@ from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from apps.accounts.permissions.IsBooker import IsBooker
 from rest_framework.generics import ListAPIView
 
-from apps.booker_settings.serializers.booker_settings import EmailSettingsSerializer
-
-
-class PersonalSettingsList(ListAPIView):
-    permission_classes = (IsAuthenticated, IsBooker, IsSuperUser)
-    serializer_class = EmailSettingsSerializer
+from apps.booker_settings.serializers.personal_settings import PersonalSettingsSerializer
 
 
 class PersonalSettingsCreate(CreateAPIView):
-    permission_classes = (IsAuthenticated, IsBooker, IsSuperUser)
-    serializer_class = EmailSettingsSerializer
+    permission_classes = (IsAuthenticated, IsBooker)
+    serializer_class = PersonalSettingsSerializer
 
 
 class PersonalSettingsRetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated, IsBooker, IsSuperUser)
-    serializer_class = EmailSettingsSerializer
-    queryset = EmailSettingsSerializer.objects.all()
+    permission_classes = (IsAuthenticated, IsBooker)
+    serializer_class = PersonalSettingsSerializer
