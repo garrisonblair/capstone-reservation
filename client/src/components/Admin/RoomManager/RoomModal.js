@@ -19,6 +19,7 @@ class RoomModal extends Component {
     unavailableStartTime: '',
     unavailableEndTime: '',
     unavailableFocus: null,
+    availabilities: [],
   }
 
   componentDidMount() {
@@ -40,7 +41,7 @@ class RoomModal extends Component {
 
     api.getRoomAvailabilities()
       .then((r) => {
-        console.log(r.data);
+        this.setState({ availabilities: r.data });
       });
 
     api.getCardReaders(selectedRoom.id)
@@ -51,6 +52,90 @@ class RoomModal extends Component {
           });
         }
       });
+  }
+
+  verifyModalForm = () => {
+    const { roomID, roomCapacity, numOfComputers } = this.state;
+    let result = true;
+
+    if (roomID.length === 0) {
+      sweetAlert('Blocked', '"Room ID" field should not be empty.', 'warning');
+      result = false;
+      // eslint-disable-next-line no-restricted-globals
+    } else if (isNaN(roomCapacity)) {
+      sweetAlert('Blocked', '"Room capacity" field should be a number.', 'warning');
+      result = false;
+      // eslint-disable-next-line no-restricted-globals
+    } else if (isNaN(numOfComputers)) {
+      sweetAlert('Blocked', '"Number of Computers" field should be a number.', 'warning');
+      result = false;
+    }
+
+    return result;
+  }
+
+  handleRoomIdOnChange = (event) => {
+    this.setState({ roomID: event.target.value });
+  }
+
+  handleRoomCapacityOnChange = (event) => {
+    this.setState({ roomCapacity: event.target.value });
+  }
+
+  handleNumberOfComputersOnChange = (event) => {
+    this.setState({ numOfComputers: event.target.value });
+  }
+
+  handleSubmit = () => {
+    // eslint-disable-next-line object-curly-newline
+    const {
+      roomID,
+      roomCapacity,
+      numOfComputers,
+    } = this.state;
+    const { selectedRoom, onClose } = this.props;
+    // Leaves the method if verification doesn't succeed
+    if (!this.verifyModalForm()) {
+      return;
+    }
+    if (selectedRoom == null) {
+      api.createRoom(roomID, roomCapacity, numOfComputers)
+        .then((response) => {
+          if (response.status === 201) {
+            sweetAlert('Completed', `Room '${roomID}' was successfully created.`, 'success')
+              .then(() => {
+                onClose();
+              });
+          }
+        })
+        .catch(() => {
+          sweetAlert(':(', 'We are sorry. Something went wrong. Room was not saved.', 'error')
+            .then(() => {
+              onClose();
+            });
+        });
+    } else {
+      api.updateRoom(
+        selectedRoom.id,
+        roomID, roomCapacity, numOfComputers,
+      )
+        .then((response) => {
+          if (response.status === 200) {
+            sweetAlert('Completed', `Room '${roomID}' was successfully updated.`, 'success')
+              .then(() => {
+                onClose();
+              });
+          }
+        })
+        .catch((error) => {
+          sweetAlert.fire({
+            position: 'top',
+            type: 'error',
+            title: 'Operation failed',
+            text: error.response.data,
+          });
+        });
+    }
   }
 
   addUnavailability = () => {
@@ -95,95 +180,6 @@ class RoomModal extends Component {
       });
   }
 
-  verifyModalForm = () => {
-    const { roomID, roomCapacity, numOfComputers } = this.state;
-    let result = true;
-
-    if (roomID.length === 0) {
-      sweetAlert('Blocked', '"Room ID" field should not be empty.', 'warning');
-      result = false;
-      // eslint-disable-next-line no-restricted-globals
-    } else if (isNaN(roomCapacity)) {
-      sweetAlert('Blocked', '"Room capacity" field should be a number.', 'warning');
-      result = false;
-      // eslint-disable-next-line no-restricted-globals
-    } else if (isNaN(numOfComputers)) {
-      sweetAlert('Blocked', '"Number of Computers" field should be a number.', 'warning');
-      result = false;
-    }
-
-    return result;
-  }
-
-  handleRoomIdOnChange = (event) => {
-    this.setState({ roomID: event.target.value });
-  }
-
-  handleRoomCapacityOnChange = (event) => {
-    this.setState({ roomCapacity: event.target.value });
-  }
-
-  handleNumberOfComputersOnChange = (event) => {
-    this.setState({ numOfComputers: event.target.value });
-  }
-
-  handleSubmit = () => {
-    // eslint-disable-next-line object-curly-newline
-    const {
-      roomID,
-      roomCapacity,
-      numOfComputers,
-      unavailableStart,
-      unavailableEnd,
-      unavailableStartTime,
-      unavailableEndTime,
-    } = this.state;
-    const { selectedRoom, onClose } = this.props;
-    const unavailabilityStart = unavailableStartTime === '' ? null : `${unavailableStart.format('YYYY-MM-DD')} ${unavailableStartTime}`;
-    const unavailabilityEnd = unavailableEndTime === '' ? null : `${unavailableEnd.format('YYYY-MM-DD')} ${unavailableEndTime}`;
-    // Leaves the method if verification doesn't succeed
-    if (!this.verifyModalForm()) {
-      return;
-    }
-    if (selectedRoom == null) {
-      api.createRoom(roomID, roomCapacity, numOfComputers)
-        .then((response) => {
-          if (response.status === 201) {
-            sweetAlert('Completed', `Room '${roomID}' was successfully created.`, 'success')
-              .then(() => {
-                onClose();
-              });
-          }
-        })
-        .catch(() => {
-          sweetAlert(':(', 'We are sorry. Something went wrong. Room was not saved.', 'error')
-            .then(() => {
-              onClose();
-            });
-        });
-    } else {
-      api.updateRoom(
-        selectedRoom.id,
-        roomID, roomCapacity, numOfComputers, unavailabilityStart, unavailabilityEnd,
-      )
-        .then((response) => {
-          if (response.status === 200) {
-            sweetAlert('Completed', `Room '${roomID}' was successfully updated.`, 'success')
-              .then(() => {
-                onClose();
-              });
-          }
-        })
-        .catch((error) => {
-          sweetAlert.fire({
-            position: 'top',
-            type: 'error',
-            title: 'Operation failed',
-            text: error.response.data,
-          });
-        });
-    }
-  }
 
   handleCardReaderDelete = () => {
     const { cardReader } = this.state;
@@ -247,30 +243,45 @@ class RoomModal extends Component {
       unavailableEndTime,
       unavailableStartTime,
       unavailableFocus,
+      availabilities,
     } = this.state;
+    const a = [];
+    availabilities.forEach((av) => {
+      const start = av.start_time.split('T');
+      const end = av.end_time.split('T');
+      const text = `${start[0]} to ${end[0]}, ${start[1].substring(0, 5)} to ${end[1].substring(0, 5)}`;
+      a.push(
+        <div key={av.id}>
+          {text}
+        </div>,
+      );
+    });
     return (
-      <FormField>
-        <DateRangePicker
-          startDate={unavailableStart}
-          startDateId="start_date_id"
-          endDate={unavailableEnd}
-          endDateId="end_date_id"
-          onDatesChange={({ startDate, endDate }) => this.setState({
-            unavailableStart: startDate,
-            unavailableEnd: endDate,
-          })}
-          focusedInput={unavailableFocus}
-          onFocusChange={f => this.setState({ unavailableFocus: f })}
-        />
-        <br />
-        Start time:&nbsp;
-        <input type="time" id="start" defaultValue={unavailableStartTime} onChange={e => this.handleTime(e)} />
-        <br />
-        End time:&nbsp;
-        <input type="time" id="end" defaultValue={unavailableEndTime} onChange={e => this.handleTime(e)} />
-        <br />
-        <Button primary content="Add" onClick={() => this.addUnavailability()} />
-      </FormField>
+      <div>
+        {a}
+        <FormField>
+          <DateRangePicker
+            startDate={unavailableStart}
+            startDateId="start_date_id"
+            endDate={unavailableEnd}
+            endDateId="end_date_id"
+            onDatesChange={({ startDate, endDate }) => this.setState({
+              unavailableStart: startDate,
+              unavailableEnd: endDate,
+            })}
+            focusedInput={unavailableFocus}
+            onFocusChange={f => this.setState({ unavailableFocus: f })}
+          />
+          <br />
+          Start time:&nbsp;
+          <input type="time" id="start" defaultValue={unavailableStartTime} onChange={e => this.handleTime(e)} />
+          <br />
+          End time:&nbsp;
+          <input type="time" id="end" defaultValue={unavailableEndTime} onChange={e => this.handleTime(e)} />
+          <br />
+          <Button primary content="Add" onClick={() => this.addUnavailability()} />
+        </FormField>
+      </div>
     );
   }
 
@@ -321,7 +332,7 @@ class RoomModal extends Component {
               />
             </FormField>
             <Divider />
-            <h3>Make room unavailable:</h3>
+            <h3>Unavailabilities:</h3>
             <br />
             { this.renderAvailability() }
             <Divider />
