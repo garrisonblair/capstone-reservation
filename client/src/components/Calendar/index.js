@@ -37,6 +37,7 @@ class Calendar extends Component {
     hoursDivisionNum: 0,
     orientation: 1,
     update: false,
+    unavailabilities: [],
   };
 
   /*
@@ -91,10 +92,13 @@ class Calendar extends Component {
     if (test) {
       this.setState({ roomsList: propsTestingRooms });
     } else {
-      api.getRooms()
-        .then((response) => {
-          this.setState({ roomsList: response.data, roomsNum: response.data.length });
+      Promise.all([api.getRooms(), api.getRoomAvailabilities()]).then((results) => {
+        this.setState({
+          roomsList: results[0].data,
+          roomsNum: results[0].data.length,
+          unavailabilities: results[1].data,
         });
+      });
     }
   }
 
@@ -238,6 +242,7 @@ class Calendar extends Component {
       roomsNum,
       hoursDivisionNum,
       update,
+      unavailabilities,
     } = this.state;
     const { forDisplay } = this.props;
     let colList = roomsList;
@@ -272,6 +277,7 @@ class Calendar extends Component {
               bookings={bookings}
               roomsList={roomsList}
               hoursList={hoursList}
+              unavailabilities={unavailabilities}
               campOns={campOns}
               selectedDate={selectedDate}
               onCloseModalWithAction={this.onCloseModalWithAction}

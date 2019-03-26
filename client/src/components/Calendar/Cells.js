@@ -76,32 +76,17 @@ class Cells extends Component {
    */
 
   // Style for .calendar__cells__cell
-  setCellStyle(hourRow, currentRoom, currentHour) {
-    const { hoursSettings, selectedDate } = this.props;
+  setCellStyle(hourRow, unavailability) {
+    const { hoursSettings } = this.props;
     const { orientation } = this.state;
     const start = (hourRow * hoursSettings.increment / 10) + 1;
     const end = start + hoursSettings.increment / 10;
     let color = '';
     let event = 'auto';
-    if (currentRoom.unavailable_start_time !== null) {
-      const s = currentRoom.unavailable_start_time.split('T');
-      const e = currentRoom.unavailable_end_time.split('T');
-      const startDate = moment(s[0], 'YYYY-MM-DD');
-      let startTime = s[1].split('-');
-      startTime = startTime[0].split(':');
-      startDate.set({ h: startTime[0], m: startTime[1] });
-      const endDate = moment(e[0], 'YYYY-MM-DD');
-      let endTime = e[1].split('-');
-      endTime = endTime[0].split(':');
-      endDate.set({ h: endTime[0], m: endTime[1] });
-      const currentDate = moment(`${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`, 'YYYY-MM-DD');
-      currentDate.set({ h: currentHour.split(':')[0], m: currentHour.split(':')[1] });
-      const timeTest = moment(`${currentHour}:00`, 'HH:mm:ss').isBetween(moment(s[1].split('-'), 'HH:mm:ss'), moment(e[1].split('-'), 'HH:mm:ss'));
-      if (currentDate.isBetween(startDate, endDate) && timeTest) {
-        color = 'rgb(127, 127, 127)';
-        if (!storage.checkAdmin()) {
-          event = 'none';
-        }
+    if (unavailability) {
+      color = 'rgb(127, 127, 127)';
+      if (!storage.checkAdmin()) {
+        event = 'none';
       }
     }
     // const height = '65px';
@@ -346,6 +331,42 @@ class Cells extends Component {
     update();
   }
 
+  checkAvailability = (unavailabilities, hour) => {
+    const { selectedDate } = this.props;
+    let currentHour = hour;
+    if (unavailabilities.length === 0) { return false; }
+    if (currentHour.split(' ').length === 2) {
+      currentHour = currentHour.split(' ');
+      if (currentHour[1] === 'PM' && currentHour[0].split(':')[0] !== '12') {
+        const newHour = currentHour[0].split(':');
+        newHour[0] = (parseInt(newHour[0], 10) + 12).toString();
+        currentHour = `${newHour[0]}:${newHour[1]}`;
+      } else {
+        // eslint-disable-next-line prefer-destructuring
+        currentHour = currentHour[0];
+      }
+    }
+    for (let i = 0; i < unavailabilities.length; i += 1) {
+      const s = unavailabilities[i].start_time.split('T');
+      const e = unavailabilities[i].end_time.split('T');
+      const startDate = moment(s[0], 'YYYY-MM-DD');
+      let startTime = s[1].split('-');
+      startTime = startTime[0].split(':');
+      startDate.set({ h: startTime[0], m: startTime[1] });
+      const endDate = moment(e[0], 'YYYY-MM-DD');
+      let endTime = e[1].split('-');
+      endTime = endTime[0].split(':');
+      endDate.set({ h: endTime[0], m: endTime[1] });
+      const currentDate = moment(`${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`, 'YYYY-MM-DD');
+      currentDate.set({ h: currentHour.split(':')[0], m: currentHour.split(':')[1] });
+      const timeTest = moment(`${currentHour}:00`, 'HH:mm:ss').isBetween(moment(s[1].split('-'), 'HH:mm:ss'), moment(e[1].split('-'), 'HH:mm:ss'));
+      if (currentDate.isBetween(startDate, endDate) && timeTest) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /*
   * COMPONENT RENDERING
   */
@@ -495,6 +516,7 @@ class Cells extends Component {
       roomsList,
       hoursList,
       bookings,
+      unavailabilities,
     } = this.props;
     const cells = [];
     let roomsCells = [];
@@ -502,10 +524,17 @@ class Cells extends Component {
 
     for (let i = 0; i < roomsList.length; i += 1) {
       const currentRoom = roomsList[i];
+      const roomUnavailability = [];
+      unavailabilities.forEach((un) => {
+        if (un.room === currentRoom.id) {
+          roomUnavailability.push(un);
+        }
+      });
       for (let j = 0; j < hoursList.length; j += 1) {
         const currentHour = hoursList[j];
+        const unavailable = this.checkAvailability(roomUnavailability, currentHour);
         roomsCells.push(
-          <div className="calendar__cells__cell" style={this.setCellStyle(j, currentRoom, currentHour).cell_style} role="button" tabIndex="0" key={cell} onClick={() => this.handleClickCell(currentHour, currentRoom)} onKeyDown={() => {}} />,
+          <div className="calendar__cells__cell" style={this.setCellStyle(j, unavailable).cell_style} role="button" tabIndex="0" key={cell} onClick={() => this.handleClickCell(currentHour, currentRoom)} onKeyDown={() => {}} />,
         );
         cell += 1;
       }
@@ -538,6 +567,7 @@ class Cells extends Component {
 
 Cells.propTypes = {
   roomsList: PropTypes.instanceOf(Array),
+  unavailabilities: PropTypes.instanceOf(Array),
   hoursList: PropTypes.instanceOf(Array),
   hoursSettings: PropTypes.instanceOf(Object),
   bookings: PropTypes.instanceOf(Array),
@@ -550,6 +580,7 @@ Cells.propTypes = {
 
 Cells.defaultProps = {
   roomsList: [],
+  unavailabilities: [],
   hoursList: [],
   hoursSettings: {
     start: '08:00',
