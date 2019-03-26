@@ -67,7 +67,7 @@ class TestPersonalSettings(TestCase):
         with self.assertRaises(ValidationError):
             setting.save()
 
-    def testPersonalSettingCreateFailedWithCamponColor(self):
+    def testPersonalSettingCreateFailedWithPassedBookingColor(self):
         setting = PersonalSettings(booker=self.booker,
                                    schedule_vertical=False,
                                    booking_color="#000000",

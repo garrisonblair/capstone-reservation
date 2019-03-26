@@ -6,10 +6,10 @@ from django.contrib.auth.models import User
 from rest_framework.test import force_authenticate, APIRequestFactory
 from rest_framework import status
 
+from django.core.exceptions import ValidationError
 from apps.booker_settings.models.PersonalSettings import PersonalSettings
-from apps.booker_settings.views.email_settings_service import EmailSettingsService
 from apps.booker_settings.views.personal_settings import PersonalSettingsCreate
-from apps.booker_settings.views.personal_settings import PersonalSettingsRetrieveUpdateDestroy
+from apps.booker_settings.views.personal_settings import PersonalSettingsUpdate
 
 
 class PersonalSettingsAPITest(TestCase):
@@ -21,6 +21,11 @@ class PersonalSettingsAPITest(TestCase):
                                                email='booker@booker.com',
                                                password='booker')
         self.booker.save()
+
+        self.booker2 = User.objects.create_user(username='booker2',
+                                               email='booker2@booker.com',
+                                               password='booker2')
+        self.booker2.save()
 
         self.admin = User.objects.create_user(username="admin",
                                               is_superuser=True)
@@ -35,7 +40,7 @@ class PersonalSettingsAPITest(TestCase):
                                     },
                                     format="json")
 
-        force_authenticate(request, user=self.admin)
+        force_authenticate(request, user=self.booker)
         response = PersonalSettingsCreate.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -54,7 +59,7 @@ class PersonalSettingsAPITest(TestCase):
                                     },
                                     format="json")
 
-        force_authenticate(request, user=self.admin)
+        force_authenticate(request, user=self.booker)
         response = PersonalSettingsCreate.as_view()(request)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -63,3 +68,167 @@ class PersonalSettingsAPITest(TestCase):
         self.assertEqual(real_settings.booking_color, "#1F5465")
         self.assertEqual(real_settings.campon_color, "#000000")
         self.assertEqual(real_settings.passed_booking_color, "#7F7F7F")
+
+    def testCreatePersonalSettingsFailedWithBookingColor(self):
+
+        request = self.factory.post("/personal_settings",
+                                    {
+                                        "booker": self.booker.id,
+                                        "booking_color": "#"
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=self.booker)
+
+        with self.assertRaises(ValidationError):
+            response = PersonalSettingsCreate.as_view()(request)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(PersonalSettings.objects.count(), 0)
+
+    def testCreatePersonalSettingsFailedWithCamponColor(self):
+
+        request = self.factory.post("/personal_settings",
+                                    {
+                                        "booker": self.booker.id,
+                                        "campon_color": "#"
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=self.booker)
+
+        with self.assertRaises(ValidationError):
+            response = PersonalSettingsCreate.as_view()(request)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(PersonalSettings.objects.count(), 0)
+
+    def testCreatePersonalSettingsFailedWithPassedBookingColor(self):
+
+        request = self.factory.post("/personal_settings",
+                                    {
+                                        "booker": self.booker.id,
+                                        "passed_booking_color": "#"
+                                    },
+                                    format="json")
+
+        force_authenticate(request, user=self.booker)
+
+        with self.assertRaises(ValidationError):
+            response = PersonalSettingsCreate.as_view()(request)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(PersonalSettings.objects.count(), 0)
+
+    def testCreatePersonalSettingsFailedWithNoBoooker(self):
+
+        request = self.factory.post("/personal_settings",
+                                    {
+                                        "booker": self.booker.id,
+                                        "passed_booking_color": "#"
+                                    },
+                                    format="json")
+        response = PersonalSettingsCreate.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(PersonalSettings.objects.count(), 0)
+
+    def testUpdatePersonalSettingsSuccessful(self):
+
+        setting = PersonalSettings(booker=self.booker)
+        setting.save()
+
+        request = self.factory.patch("/personal_settings", {
+                                        "schedule_vertical": False,
+                                        "booking_color": "#000000",
+                                        "campon_color": "#000000",
+                                        "passed_booking_color": "#000000"
+                                    },
+                                    format="json")
+        force_authenticate(request, user=self.booker)
+        response = PersonalSettingsUpdate.as_view()(request, pk=1)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(PersonalSettings.objects.count(), 1)
+        real_settings = PersonalSettings.objects.last()
+        self.assertEqual(real_settings.schedule_vertical, False)
+        self.assertEqual(real_settings.booking_color, "#000000")
+        self.assertEqual(real_settings.campon_color, "#000000")
+        self.assertEqual(real_settings.passed_booking_color, "#000000")
+
+    def testUpdatePersonalSettingsNotChangingOriginal(self):
+
+        setting = PersonalSettings(booker=self.booker)
+        setting.save()
+
+        request = self.factory.patch("/personal_settings", {
+                                        "schedule_vertical": False,
+                                        "booking_color": "#000000",
+                                        "campon_color": "#000000",
+                                        "passed_booking_color": "#000000"
+                                    },
+                                    format="json")
+        force_authenticate(request, user=self.booker)
+        response = PersonalSettingsUpdate.as_view()(request, pk=1)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(PersonalSettings.objects.count(), 1)
+        real_settings = PersonalSettings.objects.last()
+        self.assertEqual(real_settings.schedule_vertical, False)
+        self.assertEqual(real_settings.booking_color, "#000000")
+        self.assertEqual(real_settings.campon_color, "#000000")
+        self.assertEqual(real_settings.passed_booking_color, "#000000")
+
+        request = self.factory.patch("/personal_settings", {
+                                        "booking_color": "#FFFFFF"
+                                    },
+                                    format="json")
+        force_authenticate(request, user=self.booker)
+        response = PersonalSettingsUpdate.as_view()(request, pk=1)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(PersonalSettings.objects.count(), 1)
+        real_settings = PersonalSettings.objects.last()
+        self.assertEqual(real_settings.schedule_vertical, False)
+        self.assertEqual(real_settings.booking_color, "#FFFFFF")
+        self.assertEqual(real_settings.campon_color, "#000000")
+        self.assertEqual(real_settings.passed_booking_color, "#000000")
+
+    def testUpdatePersonalSettingsWithDifferentBooker(self):
+
+        setting = PersonalSettings(booker=self.booker)
+        setting.save()
+
+        request = self.factory.patch("/personal_settings", {
+                                        "schedule_vertical": False,
+                                        "booking_color": "#000000",
+                                        "campon_color": "#000000",
+                                        "passed_booking_color": "#000000"
+                                    },
+                                    format="json")
+        force_authenticate(request, user=self.booker2)
+        response = PersonalSettingsUpdate.as_view()(request, pk=1)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def testUpdatePersonalSettingsBookerStayTheSame(self):
+
+        setting = PersonalSettings(booker=self.booker)
+        setting.save()
+
+        request = self.factory.patch("/personal_settings", {
+                                        "booker": self.booker2.id,# booker2 id instead of booker
+                                        "schedule_vertical": False,
+                                        "booking_color": "#000000",
+                                        "campon_color": "#000000",
+                                        "passed_booking_color": "#000000"
+                                    },
+                                    format="json")
+        force_authenticate(request, user=self.booker)
+        response = PersonalSettingsUpdate.as_view()(request, pk=1)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        real_settings = PersonalSettings.objects.last()
+        self.assertEqual(real_settings.booker.id, 1)
+        self.assertEqual(real_settings.schedule_vertical, False)
+        self.assertEqual(real_settings.booking_color, "#000000")
+        self.assertEqual(real_settings.campon_color, "#000000")
+        self.assertEqual(real_settings.passed_booking_color, "#000000")

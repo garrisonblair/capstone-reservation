@@ -7,3 +7,4 @@ class PersonalSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonalSettings
         fields = '__all__'
+        read_only_fields = ('id',)
