@@ -49,3 +49,19 @@ class PersonalSettingsUpdate(APIView):
 
         except ValidationError as error:
             return Response(error.messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PersonalSettingsList(ListAPIView):
+    permission_classes = (IsAuthenticated, IsBooker)
+    serializer_class = PersonalSettingsSerializer
+
+    def get(self, request, pk):
+        try:
+            personal_settings = PersonalSettings.objects.get(id=pk)
+        except PersonalSettings.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if personal_settings.booker.id is not request.user.id:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(personal_settings, status=status.HTTP_200_OK)
