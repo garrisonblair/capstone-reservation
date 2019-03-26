@@ -4,21 +4,20 @@ from apps.accounts.permissions.IsSuperUser import IsSuperUser
 from apps.accounts.permissions.IsBooker import IsBooker
 from rest_framework.generics import ListAPIView
 
-from apps.rooms.models.RoomUnavailability import RoomUnavailability
-from apps.rooms.serializers.room_unavailability import RoomUnavailabilitySerializer
+from apps.booker_settings.serializers.booker_settings import EmailSettingsSerializer
 
 
 class PersonalSettingsList(ListAPIView):
     permission_classes = (IsAuthenticated, IsBooker, IsSuperUser)
-    serializer_class = RoomUnavailabilitySerializer
+    serializer_class = EmailSettingsSerializer
 
 
 class PersonalSettingsCreate(CreateAPIView):
     permission_classes = (IsAuthenticated, IsBooker, IsSuperUser)
-    serializer_class = RoomUnavailabilitySerializer
+    serializer_class = EmailSettingsSerializer
 
 
 class PersonalSettingsRetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsBooker, IsSuperUser)
-    serializer_class = RoomUnavailabilitySerializer
-    queryset = RoomUnavailability.objects.all()
+    serializer_class = EmailSettingsSerializer
+    queryset = EmailSettingsSerializer.objects.all()
