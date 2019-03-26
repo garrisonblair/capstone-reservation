@@ -239,12 +239,17 @@ function deleteRoom(id) {
   });
 }
 
-function getRoomAvailabilities() {
+function getRoomAvailabilities(roomId) {
   const headers = getTokenHeader();
+  const data = roomId ? {
+    room_id: roomId,
+  }
+    : {};
   return axios({
     method: 'GET',
     url: `${settings.API_ROOT}/room_unavailabilities`,
     headers,
+    data,
     withCredentials: true,
   });
 }

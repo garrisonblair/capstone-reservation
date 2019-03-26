@@ -39,12 +39,12 @@ class RoomModal extends Component {
       });
     }
 
-    api.getRoomAvailabilities()
+    api.getRoomAvailabilities(selectedRoom ? selectedRoom.id : null)
       .then((r) => {
         this.setState({ availabilities: r.data });
       });
 
-    api.getCardReaders(selectedRoom.id)
+    api.getCardReaders(selectedRoom ? selectedRoom.id : null)
       .then((response) => {
         if (response.data.length > 0) {
           this.setState({
@@ -245,16 +245,19 @@ class RoomModal extends Component {
       unavailableFocus,
       availabilities,
     } = this.state;
+    const { selectedRoom } = this.props;
     const a = [];
     availabilities.forEach((av) => {
-      const start = av.start_time.split('T');
-      const end = av.end_time.split('T');
-      const text = `${start[0]} to ${end[0]}, ${start[1].substring(0, 5)} to ${end[1].substring(0, 5)}`;
-      a.push(
-        <div key={av.id}>
-          {text}
-        </div>,
-      );
+      if (av.room === selectedRoom.id) {
+        const start = av.start_time.split('T');
+        const end = av.end_time.split('T');
+        const text = `${start[0]} to ${end[0]}, ${start[1].substring(0, 5)} to ${end[1].substring(0, 5)}`;
+        a.push(
+          <div key={av.id}>
+            {text}
+          </div>,
+        );
+      }
     });
     return (
       <div>
