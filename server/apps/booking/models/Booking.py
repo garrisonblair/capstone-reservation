@@ -107,6 +107,9 @@ class Booking(models.Model, SubjectModel):
 
     def validate_model(self):
         now = datetime.datetime.now()
+        print(self.start_time)
+        print(self.end_time)
+        print(self.end_time.__class__)
         if not isinstance(self.start_time, datetime.time):
             self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
         if not isinstance(self.end_time, datetime.time):
@@ -300,6 +303,76 @@ class Booking(models.Model, SubjectModel):
         Notification.objects.notify(self.date, self.room)
 
         return
+
+    def update_campons_after_change(self):
+        # Retrieve all bookings campons
+        from apps.booking.models.CampOn import CampOn
+        campons = CampOn.objects.filter(camped_on_booking__id=self.id).order_by("id")
+        if campons.count() == 0:
+            return False
+
+        # Check if there is a campon that needs to be updated
+        first_campon = None
+        for campon in campons:
+            if campon.end_time > self.end_time:
+                first_campon = campon
+                break
+
+        if first_campon is None:
+            return False
+
+        # Split campon into campon and new booking if it extends over the booking end time
+        if first_campon.start_time < self.end_time < first_campon.end_time:
+            new_booking_end = first_campon.end_time
+            first_campon.end_time = self.end_time
+            first_campon.save()
+            new_booking = Booking(
+                booker=first_campon.booker,
+                room=self.room,
+                date=self.date,
+                start_time=self.end_time,
+                end_time=new_booking_end,
+            )
+            new_booking.save()
+
+        # Turn campon into entire new booking if its start is after the booking end time
+        elif first_campon.start_time > self.end_time:
+            new_booking = Booking(
+                booker=first_campon.booker,
+                room=self.room,
+                date=self.date,
+                start_time=first_campon.start_time,
+                end_time=first_campon.end_time
+            )
+            first_campon.delete()
+            new_booking.save()
+
+        # Remove campon from queryset as it has been dealt with
+        campons = campons.exclude(id=first_campon.id)
+
+        # Check if there are more campons to update
+        if campons.count() == 0:
+            return True
+
+        # Set all subsequent campons to be related to the new booking if they end later than the current booking
+        for campon in campons:
+            if campon.start_time > self.end_time:
+                campon.camped_on_booking = new_booking
+                campon.save()
+            elif campon.start_time < self.end_time < campon.end_time:
+                new_end = campon.end_time
+                campon.end_time = self.end_time
+                campon.save()
+                new_campon = CampOn(
+                    start_time=self.end_time,
+                    end_time=new_end,
+                    booker=campon.booker,
+                    camped_on_booking=new_booking
+                )
+                new_campon.save()
+
+        # restart process with the new booking for any other campons that need to be updated
+        new_booking.update_campons_after_change()
 
     def set_to_confirmed(self):
         self.confirmed = True

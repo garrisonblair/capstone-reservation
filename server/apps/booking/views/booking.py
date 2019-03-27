@@ -132,6 +132,7 @@ class BookingCancel(APIView):
                 now_end = utils.get_rounded_time(10).time()
                 booking.end_time = now_end
                 booking.save()
+                booking.update_campons_after_change()
                 utils.log_model_change(booking, utils.DELETION, request.user)
             except ValidationError as e:
                 return Response(e.message, status.HTTP_400_BAD_REQUEST)
