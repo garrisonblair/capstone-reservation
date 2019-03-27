@@ -841,6 +841,37 @@ function updateEmailSettings(
   });
 }
 
+function getPersonalSettings(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/personal_settings_list/${id}`,
+    headers,
+    withCredentials: true,
+  });
+}
+
+function createPersonalSettings(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/personal_settings`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function updatePersonalSettings(id, data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/personal_settings/${id}`,
+    headers,
+    data,
+  });
+}
+
 function getCSV() {
   const headers = getTokenHeader();
   return axios({
@@ -932,6 +963,9 @@ const api = {
   postNotification,
   getEmailSettings,
   updateEmailSettings,
+  getPersonalSettings,
+  createPersonalSettings,
+  updatePersonalSettings,
   getCSV,
   postCSV,
 };
