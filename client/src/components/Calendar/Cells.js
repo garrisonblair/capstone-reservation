@@ -42,7 +42,9 @@ class Cells extends Component {
   };
 
   componentDidMount() {
-    this.syncSettings(this.getServiceToken());
+    if (storage.getUser() !== null) {
+      this.syncSettings(this.getServiceToken());
+    }
   }
 
   getServiceToken = () => {
