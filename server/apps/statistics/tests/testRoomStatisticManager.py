@@ -141,3 +141,4 @@ class TestRoomStatisticManager(TestCase):
                  }
 
         self.assertEqual(self.stats.get_serialized_statistics(room=self.room, start_date=date4, end_date=date5), stats)
+        

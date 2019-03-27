@@ -88,3 +88,4 @@ class Room(models.Model):
         if self.booking_set.filter(date=date, start_time__lt=end, end_time__gt=start).exists():
             return False
         return True
+        
