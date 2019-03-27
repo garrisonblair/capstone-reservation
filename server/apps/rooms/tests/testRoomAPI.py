@@ -317,4 +317,3 @@ class RoomAPITest(TestCase):
         instances_of_deleted_room_after = len(Room.objects.filter(id=self.room1.id))
 
         self.assertEqual(instances_of_deleted_room_before, instances_of_deleted_room_after)
-        
