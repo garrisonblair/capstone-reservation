@@ -129,15 +129,12 @@ class TestRoomStatisticManager(TestCase):
                  'average_time_booked_per_day': 0.556,
                  'hours_booked': 10.0,
                  'num_room_bookings': 5,
-                 'room': {'available': True,
-                          'number_of_computers': 2,
+                 'room': {'number_of_computers': 2,
                           'capacity': 7,
                           'has_tv': False,
                           'has_windows': False,
                           'name': '1',
                           'id': 1,
-                          'unavailable_start_time': None,
-                          'unavailable_end_time': None,
                           'max_booking_duration': None,
                           'max_recurring_booking_duration': None
                           }

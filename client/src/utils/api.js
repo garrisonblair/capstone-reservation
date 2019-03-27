@@ -284,6 +284,46 @@ function deleteRoom(id) {
   });
 }
 
+function getRoomAvailabilities(roomId) {
+  const headers = getTokenHeader();
+  const data = roomId ? {
+    room_id: roomId,
+  }
+    : {};
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/room_unavailabilities`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function addRoomAvailability(data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/room_unavailability`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function deleteRoomAvailability(id) {
+  const headers = getTokenHeader();
+  const data = {
+    id,
+  };
+  return axios({
+    method: 'DELETE',
+    url: `${settings.API_ROOT}/room_unavailability/${id}`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
 function getCardReaders(roomId) {
   const headers = getTokenHeader();
   let params = null;
@@ -859,6 +899,9 @@ const api = {
   createRoom,
   updateRoom,
   deleteRoom,
+  getRoomAvailabilities,
+  addRoomAvailability,
+  deleteRoomAvailability,
   getCardReaders,
   createCardReader,
   deleteCardReader,

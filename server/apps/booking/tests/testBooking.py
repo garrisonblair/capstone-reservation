@@ -1,7 +1,10 @@
 from django.test import TestCase
 from apps.booking.models.Booking import Booking
+from apps.rooms.models.RoomUnavailability import RoomUnavailability
 from apps.rooms.models.Room import Room
 from datetime import datetime, time, timedelta
+from django.utils import timezone
+from django.utils.timezone import make_aware
 
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
@@ -381,49 +384,33 @@ class TestBooking(TestCase):
 
         settings.save()
 
-    def testBookingCreationUnavailableRoom(self):
+    def testBookingCreationWithUnavailableRoom(self):
 
-        room1 = Room(name="R100", capacity=1, number_of_computers=1, available=False)
-        room1.save()
+        room = Room(name="Room 1", capacity=7, number_of_computers=7)
+        room.save()
+
+        now = timezone.now()
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_today = now.replace(hour=23, minute=59, second=59, microsecond=0)
+
+        start_time = now.replace(hour=10, minute=0, second=0, microsecond=0)
+        start_time = start_time.time()
+        end_time = now.replace(hour=11, minute=0, second=0, microsecond=0)
+        end_time = end_time.time()
+
+        unavailability = RoomUnavailability(room=room,
+                                            start_time=today,
+                                            end_time=end_of_today)
+        unavailability.save()
 
         booking = Booking(booker=self.booker,
-                          room=room1,
-                          date=self.date,
-                          start_time=self.start_time,
-                          end_time=self.end_time)
+                          room=room,
+                          date=today,
+                          start_time=start_time,
+                          end_time=end_time)
+
         with self.assertRaises(ValidationError):
             booking.save()
-
-        self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings)
-
-        with self.assertRaises(Booking.DoesNotExist):
-            Booking.objects.get(booker=self.booker,
-                                room=room1,
-                                date=self.date,
-                                start_time=self.start_time,
-                                end_time=self.end_time)
-
-    def testBookingCreationUnavailableRoomEndTimeEqualStartTime(self):
-
-        start_date_time = datetime.combine(self.date, datetime.strptime("11:30", "%H:%M").time())
-        end_date_time = datetime.combine(self.date, datetime.strptime("12:00", "%H:%M").time())
-        room1 = Room(name="R100", capacity=1, number_of_computers=1, available=False,
-                     unavailable_start_time=start_date_time, unavailable_end_time=end_date_time)
-        room1.save()
-
-        booking = Booking(booker=self.booker,
-                          room=room1,
-                          date=self.date,
-                          start_time=self.start_time,
-                          end_time=self.end_time)
-        booking.save()
-        read_booking = Booking.objects.get(booker=self.booker,
-                                           room=room1,
-                                           date=self.date,
-                                           start_time=self.start_time,
-                                           end_time=self.end_time)
-        self.assertEqual(read_booking, booking)
-        self.assertEqual(len(Booking.objects.all()), self.lengthOfBookings + 1)
 
     def testBookingTooLongForRoom(self):
         self.room.max_booking_duration = 2

@@ -38,6 +38,7 @@ class Calendar extends Component {
     hoursDivisionNum: 0,
     orientation: 1,
     update: false,
+    unavailabilities: [],
     showRoomsSelection: false,
     roomsToDisplay: [],
   };
@@ -94,20 +95,24 @@ class Calendar extends Component {
     if (test) {
       this.setState({ roomsList: propsTestingRooms });
     } else {
-      api.getRooms()
-        .then((response) => {
-          if (forDisplay) {
-            this.setState({
-              roomsList: response.data,
-              roomsNum: response.data.length,
-              roomsToDisplay: response.data,
-            }, () => {
-              this.setState({ showRoomsSelection: true });
-            });
-          } else {
-            this.setState({ roomsList: response.data, roomsNum: response.data.length });
-          }
-        });
+      Promise.all([api.getRooms(), api.getRoomAvailabilities()]).then((results) => {
+        if (forDisplay) {
+          this.setState({
+            roomsList: results[0].data,
+            roomsNum: results[0].data.length,
+            unavailabilities: results[1].data,
+            roomsToDisplay: results[0].data,
+          }, () => {
+            this.setState({ showRoomsSelection: true });
+          });
+        } else {
+          this.setState({
+            roomsList: results[0].data,
+            roomsNum: results[0].data.length,
+            unavailabilities: results[1].data,
+          });
+        }
+      });
     }
   }
 
@@ -256,6 +261,7 @@ class Calendar extends Component {
       roomsNum,
       hoursDivisionNum,
       update,
+      unavailabilities,
       showRoomsSelection,
       roomsToDisplay,
     } = this.state;
@@ -301,6 +307,7 @@ class Calendar extends Component {
               bookings={bookings}
               roomsList={forDisplay ? roomsToDisplay : roomsList}
               hoursList={hoursList}
+              unavailabilities={unavailabilities}
               campOns={campOns}
               selectedDate={selectedDate}
               onCloseModalWithAction={this.onCloseModalWithAction}
