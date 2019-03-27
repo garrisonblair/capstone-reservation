@@ -1,12 +1,9 @@
-from apps.rooms.models.Room import Room
-
 from django.test.testcases import TestCase
 from django.contrib.auth.models import User
 
 from rest_framework.test import force_authenticate, APIRequestFactory
 from rest_framework import status
 
-from django.core.exceptions import ValidationError
 from apps.booker_settings.models.PersonalSettings import PersonalSettings
 from apps.booker_settings.views.personal_settings import PersonalSettingsCreateRetrieveUpdate
 

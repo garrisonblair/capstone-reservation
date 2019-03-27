@@ -1,7 +1,6 @@
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions.IsBooker import IsBooker
-from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,8 +23,6 @@ class PersonalSettingsCreateRetrieveUpdate(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         try:
-            # Booker id stays the same on update
-            data["booker"] = request.user.id
             personal_settings.update(data)
         except ValidationError as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)

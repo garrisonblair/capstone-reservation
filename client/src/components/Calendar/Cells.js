@@ -6,7 +6,6 @@ import {
   Icon,
   Message,
 } from 'semantic-ui-react';
-import sweetAlert from 'sweetalert2';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
