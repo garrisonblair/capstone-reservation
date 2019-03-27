@@ -354,7 +354,8 @@ class RoomModal extends Component {
         a.push(
           <div key={av.id}>
             {text}
-            <Button icon="close" color="red" size="tiny" onClick={() => this.deleteUnavailability(av.id)} />
+            &emsp;
+            <input type="button" value="Delete" onClick={() => this.deleteUnavailability(av.id)} />
           </div>,
         );
       }
