@@ -129,7 +129,15 @@ class TestRoomStatisticManager(TestCase):
                  'average_time_booked_per_day': 0.556,
                  'hours_booked': 10.0,
                  'num_room_bookings': 5,
-                 'room': {'number_of_computers': 2, 'capacity': 7, 'name': '1',
-                          'id': 1}}
+                 'room': {'number_of_computers': 2,
+                          'capacity': 7,
+                          'has_tv': False,
+                          'has_windows': False,
+                          'name': '1',
+                          'id': 1,
+                          'max_booking_duration': None,
+                          'max_recurring_booking_duration': None
+                          }
+                 }
 
         self.assertEqual(self.stats.get_serialized_statistics(room=self.room, start_date=date4, end_date=date5), stats)

@@ -43,7 +43,7 @@ class RoomStatisticManager:
         stats = dict()
         stats["room"] = RoomSerializer(room).data
         stats["num_room_bookings"] = self.get_num_room_bookings(room, start_date, end_date)
-        stats["hours_booked"] = self.get_time_booked(room, start_date, end_date).total_seconds() / 3600
+        stats["hours_booked"] = round(self.get_time_booked(room, start_date, end_date).total_seconds() / 3600, 2)
 
         if start_date is None and end_date is None:
             stats["average_bookings_per_day"] = self.get_average_bookings_per_day(room)

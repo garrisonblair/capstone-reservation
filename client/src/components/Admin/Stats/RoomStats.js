@@ -10,7 +10,6 @@ import {
   Segment,
 } from 'semantic-ui-react';
 import { SingleDatePicker } from 'react-dates';
-// import * as moment from 'moment';
 import { Bar } from 'react-chartjs-2';
 import api from '../../../utils/api';
 import 'react-dates/lib/css/_datepicker.css';

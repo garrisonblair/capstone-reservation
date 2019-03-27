@@ -7,6 +7,7 @@ import Header from './Header';
 import Navigation from '../Navigation';
 import api from '../../utils/api';
 import storage from '../../utils/local-storage';
+import RoomsSelection from './RoomsSelection';
 import './Calendar.scss';
 
 class Calendar extends Component {
@@ -38,6 +39,8 @@ class Calendar extends Component {
     orientation: 1,
     update: false,
     unavailabilities: [],
+    showRoomsSelection: false,
+    roomsToDisplay: [],
   };
 
   /*
@@ -87,17 +90,28 @@ class Calendar extends Component {
   }
 
   getRooms() {
-    const { propsTestingRooms } = this.props;
+    const { propsTestingRooms, forDisplay } = this.props;
     const test = !!propsTestingRooms;
     if (test) {
       this.setState({ roomsList: propsTestingRooms });
     } else {
       Promise.all([api.getRooms(), api.getRoomAvailabilities()]).then((results) => {
-        this.setState({
-          roomsList: results[0].data,
-          roomsNum: results[0].data.length,
-          unavailabilities: results[1].data,
-        });
+        if (forDisplay) {
+          this.setState({
+            roomsList: results[0].data,
+            roomsNum: results[0].data.length,
+            unavailabilities: results[1].data,
+            roomsToDisplay: results[0].data,
+          }, () => {
+            this.setState({ showRoomsSelection: true });
+          });
+        } else {
+          this.setState({
+            roomsList: results[0].data,
+            roomsNum: results[0].data.length,
+            unavailabilities: results[1].data,
+          });
+        }
       });
     }
   }
@@ -186,6 +200,10 @@ class Calendar extends Component {
     this.getBookings();
   }
 
+  closeRoomsSelection = (rooms) => {
+    this.setState({ roomsNum: rooms.length, roomsToDisplay: rooms, showRoomsSelection: false });
+  }
+
   campOnToBooking = (campOns, bookings) => {
     const campOnBookings = [];
     if (!!campOns && !!bookings) {
@@ -211,6 +229,7 @@ class Calendar extends Component {
           id: `camp${campOn.camped_on_booking}-${index}`,
           isCampOn: true,
           camped_on_booking: campOn.camped_on_booking,
+          camp_on_id: campOn.id,
         });
       });
       campOnBookings.forEach((campOnBooking) => {
@@ -243,14 +262,16 @@ class Calendar extends Component {
       hoursDivisionNum,
       update,
       unavailabilities,
+      showRoomsSelection,
+      roomsToDisplay,
     } = this.state;
     const { forDisplay } = this.props;
-    let colList = roomsList;
+    let colList = forDisplay ? roomsToDisplay : roomsList;
     let colName = 'room';
     let rowList = hoursList;
     let rowName = 'hour';
     if (orientation === 1) {
-      rowList = roomsList;
+      rowList = forDisplay ? roomsToDisplay : roomsList;
       rowName = 'room';
       colList = hoursList;
       colName = 'hour';
@@ -266,6 +287,15 @@ class Calendar extends Component {
           update={update}
           forDisplay={forDisplay}
         />
+        {forDisplay
+          ? (
+            <RoomsSelection
+              show={showRoomsSelection}
+              rooms={roomsList}
+              roomsToDisplay={roomsToDisplay}
+              onClose={this.closeRoomsSelection}
+            />)
+          : null}
         <div className="calendar__container" key={1}>
           <Announcement />
           <div className="calendar__wrapper" style={this.setStyle().wrapper}>
@@ -275,7 +305,7 @@ class Calendar extends Component {
             <Cells
               hoursSettings={hoursSettings}
               bookings={bookings}
-              roomsList={roomsList}
+              roomsList={forDisplay ? roomsToDisplay : roomsList}
               hoursList={hoursList}
               unavailabilities={unavailabilities}
               campOns={campOns}

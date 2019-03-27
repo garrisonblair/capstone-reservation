@@ -1,15 +1,15 @@
 import datetime
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import APIException
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from apps.accounts.exceptions import PrivilegeError
-from apps.accounts.models.User import User
 from apps.accounts.permissions.IsBooker import IsBooker
+from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.booking.models.CampOn import CampOn
 from apps.booking.models.Booking import Booking
 from apps.booking.serializers.campon import CampOnSerializer, ReadCampOnSerializer
@@ -76,15 +76,7 @@ class CampOnCreate(APIView):
         data["booker"] = request.user.id
 
         # Rounding to nearest 10th minute, as bookings and camp-ons can only be made every ten minute interval
-        time = datetime.datetime.now().replace(microsecond=0)
-        discard = datetime.timedelta(
-            minutes=time.minute % 10,
-            seconds=time.second,
-            microseconds=time.microsecond
-        )
-        time -= discard
-        if discard >= datetime.timedelta(minutes=5):
-            time += datetime.timedelta(minutes=10)
+        time = utils.get_rounded_time(10)
 
         data["start_time"] = time.time()
         serializer = CampOnSerializer(data=data)
@@ -157,3 +149,56 @@ class CampOnCreate(APIView):
         response_data = {"CampOn": CampOnSerializer(camp_on).data,
                          "Booking": BookingSerializer(new_booking).data}
         return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+class CamponCancel(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+
+    def post(self, request, pk):
+        try:
+            campon = CampOn.objects.get(id=pk)
+        except Booking.DoesNotExist:
+            return Response("Selected camp on to cancel does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        is_admin = False
+        if request.user.is_superuser:
+            is_admin = True
+
+        try:
+            id = campon.id
+            delete = campon.delete_campon(is_admin)
+            if delete:
+                campon.id = id
+                utils.log_model_change(campon, utils.DELETION, request.user)
+            else:
+                utils.log_model_change(campon, utils.CHANGE, request.user)
+        except ValidationError as error:
+            return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class CamponRetrieveUpdateDestroy(APIView):
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+
+    def patch(self, request, pk):
+        data = request.data
+
+        try:
+            campon = CampOn.objects.get(id=pk)
+        except Booking.DoesNotExist:
+            return Response("Selected camp on to edit does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+        request_end_time = datetime.datetime.strptime(data["end_time"], "%H:%M").time()
+
+        is_admin = False
+        if request.user.is_superuser:
+            is_admin = True
+
+        try:
+            campon.edit(request_end_time, is_admin)
+            utils.log_model_change(campon, utils.CHANGE, request.user)
+        except ValidationError as error:
+            return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_200_OK)

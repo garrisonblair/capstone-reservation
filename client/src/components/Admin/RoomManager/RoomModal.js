@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sweetAlert from 'sweetalert2';
 import {
-  Modal, Button, FormField, Input, Divider,
+  Modal, Button, FormField, Input, Divider, Table, Checkbox,
 } from 'semantic-ui-react';
 import { DateRangePicker } from 'react-dates';
 import moment from 'moment';
@@ -20,6 +20,11 @@ class RoomModal extends Component {
     unavailableEndTime: '',
     unavailableFocus: null,
     availabilities: [],
+    hasTv: false,
+    hasWindows: false,
+    maxBookingDuration: '',
+    maxRecurringBookingDuration: '',
+    cardReader: '',
   }
 
   componentDidMount() {
@@ -31,11 +36,15 @@ class RoomModal extends Component {
         roomID: selectedRoom.name,
         roomCapacity: selectedRoom.capacity,
         numOfComputers: selectedRoom.number_of_computers,
-        cardReader: null,
         unavailableStart: uStart ? moment() : uStart,
         unavailableEnd: uEnd ? moment() : uEnd,
         unavailableStartTime: uStart ? '' : uStart.format('HH:mm'),
         unavailableEndTime: uEnd ? '' : uEnd.format('HH:mm'),
+        hasTv: selectedRoom.has_tv,
+        hasWindows: selectedRoom.has_windows,
+        cardReader: '',
+        maxBookingDuration: selectedRoom.max_booking_duration,
+        maxRecurringBookingDuration: selectedRoom.max_recurring_booking_duration,
       });
     }
 
@@ -60,7 +69,14 @@ class RoomModal extends Component {
   }
 
   verifyModalForm = () => {
-    const { roomID, roomCapacity, numOfComputers } = this.state;
+    const {
+      roomID,
+      roomCapacity,
+      numOfComputers,
+      maxBookingDuration,
+      maxRecurringBookingDuration,
+    } = this.state;
+
     let result = true;
 
     if (roomID.length === 0) {
@@ -73,6 +89,14 @@ class RoomModal extends Component {
       // eslint-disable-next-line no-restricted-globals
     } else if (isNaN(numOfComputers)) {
       sweetAlert('Blocked', '"Number of Computers" field should be a number.', 'warning');
+      result = false;
+      // eslint-disable-next-line no-restricted-globals
+    } else if (isNaN(maxBookingDuration) && maxBookingDuration !== '') {
+      sweetAlert('Blocked', '"Maximum Booking Duration" field should be a number.');
+      result = false;
+      // eslint-disable-next-line no-restricted-globals
+    } else if (isNaN(maxRecurringBookingDuration) && maxBookingDuration !== '') {
+      sweetAlert('Blocked', '"Maximum Recurring Booking Duration" field should be a number.');
       result = false;
     }
 
@@ -91,20 +115,60 @@ class RoomModal extends Component {
     this.setState({ numOfComputers: event.target.value });
   }
 
+  handleHasTvChange = (event, data) => {
+    this.setState({ hasTv: data.checked });
+  }
+
+  handleHasWindowsChange = (event, data) => {
+    this.setState({ hasWindows: data.checked });
+  }
+
+  handleBookingDurationChange = (event) => {
+    this.setState({ maxBookingDuration: event.target.value });
+  }
+
+  handleRecurringBookingDurationChange = (event) => {
+    this.setState({ maxRecurringBookingDuration: event.target.value });
+  }
+
   handleSubmit = () => {
     // eslint-disable-next-line object-curly-newline
     const {
       roomID,
       roomCapacity,
       numOfComputers,
+      hasTv,
+      hasWindows,
+    } = this.state;
+
+    let {
+      maxBookingDuration,
+      maxRecurringBookingDuration,
     } = this.state;
     const { selectedRoom, onClose } = this.props;
     // Leaves the method if verification doesn't succeed
     if (!this.verifyModalForm()) {
       return;
     }
+
+    if (maxBookingDuration === '') {
+      maxBookingDuration = undefined;
+    }
+
+    if (maxRecurringBookingDuration === '') {
+      maxRecurringBookingDuration = undefined;
+    }
+
     if (selectedRoom == null) {
-      api.createRoom(roomID, roomCapacity, numOfComputers)
+      api.createRoom(
+        roomID,
+        roomCapacity,
+        numOfComputers,
+        hasTv,
+        hasWindows,
+        maxBookingDuration,
+        maxRecurringBookingDuration,
+      )
         .then((response) => {
           if (response.status === 201) {
             sweetAlert('Completed', `Room '${roomID}' was successfully created.`, 'success')
@@ -122,7 +186,13 @@ class RoomModal extends Component {
     } else {
       api.updateRoom(
         selectedRoom.id,
-        roomID, roomCapacity, numOfComputers,
+        roomID,
+        roomCapacity,
+        numOfComputers,
+        hasTv,
+        hasWindows,
+        maxBookingDuration,
+        maxRecurringBookingDuration,
       )
         .then((response) => {
           if (response.status === 200) {
@@ -198,7 +268,7 @@ class RoomModal extends Component {
             showConfirmButton: false,
             timer: 2000,
           });
-          this.getUnavailabilities(); 
+          this.getUnavailabilities();
         }
       })
       .catch((error) => {
@@ -330,10 +400,15 @@ class RoomModal extends Component {
       roomCapacity,
       roomID,
       numOfComputers,
+      hasTv,
+      hasWindows,
       cardReader,
+      maxBookingDuration,
+      maxRecurringBookingDuration,
     } = this.state;
+
     return (
-      <Modal centered={false} size="tiny" open={show} id="room-modal" onClose={onClose}>
+      <Modal centered={false} size="small" open={show} id="room-modal" onClose={onClose}>
         <Modal.Header>
           Room Details
         </Modal.Header>
@@ -348,20 +423,67 @@ class RoomModal extends Component {
                 disabled={selectedRoom != null}
               />
             </FormField>
-            <h3>Room capacity:</h3>
+            <Table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h3>Room capacity:</h3>
+                    <FormField>
+                      <Input
+                        size="small"
+                        onChange={this.handleRoomCapacityOnChange}
+                        value={roomCapacity}
+                      />
+                    </FormField>
+                  </td>
+                  <td>
+                    <h3>Number of computers:</h3>
+                    <FormField>
+                      <Input
+                        size="small"
+                        onChange={this.handleNumberOfComputersOnChange}
+                        value={numOfComputers}
+                      />
+                    </FormField>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h3>Has TV:</h3>
+                    <FormField>
+                      <Checkbox
+                        checked={hasTv}
+                        onChange={this.handleHasTvChange}
+                      />
+                    </FormField>
+                  </td>
+                  <td>
+                    <h3>Has Windows:</h3>
+                    <FormField>
+                      <Checkbox
+                        checked={hasWindows}
+                        onChange={this.handleHasWindowsChange}
+                      />
+                    </FormField>
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+            <Divider />
+            <h3>Maximum duration of Booking (Hours):</h3>
             <FormField>
               <Input
                 size="small"
-                onChange={this.handleRoomCapacityOnChange}
-                value={roomCapacity}
+                onChange={this.handleBookingDurationChange}
+                value={maxBookingDuration === null ? '' : maxBookingDuration}
               />
             </FormField>
-            <h3>Number of computers:</h3>
+            <h3>Maximum duration of Recurring Bookings (Hours):</h3>
             <FormField>
               <Input
                 size="small"
-                onChange={this.handleNumberOfComputersOnChange}
-                value={numOfComputers}
+                onChange={this.handleRecurringBookingDurationChange}
+                value={maxRecurringBookingDuration === null ? '' : maxRecurringBookingDuration}
               />
             </FormField>
             <Divider />
@@ -391,6 +513,10 @@ RoomModal.propTypes = {
     name: PropTypes.string,
     capacity: PropTypes.number,
     number_of_computers: PropTypes.number,
+    has_tv: PropTypes.bool,
+    has_windows: PropTypes.bool,
+    maxBookingDuration: PropTypes.number,
+    maxRecurringBookingDuration: PropTypes.number,
   }),
 };
 

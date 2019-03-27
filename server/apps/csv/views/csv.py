@@ -30,7 +30,7 @@ class CsvView(APIView):
         model_instance = [instance for instance in models if instance.__name__ == model][0]
         meta = model_instance._meta
         # CSV headers
-        fields = [field.name for field in meta.fields if model not in exclude or field.name not in exclude[model]]
+        fields = [field.name for field in meta.fields if model in exclude and field.name not in exclude[model]]
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(model)

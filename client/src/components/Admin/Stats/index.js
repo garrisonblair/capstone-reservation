@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import { Menu } from 'semantic-ui-react';
+import ChartDataLabels from 'chartjs-plugin-datalabels'; // Requires to be imported to display numbers on chart
 import AdminRequired from '../../HOC/AdminRequired';
 import RoomStats from './RoomStats';
 import ProgramStats from './ProgramStats';
@@ -8,7 +10,7 @@ import '../Admin.scss';
 
 class Stats extends Component {
   state = {
-    activeItem: 'program',
+    activeItem: 'room',
   }
 
   handleItemClick = (activeItem) => {
