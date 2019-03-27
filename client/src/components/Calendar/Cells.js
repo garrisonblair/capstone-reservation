@@ -31,9 +31,12 @@ class Cells extends Component {
     selectedBookingCampons: null,
     bookingModal: false,
     bookingInfoModal: false,
-    orientation: 0,
     hoursDivisionNum: 0,
     roomsNum: 0,
+    orientation: 0,
+    bookingColor: '#1F5465',
+    passedBookingColor: '#7F7F7F',
+    camponColor: '#82220E',
   };
 
   static getDerivedStateFromProps(props, state) {
@@ -135,11 +138,16 @@ class Cells extends Component {
   // Style for .calendar__booking
   setBookingStyle(booking) {
     const { hoursSettings } = this.props;
-    const { orientation } = this.state;
+    const {
+      orientation,
+      bookingColor,
+      camponColor,
+      passedBookingColor,
+    } = this.state;
     const bookingStart = Cells.timeStringToInt(booking.start_time);
     const bookingEnd = Cells.timeStringToInt(booking.end_time);
     const calendarStart = Cells.timeStringToInt(hoursSettings.start);
-    let color = '#1F5465';
+    let color = bookingColor;
     const currentDate = new Date();
     const currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`;
 
@@ -161,10 +169,10 @@ class Cells extends Component {
       }
     }
     if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10))) {
-      color = '#7F7F7F';
+      color = passedBookingColor;
     } else
     if (booking.isCampOn) {
-      color = '#82220E';
+      color = camponColor;
     }
 
     // Find the rows in the grid the booking corresponds to.
