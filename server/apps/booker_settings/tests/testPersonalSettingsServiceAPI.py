@@ -27,7 +27,6 @@ class PersonalSettingsAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         real_settings = response.data
-        self.assertEqual(real_settings['schedule_vertical'], True)
         self.assertEqual(real_settings['booking_color'], "#1F5465")
         self.assertEqual(real_settings['campon_color'], "#82220E")
         self.assertEqual(real_settings['passed_booking_color'], "#7F7F7F")
@@ -54,7 +53,6 @@ class PersonalSettingsAPITest(TestCase):
 
     def testPostPersonalSettingsSuccessful(self):
         request = self.factory.post('personal_settings_service', {
-                                        "schedule_vertical": False,
                                         "booking_color": "#000000",
                                         "campon_color": "#000000",
                                         "passed_booking_color": "#000000"
@@ -63,14 +61,12 @@ class PersonalSettingsAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         real_settings = PersonalSettings.objects.get(booker=self.booker)
-        self.assertEqual(real_settings.schedule_vertical, False)
         self.assertEqual(real_settings.booking_color, "#000000")
         self.assertEqual(real_settings.campon_color, "#000000")
         self.assertEqual(real_settings.passed_booking_color, "#000000")
 
     def testPostPersonalSettingsWrongData(self):
         request = self.factory.post('personal_settings_service', {
-                                        "schedule_vertical": False,
                                         "booking_color": "#",
                                         "campon_color": "#000000",
                                         "passed_booking_color": "#000000"

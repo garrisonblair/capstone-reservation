@@ -19,14 +19,14 @@ class PersonalSettingsCreateRetrieveUpdate(APIView):
         data = request.data
 
         try:
-            email_settings = PersonalSettings.objects.get(booker=request.user)
+            personal_settings = PersonalSettings.objects.get(booker=request.user)
         except PersonalSettings.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         try:
-            # Booker id stays the same as its on creation
+            # Booker id stays the same on update
             data["booker"] = request.user.id
-            email_settings.update(data)
+            personal_settings.update(data)
         except ValidationError as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)
 

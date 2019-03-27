@@ -852,13 +852,11 @@ function getPersonalSettings(serviceToken) {
 }
 
 function updatePersonalSettings(
-  scheduleVertical, bookingColor,
-  camponColor, passedBookingColor, serviceToken,
+  bookingColor, camponColor, passedBookingColor, serviceToken,
 ) {
   const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
   const endpoint = serviceToken ? 'personal_settings_service' : 'personal_settings';
   const data = {
-    when_booking: scheduleVertical,
     booking_color: bookingColor,
     campon_color: camponColor,
     passed_booking_color: passedBookingColor,

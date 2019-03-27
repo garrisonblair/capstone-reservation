@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Button, Checkbox, Table, Segment,
+  Button, Table, Segment,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
@@ -9,7 +9,6 @@ import './PersonalSettings.scss';
 
 class PersonalSettings extends Component {
   state = {
-    scheduleVertical: true,
     bookingColor: '#1F5465',
     camponColor: '#82220E',
     passedBookingColor: '#7F7F7F',
@@ -38,7 +37,6 @@ class PersonalSettings extends Component {
       .then((r) => {
         if (r.status === 200) {
           this.setState({
-            scheduleVertical: r.data.schedule_vertical,
             bookingColor: r.data.booking_color,
             camponColor: r.data.campon_color,
             passedBookingColor: r.data.passed_booking_color,
@@ -50,13 +48,6 @@ class PersonalSettings extends Component {
         const { data } = e.response;
         sweetAlert('Blocked', data.detail, 'error');
       });
-  }
-
-  handleWhenScheduleVerticalOnToggle = (e, data) => {
-    this.setState({
-      scheduleVertical: data.checked,
-      disableButton: false,
-    });
   }
 
   handleBookingColorChange = (event) => {
@@ -82,13 +73,11 @@ class PersonalSettings extends Component {
 
   handleSaveOnClick = () => {
     const {
-      scheduleVertical, bookingColor,
-      camponColor, passedBookingColor,
+      bookingColor, camponColor, passedBookingColor,
     } = this.state;
 
     api.updatePersonalSettings(
-      scheduleVertical, bookingColor,
-      camponColor, passedBookingColor, this.getServiceToken(),
+      bookingColor, camponColor, passedBookingColor, this.getServiceToken(),
     )
       .then((r) => {
         // console.log(r);
@@ -96,6 +85,12 @@ class PersonalSettings extends Component {
           this.sweetAlertSuccess();
           this.setState({
             disableButton: true,
+          });
+        } else {
+          sweetAlert.fire({
+            position: 'top',
+            type: 'error',
+            text: 'Invalid credentials',
           });
         }
       });
@@ -114,8 +109,7 @@ class PersonalSettings extends Component {
 
   render() {
     const {
-      scheduleVertical, bookingColor,
-      camponColor, passedBookingColor, isLoading,
+      bookingColor, camponColor, passedBookingColor, isLoading,
       disableButton,
     } = this.state;
     return (
@@ -130,16 +124,6 @@ class PersonalSettings extends Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              <Table.Row>
-                <Table.Cell>Vertical Schedule</Table.Cell>
-                <Table.Cell collapsing>
-                  <Checkbox
-                    toggle
-                    checked={scheduleVertical}
-                    onChange={this.handleWhenScheduleVerticalOnToggle}
-                  />
-                </Table.Cell>
-              </Table.Row>
               <Table.Row>
                 <Table.Cell>Booking color</Table.Cell>
                 <Table.Cell collapsing>

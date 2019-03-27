@@ -6,10 +6,12 @@ import {
   Icon,
   Message,
 } from 'semantic-ui-react';
+import sweetAlert from 'sweetalert2';
 import './Calendar.scss';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
 import storage from '../../utils/local-storage';
+import api from '../../utils/api';
 
 
 class Cells extends Component {
@@ -35,9 +37,24 @@ class Cells extends Component {
     roomsNum: 0,
     orientation: 0,
     bookingColor: '#1F5465',
-    passedBookingColor: '#7F7F7F',
     camponColor: '#82220E',
+    passedBookingColor: '#7F7F7F',
   };
+
+  componentDidMount() {
+    this.syncSettings(this.getServiceToken());
+  }
+
+  getServiceToken = () => {
+    // eslint-disable-next-line react/prop-types
+    const { match } = this.props;
+    let token;
+    if (match !== undefined) {
+      // eslint-disable-next-line prefer-destructuring
+      token = match.params.token;
+    }
+    return token;
+  }
 
   static getDerivedStateFromProps(props, state) {
     if (
@@ -211,6 +228,7 @@ class Cells extends Component {
         },
       };
     }
+
     return style;
   }
 
@@ -240,6 +258,23 @@ class Cells extends Component {
       });
     }
     return campOnsList;
+  }
+
+  syncSettings = (token) => {
+    api.getPersonalSettings(token)
+      .then((r) => {
+        if (r.status === 200) {
+          this.setState({
+            bookingColor: r.data.booking_color,
+            camponColor: r.data.campon_color,
+            passedBookingColor: r.data.passed_booking_color,
+          });
+        }
+      })
+      .catch((e) => {
+        const { data } = e.response;
+        sweetAlert('Blocked', data.detail, 'error');
+      });
   }
 
   toggleBookingModal = () => {
