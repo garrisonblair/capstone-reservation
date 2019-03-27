@@ -1,49 +1,53 @@
 import React, { Component } from 'react';
 import {
-  Button, Checkbox, Table, Segment,
+  Button, Checkbox,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
+import storage from '../../utils/local-storage';
 import './PersonalSettings.scss';
 
 
 class PersonalSettings extends Component {
   state = {
-    whenBooking: false,
-    whenInvitation: false,
-    bookingReminder: false,
-    whenCamponOnBooking: false,
-    isLoading: false,
+    scheduleVertical: true,
+    bookingColor: '#1F5465',
+    passedBookingColor: '#7F7F7F',
+    camponColor: '#82220E',
     disableButton: true,
   }
 
   componentDidMount() {
-    this.syncSettings(this.getServiceToken());
+    const { booker } = storage.getUser();
+    this.syncSettings(booker);
   }
 
-  getServiceToken = () => {
-    // eslint-disable-next-line react/prop-types
-    const { match } = this.props;
-    let token;
-    if (match !== undefined) {
-      // eslint-disable-next-line prefer-destructuring
-      token = match.params.token;
-    }
-    return token;
-  }
-
-  syncSettings = (token) => {
-    this.setState({ isLoading: true });
-    api.getEmailSettings(token)
+  syncSettings = (booker) => {
+    api.getPersonalSettings(booker.id)
       .then((r) => {
         if (r.status === 200) {
           this.setState({
-            whenBooking: r.data.when_booking,
-            whenInvitation: r.data.when_invitation,
-            bookingReminder: r.data.booking_reminder,
-            whenCamponOnBooking: r.data.when_camp_on_booking,
-            isLoading: false,
+            scheduleVertical: r.data.schedule_vertical,
+            bookingColor: r.data.booking_color,
+            passedBookingColor: r.data.passed_booking_color,
+            camponColor: r.data.campon_color,
           });
+        } else if (r.status === 404) {
+          api.createPersonalSettings()
+            .then((c) => {
+              if (c.status === 204) {
+                this.setState({
+                  scheduleVertical: c.data.schedule_vertical,
+                  bookingColor: c.data.booking_color,
+                  passedBookingColor: c.data.passed_booking_color,
+                  camponColor: c.data.campon_color,
+                });
+              }
+            })
+            .catch((e) => {
+              const { data } = e.response;
+              sweetAlert('Blocked', data.detail, 'error');
+            });
         }
       })
       .catch((e) => {
@@ -52,45 +56,42 @@ class PersonalSettings extends Component {
       });
   }
 
-  handleWhenBookingOnToggle = (e, data) => {
+  handleWhenCalendarVerticalOnToggle = (e, data) => {
     this.setState({
-      whenBooking: data.checked,
+      scheduleVertical: data.checked,
       disableButton: false,
     });
   }
 
-
-  handleWhenInvitationOnToogle = (e, data) => {
-    this.setState({
-      whenInvitation: data.checked,
-      disableButton: false,
-    });
+  handleBookingColorChange = (event) => {
+    this.setState({ bookingColor: event.target.value });
   }
 
-  handleBookingReminderOnToogle = (e, data) => {
-    this.setState({
-      bookingReminder: data.checked,
-      disableButton: false,
-    });
+  handlePassedBookingColorChange = (event) => {
+    this.setState({ passedBookingColor: event.target.value });
   }
 
-  handleWhenCamponOnBookingOnToogle = (e, data) => {
-    this.setState({
-      whenCamponOnBooking: data.checked,
-      disableButton: false,
-    });
+  handleCamponColorChange = (event) => {
+    this.setState({ camponColor: event.target.value });
   }
 
   handleSaveOnClick = () => {
     const {
-      whenBooking, whenInvitation,
-      bookingReminder, whenCamponOnBooking,
+      scheduleVertical,
+      bookingColor,
+      passedBookingColor,
+      camponColor,
     } = this.state;
 
-    api.updateEmailSettings(
-      whenBooking, whenInvitation,
-      bookingReminder, whenCamponOnBooking, this.getServiceToken(),
-    )
+    const data = {
+      scheduleVertical: `${scheduleVertical}`,
+      bookingColor: `${bookingColor}`,
+      passedBookingColor: `${passedBookingColor}`,
+      camponColor: `${camponColor}`,
+    };
+    const { booker } = storage.getUser();
+
+    api.updatePersonalSettings(booker.id, data)
       .then((r) => {
         // console.log(r);
         if (r.status === 200) {
@@ -106,7 +107,7 @@ class PersonalSettings extends Component {
     sweetAlert.fire({
       // position: 'top',
       type: 'success',
-      title: 'Email settings saved',
+      title: 'Personal settings is updated',
       toast: true,
       showConfirmButton: false,
       timer: 2000,
@@ -115,72 +116,51 @@ class PersonalSettings extends Component {
 
   render() {
     const {
-      whenBooking, whenInvitation,
-      bookingReminder, whenCamponOnBooking, isLoading,
+      scheduleVertical,
+      bookingColor,
+      passedBookingColor,
+      camponColor,
       disableButton,
     } = this.state;
     return (
-      <div id="email-settings">
-        <h1>Email Settings</h1>
-        <Segment loading={isLoading}>
-          <Table celled collapsing>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Email feature</Table.HeaderCell>
-                <Table.HeaderCell />
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              <Table.Row>
-                <Table.Cell>Receive email when making a booking</Table.Cell>
-                <Table.Cell collapsing>
-                  <Checkbox
-                    toggle
-                    checked={whenBooking}
-                    onChange={this.handleWhenBookingOnToggle}
-                  />
-                </Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>Receive email when invited to a group</Table.Cell>
-                <Table.Cell collapsing>
-                  <Checkbox
-                    toggle
-                    checked={whenInvitation}
-                    onChange={this.handleWhenInvitationOnToogle}
-                  />
-                </Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>Receive email reminder before a booking</Table.Cell>
-                <Table.Cell collapsing>
-                  <Checkbox
-                    toggle
-                    checked={bookingReminder}
-                    onChange={this.handleBookingReminderOnToogle}
-                  />
-                </Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>Receive email when someone camps on your booking</Table.Cell>
-                <Table.Cell collapsing>
-                  <Checkbox
-                    toggle
-                    checked={whenCamponOnBooking}
-                    onChange={this.handleWhenCamponOnBookingOnToogle}
-                  />
-                </Table.Cell>
-              </Table.Row>
-            </Table.Body>
-          </Table>
-          <Button
-            color="blue"
-            onClick={this.handleSaveOnClick}
-            disabled={disableButton}
-          >
-            Save
-          </Button>
-        </Segment>
+      <div id="personal-settings">
+        <h1>Personal Settings</h1>
+        <Checkbox
+          toggle
+          checked={scheduleVertical}
+          onChange={this.handleWhenCalendarVerticalOnToggle}
+        />
+        Booking color:
+        <input
+          type="text"
+          id="bookingColor"
+          value={bookingColor}
+          onChange={this.handleBookingColorChange}
+          onKeyPress={this.handleKeyPress}
+        />
+        Passed booking color:
+        <input
+          type="text"
+          id="passedBookingColor"
+          value={passedBookingColor}
+          onChange={this.handleBookingColorChange}
+          onKeyPress={this.handleKeyPress}
+        />
+        Campon color:
+        <input
+          type="text"
+          id="camponColor"
+          value={camponColor}
+          onChange={this.handleBookingColorChange}
+          onKeyPress={this.handleKeyPress}
+        />
+        <Button
+          color="blue"
+          onClick={this.handleSaveOnClick}
+          disabled={disableButton}
+        >
+        Save
+        </Button>
       </div>
     );
   }
