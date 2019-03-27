@@ -841,32 +841,31 @@ function updateEmailSettings(
   });
 }
 
-function getPersonalSettings(id) {
-  const headers = getTokenHeader();
+function getPersonalSettings(serviceToken) {
+  const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
+  const endpoint = serviceToken ? 'personal_settings_service' : 'personal_settings';
   return axios({
     method: 'GET',
-    url: `${settings.API_ROOT}/personal_settings_list/${id}`,
+    url: `${settings.API_ROOT}/${endpoint}`,
     headers,
-    withCredentials: true,
   });
 }
 
-function createPersonalSettings(data) {
-  const headers = getTokenHeader();
+function updatePersonalSettings(
+  scheduleVertical, bookingColor,
+  camponColor, passedBookingColor, serviceToken,
+) {
+  const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
+  const endpoint = serviceToken ? 'personal_settings_service' : 'personal_settings';
+  const data = {
+    when_booking: scheduleVertical,
+    booking_color: bookingColor,
+    campon_color: camponColor,
+    passed_booking_color: passedBookingColor,
+  };
   return axios({
     method: 'POST',
-    url: `${settings.API_ROOT}/personal_settings`,
-    headers,
-    data,
-    withCredentials: true,
-  });
-}
-
-function updatePersonalSettings(id, data) {
-  const headers = getTokenHeader();
-  return axios({
-    method: 'PATCH',
-    url: `${settings.API_ROOT}/personal_settings/${id}`,
+    url: `${settings.API_ROOT}/${endpoint}`,
     headers,
     data,
   });
@@ -964,7 +963,6 @@ const api = {
   getEmailSettings,
   updateEmailSettings,
   getPersonalSettings,
-  createPersonalSettings,
   updatePersonalSettings,
   getCSV,
   postCSV,

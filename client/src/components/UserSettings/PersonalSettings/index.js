@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import {
-  Button, Checkbox,
+  Button, Checkbox, Table, Segment,
 } from 'semantic-ui-react';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
-import storage from '../../utils/local-storage';
 import './PersonalSettings.scss';
 
 
@@ -12,42 +11,39 @@ class PersonalSettings extends Component {
   state = {
     scheduleVertical: true,
     bookingColor: '#1F5465',
-    passedBookingColor: '#7F7F7F',
     camponColor: '#82220E',
+    passedBookingColor: '#7F7F7F',
+    isLoading: false,
     disableButton: true,
   }
 
   componentDidMount() {
-    const { booker } = storage.getUser();
-    this.syncSettings(booker);
+    this.syncSettings(this.getServiceToken());
   }
 
-  syncSettings = (booker) => {
-    api.getPersonalSettings(booker.id)
+  getServiceToken = () => {
+    // eslint-disable-next-line react/prop-types
+    const { match } = this.props;
+    let token;
+    if (match !== undefined) {
+      // eslint-disable-next-line prefer-destructuring
+      token = match.params.token;
+    }
+    return token;
+  }
+
+  syncSettings = (token) => {
+    this.setState({ isLoading: true });
+    api.getPersonalSettings(token)
       .then((r) => {
         if (r.status === 200) {
           this.setState({
             scheduleVertical: r.data.schedule_vertical,
             bookingColor: r.data.booking_color,
-            passedBookingColor: r.data.passed_booking_color,
             camponColor: r.data.campon_color,
+            passedBookingColor: r.data.passed_booking_color,
+            isLoading: false,
           });
-        } else if (r.status === 404) {
-          api.createPersonalSettings()
-            .then((c) => {
-              if (c.status === 204) {
-                this.setState({
-                  scheduleVertical: c.data.schedule_vertical,
-                  bookingColor: c.data.booking_color,
-                  passedBookingColor: c.data.passed_booking_color,
-                  camponColor: c.data.campon_color,
-                });
-              }
-            })
-            .catch((e) => {
-              const { data } = e.response;
-              sweetAlert('Blocked', data.detail, 'error');
-            });
         }
       })
       .catch((e) => {
@@ -56,7 +52,7 @@ class PersonalSettings extends Component {
       });
   }
 
-  handleWhenCalendarVerticalOnToggle = (e, data) => {
+  handleWhenScheduleVerticalOnToggle = (e, data) => {
     this.setState({
       scheduleVertical: data.checked,
       disableButton: false,
@@ -64,34 +60,36 @@ class PersonalSettings extends Component {
   }
 
   handleBookingColorChange = (event) => {
-    this.setState({ bookingColor: event.target.value });
+    this.setState({
+      bookingColor: event.target.value,
+      disableButton: false,
+    });
   }
 
   handlePassedBookingColorChange = (event) => {
-    this.setState({ passedBookingColor: event.target.value });
+    this.setState({
+      passedBookingColor: event.target.value,
+      disableButton: false,
+    });
   }
 
   handleCamponColorChange = (event) => {
-    this.setState({ camponColor: event.target.value });
+    this.setState({
+      camponColor: event.target.value,
+      disableButton: false,
+    });
   }
 
   handleSaveOnClick = () => {
     const {
-      scheduleVertical,
-      bookingColor,
-      passedBookingColor,
-      camponColor,
+      scheduleVertical, bookingColor,
+      camponColor, passedBookingColor,
     } = this.state;
 
-    const data = {
-      scheduleVertical: `${scheduleVertical}`,
-      bookingColor: `${bookingColor}`,
-      passedBookingColor: `${passedBookingColor}`,
-      camponColor: `${camponColor}`,
-    };
-    const { booker } = storage.getUser();
-
-    api.updatePersonalSettings(booker.id, data)
+    api.updatePersonalSettings(
+      scheduleVertical, bookingColor,
+      camponColor, passedBookingColor, this.getServiceToken(),
+    )
       .then((r) => {
         // console.log(r);
         if (r.status === 200) {
@@ -107,7 +105,7 @@ class PersonalSettings extends Component {
     sweetAlert.fire({
       // position: 'top',
       type: 'success',
-      title: 'Personal settings is updated',
+      title: 'Personal settings has been updated',
       toast: true,
       showConfirmButton: false,
       timer: 2000,
@@ -116,51 +114,78 @@ class PersonalSettings extends Component {
 
   render() {
     const {
-      scheduleVertical,
-      bookingColor,
-      passedBookingColor,
-      camponColor,
+      scheduleVertical, bookingColor,
+      camponColor, passedBookingColor, isLoading,
       disableButton,
     } = this.state;
     return (
       <div id="personal-settings">
         <h1>Personal Settings</h1>
-        <Checkbox
-          toggle
-          checked={scheduleVertical}
-          onChange={this.handleWhenCalendarVerticalOnToggle}
-        />
-        Booking color:
-        <input
-          type="text"
-          id="bookingColor"
-          value={bookingColor}
-          onChange={this.handleBookingColorChange}
-          onKeyPress={this.handleKeyPress}
-        />
-        Passed booking color:
-        <input
-          type="text"
-          id="passedBookingColor"
-          value={passedBookingColor}
-          onChange={this.handleBookingColorChange}
-          onKeyPress={this.handleKeyPress}
-        />
-        Campon color:
-        <input
-          type="text"
-          id="camponColor"
-          value={camponColor}
-          onChange={this.handleBookingColorChange}
-          onKeyPress={this.handleKeyPress}
-        />
-        <Button
-          color="blue"
-          onClick={this.handleSaveOnClick}
-          disabled={disableButton}
-        >
-        Save
-        </Button>
+        <Segment loading={isLoading}>
+          <Table celled collapsing>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Personalization</Table.HeaderCell>
+                <Table.HeaderCell />
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              <Table.Row>
+                <Table.Cell>Vertical Schedule</Table.Cell>
+                <Table.Cell collapsing>
+                  <Checkbox
+                    toggle
+                    checked={scheduleVertical}
+                    onChange={this.handleWhenScheduleVerticalOnToggle}
+                  />
+                </Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>Booking color</Table.Cell>
+                <Table.Cell collapsing>
+                  <input
+                    type="text"
+                    id="bookingColor"
+                    value={bookingColor}
+                    onChange={this.handleBookingColorChange}
+                    onKeyPress={this.handleKeyPress}
+                  />
+                </Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>Campon color</Table.Cell>
+                <Table.Cell collapsing>
+                  <input
+                    type="text"
+                    id="camponColor"
+                    value={camponColor}
+                    onChange={this.handleCamponColorChange}
+                    onKeyPress={this.handleKeyPress}
+                  />
+                </Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>Passed booking color</Table.Cell>
+                <Table.Cell collapsing>
+                  <input
+                    type="text"
+                    id="passedBookingColor"
+                    value={passedBookingColor}
+                    onChange={this.handlePassedBookingColorChange}
+                    onKeyPress={this.handleKeyPress}
+                  />
+                </Table.Cell>
+              </Table.Row>
+            </Table.Body>
+          </Table>
+          <Button
+            color="blue"
+            onClick={this.handleSaveOnClick}
+            disabled={disableButton}
+          >
+            Save
+          </Button>
+        </Segment>
       </div>
     );
   }
