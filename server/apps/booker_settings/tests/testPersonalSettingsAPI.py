@@ -8,9 +8,7 @@ from rest_framework import status
 
 from django.core.exceptions import ValidationError
 from apps.booker_settings.models.PersonalSettings import PersonalSettings
-from apps.booker_settings.views.personal_settings import PersonalSettingsCreate
-from apps.booker_settings.views.personal_settings import PersonalSettingsUpdate
-from apps.booker_settings.views.personal_settings import PersonalSettingsList
+from apps.booker_settings.views.personal_settings import PersonalSettingsCreateRetrieveUpdate
 
 
 class PersonalSettingsAPITest(TestCase):
