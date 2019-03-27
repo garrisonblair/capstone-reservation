@@ -28,3 +28,18 @@ class PersonalSettings(models.Model):
 
         if not hex_pattern.match(self.passed_booking_color):
             raise ValidationError("The format of passed booking color code is invalid.")
+
+    def update(self, data):
+        if "schedule_vertical" in data:
+            self.schedule_vertical = data["schedule_vertical"]
+
+        if "booking_color" in data:
+            self.booking_color = data["booking_color"]
+
+        if "campon_color" in data:
+            self.campon_color = data["campon_color"]
+
+        if "passed_booking_color" in data:
+            self.passed_booking_color = data["passed_booking_color"]
+
+        self.save()
