@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.accounts.models import PrivilegeCategory
+from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.models.User import User
 from apps.groups.models.Group import Group

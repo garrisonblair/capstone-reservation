@@ -1,5 +1,6 @@
 import axios from 'axios';
 import settings from '../config/settings';
+import storage from './local-storage';
 import getTokenHeader from './requestHeaders';
 
 
@@ -49,7 +50,7 @@ async function logout() {
     // eslint-disable-next-line no-console
     console.log(e);
   }
-  localStorage.removeItem('CapstoneReservationUser');
+  storage.deleteUser();
 }
 
 function verify(token) {
@@ -170,6 +171,27 @@ function createCampOn(data) {
   });
 }
 
+function updateCampOn(id, data) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'PATCH',
+    url: `${settings.API_ROOT}/campon/${id}/edit`,
+    headers,
+    data,
+    withCredentials: true,
+  });
+}
+
+function deleteCampOn(id) {
+  const headers = getTokenHeader();
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/campon/${id}/cancel`,
+    headers,
+    withCredentials: true,
+  });
+}
+
 function getRooms() {
   return axios({
     method: 'GET',
@@ -191,12 +213,24 @@ function getRoomsForDate(date, startTime, endTime) {
   });
 }
 
-function createRoom(name, capacity, numberOfComputers) {
+function createRoom(
+  name,
+  capacity,
+  numberOfComputers,
+  hasTv,
+  hasWindows,
+  maxBookingDuration,
+  maxRecurringBookingDuration,
+) {
   const headers = getTokenHeader();
   const data = {
     name,
     capacity,
     number_of_computers: numberOfComputers,
+    has_tv: hasTv,
+    has_windows: hasWindows,
+    max_booking_duration: maxBookingDuration,
+    max_recurring_booking_duration: maxRecurringBookingDuration,
   };
   return axios({
     method: 'POST',
@@ -208,13 +242,24 @@ function createRoom(name, capacity, numberOfComputers) {
 }
 
 function updateRoom(
-  id, name, capacity, numberOfComputers,
+  id,
+  name,
+  capacity,
+  numberOfComputers,
+  hasTv,
+  hasWindows,
+  maxBookingDuration,
+  maxRecurringBookingDuration,
 ) {
   const headers = getTokenHeader();
   const data = {
     name,
     capacity,
     number_of_computers: numberOfComputers,
+    has_tv: hasTv,
+    has_windows: hasWindows,
+    max_booking_duration: maxBookingDuration,
+    max_recurring_booking_duration: maxRecurringBookingDuration,
   };
   return axios({
     method: 'PATCH',
@@ -847,6 +892,8 @@ const api = {
   createRecurringBooking,
   getCampOns,
   createCampOn,
+  updateCampOn,
+  deleteCampOn,
   getRooms,
   getRoomsForDate,
   createRoom,

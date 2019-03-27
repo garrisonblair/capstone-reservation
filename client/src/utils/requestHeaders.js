@@ -1,5 +1,7 @@
+import storage from './local-storage';
+
 function getApiToken() {
-  const user = JSON.parse(localStorage.getItem('CapstoneReservationUser'));
+  const user = storage.getUser();
   return user ? user.token : null;
 }
 

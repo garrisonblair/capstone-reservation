@@ -7,11 +7,15 @@ class RoomManager(models.Manager):
     def create_room(self,
                     name,
                     capacity,
-                    number_of_computers):
+                    number_of_computers,
+                    has_tv=False,
+                    has_windows=False):
         room = self.create(
             name=name,
             capacity=capacity,
             number_of_computers=number_of_computers,
+            has_tv=has_tv,
+            has_windows=has_windows,
         )
 
         return room
@@ -21,6 +25,11 @@ class Room(models.Model):
     name = models.CharField(max_length=50, blank=False, unique=True)
     capacity = models.PositiveIntegerField(blank=False, null=False, default=0)
     number_of_computers = models.PositiveIntegerField(blank=False, null=False, default=0)
+    has_tv = models.BooleanField(default=False)
+    has_windows = models.BooleanField(default=False)
+    max_booking_duration = models.IntegerField(blank=True, null=True)
+    max_recurring_booking_duration = models.IntegerField(blank=True, null=True)
+
     objects = RoomManager()
 
     observers = list()

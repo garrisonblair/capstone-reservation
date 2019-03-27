@@ -389,17 +389,18 @@ class TestBooking(TestCase):
         room = Room(name="Room 1", capacity=7, number_of_computers=7)
         room.save()
 
-        today = timezone.now()
-        tomorrow = timezone.now() + timedelta(1)
+        now = timezone.now()
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_today = now.replace(hour=23, minute=59, second=59, microsecond=0)
 
-        start_time = timezone.now() + timedelta(hours=1)
+        start_time = now.replace(hour=10, minute=0, second=0, microsecond=0)
         start_time = start_time.time()
-        end_time = timezone.now() + timedelta(hours=2)
+        end_time = now.replace(hour=11, minute=0, second=0, microsecond=0)
         end_time = end_time.time()
 
         unavailability = RoomUnavailability(room=room,
                                             start_time=today,
-                                            end_time=tomorrow)
+                                            end_time=end_of_today)
         unavailability.save()
 
         booking = Booking(booker=self.booker,
@@ -410,3 +411,39 @@ class TestBooking(TestCase):
 
         with self.assertRaises(ValidationError):
             booking.save()
+
+    def testBookingTooLongForRoom(self):
+        self.room.max_booking_duration = 2
+        self.room.save()
+
+        booking = Booking(booker=self.booker,
+                          room=self.room,
+                          date=self.date,
+                          start_time=time(12, 0, 0),
+                          end_time=time(15, 0, 0))
+
+        try:
+            booking.save()
+        except ValidationError as e:
+            self.assertTrue(True)
+            return
+
+        self.fail()
+
+    def testBookingNotTooLongForRoom(self):
+        self.room.max_booking_duration = 2
+        self.room.save()
+
+        booking = Booking(booker=self.booker,
+                          room=self.room,
+                          date=self.date,
+                          start_time=time(12, 0, 0),
+                          end_time=time(14, 0, 0))
+
+        try:
+            booking.save()
+        except ValidationError as e:
+            self.fail()
+            return
+
+        self.assertTrue(True)
