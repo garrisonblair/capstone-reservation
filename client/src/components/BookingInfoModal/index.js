@@ -20,13 +20,30 @@ import './BookingInfoModal.scss';
 
 
 class BookingInfoModal extends Component {
+  static convertDateToString(date) {
+    const year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    if (month < 10) {
+      month = `0${month}`;
+    }
+    if (day < 10) {
+      day = `0${day}`;
+    }
+    const stringDate = `${year}-${month}-${day}`;
+    return stringDate;
+  }
+
   static checkCamponPossible(booking) {
     if (booking.id) {
       const currentDate = new Date();
       const currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}00`;
       const bookingEndTime = booking.end_time.replace(/:/g, '');
       const bookingStartTime = booking.start_time.replace(/:/g, '');
-      if (currentTime < bookingEndTime && currentTime > bookingStartTime) {
+      const bookingDate = booking.date;
+      const currentDateString = BookingInfoModal.convertDateToString(currentDate);
+      if (currentTime < bookingEndTime && currentTime > bookingStartTime
+        && bookingDate === currentDateString) {
         return true;
       }
       return false;
