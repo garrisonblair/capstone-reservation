@@ -346,7 +346,6 @@ class BookingInfoModal extends Component {
       );
     }
     if (booking.booker
-      && !booking.booker.is_superuser
       && BookingInfoModal.checkCamponPossible(booking)) {
       return (
         <CampOnForm
