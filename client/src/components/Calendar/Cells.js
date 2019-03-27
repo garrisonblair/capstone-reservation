@@ -270,10 +270,6 @@ class Cells extends Component {
             passedBookingColor: r.data.passed_booking_color,
           });
         }
-      })
-      .catch((e) => {
-        const { data } = e.response;
-        sweetAlert('Blocked', data.detail, 'error');
       });
   }
 

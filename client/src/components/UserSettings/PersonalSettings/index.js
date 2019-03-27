@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Button, Table, Segment,
 } from 'semantic-ui-react';
+import { SketchPicker, Hue } from 'react-color';
 import sweetAlert from 'sweetalert2';
 import api from '../../../utils/api';
 import './PersonalSettings.scss';
@@ -71,6 +72,27 @@ class PersonalSettings extends Component {
     });
   }
 
+  handlePickBookingColor = (color) => {
+    this.setState({
+      bookingColor: color.hex,
+      disableButton: false,
+    });
+  };
+
+  handlePickCampOnColor = (color) => {
+    this.setState({
+      camponColor: color.hex,
+      disableButton: false,
+    });
+  };
+
+  handlePickPassedBookingColor = (color) => {
+    this.setState({
+      passedBookingColor: color.hex,
+      disableButton: false,
+    });
+  };
+
   handleSaveOnClick = () => {
     const {
       bookingColor, camponColor, passedBookingColor,
@@ -93,6 +115,10 @@ class PersonalSettings extends Component {
             text: 'Invalid credentials',
           });
         }
+      })
+      .catch((e) => {
+        const { data } = e.response;
+        sweetAlert('Invalid Color Code', data.detail, 'error');
       });
   }
 
@@ -134,6 +160,10 @@ class PersonalSettings extends Component {
                     onChange={this.handleBookingColorChange}
                     onKeyPress={this.handleKeyPress}
                   />
+                  <SketchPicker
+                    color={this.handleBookingColorChange}
+                    onChangeComplete={this.handlePickBookingColor}
+                  />
                 </Table.Cell>
               </Table.Row>
               <Table.Row>
@@ -146,6 +176,10 @@ class PersonalSettings extends Component {
                     onChange={this.handleCamponColorChange}
                     onKeyPress={this.handleKeyPress}
                   />
+                  <SketchPicker
+                    color={this.handleCamponColorChange}
+                    onChangeComplete={this.handlePickCampOnColor}
+                  />
                 </Table.Cell>
               </Table.Row>
               <Table.Row>
@@ -157,6 +191,10 @@ class PersonalSettings extends Component {
                     value={passedBookingColor}
                     onChange={this.handlePassedBookingColorChange}
                     onKeyPress={this.handleKeyPress}
+                  />
+                  <SketchPicker
+                    color={this.handlePassedBookingColorChange}
+                    onChangeComplete={this.handlePickPassedBookingColor}
                   />
                 </Table.Cell>
               </Table.Row>
