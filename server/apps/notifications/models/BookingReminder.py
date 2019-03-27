@@ -6,6 +6,7 @@ from apps.booking.models.Booking import Booking
 from apps.system_administration.models.system_settings import SystemSettings
 from apps.util.ModelObserver import ModelObserver
 from apps.notifications.apps import NotificationsConfig
+from apps.booker_settings.models.EmailSettings import EmailSettings
 
 
 class BookingReminderManager(models.Manager, ModelObserver):
@@ -78,10 +79,10 @@ class BookingReminder(models.Model):
                                                                                               self.booking.room.name)
 
         for user in users:
-            greeting = "Hello {}".format(user.first_name)
-
-            full_message = greeting + "\n\n" + message
-
-            user.send_email(subject, full_message)
+            email_settings = EmailSettings.objects.get_or_create(booker=user)[0]
+            if email_settings.booking_reminder:
+                greeting = "Hello {}".format(user.first_name)
+                full_message = greeting + "\n\n" + message
+                user.send_email(subject, full_message)
 
         self.delete()

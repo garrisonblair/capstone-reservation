@@ -851,6 +851,36 @@ function postNotification(bookerId, rooms, date, rangeStart, rangeEnd, minBookin
   });
 }
 
+function getEmailSettings(serviceToken) {
+  const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
+  const endpoint = serviceToken ? 'email_settings_service' : 'email_settings';
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/${endpoint}`,
+    headers,
+  });
+}
+
+function updateEmailSettings(
+  whenBooking, whenInvitation,
+  bookingReminder, whenCampsOnBooking, serviceToken,
+) {
+  const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
+  const endpoint = serviceToken ? 'email_settings_service' : 'email_settings';
+  const data = {
+    when_booking: whenBooking,
+    when_invitation: whenInvitation,
+    booking_reminder: bookingReminder,
+    when_camp_on_booking: whenCampsOnBooking,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/${endpoint}`,
+    headers,
+    data,
+  });
+}
+
 function getCSV() {
   const headers = getTokenHeader();
   return axios({
@@ -943,6 +973,8 @@ const api = {
   deleteAnnouncement,
   updateAnnouncement,
   postNotification,
+  getEmailSettings,
+  updateEmailSettings,
   getCSV,
   postCSV,
 };

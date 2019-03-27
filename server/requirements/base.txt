@@ -18,3 +18,4 @@ google-auth-oauthlib
 ics==0.4
 celery==4.2.1
 django-celery-beat==1.4.0
+PyJWT

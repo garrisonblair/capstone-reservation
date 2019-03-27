@@ -36,6 +36,7 @@ PROJECT_APPS = [
     'apps.card_reader.apps.CardReaderConfig',
     'apps.notifications.apps.NotificationsConfig',
     'apps.csv.apps.CsvConfig',
+    'apps.booker_settings.apps.EmailSettingsConfig'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS

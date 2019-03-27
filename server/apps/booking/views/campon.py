@@ -12,6 +12,7 @@ from apps.accounts.permissions.IsBooker import IsBooker
 from apps.accounts.permissions.IsOwnerOrAdmin import IsOwnerOrAdmin
 from apps.booking.models.CampOn import CampOn
 from apps.booking.models.Booking import Booking
+from apps.booker_settings.models.EmailSettings import EmailSettings
 from apps.booking.serializers.campon import CampOnSerializer, ReadCampOnSerializer
 from apps.booking.serializers.booking import BookingSerializer
 from apps.util import utils
@@ -148,6 +149,11 @@ class CampOnCreate(APIView):
 
         response_data = {"CampOn": CampOnSerializer(camp_on).data,
                          "Booking": BookingSerializer(new_booking).data}
+        email_settings = EmailSettings.objects.get_or_create(booker=camp_on.camped_on_booking.booker)[0]
+        if email_settings.when_camp_on_booking:
+            email_subject = "Camping on your booking!"
+            email_message = "Someone made a camp-on on your booking. Make sure you are in the room or you may lose it."
+            current_booking.booker.send_email(email_subject, email_message)
         return Response(response_data, status=status.HTTP_201_CREATED)
 
 

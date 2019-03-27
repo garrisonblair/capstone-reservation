@@ -152,6 +152,7 @@ class Navigation extends Component {
           <Dropdown.Divider /> */}
             <Dropdown.Item icon="th" text="Dashboard" onClick={() => history.push('dashboard')} />
             <Dropdown.Item icon="user" text="Profile" onClick={() => history.push('profile')} />
+            <Dropdown.Item icon="cog" text="Settings" onClick={() => history.push('settings')} />
           </Dropdown.Menu>
         </Dropdown>
       </React.Fragment>

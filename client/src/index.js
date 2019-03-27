@@ -27,6 +27,8 @@ import HomeMobile from './components/Mobile/Home';
 import HomeDisplay from './components/HomeDisplay';
 import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
+import UserSettings from './components/UserSettings';
+import EmailSettings from './components/UserSettings/EmailSettings';
 import Groups from './components/Admin/Groups';
 
 function renderPage() {
@@ -53,6 +55,8 @@ function renderPage() {
           <Route exact path="/admin/logs" render={() => <Admin menuType="logs" content={<BookingActivity />} />} />
           <Route exact path="/admin/databasedump" render={() => <Admin menuType="databasedumps" content={<DatabaseDump />} />} />
           <Route exact path="/dashboard" component={Dashboard} />
+          <Route exact path="/settings" component={UserSettings} />
+          <Route exact path="/email_settings/:token" component={EmailSettings} />
           <Route exact path="/profile" render={() => <Profile asPage />} />
           <Route component={NotFound} />
         </Switch>
