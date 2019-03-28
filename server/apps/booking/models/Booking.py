@@ -380,7 +380,6 @@ class Booking(models.Model, SubjectModel):
         # restart process with the new booking for any other campons that need to be updated
         new_booking.update_campons_after_change()
 
-
     def set_to_confirmed(self):
         self.confirmed = True
         self.save()
