@@ -134,6 +134,9 @@ class CampOn(models.Model, SubjectModel):
 
         if self.start_time <= now.time() and not is_admin:
             end_time = get_rounded_time(10).time()
+            if end_time == self.start_time:
+                self.delete()
+                return True
             try:
                 self.end_time = end_time
                 self.save()
