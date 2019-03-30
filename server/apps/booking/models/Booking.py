@@ -106,10 +106,6 @@ class Booking(models.Model, SubjectModel):
                     self.recurring_booking, self.confirmed)
 
     def validate_model(self):
-        now = datetime.datetime.now()
-        print(self.start_time)
-        print(self.end_time)
-        print(self.end_time.__class__)
         if not isinstance(self.start_time, datetime.time):
             self.start_time = datetime.datetime.strptime(self.start_time, "%H:%M").time()
         if not isinstance(self.end_time, datetime.time):
