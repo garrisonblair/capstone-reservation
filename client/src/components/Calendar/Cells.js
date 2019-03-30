@@ -442,6 +442,7 @@ class Cells extends Component {
 
   renderBookingText(booking) {
     const { orientation } = this.props;
+    const isRecurring = booking.recurring_booking;
     let usernameDisplay = booking.booker.username;
     if (booking.show_note_on_calendar) {
       usernameDisplay = booking.note;
@@ -464,7 +465,13 @@ class Cells extends Component {
           {booking.note && (booking.display_note || storage.checkAdmin())
             ? Cells.renderNote(booking) : null}
 
-          {booking.confirmed ? <div style={{ marginTop: '5px' }}><Icon name="check circle" /></div> : null}
+          {booking.confirmed || isRecurring ? (
+            <div style={{ marginTop: '5px' }}>
+              <Icon name="facebook" />
+              {isRecurring ? <Icon name="history" flipped="horizontally" /> : null}
+              {booking.confirmed ? <Icon name="check circle" /> : null}
+            </div>
+          ) : null}
         </span>
       );
     }
