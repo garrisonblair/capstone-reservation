@@ -152,17 +152,6 @@ function createRecurringBooking(data) {
   });
 }
 
-function editRecurringBooking(data, bookingId) {
-  const headers = getTokenHeader();
-  return axios({
-    method: 'POST',
-    url: `${settings.API_ROOT}/booking/${bookingId}/edit_recurring_booking`,
-    headers,
-    data,
-    withCredentials: true,
-  });
-}
-
 function deleteRecurringBooking(bookingId) {
   const headers = getTokenHeader();
   return axios({
@@ -863,7 +852,6 @@ const api = {
   deleteBooking,
   confirmBooking,
   createRecurringBooking,
-  editRecurringBooking,
   deleteRecurringBooking,
   getCampOns,
   createCampOn,

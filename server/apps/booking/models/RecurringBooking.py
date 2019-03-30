@@ -67,9 +67,9 @@ class RecurringBooking(models.Model):
     objects = RecurringBookingManager()
 
     def save(self, *args, **kwargs):
-        self.evaluate_privilege()
         if self.id is None:
             is_create = True
+            self.evaluate_privilege()
         else:
             is_create = False
         self.validate_model(is_create)

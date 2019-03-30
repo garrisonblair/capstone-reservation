@@ -48,7 +48,7 @@ class RecurringBookingCreate(APIView):
 
 
 class RecurringBookingCancel(APIView):
-    permission_classes = (IsAuthenticated, IsOwnerOrAdmin, IsBooker)
+    permission_classes = (IsAuthenticated, IsBooker)
     serializer_class = RecurringBookingSerializer
 
     def post(self, request, pk):
@@ -58,6 +58,10 @@ class RecurringBookingCancel(APIView):
             recurring_booking = RecurringBooking.objects.get(id=pk)
         except RecurringBooking.DoesNotExist:
             return Response('Booking does not exist.', status=status.HTTP_400_BAD_REQUEST)
+
+        if request.user.is_superuser:
+            recurring_booking.delete()
+            return Response("Recurring Booking deleted", status=status.HTTP_200_OK)
 
         # Check user permissions
         self.check_object_permissions(request, recurring_booking.booker)
@@ -82,7 +86,7 @@ class RecurringBookingCancel(APIView):
         future_associated_booking_instances.delete()
 
         try:
-            recurring_booking.end_date = now.date()
+            recurring_booking.end_date = now.date() + datetime.timedelta(days=1)
             recurring_booking.save()
         except ValidationError as error:
             return Response(error.message, status=status.HTTP_400_BAD_REQUEST)

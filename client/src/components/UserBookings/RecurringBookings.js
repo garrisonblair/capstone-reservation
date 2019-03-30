@@ -5,25 +5,9 @@ import {
   TableBody,
 } from 'semantic-ui-react';
 import EmptySegment from '../EmptySegment';
-import RecurringBookingModal from '../RecurringBookingModal';
 
 
 class RecurringBookings extends Component {
-  state = {
-    showRecurringModal: false,
-    booking: null,
-  }
-
-  closeModal = () => {
-    this.setState({ showRecurringModal: false });
-  }
-
-  openRecurringModal = (booking) => {
-    this.setState({ booking }, () => {
-      this.setState({ showRecurringModal: true });
-    });
-  }
-
   renderTableHeader = () => {
     const headers = ['Room', 'Start Date', 'End Date', 'Start Time', 'End Time', 'Group'];
     let component = [];
@@ -77,21 +61,12 @@ class RecurringBookings extends Component {
 
   render() {
     const { bookings } = this.props;
-    const { showRecurringModal, booking } = this.state;
     let component = (
       <div>
         <Table unstackable>
           {this.renderTableHeader()}
           {this.renderTableBody()}
         </Table>
-        {showRecurringModal === true
-          ? (
-            <RecurringBookingModal
-              show={showRecurringModal}
-              booking={booking}
-              onClose={this.closeModal}
-            />)
-          : null}
       </div>
     );
 

@@ -16,7 +16,6 @@ import api from '../../utils/api';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
 import storage from '../../utils/local-storage';
-import RecurringBookingModal from '../RecurringBookingModal';
 import './BookingInfoModal.scss';
 
 
@@ -53,7 +52,6 @@ class BookingInfoModal extends Component {
     displayNote: false,
     showOnCalendar: false,
     booking: undefined,
-    showRecurringModal: false,
   }
 
   componentWillMount() {
@@ -85,7 +83,6 @@ class BookingInfoModal extends Component {
     onClose();
     this.setState({
       show: false,
-      showRecurringModal: false,
     });
   }
 
@@ -211,6 +208,41 @@ class BookingInfoModal extends Component {
       });
   }
 
+  handleDeleteButton = () => {
+    const { booking } = this.props;
+    sweetAlert.fire({
+      position: 'top',
+      type: 'warning',
+      text: 'This will delete all bookings associated with this recurring booking.',
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      showCancelButton: true,
+    })
+      .then((r) => {
+        if (r.value) {
+          api.deleteRecurringBooking(booking.id)
+            .then(() => {
+              this.closeModal();
+              sweetAlert.fire({
+                position: 'top',
+                type: 'success',
+                title: 'Recurring booking was successfully deleted.',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+              });
+            })
+            .catch((error) => {
+              sweetAlert.fire({
+                position: 'top',
+                type: 'error',
+                text: error.response.data,
+              });
+            });
+        }
+      });
+  }
+
   handleGoToUser = () => {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
@@ -328,7 +360,7 @@ class BookingInfoModal extends Component {
             onCloseWithEditBooking={this.closeModalWithAction}
           />
           {booking.recurring_booking === null ? null
-            : <Button content="Edit recurring bookings" color="blue" onClick={() => this.setState({ showRecurringModal: true })} />}
+            : <Button content="Delete Recurring Bookings" color="red" onClick={this.handleDeleteButton} />}
           <div className="ui divider" />
         </div>
       );
@@ -363,7 +395,7 @@ class BookingInfoModal extends Component {
   }
 
   render() {
-    const { show, showRecurringModal } = this.state;
+    const { show } = this.state;
     const { selectedRoomName, booking } = this.props;
     return (
       <div id="reservation-details-modal">
@@ -377,14 +409,6 @@ class BookingInfoModal extends Component {
           </Modal.Header>
           {this.renderDescription()}
         </Modal>
-        {showRecurringModal === true
-          ? (
-            <RecurringBookingModal
-              show={showRecurringModal}
-              booking={booking.recurring_booking}
-              onClose={this.closeModal}
-            />)
-          : null}
       </div>
     );
   }

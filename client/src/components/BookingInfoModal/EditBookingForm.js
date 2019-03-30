@@ -15,7 +15,6 @@ import './BookingInfoModal.scss';
 
 
 class EditBookingForm extends Component {
-
   static generateReservationProfilesOptions(reservationProfiles) {
     const result = reservationProfiles.map(profile => ({ text: profile, value: profile }));
     return result;
@@ -35,7 +34,9 @@ class EditBookingForm extends Component {
   }
 
   componentDidMount() {
-    const { minuteInterval, reservationProfiles, booking, minHour, maxHour } = this.props;
+    const {
+      minuteInterval, reservationProfiles, booking, minHour, maxHour,
+    } = this.props;
     const startTime = booking.start_time;
     const endTime = booking.end_time;
     this.setState({
