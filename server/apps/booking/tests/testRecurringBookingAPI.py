@@ -288,7 +288,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(RecurringBooking.objects.count(), 1)
         self.assertEqual(recurring_booking.booking_set.count(), 2)
-        self.assertEqual(recurring_booking.end_date, datetime.date(2019, 10, 10))
+        self.assertEqual(recurring_booking.end_date, datetime.date(2019, 10, 11))
 
     def testCancelRecurringBookingAfterEnd(self):
         recurring_booking, conflicts = RecurringBooking.objects.create_recurring_booking(
