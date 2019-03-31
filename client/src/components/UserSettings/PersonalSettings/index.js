@@ -174,7 +174,7 @@ class PersonalSettings extends Component {
     const {
       bookingColor, camponColor, passedBookingColor,
       isLoading, disableButton,
-      displayBookingColorPicker, displayCamponColorPicker, displayPassedBookingColorPicker
+      displayBookingColorPicker, displayCamponColorPicker, displayPassedBookingColorPicker,
     } = this.state;
     const popover = {
       position: 'absolute',
