@@ -5,8 +5,8 @@ from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from rest_framework.test import force_authenticate
 from django.contrib.auth.models import User
-from django.contrib.admin.models import LogEntry, ContentType, ADDITION, CHANGE
-from datetime import timedelta, datetime
+from django.contrib.admin.models import LogEntry, ContentType, ADDITION
+import datetime
 
 from apps.accounts.models.User import User
 from apps.booking.models.RecurringBooking import RecurringBooking
@@ -14,10 +14,11 @@ from apps.booking.models.Booking import Booking
 from apps.groups.models.Group import Group
 from apps.rooms.models.Room import Room
 
-from apps.booking.views.recurring_booking import RecurringBookingCreate
+from apps.booking.views.recurring_booking import RecurringBookingCreate, RecurringBookingCancel
 
 from apps.booking.serializers.recurring_booking import LogRecurringBookingSerializer
 from apps.booking.serializers.booking import LogBookingSerializer
+from apps.util.mock_datetime import mock_datetime
 
 
 class BookingAPITest(TestCase):
@@ -44,8 +45,11 @@ class BookingAPITest(TestCase):
         self.room = Room(name="H833-17", capacity=4, number_of_computers=1)
         self.room.save()
 
-        start = datetime.strptime("2019-10-01 12:00", "%Y-%m-%d %H:%M")
-        end = datetime.strptime("2019-10-16 15:00", "%Y-%m-%d %H:%M")
+        self.room2 = Room(name="H833-18", capacity=4, number_of_computers=1)
+        self.room2.save()
+
+        start = datetime.datetime.strptime("2019-10-01 12:00", "%Y-%m-%d %H:%M")
+        end = datetime.datetime.strptime("2019-10-16 15:00", "%Y-%m-%d %H:%M")
         self.start_date = start.date()
         self.end_date = end.date()
         self.start_time = start.time()
@@ -79,7 +83,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking1.group, self.group)
         self.assertEqual(booking1.booker, self.user1)
 
-        booking2 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=7))
+        booking2 = recurring_booking.booking_set.get(date=self.start_date + datetime.timedelta(days=7))
 
         self.assertEqual(booking2.start_time, self.start_time)
         self.assertEqual(booking2.end_time, self.end_time)
@@ -87,7 +91,7 @@ class BookingAPITest(TestCase):
         self.assertEqual(booking2.group, self.group)
         self.assertEqual(booking2.booker, self.user1)
 
-        booking3 = recurring_booking.booking_set.get(date=self.start_date + timedelta(days=14))
+        booking3 = recurring_booking.booking_set.get(date=self.start_date + datetime.timedelta(days=14))
 
         self.assertEqual(booking3.start_time, self.start_time)
         self.assertEqual(booking3.end_time, self.end_time)
@@ -237,3 +241,73 @@ class BookingAPITest(TestCase):
         response = RecurringBookingCreate.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, [self.start_date])
+
+    def testCancelRecurringBookingBeforeStart(self):
+        recurring_booking, conflicts = RecurringBooking.objects.create_recurring_booking(
+            self.start_date,
+            self.end_date,
+            self.start_time,
+            self.end_time,
+            self.room,
+            self.group,
+            self.user1,
+            False
+        )
+
+        with mock_datetime(datetime.datetime(2019, 9, 12, 11, 30, 0, 0), datetime):
+            request = self.factory.post("/booking/{}/cancel_recurring_booking".format(recurring_booking.id),
+                                        {}, format="json")
+            force_authenticate(request, user=User.objects.get(username="john"))
+            response = RecurringBookingCancel.as_view()(request, recurring_booking.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(RecurringBooking.objects.count(), 0)
+        self.assertEqual(Booking.objects.count(), 0)
+
+    def testCancelRecurringBookingAfterStart(self):
+        recurring_booking, conflicts = RecurringBooking.objects.create_recurring_booking(
+            self.start_date,
+            self.end_date,
+            self.start_time,
+            self.end_time,
+            self.room,
+            self.group,
+            self.user1,
+            False
+        )
+        self.assertEqual(recurring_booking.booking_set.count(), 3)
+
+        with mock_datetime(datetime.datetime(2019, 10, 10, 11, 30, 0, 0), datetime):
+            request = self.factory.post("/booking/{}/cancel_recurring_booking".format(recurring_booking.id),
+                                        {}, format="json")
+            force_authenticate(request, user=User.objects.get(username="john"))
+            response = RecurringBookingCancel.as_view()(request, recurring_booking.id)
+
+        recurring_booking = RecurringBooking.objects.get(id=recurring_booking.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(RecurringBooking.objects.count(), 1)
+        self.assertEqual(recurring_booking.booking_set.count(), 2)
+        self.assertEqual(recurring_booking.end_date, datetime.date(2019, 10, 11))
+
+    def testCancelRecurringBookingAfterEnd(self):
+        recurring_booking, conflicts = RecurringBooking.objects.create_recurring_booking(
+            self.start_date,
+            self.end_date,
+            self.start_time,
+            self.end_time,
+            self.room,
+            self.group,
+            self.user1,
+            False
+        )
+        self.assertEqual(recurring_booking.booking_set.count(), 3)
+
+        with mock_datetime(datetime.datetime(2019, 10, 17, 11, 30, 0, 0), datetime):
+            request = self.factory.post("/booking/{}/cancel_recurring_booking".format(recurring_booking.id),
+                                        {}, format="json")
+            force_authenticate(request, user=User.objects.get(username="john"))
+            response = RecurringBookingCancel.as_view()(request, recurring_booking.id)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(RecurringBooking.objects.count(), 1)

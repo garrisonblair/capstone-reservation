@@ -115,6 +115,10 @@ class BookingCancel(APIView):
         except Booking.DoesNotExist:
             return Response("Selected booking to cancel does not exist", status=status.HTTP_400_BAD_REQUEST)
 
+        if request.user.is_superuser:
+            booking.delete_booking()
+            return Response("Booking deleted", status=status.HTTP_200_OK)
+
         # Check user permissions
         self.check_object_permissions(request, booking.booker)
 
@@ -134,6 +138,7 @@ class BookingCancel(APIView):
                 now_end = utils.get_rounded_time(10).time()
                 booking.end_time = now_end
                 booking.save()
+                booking.update_campons_after_change()
                 utils.log_model_change(booking, utils.DELETION, request.user)
             except ValidationError as e:
                 return Response(e.message, status.HTTP_400_BAD_REQUEST)

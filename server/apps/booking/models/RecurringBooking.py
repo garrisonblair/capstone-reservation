@@ -3,14 +3,14 @@ import json
 from django.core.exceptions import ValidationError
 from apps.accounts.exceptions import PrivilegeError
 from django.db import models
-from django.db.models import Q
 
 from apps.accounts.models.PrivilegeCategory import PrivilegeCategory
 from apps.rooms.models.Room import Room
 from apps.accounts.models.User import User
 from apps.groups.models.Group import Group
 from apps.util.AbstractBooker import AbstractBooker
-from datetime import timedelta, datetime, date
+
+from datetime import timedelta, datetime, date, time
 
 
 class RecurringBookingManager(models.Manager):
@@ -67,14 +67,18 @@ class RecurringBooking(models.Model):
     objects = RecurringBookingManager()
 
     def save(self, *args, **kwargs):
-        self.evaluate_privilege()
-        self.validate_model()
+        if self.id is None:
+            is_create = True
+            self.evaluate_privilege()
+        else:
+            is_create = False
+        self.validate_model(is_create)
         super(RecurringBooking, self).save(*args, **kwargs)
 
-    def validate_model(self):
+    def validate_model(self, is_create=False):
         if self.start_date >= self.end_date:
             raise ValidationError("Start date can not be after End date.")
-        elif self.end_date < self.start_date + timedelta(days=7):
+        elif self.end_date < self.start_date + timedelta(days=7) and is_create:
             raise ValidationError("You must book for at least two consecutive weeks.")
         elif self.booking_start_time >= self.booking_end_time:
             raise ValidationError("Start time can not be after End time.")
@@ -93,18 +97,19 @@ class RecurringBooking(models.Model):
             current_date = self.start_date
             bookings = 0
             conflicts = ''
-            while current_date <= self.end_date:
-                if Booking.objects.filter(~Q(id=self.id),
-                                          start_time__lt=self.booking_end_time,
-                                          end_time__gt=self.booking_start_time,
-                                          room=self.room,
-                                          date=current_date).exists():
-                    if self.skip_conflicts:
-                        bookings += 1
-                    else:
-                        conflict = current_date.strftime('%x')
-                        conflicts += ", {}".format(conflict)
-                current_date += timedelta(days=7)
+
+            if is_create:
+                while current_date <= self.end_date:
+                    if Booking.objects.filter(start_time__lt=self.booking_end_time,
+                                              end_time__gt=self.booking_start_time,
+                                              room=self.room,
+                                              date=current_date).exists():
+                        if self.skip_conflicts:
+                            bookings += 1
+                        else:
+                            conflict = current_date.strftime('%x')
+                            conflicts += ", {}".format(conflict)
+                    current_date += timedelta(days=7)
 
             if conflicts != '':
                 raise ValidationError(conflicts[2:])
@@ -159,3 +164,9 @@ class RecurringBooking(models.Model):
     def json_serialize(self):
         from ..serializers.recurring_booking import LogRecurringBookingSerializer
         return json.dumps(LogRecurringBookingSerializer(self).data)
+
+
+def add_days_to_date(date, days):
+    date_dt = datetime.combine(date, time(0, 0, 0))
+    date_dt += timedelta(days=days)
+    return date_dt.date()

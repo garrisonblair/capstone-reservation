@@ -13,20 +13,37 @@ import {
 import sweetAlert from 'sweetalert2';
 import moment from 'moment';
 import api from '../../utils/api';
-import storage from '../../utils/local-storage';
 import CampOnForm from './CampOnForm';
 import EditBookingForm from './EditBookingForm';
+import storage from '../../utils/local-storage';
 import './BookingInfoModal.scss';
 
 
 class BookingInfoModal extends Component {
+  static convertDateToString(date) {
+    const year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    if (month < 10) {
+      month = `0${month}`;
+    }
+    if (day < 10) {
+      day = `0${day}`;
+    }
+    const stringDate = `${year}-${month}-${day}`;
+    return stringDate;
+  }
+
   static checkCamponPossible(booking) {
     if (booking.id) {
       const currentDate = new Date();
       const currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}00`;
       const bookingEndTime = booking.end_time.replace(/:/g, '');
       const bookingStartTime = booking.start_time.replace(/:/g, '');
-      if (currentTime < bookingEndTime && currentTime > bookingStartTime) {
+      const bookingDate = booking.date;
+      const currentDateString = BookingInfoModal.convertDateToString(currentDate);
+      if (currentTime < bookingEndTime && currentTime > bookingStartTime
+        && bookingDate === currentDateString) {
         return true;
       }
       return false;
@@ -208,6 +225,41 @@ class BookingInfoModal extends Component {
       });
   }
 
+  handleDeleteButton = () => {
+    const { booking } = this.props;
+    sweetAlert.fire({
+      position: 'top',
+      type: 'warning',
+      text: 'This will delete all bookings associated with this recurring booking.',
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      showCancelButton: true,
+    })
+      .then((r) => {
+        if (r.value) {
+          api.deleteRecurringBooking(booking.id)
+            .then(() => {
+              this.closeModal();
+              sweetAlert.fire({
+                position: 'top',
+                type: 'success',
+                title: 'Recurring booking was successfully deleted.',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+              });
+            })
+            .catch((error) => {
+              sweetAlert.fire({
+                position: 'top',
+                type: 'error',
+                text: error.response.data,
+              });
+            });
+        }
+      });
+  }
+
   handleGoToUser = () => {
     // eslint-disable-next-line react/prop-types
     const { history } = this.props;
@@ -338,15 +390,19 @@ class BookingInfoModal extends Component {
     const { selectedRoomName } = this.props;
     if (BookingInfoModal.checkSameUserOrAdmin(booking)) {
       return (
-        <EditBookingForm
-          booking={booking}
-          selectedRoomName={selectedRoomName}
-          onCloseWithEditBooking={this.closeModalWithAction}
-        />
+        <div>
+          <EditBookingForm
+            booking={booking}
+            selectedRoomName={selectedRoomName}
+            onCloseWithEditBooking={this.closeModalWithAction}
+          />
+          {booking.recurring_booking === null ? null
+            : <Button content="Delete Recurring Bookings" color="red" onClick={this.handleDeleteButton} />}
+          <div className="ui divider" />
+        </div>
       );
     }
     if (booking.booker
-      && !booking.booker.is_superuser
       && BookingInfoModal.checkCamponPossible(booking)) {
       return (
         <CampOnForm

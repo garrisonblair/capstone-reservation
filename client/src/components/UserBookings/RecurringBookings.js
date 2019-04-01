@@ -31,7 +31,7 @@ class RecurringBookings extends Component {
     const { bookings } = this.props;
     const component = bookings.map((booking, index) => (
       // eslint-disable-next-line react/no-array-index-key
-      <Table.Row key={index}>
+      <Table.Row key={index} onClick={() => this.openRecurringModal(booking)}>
         <Table.Cell>
           {booking.room.name}
         </Table.Cell>
