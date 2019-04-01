@@ -507,7 +507,6 @@ class Cells extends Component {
 
           {booking.confirmed || isRecurring ? (
             <div style={{ marginTop: '5px' }}>
-              <Icon name="facebook" />
               {isRecurring ? <Icon name="history" flipped="horizontally" /> : null}
               {booking.confirmed ? <Icon name="check circle" /> : null}
             </div>
