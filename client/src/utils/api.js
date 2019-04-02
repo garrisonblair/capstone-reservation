@@ -891,6 +891,34 @@ function updateEmailSettings(
   });
 }
 
+function getPersonalSettings(serviceToken) {
+  const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
+  const endpoint = serviceToken ? 'personal_settings_service' : 'personal_settings';
+  return axios({
+    method: 'GET',
+    url: `${settings.API_ROOT}/${endpoint}`,
+    headers,
+  });
+}
+
+function updatePersonalSettings(
+  bookingColor, camponColor, passedBookingColor, serviceToken,
+) {
+  const headers = serviceToken ? { Authorization: serviceToken } : getTokenHeader();
+  const endpoint = serviceToken ? 'personal_settings_service' : 'personal_settings';
+  const data = {
+    booking_color: bookingColor,
+    campon_color: camponColor,
+    passed_booking_color: passedBookingColor,
+  };
+  return axios({
+    method: 'POST',
+    url: `${settings.API_ROOT}/${endpoint}`,
+    headers,
+    data,
+  });
+}
+
 function getCSV() {
   const headers = getTokenHeader();
   return axios({
@@ -986,6 +1014,8 @@ const api = {
   postNotification,
   getEmailSettings,
   updateEmailSettings,
+  getPersonalSettings,
+  updatePersonalSettings,
   getCSV,
   postCSV,
 };

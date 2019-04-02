@@ -48,6 +48,7 @@ class Navigation extends Component {
   handleForDisplay = () => {
     const { history } = this.props;
     history.push('/forDisplay');
+    window.location.reload();
   }
 
   handleMobilePage = () => {
@@ -73,6 +74,7 @@ class Navigation extends Component {
           if (history.location.pathname !== '/') {
             history.push('/');
           }
+          window.location.reload();
         });
     } else {
       this.setState({ showLogin: true });

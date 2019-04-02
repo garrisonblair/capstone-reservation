@@ -11,6 +11,7 @@ import moment from 'moment';
 import ReservationDetailsModal from '../ReservationDetailsModal';
 import BookingInfoModal from '../BookingInfoModal';
 import storage from '../../utils/local-storage';
+import api from '../../utils/api';
 
 class Cells extends Component {
   static timeStringToInt(time) {
@@ -31,10 +32,30 @@ class Cells extends Component {
     selectedBookingCampons: null,
     bookingModal: false,
     bookingInfoModal: false,
-    orientation: 0,
     hoursDivisionNum: 0,
     roomsNum: 0,
+    orientation: 0,
+    bookingColor: '#1F5465',
+    camponColor: '#82220E',
+    passedBookingColor: '#7F7F7F',
   };
+
+  componentDidMount() {
+    if (storage.getUser() !== null) {
+      this.syncSettings(this.getServiceToken());
+    }
+  }
+
+  getServiceToken = () => {
+    // eslint-disable-next-line react/prop-types
+    const { match } = this.props;
+    let token;
+    if (match !== undefined) {
+      // eslint-disable-next-line prefer-destructuring
+      token = match.params.token;
+    }
+    return token;
+  }
 
   static getDerivedStateFromProps(props, state) {
     if (
@@ -146,11 +167,16 @@ class Cells extends Component {
   // Style for .calendar__booking
   setBookingStyle(booking) {
     const { hoursSettings } = this.props;
-    const { orientation } = this.state;
+    const {
+      orientation,
+      bookingColor,
+      camponColor,
+      passedBookingColor,
+    } = this.state;
     const bookingStart = Cells.timeStringToInt(booking.start_time);
     const bookingEnd = Cells.timeStringToInt(booking.end_time);
     const calendarStart = Cells.timeStringToInt(hoursSettings.start);
-    let color = '#1F5465';
+    let color = bookingColor;
     const currentDate = new Date();
     const currentMinute = currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`;
 
@@ -172,10 +198,10 @@ class Cells extends Component {
       }
     }
     if (datePassed || (sameDate && parseInt(booking.end_time.replace(/:/g, ''), 10) <= parseInt(`${currentDate.getHours()}${currentMinute}00`, 10))) {
-      color = '#7F7F7F';
+      color = passedBookingColor;
     } else
     if (booking.isCampOn) {
-      color = '#82220E';
+      color = camponColor;
     }
 
     // Find the rows in the grid the booking corresponds to.
@@ -214,6 +240,7 @@ class Cells extends Component {
         },
       };
     }
+
     return style;
   }
 
@@ -243,6 +270,19 @@ class Cells extends Component {
       });
     }
     return campOnsList;
+  }
+
+  syncSettings = (token) => {
+    api.getPersonalSettings(token)
+      .then((r) => {
+        if (r.status === 200) {
+          this.setState({
+            bookingColor: r.data.booking_color,
+            camponColor: r.data.campon_color,
+            passedBookingColor: r.data.passed_booking_color,
+          });
+        }
+      });
   }
 
   toggleBookingModal = () => {
