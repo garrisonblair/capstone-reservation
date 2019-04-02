@@ -342,7 +342,7 @@ class Booking(models.Model, SubjectModel):
             new_booking.save()
 
         # Turn campon into entire new booking if its start is after the booking end time
-        elif first_campon.start_time > self.end_time:
+        elif first_campon.start_time >= self.end_time:
             new_booking = Booking(
                 booker=first_campon.booker,
                 room=self.room,

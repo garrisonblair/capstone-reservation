@@ -39,7 +39,7 @@ class Navigation extends Component {
     const { history } = this.props;
 
     if (history.location.pathname === '/') {
-      window.location.reload();
+      // window.location.reload();
     } else {
       history.push('/');
     }
@@ -74,7 +74,7 @@ class Navigation extends Component {
           if (history.location.pathname !== '/') {
             history.push('/');
           }
-          window.location.reload();
+          // window.location.reload();
         });
     } else {
       this.setState({ showLogin: true });

@@ -214,6 +214,7 @@ class BookingRetrieveUpdateDestroy(APIView):
 
             update_booking.merge_with_neighbouring_bookings()
             update_booking.save()
+            update_booking.update_campons_after_change()
 
             utils.log_model_change(update_booking, utils.CHANGE, request.user)
 

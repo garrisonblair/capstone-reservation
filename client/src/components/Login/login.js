@@ -52,7 +52,7 @@ class LoginComponent extends Component {
           timer: 2000,
         });
         onSuccess();
-        window.location.reload();
+        // window.location.reload();
       })
       .catch(() => {
         sweetAlert.fire({
