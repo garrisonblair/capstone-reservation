@@ -40,10 +40,9 @@ class BookingInfoModal extends Component {
       const currentTime = `${currentDate.getHours()}${currentDate.getMinutes() < 10 ? `0${currentDate.getMinutes()}` : `${currentDate.getMinutes()}`}00`;
       const bookingEndTime = booking.end_time.replace(/:/g, '');
       const bookingStartTime = booking.start_time.replace(/:/g, '');
-      const bookingDate = booking.date;
-      const currentDateString = BookingInfoModal.convertDateToString(currentDate);
-      if (currentTime < bookingEndTime && currentTime > bookingStartTime
-        && bookingDate === currentDateString) {
+      // const bookingDate = booking.date;
+      // const currentDateString = BookingInfoModal.convertDateToString(currentDate);
+      if (currentTime < bookingEndTime && currentTime > bookingStartTime) {
         return true;
       }
       return false;
