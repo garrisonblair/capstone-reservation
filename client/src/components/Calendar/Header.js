@@ -24,7 +24,7 @@ class Header extends Component {
         <br />
         <span>
           Windows:&nbsp;
-          {h.windows ? 'yes' : 'no'}
+          {h.has_windows ? 'yes' : 'no'}
         </span>
       </div>
     );
