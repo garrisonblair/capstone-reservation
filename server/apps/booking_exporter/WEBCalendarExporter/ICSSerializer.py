@@ -83,8 +83,8 @@ class ICSSerializer(abc.ABC):
 
         dt_end_time = str(dt_end_h) + str(dt_end_m) + str(dt_end_s)
 
-        dt_start = 'DTSTART:' + str(dt_start_date) + 'T' + str(dt_start_time)
-        dt_end = 'DTEND:' + str(dt_end_date) + 'T' + str(dt_end_time)
+        dt_start = str(dt_start_date) + 'T' + str(dt_start_time)
+        dt_end = str(dt_end_date) + 'T' + str(dt_end_time)
 
         ics_file = """BEGIN:VCALENDAR
 METHOD:PUBLISH
