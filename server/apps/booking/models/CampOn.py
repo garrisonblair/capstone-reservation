@@ -35,9 +35,9 @@ class CampOn(models.Model, SubjectModel):
         is_create = False
         if self.id is None:
             is_create = True
-        this = super(CampOn, self).save(*args, **kwargs)
 
         self.validate_model(is_create)
+        this = super(CampOn, self).save(*args, **kwargs)
 
         if is_create:
             self.object_created()
