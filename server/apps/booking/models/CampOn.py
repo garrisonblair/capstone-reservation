@@ -32,11 +32,12 @@ class CampOn(models.Model, SubjectModel):
 
     def save(self, *args, **kwargs):
         self.evaluate_privilege()
-        self.validate_model()
         is_create = False
         if self.id is None:
             is_create = True
         this = super(CampOn, self).save(*args, **kwargs)
+
+        self.validate_model(is_create)
 
         if is_create:
             self.object_created()
@@ -64,7 +65,7 @@ class CampOn(models.Model, SubjectModel):
                                                                                             self.start_time,
                                                                                             self.end_time)
 
-    def validate_model(self):
+    def validate_model(self, is_create):
         today = datetime.datetime.now().today().date()
 
         if self.camped_on_booking.date != today:
@@ -86,7 +87,8 @@ class CampOn(models.Model, SubjectModel):
         other_campons = CampOn.objects.filter(booker=self.booker, camped_on_booking=self.camped_on_booking)
 
         if other_campons.count() > 1 or (other_campons.count() is 1 and other_campons[0].id is not self.id):
-            raise ValidationError("Cannot camp-on the same Booking more than once.")
+            if is_create:
+                raise ValidationError("Cannot camp-on the same Booking more than once.")
 
     def evaluate_privilege(self):
 
