@@ -395,8 +395,7 @@ class BookingInfoModal extends Component {
             selectedRoomName={selectedRoomName}
             onCloseWithEditBooking={this.closeModalWithAction}
           />
-          {booking.recurring_booking === null ? null
-            : <Button content="Delete Recurring Bookings" color="red" onClick={this.handleDeleteButton} />}
+          {booking.recurring_booking ? <Button content="Delete Recurring Bookings" color="red" onClick={this.handleDeleteButton} /> : null}
           <div className="ui divider" />
         </div>
       );
